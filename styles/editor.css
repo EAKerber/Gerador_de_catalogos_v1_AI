@@ -271,6 +271,12 @@ body[data-document-dirty="true"] #saveButton::after { content: ""; display: inli
 .geometry-resolution-note strong { font-size: 9px; text-transform: uppercase; }
 .geometry-resolution-note span { font-size: 11px; font-weight: 800; }
 .geometry-resolution-note small { color: var(--color-ink-600); font-size: 9px; line-height: 1.35; }
+.batch-numeric-editor { display: grid; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-line-250); }
+.batch-frame-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.batch-frame-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px; min-width: 0; }
+.batch-frame-field label { grid-column: 1 / -1; color: var(--color-ink-600); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.batch-frame-field input { width: 100%; min-width: 0; height: 32px; padding: 6px 7px; border: 1px solid var(--color-line-250); border-radius: 6px; }
+.batch-frame-field button { min-height: 32px; padding: 5px 7px; border: 1px solid var(--color-line-250); border-radius: 6px; background: #fff; font-size: 9px; font-weight: 800; }
 
 .toast {
   position: fixed;

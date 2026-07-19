@@ -6,7 +6,7 @@ A direção canônica do produto, o fluxo esperado para agentes, a política de 
 
 ## Entrega atual
 
-A pasta reúne vinte e sete etapas evolutivas:
+A pasta reúne as seguintes etapas evolutivas:
 
 - **Incremento 00 — fundação arquitetônica:** documento JSON versionado, registro de componentes, tokens e separação das camadas.
 - **Incremento 01 — editor base A4:** página vazia, drag and drop, seleção, inspetor, movimento, resize, grid, snap e exportação JSON.
@@ -38,6 +38,7 @@ A pasta reúne vinte e sete etapas evolutivas:
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
 - **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
 - **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
+- **Incremento 05.17 — geometria orientada por intenção (checkpoint 1):** seleção contextual atômica e uma superfície de multisseleção para relações, equalização, valores exatos e deltas reversíveis.
 
 ## Abrir
 

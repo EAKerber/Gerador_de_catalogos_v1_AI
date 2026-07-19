@@ -50,13 +50,13 @@ O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colu
 
 | Prioridade | Problema confirmado | Critério de saída |
 | --- | --- | --- |
-| P1 | Seleção contextual ainda cobra correção | Selecionar qualquer descendente visível ajusta contexto e foco em uma ação; zero tentativa sem efeito no benchmark. |
-| P1 | Geometria domina o fluxo manual | Ações de grupo distribuem, alinham e dimensionam irmãos sem editar quatro campos por componente. |
+| P1 | Seleção contextual ainda cobra correção | Implementação 05.17: transição atômica e contratos de pai/filho/irmão; confirmar zero tentativa no próximo benchmark Chromium. |
+| P1 | Geometria domina o fluxo manual | Checkpoint 05.17: equalização, valores exatos e deltas sobre seleção; preview e relações persistentes permanecem posteriores. |
 | P1 | Composição final permanece inválida | Mesmo alvo encerra com zero colisão e zero overflow, sem retirar edição individual. |
 | P2 | Galerias exigem edição imagem por imagem | Entrada de coleção permite adicionar imagens/legendas em lote e refinar exceções. |
 | P2 | Legendas exigem três ações por definição | Entrada de coleção materializa várias definições e itens visuais em uma transação. |
 
-O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. Não há evidência para remover separadores, mínimos, autoridade, presets ou geometria exata; geometria exata deve sair do caminho normal, não do modelo.
+O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. A revisão posterior corrige a interpretação: geometria exata permanece central, mas deve cooperar com manipulação direta, relações e conjuntos em vez de depender de campos isolados.
 
 ### Frentes congeladas
 

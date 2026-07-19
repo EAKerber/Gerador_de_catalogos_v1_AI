@@ -423,6 +423,7 @@
       const presetId = this.commonValue(cards, card => card.presentation?.presetId || "product-standard");
       const accentColor = this.commonValue(accentEligible, component => component.style?.accentColor || "brand.primary");
       const textColor = this.commonValue(textEligible, component => component.style?.textColor || "text.primary");
+      const frameValues = Object.fromEntries(["x", "y", "width", "height"].map(path => [path, this.commonValue(components, component => Math.round(component.frame[path]))]));
       const mixedOption = value => value ? "" : '<option value="" selected disabled>Valores diferentes — escolher para aplicar</option>';
       const presets = Object.values(window.CatalogPresentations?.PRESETS || {});
       const separatorPresets = Object.values(window.CATALOG_SEPARATOR_PRESETS || {});
@@ -451,8 +452,9 @@
         </header>
         <div class="inspector-tab-panel batch-inspector">
           <section class="inspector-section">
-            <h3 class="inspector-section__title">Organizar conjunto</h3>
-            <p class="inspector-note">Alinhamento usa a caixa atual da seleção. Itens em slot ou auto-layout passam a override manual.</p>
+            <h3 class="inspector-section__title">Geometria do conjunto</h3>
+            <p class="inspector-note">Precisão direta, relacional e numérica na mesma seleção. Itens gerenciados passam a posição independente; uma ação desfaz o comando inteiro.</p>
+            <div class="inspector-section__heading"><h4>Relações</h4><span>alinhar e distribuir</span></div>
             <div class="batch-command-grid" aria-label="Alinhamento da seleção">
               <button type="button" data-batch-align="left" title="Alinhar à esquerda">← Esquerda</button>
               <button type="button" data-batch-align="center" title="Centralizar horizontalmente">↔ Centro</button>
@@ -464,6 +466,20 @@
             <div class="inspector-actions inspector-actions--grid">
               <button type="button" data-batch-distribute="horizontal" ${components.length < 3 ? "disabled" : ""}>Distribuir ↔</button>
               <button type="button" data-batch-distribute="vertical" ${components.length < 3 ? "disabled" : ""}>Distribuir ↕</button>
+              <button type="button" data-batch-equalize="width">Igualar larguras</button>
+              <button type="button" data-batch-equalize="height">Igualar alturas</button>
+            </div>
+            <div class="batch-numeric-editor">
+              <div class="inspector-section__heading"><h4>Valores exatos</h4><span>aplicar à seleção</span></div>
+              <div class="batch-frame-grid">
+                ${["x", "y", "width", "height"].map(path => `<div class="batch-frame-field"><label>${path === "width" ? "Largura" : path === "height" ? "Altura" : path.toUpperCase()}</label><input type="number" step="1" value="${frameValues[path] ?? ""}" placeholder="Misto" data-batch-frame-value="${path}" /><button type="button" data-batch-frame-apply="${path}">Aplicar</button></div>`).join("")}
+              </div>
+              <div class="inspector-section__heading"><h4>Deslocamento</h4><span>delta relativo</span></div>
+              <div class="inspector-grid">
+                <div class="inspector-field"><label>Delta X</label><input type="number" step="1" value="0" data-batch-delta="x" /></div>
+                <div class="inspector-field"><label>Delta Y</label><input type="number" step="1" value="0" data-batch-delta="y" /></div>
+              </div>
+              <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-delta-apply>Aplicar deslocamento</button>
             </div>
             <div class="batch-spacing-editor">
               <div class="inspector-section__heading"><h4>Espaçamento definido</h4><span>2 ou mais irmãos</span></div>
@@ -770,8 +786,21 @@
       if (selectedIds.length > 1) {
         const align = event.target.closest("[data-batch-align]");
         const distribute = event.target.closest("[data-batch-distribute]");
+        const equalize = event.target.closest("[data-batch-equalize]");
+        const frameApply = event.target.closest("[data-batch-frame-apply]");
         if (align) this.store.alignComponents(selectedIds, align.dataset.batchAlign);
         else if (distribute) this.store.distributeComponents(selectedIds, distribute.dataset.batchDistribute);
+        else if (equalize) this.store.transformComponents(selectedIds, { kind: "equalize", path: equalize.dataset.batchEqualize });
+        else if (frameApply) {
+          const path = frameApply.dataset.batchFrameApply;
+          const value = this.root.querySelector(`[data-batch-frame-value="${path}"]`)?.value;
+          if (value !== "") this.store.transformComponents(selectedIds, { kind: "set", path, value });
+        }
+        else if (event.target.closest("[data-batch-delta-apply]")) {
+          const x = Number(this.root.querySelector('[data-batch-delta="x"]')?.value || 0);
+          const y = Number(this.root.querySelector('[data-batch-delta="y"]')?.value || 0);
+          if (x || y) this.store.transformComponents(selectedIds, { kind: "delta", values: { x, y } });
+        }
         else if (event.target.closest("[data-batch-spacing-apply]")) {
           try {
             this.store.spaceComponents(selectedIds, {

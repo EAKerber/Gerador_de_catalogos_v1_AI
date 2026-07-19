@@ -1,15 +1,15 @@
-# Atlas de funcionalidades — Incremento 05.16
+# Atlas de funcionalidades — Incremento 05.17
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 38 capacidades de produto;
+- 39 capacidades de produto;
 - 16 tipos de componente;
 - 5 receitas oficiais;
 - 15 fluxos curados;
 - 27 ícones declarados.
-- governança: 23 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 24 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Fluxos por intenção
 
@@ -23,7 +23,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset persistido por referência e reutilizável |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
-| `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação |
+| `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação |
 | `reuse.saved-component` | Reutilizar uma composição editada | Selecionar componente → Estrutura → Salvar em Meus componentes | Snapshot reutilizável com novos IDs a cada inserção |
 | `safety.history` | Reverter ou reaplicar uma mudança | Toolbar → Histórico; Ctrl/Cmd+Z e Ctrl/Cmd+Shift+Z ou Ctrl+Y | Estado anterior ou posterior restaurado atomicamente |
 | `inspect.progressive` | Ajustar do conteúdo à geometria sem receber tudo de uma vez | Inspetor → Conteúdo, Layout, Visual e Avançado | Controles priorizados pela intenção e propriedades técnicas sob divulgação |
@@ -140,10 +140,10 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `layout.multi-selection`
 - **Acesso:** Shift/Ctrl/Cmd+clique → Layout/Visual
 - **Pré-condições:** Itens no mesmo contexto e com o mesmo pai
-- **Resultado:** Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação
-- **Exemplo:** Distribuir três cards e inserir divisórias verticais
+- **Resultado:** Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação
+- **Exemplo:** Igualar três cards, deslocar o conjunto e inserir divisórias verticais
 - **Limites:** Seleção cruzando pais é rejeitada
-- **Capacidades:** `multiSelection`, `batchAlignment`, `batchSpacing`, `batchSeparators`, `batchPresentation`
+- **Capacidades:** `multiSelection`, `batchAlignment`, `batchGeometry`, `batchSpacing`, `batchSeparators`, `batchPresentation`
 - **Componentes:** `separator`
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
@@ -259,6 +259,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `heroGridStripComposition` | `true` | **active** | Materializa uma organização frequente com componentes canônicos e editáveis. | `CatalogCapabilities.capabilities.heroGridStripComposition` |
 | `multiSelection` | `true` | **active** | Base para ações de grupo. | `CatalogCapabilities.capabilities.multiSelection` |
 | `batchAlignment` | `true` | **active** | Intenção distinta de organização de irmãos. | `CatalogCapabilities.capabilities.batchAlignment` |
+| `batchGeometry` | `true` | **active** | Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos. | `CatalogCapabilities.capabilities.batchGeometry` |
 | `batchPresentation` | `true` | **audit** | Consolidar com modos, presets e densidade sem duplicar superfícies. | `CatalogCapabilities.capabilities.batchPresentation` |
 | `oneClickInsertion` | `true` | **active** | O botão contextual demonstrou ganho geral de usabilidade. | `CatalogCapabilities.capabilities.oneClickInsertion` |
 | `officialSectionRecipes` | `true` | **active** | Receitas devem evoluir para comandos compostos compartilhados. | `CatalogCapabilities.capabilities.officialSectionRecipes` |

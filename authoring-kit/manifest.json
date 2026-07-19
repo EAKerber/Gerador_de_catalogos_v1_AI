@@ -1,7 +1,7 @@
 {
   "kitFormat": "CatalogAuthoringKit",
-  "kitVersion": "1.5.6",
-  "editorIncrement": "05.16",
+  "kitVersion": "1.5.7",
+  "editorIncrement": "05.17",
   "defaultAssetPolicy": "assisted",
   "guide": "GUIDE.md",
   "capabilities": "capabilities.json",

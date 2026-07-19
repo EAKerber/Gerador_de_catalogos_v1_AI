@@ -209,6 +209,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.batchGeometry",
+      "governance": "active",
+      "governanceReason": "Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos.",
+      "id": "batchGeometry",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.batchPresentation",
       "governance": "audit",
       "governanceReason": "Consolidar com modos, presets e densidade sem duplicar superfícies.",
@@ -1242,6 +1249,7 @@
       "capabilityIds": [
         "multiSelection",
         "batchAlignment",
+        "batchGeometry",
         "batchSpacing",
         "batchSeparators",
         "batchPresentation"
@@ -1310,7 +1318,7 @@
     }
   ],
   "editor": {
-    "increment": "05.16",
+    "increment": "05.17",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -1683,11 +1691,11 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 38,
+    "capabilities": 39,
     "components": 16,
     "curatedFlows": 15,
     "governance": {
-      "active": 23,
+      "active": 24,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

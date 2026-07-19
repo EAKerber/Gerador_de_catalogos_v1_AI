@@ -1,7 +1,7 @@
 {
   "guideFormat": "CatalogFeatureGuide",
   "guideVersion": "1.0.0",
-  "editorIncrement": "05.16",
+  "editorIncrement": "05.17",
   "entries": [
     {
       "id": "start.semantic-source",
@@ -112,10 +112,10 @@
       "intention": "Refinar vários elementos irmãos de uma vez",
       "access": "Shift/Ctrl/Cmd+clique → Layout/Visual",
       "preconditions": ["Itens no mesmo contexto e com o mesmo pai"],
-      "result": "Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação",
-      "example": "Distribuir três cards e inserir divisórias verticais",
+      "result": "Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação",
+      "example": "Igualar três cards, deslocar o conjunto e inserir divisórias verticais",
       "limits": ["Seleção cruzando pais é rejeitada"],
-      "capabilityIds": ["multiSelection", "batchAlignment", "batchSpacing", "batchSeparators", "batchPresentation"],
+      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "batchSpacing", "batchSeparators", "batchPresentation"],
       "componentTypes": ["separator"],
       "recipeIds": [],
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]

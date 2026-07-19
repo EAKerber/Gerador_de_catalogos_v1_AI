@@ -94,6 +94,7 @@ assert(renderer.includes("data-insert-template") && renderer.includes("data-inse
 assert(projectPackage.includes("officialSectionRecipes") && read("schemas/catalog-capabilities.schema.json").includes('"recipes"'), "Receitas oficiais não estão declaradas no manifesto de capacidades.");
 assert(renderer.includes("data-context-action") && interactions.includes("performContextualAction") && documentStore.includes("addArtVariation"), "O + contextual não percorre interface e store.");
 assert(inspector.includes("data-batch-spacing-apply") && documentStore.includes("spaceComponents") && documentStore.includes("addSeparatorsForComponents"), "Espaçamento e separadores em lote não percorrem inspetor e store.");
+assert(inspector.includes("data-batch-equalize") && inspector.includes("data-batch-frame-apply") && inspector.includes("data-batch-delta-apply") && documentStore.includes("transformComponents"), "A geometria integrada da multisseleção não percorre inspetor e store.");
 assert(inspector.includes("taskStateByType") && inspector.includes("rememberTaskState") && inspector.includes("restoreTaskState"), "O inspetor não preserva a tarefa entre componentes equivalentes.");
 assert(interactions.includes("requireActionResult") && interactions.includes("não pode ser inserido no contexto atual"), "Ações sem resultado ainda podem falhar silenciosamente.");
 assert(read("app/component-registry.js").includes("CATALOG_SEPARATOR_PRESETS") && projectPackage.includes("separatorPresets"), "Presets editáveis de separador não foram declarados.");

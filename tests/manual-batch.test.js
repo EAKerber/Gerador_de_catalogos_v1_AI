@@ -41,6 +41,17 @@ assert(store.distributeComponents(store.getSelectedIds(), "horizontal"), "A dist
 const centers = [first, second, third].map(component => live(component).frame.x + live(component).frame.width / 2);
 assert(Math.abs((centers[1] - centers[0]) - (centers[2] - centers[1])) < 0.001, "A distribuição não igualou a distância entre centros.");
 
+const historyBeforeTransform = store.getHistoryState().undoCount;
+assert(store.transformComponents(store.getSelectedIds(), { kind: "equalize", path: "width", referenceId: second.id }), "Igualar larguras foi recusado.");
+assert([first, second, third].every(component => live(component).frame.width === live(second).frame.width), "A equalização não usou a largura da referência.");
+assert(store.getHistoryState().undoCount === historyBeforeTransform + 1, "A equalização criou mais de uma entrada de histórico.");
+assert(store.transformComponents(store.getSelectedIds(), { kind: "delta", values: { x: 12, y: -8 } }), "O deslocamento conjunto foi recusado.");
+assert(live(first).frame.x === 52 && live(first).frame.y === 72, "O delta não foi aplicado aos dois eixos.");
+assert(store.transformComponents(store.getSelectedIds(), { kind: "set", path: "height", value: 64 }), "A altura exata em lote foi recusada.");
+assert([first, second, third].every(component => live(component).frame.height === 64), "A altura exata não foi aplicada ao conjunto.");
+store.undo();
+assert([first, second, third].every(component => live(component).frame.height === 40), "Desfazer não restaurou a altura do conjunto.");
+
 const historyBeforeStyle = store.getHistoryState().undoCount;
 const styled = store.setStyleBatch(store.getSelectedIds(), { textColor: "brand.secondary" });
 assert(styled.length === 3 && styled.every(component => component.style.textColor === "brand.secondary"), "O token visual não foi aplicado aos itens elegíveis.");

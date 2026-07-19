@@ -392,6 +392,19 @@ Critérios de aceite:
 
 Concluído: memória de aba/disclosures por tipo durante a sessão, diagnóstico explícito para inserções sem resultado, correção geométrica da receita hero + grade + faixa e reconstrução integral comparável. O benchmark caiu de 267 para 223 ações; tabelas caíram de 82 para 56 e overflows de dois para zero. O próximo ciclo deve atacar seleção contextual, ações geométricas de grupo e coleções de galeria/legenda até a mesma composição terminar sem colisões.
 
+## Incremento 05.17 — Geometria orientada por intenção
+
+Critérios de aceite:
+
+- preservar geometria exata como capacidade central;
+- fundir seleção e transição de contexto em uma ação;
+- reunir manipulação relacional e numérica na multisseleção;
+- equalizar dimensões, aplicar valores exatos e deslocar por delta em transações reversíveis;
+- manter mínimos, autoridade local e geometria solicitada/resolvida;
+- adiar constraints persistentes até que relações efêmeras demonstrem insuficiência.
+
+Checkpoint 1 entregue no domínio e na interface: seleção atômica, equalização, valores exatos e deltas. Galerias/legendas como coleção, preview de colisão e novo benchmark integral permanecem nos checkpoints seguintes. O contrato Chromium foi criado, mas sua execução ficou bloqueada por `SIGSEGV` do binário ambiental antes da abertura da página.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Critérios de aceite:

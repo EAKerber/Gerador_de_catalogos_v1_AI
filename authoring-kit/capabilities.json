@@ -8,6 +8,7 @@
     ],
     "assetMaxBytes": 26214400,
     "batchAlignment": true,
+    "batchGeometry": true,
     "batchPresentation": true,
     "batchSeparators": true,
     "batchSpacing": true,
@@ -1145,7 +1146,7 @@
     "pagePreset": "A4"
   },
   "editor": {
-    "increment": "05.16",
+    "increment": "05.17",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },

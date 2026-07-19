@@ -1,7 +1,7 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.16",
+  "editorIncrement": "05.17",
   "statusVocabulary": {
     "active": "Evolução permitida dentro do foco atual de usabilidade, fidelidade e confiabilidade.",
     "maintain": "Contrato preservado e corrigido quando necessário, sem expansão funcional.",
@@ -75,6 +75,7 @@
     { "id": "heroGridStripComposition", "status": "active", "reason": "Materializa uma organização frequente com componentes canônicos e editáveis." },
     { "id": "multiSelection", "status": "active", "reason": "Base para ações de grupo." },
     { "id": "batchAlignment", "status": "active", "reason": "Intenção distinta de organização de irmãos." },
+    { "id": "batchGeometry", "status": "active", "reason": "Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos." },
     { "id": "batchPresentation", "status": "audit", "reason": "Consolidar com modos, presets e densidade sem duplicar superfícies." },
     { "id": "oneClickInsertion", "status": "active", "reason": "O botão contextual demonstrou ganho geral de usabilidade." },
     { "id": "officialSectionRecipes", "status": "active", "reason": "Receitas devem evoluir para comandos compostos compartilhados." },

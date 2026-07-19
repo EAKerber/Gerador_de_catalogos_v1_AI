@@ -68,6 +68,7 @@
       "component-presentation-updated": "Editar apresentação",
       "components-aligned": "Alinhar seleção",
       "components-distributed": "Distribuir seleção",
+      "components-transformed": "Transformar seleção",
       "components-spaced": "Ajustar espaçamento",
       "components-presentation-updated": "Editar apresentação da seleção",
       "components-style-updated": "Editar estilo da seleção",
@@ -2356,8 +2357,23 @@
       const record = this.findComponent(componentId);
       if (!record) return false;
       const parentId = record.parent?.id || null;
-      if (this.state.editor.editingContextId !== parentId) this.state.editor.editingContextId = parentId;
-      this.setSelection(componentId, options);
+      const previousContextId = this.state.editor.editingContextId;
+      this.state.editor.editingContextId = parentId;
+      if (options.additive === true || options.toggle === true) {
+        this.setSelection(componentId, options);
+        return true;
+      }
+      this.state.editor.selectedComponentId = componentId;
+      this.state.editor.selectedComponentIds = [componentId];
+      this.emit({
+        type: "selection",
+        componentId,
+        componentIds: [componentId],
+        source: "layers",
+        contextChanged: previousContextId !== parentId,
+        previousContextId,
+        editingContextId: parentId
+      });
       return true;
     }
 
@@ -2746,6 +2762,40 @@
         });
         this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
         this.state.editor.selectedComponentId = this.state.editor.selectedComponentIds[this.state.editor.selectedComponentIds.length - 1];
+        return true;
+      });
+    }
+
+    transformComponents(componentIds, operation = {}) {
+      const selection = this.getBatchSelection(componentIds);
+      if (!selection) return false;
+      const allowedPaths = new Set(["x", "y", "width", "height"]);
+      const values = operation.values && typeof operation.values === "object"
+        ? Object.fromEntries(Object.entries(operation.values).filter(([key, value]) => allowedPaths.has(key) && Number.isFinite(Number(value))).map(([key, value]) => [key, Number(value)]))
+        : null;
+      const path = allowedPaths.has(operation.path) ? operation.path : null;
+      const kind = String(operation.kind || "set");
+      if ((!path && !Object.keys(values || {}).length) || !["set", "delta", "equalize"].includes(kind)) return false;
+      const requested = Number(operation.value);
+      if (!values && kind !== "equalize" && !Number.isFinite(requested)) return false;
+      const referenceId = selection.records.some(record => record.component.id === operation.referenceId)
+        ? operation.referenceId
+        : this.state.editor.selectedComponentId;
+      const reference = selection.records.find(record => record.component.id === referenceId)?.component || selection.records[selection.records.length - 1].component;
+      return this.runCompoundChange({
+        type: "components-transformed",
+        componentIds: selection.records.map(record => record.component.id),
+        operation: { kind, path, values, value: kind === "equalize" ? reference.frame[path] : requested, referenceId: reference.id }
+      }, () => {
+        this.releaseBatchLayout(selection.records);
+        selection.records.forEach(record => {
+          const patch = values
+            ? Object.fromEntries(Object.entries(values).map(([key, value]) => [key, kind === "delta" ? record.component.frame[key] + value : value]))
+            : { [path]: kind === "delta" ? record.component.frame[path] + requested : kind === "equalize" ? reference.frame[path] : requested };
+          this.updateComponent(record.component.id, { frame: patch });
+        });
+        this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
+        this.state.editor.selectedComponentId = reference.id;
         return true;
       });
     }

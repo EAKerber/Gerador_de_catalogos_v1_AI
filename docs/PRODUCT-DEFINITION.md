@@ -2,7 +2,7 @@
 
 ## Status
 
-Direção de produto aceita em 2026-07-14 e atualizada pelos Incrementos 05.10 e 05.13. Este documento orienta backlog, arquitetura, interface e kit de autoria para agentes. Implementações atuais que ainda não atendem a esta definição são tratadas como etapas de migração, não como mudança da visão.
+Direção de produto aceita em 2026-07-14 e atualizada pelos Incrementos 05.10, 05.13 e 05.17. Este documento orienta backlog, arquitetura, interface e kit de autoria para agentes. Implementações atuais que ainda não atendem a esta definição são tratadas como etapas de migração, não como mudança da visão.
 
 ## 1. Visão
 
@@ -120,6 +120,15 @@ O resultado é um `CatalogProjectPackage` contendo o JSON materializado, assets 
 - o papel `primary-content` direciona o foco depois da página-base;
 - receitas oficiais passam a integrar o manifesto de capacidades do kit;
 - previsão contextual ampla e adaptação por uso continuam incrementais.
+
+### Direção geométrica canonizada no 05.17
+
+- precisão exata é uma capacidade central de refinamento, não um escape hatch periférico;
+- o custo indesejado é a repetição de correções numéricas isoladas, não a existência de X, Y, largura e altura;
+- manipulação direta, relações entre elementos e valores numéricos devem cooperar sobre a mesma seleção;
+- operações sobre conjuntos preservam mínimos, autoridade local, histórico e geometria solicitada/resolvida;
+- assistência estética sugere e explica relações, mas não substitui julgamento do usuário;
+- constraints relacionais persistentes só entram após evidência de que comandos relacionais efêmeros são insuficientes.
 
 ## 4. Fluxo canônico por catálogo
 
