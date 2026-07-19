@@ -38,7 +38,6 @@ A pasta reúne as seguintes etapas evolutivas:
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
 - **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
 - **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
-- **Incremento 05.17 — geometria e coleções em lote:** mapas de caixas, galerias e legendas reduzem a reconstrução integral para 157 ações, eliminando as oito colisões restantes sem retirar a edição individual.
 - **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, grade de caixas heterogêneas, diagnóstico da seleção e editores de coleção; benchmark final em 157 ações sem colisão ou overflow.
 
 ## Abrir
