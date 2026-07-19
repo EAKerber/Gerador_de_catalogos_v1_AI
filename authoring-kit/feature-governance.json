@@ -1,7 +1,7 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.15",
+  "editorIncrement": "05.16",
   "statusVocabulary": {
     "active": "Evolução permitida dentro do foco atual de usabilidade, fidelidade e confiabilidade.",
     "maintain": "Contrato preservado e corrigido quando necessário, sem expansão funcional.",

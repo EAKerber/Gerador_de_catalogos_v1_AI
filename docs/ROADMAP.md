@@ -390,6 +390,8 @@ Critérios de aceite:
 - medir ações, correções, trocas de contexto, tentativas sem efeito e validade final;
 - demonstrar zero ação silenciosa e zero colisão/overflow produzidos por receitas oficiais.
 
+Checkpoint 1 entregue: memória de aba/disclosures por tipo durante a sessão, diagnóstico explícito para inserções sem resultado, correção geométrica da receita hero + grade + faixa e medição isolada do núcleo estrutural em nove ações. A reconstrução integral continua pendente e permanece deliberadamente separada dessa medição parcial.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Critérios de aceite:

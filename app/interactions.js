@@ -40,7 +40,10 @@
           event.preventDefault();
           event.stopPropagation();
           try {
-            this.store.performContextualAction(contextualAction.dataset.contextAction, contextualAction.dataset.contextComponentId);
+            this.requireActionResult(
+              this.store.performContextualAction(contextualAction.dataset.contextAction, contextualAction.dataset.contextComponentId),
+              "Esta ação contextual não pôde ser aplicada à seleção atual."
+            );
           } catch (error) {
             this.reportError(error);
           }
@@ -60,8 +63,8 @@
         event.stopPropagation();
         try {
           const insertionOptions = { preferCurrentContext: event.shiftKey };
-          if (template) this.store.insertComponentFromTemplate(template.dataset.insertTemplate, insertionOptions);
-          else this.store.insertComponent(component.dataset.insertComponent, insertionOptions);
+          if (template) this.requireActionResult(this.store.insertComponentFromTemplate(template.dataset.insertTemplate, insertionOptions), "Esta estrutura não é compatível com o contexto atual.");
+          else this.requireActionResult(this.store.insertComponent(component.dataset.insertComponent, insertionOptions), "Este componente não pode ser inserido no contexto atual.");
         } catch (error) {
           this.reportError(error);
         }
@@ -73,8 +76,8 @@
         event.preventDefault();
         try {
           const insertionOptions = { preferCurrentContext: event.shiftKey };
-          if (item.dataset.templateId) this.store.insertComponentFromTemplate(item.dataset.templateId, insertionOptions);
-          else this.store.insertComponent(item.dataset.componentType, insertionOptions);
+          if (item.dataset.templateId) this.requireActionResult(this.store.insertComponentFromTemplate(item.dataset.templateId, insertionOptions), "Esta estrutura não é compatível com o contexto atual.");
+          else this.requireActionResult(this.store.insertComponent(item.dataset.componentType, insertionOptions), "Este componente não pode ser inserido no contexto atual.");
         } catch (error) {
           this.reportError(error);
         }
@@ -134,6 +137,11 @@
       console.warn(error);
       const status = document.getElementById("documentStatus");
       if (status) status.textContent = error?.message || "Não foi possível concluir a inserção.";
+    }
+
+    requireActionResult(result, message) {
+      if (result !== null && result !== false && result !== undefined) return result;
+      throw new Error(message || "A ação não está disponível no contexto atual.");
     }
 
     isInsideContext(event, contextId) {

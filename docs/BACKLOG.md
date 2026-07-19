@@ -37,6 +37,17 @@ O 05.13 não remove recursos nem migra documentos. `CatalogDocument` permanece e
 
 O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colunas, componentes e vínculos já canônicos. Continuidade de tarefa e nova medição passam para 05.16.
 
+### Em andamento — Incremento 05.16 Interface orientada à tarefa
+
+| Prioridade | Problema | Critério de saída |
+| --- | --- | --- |
+| P1 | Perda de continuidade entre itens equivalentes | Checkpoint 1: aba, avançado e disclosures são lembrados por tipo durante a sessão. |
+| P1 | Ações silenciosas | Checkpoint 1: inserção e ações contextuais sem resultado atualizam o status com causa compreensível. |
+| P1 | Receita focal geometricamente inválida | Corrigido: mínimo real da grade e faixa produz zero colisão/overflow. |
+| P1 | Nova medição integral | Pendente: repetir reconstrução completa; o recorte estrutural atual mede nove ações e não é apresentado como comparação integral. |
+
+O próximo checkpoint deve medir a reconstrução completa e usar as trocas/tentativas observadas para decidir quais superfícies podem ser consolidadas ou removidas.
+
 ### Frentes congeladas
 
 Expansão multimídia, hospedagem, colaboração, touch/mobile completo e workflow de publicação não possuem incremento ativo. PDF continua no núcleo de fidelidade; portabilidade existente é apenas mantida.

@@ -85,7 +85,7 @@
     ]
   });
 
-  const heroGridStrip = node("recipe-hero-grid-strip-root", "layout-container", { x: 0, y: 0, width: 746, height: 800 }, {
+  const heroGridStrip = node("recipe-hero-grid-strip-root", "layout-container", { x: 0, y: 0, width: 746, height: 900 }, {
     name: "Hero, grade e faixa",
     props: { label: "HERO + GRADE + FAIXA", recipeRole: "product-composition" },
     style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
@@ -97,13 +97,13 @@
         style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
         layout: { mode: "grid", padding: 0, gap: 0, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
       }),
-      node("recipe-grid-region", "layout-container", { x: 0, y: 292, width: 746, height: 400 }, {
+      node("recipe-grid-region", "layout-container", { x: 0, y: 292, width: 746, height: 476 }, {
         name: "Grade de produtos",
         props: { label: "GRADE DE PRODUTOS", recipeRole: "grid" },
         style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
         layout: { mode: "grid", padding: 0, gap: 12, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
       }),
-      node("recipe-strip-region", "layout-container", { x: 0, y: 704, width: 746, height: 88 }, {
+      node("recipe-strip-region", "layout-container", { x: 0, y: 780, width: 746, height: 120 }, {
         name: "Faixa complementar",
         props: { label: "FAIXA COMPLEMENTAR", recipeRole: "strip" },
         style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },

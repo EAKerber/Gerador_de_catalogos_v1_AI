@@ -37,6 +37,7 @@ A pasta reúne vinte e sete etapas evolutivas:
 - **Incremento 05.13 — auditoria subtrativa e governança:** 35 capacidades classificadas, frentes externas congeladas, redundâncias mapeadas e autoridade Auto/Manual testada antes de qualquer remoção.
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
 - **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
+- **Incremento 05.16 — continuidade de tarefa (checkpoint 1):** abas e disclosures acompanham itens equivalentes, ações sem resultado recebem diagnóstico e receitas oficiais passam pelo gate de zero colisão/overflow.
 
 ## Abrir
 

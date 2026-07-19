@@ -15,11 +15,13 @@
       this.root = document.getElementById("inspectorRoot");
       this.activeTab = "content";
       this.lastComponentId = null;
+      this.lastComponentType = null;
       this.showAllProperties = false;
       this.tableColumnsOpen = false;
       this.tableBulkOpen = false;
       this.tableBulkFeedback = "";
       this.legendEditorOpen = false;
+      this.taskStateByType = new Map();
       this.root.addEventListener("change", event => this.handleChange(event));
       this.root.addEventListener("click", event => this.handleClick(event));
       this.root.addEventListener("toggle", event => this.handleDisclosureToggle(event), true);
@@ -372,6 +374,42 @@
       return items.every(item => getter(item) === first) ? first : "";
     }
 
+    taskStateKey(component) {
+      return component?.type || "unknown";
+    }
+
+    rememberTaskState(component = this.store.getSelected()) {
+      if (!component) return;
+      this.taskStateByType.set(this.taskStateKey(component), {
+        activeTab: this.activeTab,
+        showAllProperties: this.showAllProperties,
+        tableColumnsOpen: this.tableColumnsOpen,
+        tableBulkOpen: this.tableBulkOpen,
+        legendEditorOpen: this.legendEditorOpen
+      });
+    }
+
+    captureRenderedTaskState() {
+      if (!this.lastComponentType || !this.lastComponentId) return;
+      this.taskStateByType.set(this.lastComponentType, {
+        activeTab: this.activeTab,
+        showAllProperties: this.showAllProperties,
+        tableColumnsOpen: this.root.querySelector(".table-column-editor")?.open === true,
+        tableBulkOpen: this.root.querySelector(".table-bulk-entry")?.open === true,
+        legendEditorOpen: this.root.querySelector(".semantic-legend-editor")?.open === true
+      });
+    }
+
+    restoreTaskState(component, definition) {
+      const saved = this.taskStateByType.get(this.taskStateKey(component));
+      this.activeTab = saved?.activeTab || (definition.container ? "structure" : "content");
+      this.showAllProperties = saved?.showAllProperties === true;
+      this.tableColumnsOpen = saved?.tableColumnsOpen === true;
+      this.tableBulkOpen = saved?.tableBulkOpen === true;
+      this.legendEditorOpen = saved?.legendEditorOpen === true;
+      this.tableBulkFeedback = "";
+    }
+
     renderBatch(components) {
       const records = components.map(component => this.store.findComponent(component.id)).filter(Boolean);
       const contextLabel = records[0]?.parent?.name || this.store.getPage().name;
@@ -396,7 +434,9 @@
 
       this.root.dataset.hasSelection = "true";
       this.root.dataset.multiSelection = "true";
+      this.captureRenderedTaskState();
       this.lastComponentId = null;
+      this.lastComponentType = null;
       this.root.innerHTML = `
         <header class="inspector-header inspector-header--batch">
           <div class="inspector-header__top">
@@ -480,7 +520,9 @@
       const record = this.store.getSelectedRecord();
       if (!component || !record) {
         this.root.dataset.hasSelection = "false";
+        this.captureRenderedTaskState();
         this.lastComponentId = null;
+        this.lastComponentType = null;
         this.root.innerHTML = `
           <div class="inspector-empty">
             <span class="inspector-empty__icon" aria-hidden="true">↖</span>
@@ -492,13 +534,10 @@
 
       const definition = window.CATALOG_COMPONENT_REGISTRY[component.type];
       if (this.lastComponentId !== component.id) {
+        this.captureRenderedTaskState();
         this.lastComponentId = component.id;
-        this.activeTab = definition.container ? "structure" : "content";
-        this.showAllProperties = false;
-        this.tableColumnsOpen = false;
-        this.tableBulkOpen = false;
-        this.tableBulkFeedback = "";
-        this.legendEditorOpen = false;
+        this.lastComponentType = component.type;
+        this.restoreTaskState(component, definition);
       }
       const contextLabel = record.parent ? record.parent.name : this.store.getPage().name;
       const minimum = this.store.getContentMinimum(component);
@@ -598,6 +637,7 @@
       if (event.target.matches(".table-column-editor")) this.tableColumnsOpen = event.target.open;
       if (event.target.matches(".table-bulk-entry")) this.tableBulkOpen = event.target.open;
       if (event.target.matches(".semantic-legend-editor")) this.legendEditorOpen = event.target.open;
+      this.rememberTaskState();
     }
 
     handleChange(event) {
@@ -758,9 +798,11 @@
       const tab = event.target.closest("[data-inspector-tab]");
       if (tab) {
         this.activeTab = tab.dataset.inspectorTab;
+        this.rememberTaskState(component);
         this.render();
       } else if (event.target.closest("[data-toggle-all-properties]")) {
         this.showAllProperties = !this.showAllProperties;
+        this.rememberTaskState(component);
         this.render();
       } else if (event.target.closest("[data-delete-component]")) {
         this.store.deleteComponent(component.id);

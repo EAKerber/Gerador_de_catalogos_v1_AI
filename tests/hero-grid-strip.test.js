@@ -17,6 +17,8 @@ assert(result.hero.binding.productId === products[0].id && result.hero.presentat
 assert(result.cards.length === 6 && result.cards.every((card, index) => card.binding.productId === products[index + 1].id), "A grade não preservou a ordem dos demais produtos.");
 assert(result.strip.children.length === 3 && result.strip.children.every(child => child.type === "specification"), "A faixa complementar não permaneceu editável por peças comuns.");
 assert(result.composition.children.map(child => child.props?.recipeRole).join(",") === "hero,grid,strip", "A hierarquia da receita perdeu seus papéis estáveis.");
+const report = store.getPublicationReport("draft");
+assert(report.summary.collisions === 0 && report.summary.overflows === 0, "A receita oficial nasceu com colisão ou overflow.");
 assert(store.getHistoryState().undoCount === before + 1 && store.getHistoryState().undoLabel === "Criar hero, grade e faixa", "A composição não foi uma transação reversível única.");
 store.undo();
 assert(!store.findComponent(result.composition.id), "Desfazer não removeu a composição inteira.");
