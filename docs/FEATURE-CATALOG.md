@@ -4,12 +4,12 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 ## Resumo
 
-- 41 capacidades de produto;
+- 42 capacidades de produto;
 - 16 tipos de componente;
 - 5 receitas oficiais;
 - 16 fluxos curados;
 - 27 ícones declarados.
-- governança: 26 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 27 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Fluxos por intenção
 
@@ -144,7 +144,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Resultado:** Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação
 - **Exemplo:** Igualar três cards, deslocar o conjunto e inserir divisórias verticais
 - **Limites:** Seleção cruzando pais é rejeitada
-- **Capacidades:** `multiSelection`, `batchAlignment`, `batchGeometry`, `selectionGeometryDiagnostics`, `batchSpacing`, `batchSeparators`, `batchPresentation`
+- **Capacidades:** `multiSelection`, `batchAlignment`, `batchGeometry`, `batchFrameMap`, `selectionGeometryDiagnostics`, `batchSpacing`, `batchSeparators`, `batchPresentation`
 - **Componentes:** `separator`
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
@@ -274,6 +274,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `multiSelection` | `true` | **active** | Base para ações de grupo. | `CatalogCapabilities.capabilities.multiSelection` |
 | `batchAlignment` | `true` | **active** | Intenção distinta de organização de irmãos. | `CatalogCapabilities.capabilities.batchAlignment` |
 | `batchGeometry` | `true` | **active** | Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos. | `CatalogCapabilities.capabilities.batchGeometry` |
+| `batchFrameMap` | `true` | **active** | Aplica caixas heterogêneas em uma transação e elimina estados intermediários do ajuste campo a campo. | `CatalogCapabilities.capabilities.batchFrameMap` |
 | `selectionGeometryDiagnostics` | `true` | **active** | Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação. | `CatalogCapabilities.capabilities.selectionGeometryDiagnostics` |
 | `batchPresentation` | `true` | **audit** | Consolidar com modos, presets e densidade sem duplicar superfícies. | `CatalogCapabilities.capabilities.batchPresentation` |
 | `oneClickInsertion` | `true` | **active** | O botão contextual demonstrou ganho geral de usabilidade. | `CatalogCapabilities.capabilities.oneClickInsertion` |

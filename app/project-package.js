@@ -3,7 +3,7 @@
 
   const PACKAGE_FORMAT = "CatalogProjectPackage";
   const PACKAGE_VERSION = "1.0.0";
-  const AUTHORING_KIT_VERSION = "1.5.8";
+  const AUTHORING_KIT_VERSION = "1.5.9";
   const CAPABILITIES_VERSION = "1.0.0";
   const MAX_PACKAGE_SIZE = 100 * 1024 * 1024;
   const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
@@ -279,6 +279,7 @@
         multiSelection: true,
         batchAlignment: true,
         batchGeometry: true,
+        batchFrameMap: true,
         selectionGeometryDiagnostics: true,
         batchPresentation: true,
         oneClickInsertion: true,

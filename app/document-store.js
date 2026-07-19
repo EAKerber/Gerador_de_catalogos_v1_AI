@@ -71,6 +71,7 @@
       "components-aligned": "Alinhar seleção",
       "components-distributed": "Distribuir seleção",
       "components-transformed": "Transformar seleção",
+      "component-frames-bulk-applied": "Aplicar geometria da seleção",
       "components-spaced": "Ajustar espaçamento",
       "components-presentation-updated": "Editar apresentação da seleção",
       "components-style-updated": "Editar estilo da seleção",
@@ -2843,6 +2844,25 @@
         this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
         this.state.editor.selectedComponentId = reference.id;
         return true;
+      });
+    }
+
+    applyComponentFramesBulk(entries = []) {
+      const valid = entries.slice(0, 40).filter(entry => entry?.id && [entry.x, entry.y, entry.width, entry.height].every(value => Number.isFinite(Number(value))));
+      const selection = this.getBatchSelection(valid.map(entry => entry.id));
+      if (!selection || selection.records.length !== valid.length) throw new Error("A lista deve conter exatamente componentes irmãos da seleção atual.");
+      const selectedIds = new Set(this.getSelectedIds());
+      if (valid.some(entry => !selectedIds.has(entry.id)) || selectedIds.size !== valid.length) throw new Error("A geometria só pode ser aplicada ao conjunto atualmente selecionado.");
+      const byId = new Map(valid.map(entry => [entry.id, entry]));
+      return this.runCompoundChange({ type: "component-frames-bulk-applied", componentIds: valid.map(entry => entry.id) }, () => {
+        this.releaseBatchLayout(selection.records);
+        selection.records.forEach(record => {
+          const frame = byId.get(record.component.id);
+          this.updateComponent(record.component.id, { frame: { x: Number(frame.x), y: Number(frame.y), width: Number(frame.width), height: Number(frame.height) } });
+        });
+        this.state.editor.selectedComponentIds = valid.map(entry => entry.id);
+        this.state.editor.selectedComponentId = valid[valid.length - 1].id;
+        return valid.map(entry => this.findComponent(entry.id).component);
       });
     }
 

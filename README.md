@@ -38,7 +38,8 @@ A pasta reúne as seguintes etapas evolutivas:
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
 - **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
 - **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
-- **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, diagnóstico da seleção e editores de coleção para galerias e legendas.
+- **Incremento 05.17 — geometria e coleções em lote:** mapas de caixas, galerias e legendas reduzem a reconstrução integral para 157 ações, eliminando as oito colisões restantes sem retirar a edição individual.
+- **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, grade de caixas heterogêneas, diagnóstico da seleção e editores de coleção; benchmark final em 157 ações sem colisão ou overflow.
 
 ## Abrir
 
@@ -529,6 +530,7 @@ node tests/contextual-actions-spacing.test.js
 node tests/ui-contract.test.js
 node tests/reference-coverage.test.js
 node tests/reference-manual-audit-contract.test.js
+node tests/reference-manual-audit-05.17-contract.test.js
 node tests/subtractive-layout-authority.test.js
 node tests/layout-authority-geometry.test.js
 node tests/contextual-insertion-target.test.js
@@ -547,4 +549,4 @@ Os testes cobrem também variantes vinculadas a galerias/linhas, legendas hierá
 
 ## Limites intencionais
 
-Os Incrementos 05.6–05.16 reduziram a reconstrução integral de **319 para 223 ações**. O ganho mais recente veio dos esquemas de tabela em grupo; geometria, galerias e legendas ainda consomem 134 ações. A composição termina com zero overflow, mas oito colisões permanecem. O 05.13 congela expansão multimídia, plataforma online, touch/mobile completo e workflow de publicação, além de pausar multipágina. O foco ativo é usabilidade, fidelidade e confiabilidade. Nenhuma opção foi removida: reajustes, duplicações, mínimos, apresentação, separadores e geometria exata entram em consolidação compatível. Um backend central de projetos não é objetivo do produto. JSON isolado não transporta bytes; para projetos com imagens, use o pacote ZIP. Evidências e decisões estão em `docs/REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`, `docs/SUBTRACTIVE-FEATURE-AUDIT-05.13.md` e `docs/BACKLOG.md`.
+Os Incrementos 05.6–05.17 reduziram a reconstrução integral de **319 para 157 ações**. Mapas de caixas e edição de coleções em lote retiraram 66 ações desde 05.16, e a composição termina sem colisão nem overflow. O 05.13 congela expansão multimídia, plataforma online, touch/mobile completo e workflow de publicação, além de pausar multipágina. O foco ativo é usabilidade, fidelidade e confiabilidade. Nenhuma opção foi removida: reajustes, duplicações, mínimos, apresentação, separadores e geometria exata entram em consolidação compatível. Um backend central de projetos não é objetivo do produto. JSON isolado não transporta bytes; para projetos com imagens, use o pacote ZIP. Evidências e decisões estão em `docs/REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.17.md`, `docs/SUBTRACTIVE-FEATURE-AUDIT-05.13.md` e `docs/BACKLOG.md`.

@@ -15,6 +15,7 @@ global.CatalogEditorIcon = () => "";
   "app/layout-engine.js",
   "app/component-registry.js",
   "app/collection-registry.js",
+  "app/manual-entry.js",
   "app/document-store.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
@@ -51,6 +52,14 @@ assert(store.transformComponents(store.getSelectedIds(), { kind: "set", path: "h
 assert([first, second, third].every(component => live(component).frame.height === 64), "A altura exata não foi aplicada ao conjunto.");
 store.undo();
 assert([first, second, third].every(component => live(component).frame.height === 40), "Desfazer não restaurou a altura do conjunto.");
+
+const frameList = CatalogManualEntry.parseFrames(["ID\tX\tY\tLARGURA\tALTURA", `${first.id}\t24\t32\t110\t50`, `${second.id}\t146\t32\t120\t50`, `${third.id}\t278\t32\t130\t50`].join("\n"));
+const historyBeforeFrames = store.getHistoryState().undoCount;
+const framed = store.applyComponentFramesBulk(frameList.rows);
+assert(framed.map(component => component.frame.x).join(",") === "24,146,278" && framed.every(component => component.frame.height === 50), "A grade de caixas não aplicou geometrias distintas atomicamente.");
+assert(store.getHistoryState().undoCount === historyBeforeFrames + 1 && store.getHistoryState().undoLabel === "Aplicar geometria da seleção", "A grade de caixas não gerou uma entrada única.");
+store.undo();
+assert(live(first).frame.x === 52 && live(first).frame.height === 40, "Desfazer não restaurou o conjunto anterior à grade de caixas.");
 
 const historyBeforeStyle = store.getHistoryState().undoCount;
 const styled = store.setStyleBatch(store.getSelectedIds(), { textColor: "brand.secondary" });

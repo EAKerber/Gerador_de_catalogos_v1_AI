@@ -21,7 +21,7 @@ Intenção editorial, coesão estrutural e assistência estética orientam a evo
 - X, Y, largura ou altura exatos podem ser aplicados à seleção;
 - delta X/Y move o conjunto numa única transação;
 - operações liberam overrides gerenciados de forma explícita, respeitam clamps/mínimos existentes e são desfeitas como um comando;
-- `batchGeometry` integra o manifesto e o `CatalogAuthoringKit 1.5.8`.
+- `batchGeometry` e `batchFrameMap` integram o manifesto e o `CatalogAuthoringKit 1.5.9`.
 
 ## Entregue no checkpoint 2
 
@@ -33,9 +33,18 @@ Intenção editorial, coesão estrutural e assistência estética orientam a evo
 - multisseleção informa colisões e extrapolações que envolvem os itens selecionados;
 - `bulkCollectionEditing` e `selectionGeometryDiagnostics` passam a integrar o kit.
 
+## Entregue no checkpoint 3
+
+- **Editar cada caixa** apresenta uma grade `ID, X, Y, largura, altura` predefinida pela multisseleção;
+- caixas diferentes são confirmadas em uma única transação, sem reflow intermediário entre campos;
+- o comando exige exatamente os irmãos selecionados e mantém uma única entrada de histórico;
+- cards compactos sem especificações recalculam o mínimo usando galeria e tabela, permitindo que o conteúdo remanescente ocupe o espaço vago;
+- a reconstrução integral caiu de 223 para **157 ações** (−29,6%), com **zero colisão e zero overflow**;
+- o kit passa a `1.5.9` e declara `batchFrameMap`.
+
 ## Limites e próximo recorte
 
-O diagnóstico descreve o estado atual; preview anterior ao commit, reserva de regiões e constraints relacionais persistentes não foram introduzidos. Importação binária em lote também permanece fora do recorte: a segunda coluna só referencia assets já cadastrados. O próximo checkpoint mensurável é o benchmark integral em Chromium.
+O diagnóstico descreve o estado atual; preview anterior ao commit, reserva de regiões e constraints relacionais persistentes não foram introduzidos. Importação binária em lote também permanece fora do recorte: a segunda coluna só referencia assets já cadastrados. A evidência comparável está em `docs/evidence/05.17` e `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.17.md`.
 
 O bloqueio Chromium foi diagnosticado depois do checkpoint: três candidatos eram arquivos vazios e o único executável tinha 7,8 MB, embora o cabeçalho ELF apontasse para seções próximas de 200 MB. O `SIGSEGV` ocorria no binário truncado, antes do Playwright e do editor. Uma distribuição íntegra de 191 MB, com cache de fontes em diretório temporário gravável, abriu o editor e validou geometria em lote, seleção/autoridade local, inserção contextual, continuidade de tarefa, fidelidade de impressão e chrome responsivo. Os testes de autoridade e continuidade também foram corrigidos para abrir explicitamente as superfícies que exercitam.
 

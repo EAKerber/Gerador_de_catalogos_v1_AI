@@ -115,7 +115,7 @@
       "result": "Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação",
       "example": "Igualar três cards, deslocar o conjunto e inserir divisórias verticais",
       "limits": ["Seleção cruzando pais é rejeitada"],
-      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "selectionGeometryDiagnostics", "batchSpacing", "batchSeparators", "batchPresentation"],
+      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "batchFrameMap", "selectionGeometryDiagnostics", "batchSpacing", "batchSeparators", "batchPresentation"],
       "componentTypes": ["separator"],
       "recipeIds": [],
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]

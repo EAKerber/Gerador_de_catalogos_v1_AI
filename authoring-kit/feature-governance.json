@@ -76,6 +76,7 @@
     { "id": "multiSelection", "status": "active", "reason": "Base para ações de grupo." },
     { "id": "batchAlignment", "status": "active", "reason": "Intenção distinta de organização de irmãos." },
     { "id": "batchGeometry", "status": "active", "reason": "Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos." },
+    { "id": "batchFrameMap", "status": "active", "reason": "Aplica caixas heterogêneas em uma transação e elimina estados intermediários do ajuste campo a campo." },
     { "id": "selectionGeometryDiagnostics", "status": "active", "reason": "Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação." },
     { "id": "batchPresentation", "status": "audit", "reason": "Consolidar com modos, presets e densidade sem duplicar superfícies." },
     { "id": "oneClickInsertion", "status": "active", "reason": "O botão contextual demonstrou ganho geral de usabilidade." },

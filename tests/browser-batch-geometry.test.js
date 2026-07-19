@@ -43,6 +43,14 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   await page.keyboard.press("Control+z");
   const undone = await page.evaluate(id => CatalogEditor.store.findComponent(id).component.frame, ids[0]);
   assert(undone.x === 40 && undone.y === 80 && undone.height === 72, "Desfazer não reverteu somente o último comando geométrico.");
+  await page.locator(".batch-frame-list > summary").click();
+  const frameText = ["ID\tX\tY\tLARGURA\tALTURA", `${ids[0]}\t24\t40\t120\t64`, `${ids[1]}\t156\t40\t120\t64`, `${ids[2]}\t288\t40\t120\t64`].join("\n");
+  const historyBeforeMap = await page.evaluate(() => CatalogEditor.store.getHistoryState().undoCount);
+  await page.locator("[data-batch-frames-text]").fill(frameText);
+  await page.locator("[data-batch-frames-apply]").click();
+  const mapped = await page.evaluate(componentIds => ({ frames: componentIds.map(id => CatalogEditor.store.findComponent(id).component.frame), history: CatalogEditor.store.getHistoryState() }), ids);
+  assert(mapped.frames.map(frame => frame.x).join(",") === "24,156,288" && mapped.frames.every(frame => frame.height === 64), "A grade heterogênea não aplicou caixas distintas.");
+  assert(mapped.history.undoCount === historyBeforeMap + 1 && mapped.history.undoLabel === "Aplicar geometria da seleção", "A grade não foi uma ação única.");
   assert(errors.length === 0, `Erros de página: ${errors.join(" | ")}`);
   await browser.close();
   console.log("✓ Geometria relacional, exata e por delta validada em multisseleção real.");

@@ -126,5 +126,22 @@
     return { rows, issues, delimiter: parsed.delimiter, hasHeader };
   }
 
-  window.CatalogManualEntry = Object.freeze({ PRODUCT_FIELDS, detectDelimiter, parseDelimited, parseProducts, parseTable, parseGallery, parseLegends, fold });
+  function parseFrames(text) {
+    const parsed = parseDelimited(text);
+    const hasHeader = fold(parsed.rows[0]?.[0]) === "id";
+    const sourceRows = (hasHeader ? parsed.rows.slice(1) : parsed.rows).slice(0, 40);
+    const rows = sourceRows.map(cells => ({
+      id: String(cells[0] || "").trim(),
+      x: Number(cells[1]),
+      y: Number(cells[2]),
+      width: Number(cells[3]),
+      height: Number(cells[4])
+    })).filter(item => item.id && [item.x, item.y, item.width, item.height].every(Number.isFinite));
+    const issues = [];
+    if (sourceRows.length < (hasHeader ? parsed.rows.length - 1 : parsed.rows.length)) issues.push({ severity: "warning", code: "ITEM_LIMIT", message: "Somente os primeiros 40 componentes foram aplicados." });
+    if (!rows.length) issues.push({ severity: "error", code: "NO_VALID_FRAMES", message: "Nenhuma geometria completa foi encontrada." });
+    return { rows, issues, delimiter: parsed.delimiter, hasHeader };
+  }
+
+  window.CatalogManualEntry = Object.freeze({ PRODUCT_FIELDS, detectDelimiter, parseDelimited, parseProducts, parseTable, parseGallery, parseLegends, parseFrames, fold });
 })();

@@ -277,6 +277,8 @@ body[data-document-dirty="true"] #saveButton::after { content: ""; display: inli
 .batch-geometry-status span { color: var(--color-ink-600); font-size: 8px; line-height: 1.35; }
 .batch-geometry-status[data-geometry-state="valid"] { border-color: #b9ddc7; background: #f1faf4; }
 .batch-geometry-status[data-geometry-state="warning"] { border-color: var(--color-brand-300); background: var(--color-brand-50); }
+.batch-frame-list { margin-top: 10px; }
+.batch-frame-list textarea { min-height: 92px; }
 .batch-frame-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .batch-frame-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px; min-width: 0; }
 .batch-frame-field label { grid-column: 1 / -1; color: var(--color-ink-600); font-size: 9px; font-weight: 800; text-transform: uppercase; }

@@ -1,4 +1,4 @@
-/* Incremento 05.16 — reconstrução manual integral comparável pela interface pública. */
+/* Incremento 05.17 — reconstrução manual integral com coleções e geometria por intenção. */
 const fs = require("fs");
 const path = require("path");
 
@@ -6,7 +6,7 @@ const playwrightRoot = process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES;
 const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwright") : "playwright");
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
-const outputDir = path.resolve(process.env.CATALOG_AUDIT_OUTPUT_DIR || "/tmp/catalog-audit-05.16");
+const outputDir = path.resolve(process.env.CATALOG_AUDIT_OUTPUT_DIR || "/tmp/catalog-audit-05.17");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const products = [
@@ -98,7 +98,7 @@ const legendPlans = [
     noEffect: meta.noEffect === true
   });
   const click = async (locator, label, meta = {}) => {
-    await locator.click();
+    await locator.click(meta.clickOptions || {});
     record("click", label, meta);
   };
   const fill = async (locator, value, label, meta = {}) => {
@@ -156,8 +156,21 @@ const legendPlans = [
       await click(page.locator("[data-toggle-all-properties]").first(), `Mostrar posição e tamanho de ${label}`, { surface: "inspector", contextSwitch: true });
     }
     for (const [key, value] of Object.entries(frame)) {
-      await fill(page.locator(`[data-frame-path="${key}"]`), value, `${label}: ${key} = ${value}`, { surface: "inspector" });
+      const input = page.locator(`[data-frame-path="${key}"]`);
+      await fill(input, value, `${label}: ${key} = ${value}`, { surface: "inspector" });
+      await input.press("Tab");
+      record("keypress", `${label}: confirmar ${key}`, { surface: "inspector" });
     }
+  };
+  const setFramesBulk = async (items, label) => {
+    await selectLayer(items[0].id, `Selecionar ${label}`);
+    for (const item of items.slice(1)) {
+      await click(page.locator(`[data-layer-id="${item.id}"]`), `Adicionar ${item.label} à seleção`, { surface: "layers", focusChange: true, clickOptions: { modifiers: ["Control"] } });
+    }
+    await ensureDetailsContent(".batch-frame-list", "[data-batch-frames-text]", `Abrir grade geométrica de ${label}`);
+    const text = ["ID\tX\tY\tLARGURA\tALTURA", ...items.map(item => [item.id, item.frame.x, item.frame.y, item.frame.width, item.frame.height].join("\t"))].join("\n");
+    await fill(page.locator("[data-batch-frames-text]"), text, `Colar geometria de ${label}`, { surface: "inspector" });
+    await click(page.locator("[data-batch-frames-apply]"), `Aplicar geometria de ${label}`, { surface: "inspector" });
   };
 
   await page.goto(baseURL, { waitUntil: "networkidle" });
@@ -239,7 +252,7 @@ const legendPlans = [
       await ensureDetails(".table-column-editor", "Recuperar configuração das exceções de rótulo");
       await fillLabel(page.locator('[data-table-column-key="price"][data-table-column-path="label"]'), plan.priceLabel, `Tabela ${index + 1}: rótulo ${plan.priceLabel}`);
     }
-    await ensureDetailsContent(".table-bulk-entry", "[data-table-bulk-text]", "Abrir colagem de linhas");
+    await ensureDetailsContent("details.table-bulk-entry:not(.legend-bulk-entry):not(.gallery-bulk-entry)", "[data-table-bulk-text]", "Abrir colagem de linhas");
     const headers = plan.omitPackage ? ["CÓDIGO", plan.middleLabel, plan.priceLabel] : ["CÓDIGO", plan.middleLabel, "EMBALAGEM", plan.priceLabel];
     const text = [headers, ...plan.rows].map(row => row.join("\t")).join("\n");
     await fill(page.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
@@ -249,13 +262,10 @@ const legendPlans = [
   for (let index = 0; index < ids.tableIds.length; index += 1) await configureTable(ids.tableIds[index], tablePlans[index], index);
 
   await ensureDetails(".semantic-legend-editor", "Abrir editor de legenda cromática");
-  for (const [label, token] of legendPlans) {
-    await ensureDetails(".semantic-legend-editor", "Recuperar editor de legenda cromática", { correction: true });
-    await ensureDetailsContent(".semantic-legend-editor", "[data-new-legend-label]", "Recuperar editor de legenda cromática");
-    await fill(page.locator("[data-new-legend-label]"), label, `Legenda: ${label}`, { surface: "inspector" });
-    await select(page.locator("[data-new-legend-token]"), token, `Legenda: token ${token}`, { surface: "inspector" });
-    await click(page.locator("[data-color-legend-add]"), `Materializar legenda ${label}`, { surface: "inspector" });
-  }
+  await ensureDetailsContent(".legend-bulk-entry", "[data-legend-bulk-text]", "Abrir criação de legendas em lote");
+  const legendText = legendPlans.map(([label, token]) => [label, token, "Embalagens"].join("\t")).join("\n");
+  await fill(page.locator("[data-legend-bulk-text]"), legendText, "Legenda: colar oito definições", { surface: "inspector" });
+  await click(page.locator("[data-legend-bulk-apply]"), "Materializar oito legendas", { surface: "inspector" });
 
   const legendState = await page.evaluate(() => ({
     definitions: CatalogEditor.store.getColorLegends().map(item => ({ key: item.metadata.key, token: item.metadata.token })),
@@ -297,24 +307,28 @@ const legendPlans = [
     }), artId);
     assert(contextual.selectedId === artId && contextual.actions.some(action => action.id === "convert-art-gallery"), `A conversão contextual não apareceu para ${artId}: ${JSON.stringify(contextual)}`);
     await click(page.locator('[data-context-action="convert-art-gallery"]'), `Card ${cardIndex + 1}: converter arte em galeria`, { surface: "components", contextSwitch: true });
-    for (let index = 2; index < captions.length; index += 1) {
-      await click(page.locator('[data-context-action="add-gallery-art"]'), `Card ${cardIndex + 1}: adicionar imagem ${index + 1}`, { surface: "components" });
-    }
     let gallery = await page.evaluate(cardId => CatalogEditor.store.findComponent(cardId)?.component?.children.find(component => component.type === "art-gallery"), ids.cardIds[cardIndex]);
+    await selectLayer(gallery.id, `Selecionar galeria do card ${cardIndex + 1}`);
+    await inspectorTab("content");
+    await ensureDetailsContent(".gallery-bulk-entry", "[data-gallery-bulk-text]", `Card ${cardIndex + 1}: abrir coleção de imagens`);
+    await fill(page.locator("[data-gallery-bulk-text]"), captions.join("\n"), `Card ${cardIndex + 1}: colar ${captions.length} legendas`, { surface: "inspector" });
+    await click(page.locator("[data-gallery-bulk-apply]"), `Card ${cardIndex + 1}: sincronizar galeria`, { surface: "inspector" });
+    gallery = await page.evaluate(cardId => CatalogEditor.store.findComponent(cardId)?.component?.children.find(component => component.type === "art-gallery"), ids.cardIds[cardIndex]);
     assert(gallery?.children.length === captions.length, `Card ${cardIndex + 1} não recebeu ${captions.length} imagens.`);
-    const last = gallery.children[gallery.children.length - 1];
-    await fill(page.locator('[data-prop-path="caption"]'), captions[captions.length - 1], `Card ${cardIndex + 1}: legenda ${captions[captions.length - 1]}`, { surface: "inspector" });
-    for (let index = 0; index < gallery.children.length - 1; index += 1) {
-      await selectLayer(gallery.children[index].id, `Selecionar imagem ${index + 1} do card ${cardIndex + 1}`);
-      await inspectorTab("content");
-      await fill(page.locator('[data-prop-path="caption"]'), captions[index], `Card ${cardIndex + 1}: legenda ${captions[index]}`, { surface: "inspector" });
-    }
   }
 
   await configureGallery(3, ["Cromado", "Preto", "Branco"]);
   await click(page.locator(`[data-context-id="${ids.contentId}"]`), "Voltar da galeria 04 ao conteúdo principal", { surface: "breadcrumb", contextSwitch: true });
   await configureGallery(6, ["Branco", "Cinza", "Marrom", "Preto", "Bege"]);
   await click(page.locator(`[data-context-id="${ids.contentId}"]`), "Voltar da galeria 07 ao conteúdo principal", { surface: "breadcrumb", contextSwitch: true });
+
+  for (const cardIndex of [3, 6]) {
+    const specificationIds = await page.evaluate(cardId => CatalogEditor.store.findComponent(cardId)?.component?.children.filter(component => component.type === "specification").map(component => component.id) || [], ids.cardIds[cardIndex]);
+    assert(specificationIds.length === 2, `Card ${cardIndex + 1} não expôs as duas especificações removíveis.`);
+    await selectLayer(specificationIds[0], `Selecionar especificações do card ${cardIndex + 1}`);
+    await click(page.locator(`[data-layer-id="${specificationIds[1]}"]`), `Adicionar segunda especificação do card ${cardIndex + 1}`, { surface: "layers", focusChange: true, clickOptions: { modifiers: ["Control"] } });
+    await click(page.locator(".batch-shortcuts [data-batch-delete]"), `Remover especificações do card ${cardIndex + 1}`, { surface: "inspector" });
+  }
 
   await selectLayer(ids.cardIds[0], "Selecionar card 01");
   await inspectorTab("content");
@@ -335,9 +349,12 @@ const legendPlans = [
   await select(page.locator('[data-layout-path="mode"]'), "free", "Conteúdo principal: layout livre", { surface: "inspector" });
 
   await click(page.locator(`[data-context-id="${ids.rootId}"]`), "Voltar ao contêiner da página", { surface: "breadcrumb", contextSwitch: true });
-  await setFrame(ids.rootId, { y: 0, height: 1100 }, "estrutura da página");
-  await setFrame(ids.headerId, { height: 110 }, "cabeçalho");
-  await setFrame(ids.footerId, { y: 1020, height: 80 }, "rodapé");
+  await setFrame(ids.rootId, { y: 0, height: 1120 }, "estrutura da página");
+  await setFramesBulk([
+    { id: ids.headerId, label: "cabeçalho", frame: { x: 0, y: 0, width: 746, height: 110 } },
+    { id: ids.contentId, label: "conteúdo", frame: { x: 0, y: 110, width: 746, height: 910 } },
+    { id: ids.footerId, label: "rodapé", frame: { x: 0, y: 1020, width: 746, height: 100 } }
+  ], "regiões da página");
   const cardFrames = [
     { x: 0, y: 0, width: 746, height: 222 },
     { x: 0, y: 234, width: 240, height: 246 },
@@ -345,11 +362,13 @@ const legendPlans = [
     { x: 504, y: 234, width: 242, height: 246 },
     { x: 0, y: 492, width: 240, height: 286 },
     { x: 252, y: 492, width: 240, height: 286 },
-    { x: 504, y: 492, width: 242, height: 286 }
+    { x: 504, y: 492, width: 242, height: 276 }
   ];
-  for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.legendPanelId, { x: 0, y: 790, width: 500, height: 120 }, "painel de legenda");
-  await setFrame(ids.tipId, { x: 510, y: 790, width: 236, height: 120 }, "chamada de dica");
+  await setFramesBulk(ids.cardIds.map((id, index) => ({ id, label: `card ${index + 1}`, frame: cardFrames[index] })), "sete cards");
+  await setFramesBulk([
+    { id: ids.legendPanelId, label: "painel de legenda", frame: { x: 0, y: 790, width: 500, height: 120 } },
+    { id: ids.tipId, label: "chamada de dica", frame: { x: 510, y: 790, width: 236, height: 120 } }
+  ], "faixa de legenda e dica");
 
   const semanticTextIds = await page.evaluate(({ tipId, legendPanelId }) => {
     const tip = CatalogEditor.store.findComponent(tipId)?.component;
@@ -425,7 +444,7 @@ const legendPlans = [
   }, { click: 0, fill: 0, selection: 0, drag: 0, keypress: 0, download: 0, contextSwitches: 0, focusChanges: 0, corrections: 0, noEffectAttempts: 0 });
   counts.total = actions.length;
   const metrics = {
-    audit: "Incremento 05.16 — reconstrução manual comparável da referência",
+    audit: "Incremento 05.17 — reconstrução manual com coleções e geometria por intenção",
     date: new Date().toISOString(),
     historicalBaselineActions: 319,
     previousComparableActions: 267,

@@ -534,6 +534,8 @@
         const tableHeight = tableSlotHeight(component);
         const dense = component.presentation?.density === "compact";
         const galleryHeight = artSlotMinimumHeight(component);
+        const specificationsPresent = hasSlot(component, "specifications");
+        if (compact && dense && galleryHeight > 0 && !specificationsPresent) return { width: 220, height: 48 + galleryHeight + 6 + tableHeight + 8 };
         const galleryExtra = Math.max(0, galleryHeight - (dense ? 92 : 84));
         if (compact && dense) return { width: 220, height: 170 + tableHeight + galleryExtra };
         return { width: 220, height: compact ? 210 + tableHeight + galleryExtra : Math.max(220, 174 + tableHeight) };

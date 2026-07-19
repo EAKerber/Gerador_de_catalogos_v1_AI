@@ -91,6 +91,7 @@ assert(inspector.includes("data-table-bulk-apply") && documentStore.includes("re
 assert(inspector.includes("data-gallery-bulk-apply") && documentStore.includes("applyGalleryItemsBulk") && manualEntry.includes("parseGallery"), "A edição em lote da galeria não percorre parser, inspetor e store.");
 assert(inspector.includes("data-legend-bulk-apply") && documentStore.includes("upsertColorLegendsBulk") && manualEntry.includes("parseLegends"), "A edição em lote de legendas não percorre parser, inspetor e store.");
 assert(inspector.includes("batch-geometry-status") && documentStore.includes("getSelectionGeometryReport"), "O diagnóstico geométrico contextual não está exposto para a seleção.");
+assert(inspector.includes("data-batch-frames-apply") && documentStore.includes("applyComponentFramesBulk") && manualEntry.includes("parseFrames"), "A grade heterogênea de caixas não percorre parser, inspetor e store.");
 assert(manualEntry.includes("parseProducts") && manualEntry.includes("parseTable") && manualEntry.includes("parseDelimited"), "O parser tabular manual não cobre produtos e tabelas.");
 assert(html.includes("app/section-recipes.js") && sectionRecipes.includes("page-catalog-base") && sectionRecipes.includes("primary-content"), "O registro oficial de receitas ou seu foco não está carregado.");
 assert(renderer.includes("data-insert-template") && renderer.includes("data-insert-component") && interactions.includes("insertComponentFromTemplate"), "A inserção contextual por um clique não percorre biblioteca e store.");

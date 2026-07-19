@@ -517,6 +517,12 @@
                 <div class="inspector-field"><label>Delta Y</label><input type="number" step="1" value="0" data-batch-delta="y" /></div>
               </div>
               <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-delta-apply>Aplicar deslocamento</button>
+              <details class="table-bulk-entry batch-frame-list">
+                <summary>Editar cada caixa <span>ID ⇥ X ⇥ Y ⇥ largura ⇥ altura</span></summary>
+                <p>Edite a grade predefinida. Todas as caixas são confirmadas juntas, evitando estados geométricos intermediários.</p>
+                <textarea rows="${Math.min(10, components.length + 1)}" data-batch-frames-text>${escapeHtml(["ID\tX\tY\tLARGURA\tALTURA", ...components.map(component => [component.id, Math.round(component.frame.x), Math.round(component.frame.y), Math.round(component.frame.width), Math.round(component.frame.height)].join("\t"))].join("\n"))}</textarea>
+                <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-frames-apply>Aplicar todas as caixas</button>
+              </details>
             </div>
             <div class="batch-spacing-editor">
               <div class="inspector-section__heading"><h4>Espaçamento definido</h4><span>2 ou mais irmãos</span></div>
@@ -840,6 +846,16 @@
           const x = Number(this.root.querySelector('[data-batch-delta="x"]')?.value || 0);
           const y = Number(this.root.querySelector('[data-batch-delta="y"]')?.value || 0);
           if (x || y) this.store.transformComponents(selectedIds, { kind: "delta", values: { x, y } });
+        }
+        else if (event.target.closest("[data-batch-frames-apply]")) {
+          const parsed = window.CatalogManualEntry.parseFrames(this.root.querySelector("[data-batch-frames-text]")?.value || "");
+          try {
+            if (!parsed.rows.length) throw new Error(parsed.issues[0]?.message || "Nenhuma geometria válida foi encontrada.");
+            this.store.applyComponentFramesBulk(parsed.rows);
+          } catch (error) {
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = error.message;
+          }
         }
         else if (event.target.closest("[data-batch-spacing-apply]")) {
           try {

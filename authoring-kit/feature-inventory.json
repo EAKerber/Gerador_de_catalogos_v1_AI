@@ -216,6 +216,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.batchFrameMap",
+      "governance": "active",
+      "governanceReason": "Aplica caixas heterogêneas em uma transação e elimina estados intermediários do ajuste campo a campo.",
+      "id": "batchFrameMap",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.selectionGeometryDiagnostics",
       "governance": "active",
       "governanceReason": "Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação.",
@@ -1264,6 +1271,7 @@
         "multiSelection",
         "batchAlignment",
         "batchGeometry",
+        "batchFrameMap",
         "selectionGeometryDiagnostics",
         "batchSpacing",
         "batchSeparators",
@@ -1726,11 +1734,11 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 41,
+    "capabilities": 42,
     "components": 16,
     "curatedFlows": 16,
     "governance": {
-      "active": 26,
+      "active": 27,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

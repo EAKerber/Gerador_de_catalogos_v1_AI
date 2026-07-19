@@ -8,6 +8,7 @@
     ],
     "assetMaxBytes": 26214400,
     "batchAlignment": true,
+    "batchFrameMap": true,
     "batchGeometry": true,
     "batchPresentation": true,
     "batchSeparators": true,

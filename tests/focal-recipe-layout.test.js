@@ -30,4 +30,10 @@ const firstSpecificationY = Math.min(...specifications.map(item => item.frame.y)
 assert(gallery.children.length === 5 && bottom(gallery) <= firstSpecificationY, "A galeria de cinco imagens colidiu com as especificações.");
 const table = card.children.find(child => child.type === "data-table");
 assert(bottom(table) <= card.frame.height, "A tabela saiu do card após reservar espaço para a galeria.");
-console.log("✓ Dica estreita e galeria compacta de cinco imagens respeitam os mínimos focais.");
+
+specifications.forEach(item => store.deleteComponent(item.id));
+const minimumWithoutSpecifications = CATALOG_COMPONENT_REGISTRY["product-card"].measureMinimum(card, { width: 270, height: 1 });
+store.updateComponent(card.id, { frame: { width: 270, height: minimumWithoutSpecifications.height } });
+assert(card.frame.height === minimumWithoutSpecifications.height, "O card sem especificações não aceitou o mínimo técnico calculado para galeria e tabela.");
+assert(bottom(gallery) <= table.frame.y && bottom(table) <= card.frame.height, "O espaço liberado pelas especificações não foi recuperado sem cortar galeria ou tabela.");
+console.log("✓ Dica estreita e galeria compacta respeitam os mínimos focais com e sem especificações.");

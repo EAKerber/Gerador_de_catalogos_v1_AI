@@ -50,9 +50,9 @@ O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colu
 
 | Prioridade | Problema confirmado | Critério de saída |
 | --- | --- | --- |
-| P1 | Seleção contextual ainda cobra correção | Implementação 05.17: transição atômica e contratos de pai/filho/irmão; confirmar zero tentativa no próximo benchmark Chromium. |
-| P1 | Geometria domina o fluxo manual | Checkpoints 05.17: equalização, valores exatos, deltas e diagnóstico atual da seleção; preview anterior ao commit e relações persistentes permanecem posteriores. |
-| P1 | Composição final permanece inválida | Mesmo alvo encerra com zero colisão e zero overflow, sem retirar edição individual. |
+| P1 | Seleção contextual ainda cobra correção | Encerrado no 05.17: transição atômica e benchmark final com uma tentativa sem efeito, não causada pela seleção entre irmãos. |
+| P1 | Geometria domina o fluxo manual | Checkpoint 3: grade heterogênea reduz 27 preenchimentos; preview anterior ao commit e relações persistentes permanecem posteriores. |
+| P1 | Composição final permanece inválida | Encerrado no benchmark 05.17: zero colisão e zero overflow sem retirar edição individual. |
 | P2 | Galerias exigem edição imagem por imagem | Entregue no checkpoint 2: sincronização ou adição de imagens/legendas em lote; importação binária conjunta permanece posterior. |
 | P2 | Legendas exigem três ações por definição | Entregue no checkpoint 2: várias definições e itens visuais materializados em uma transação. |
 

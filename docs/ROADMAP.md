@@ -403,7 +403,7 @@ Critérios de aceite:
 - manter mínimos, autoridade local e geometria solicitada/resolvida;
 - adiar constraints persistentes até que relações efêmeras demonstrem insuficiência.
 
-Checkpoints 1 e 2 entregues no domínio e na interface: seleção atômica, equalização, valores exatos, deltas, diagnóstico geométrico atual e edição em lote de galerias/legendas. Preview anterior ao commit e constraints persistentes continuam adiados. O `SIGSEGV` foi isolado em uma cópia Chromium truncada e substituída por runtime íntegro; os contratos reais recentes voltaram a executar. O benchmark integral permanece como próxima medição, não mais bloqueado pelo navegador.
+Checkpoints 1–3 concluídos: seleção atômica, relações, valores exatos, deltas, diagnóstico, coleções em lote e grade de caixas heterogêneas. O `SIGSEGV` foi isolado em uma cópia Chromium truncada. No runtime íntegro, o benchmark integral caiu de 223 para 157 ações e terminou com zero colisão/overflow. Preview anterior ao commit e constraints persistentes continuam adiados por falta de evidência de necessidade.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
