@@ -51,10 +51,10 @@ O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colu
 | Prioridade | Problema confirmado | Critério de saída |
 | --- | --- | --- |
 | P1 | Seleção contextual ainda cobra correção | Implementação 05.17: transição atômica e contratos de pai/filho/irmão; confirmar zero tentativa no próximo benchmark Chromium. |
-| P1 | Geometria domina o fluxo manual | Checkpoint 05.17: equalização, valores exatos e deltas sobre seleção; preview e relações persistentes permanecem posteriores. |
+| P1 | Geometria domina o fluxo manual | Checkpoints 05.17: equalização, valores exatos, deltas e diagnóstico atual da seleção; preview anterior ao commit e relações persistentes permanecem posteriores. |
 | P1 | Composição final permanece inválida | Mesmo alvo encerra com zero colisão e zero overflow, sem retirar edição individual. |
-| P2 | Galerias exigem edição imagem por imagem | Entrada de coleção permite adicionar imagens/legendas em lote e refinar exceções. |
-| P2 | Legendas exigem três ações por definição | Entrada de coleção materializa várias definições e itens visuais em uma transação. |
+| P2 | Galerias exigem edição imagem por imagem | Entregue no checkpoint 2: sincronização ou adição de imagens/legendas em lote; importação binária conjunta permanece posterior. |
+| P2 | Legendas exigem três ações por definição | Entregue no checkpoint 2: várias definições e itens visuais materializados em uma transação. |
 
 O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. A revisão posterior corrige a interpretação: geometria exata permanece central, mas deve cooperar com manipulação direta, relações e conjuntos em vez de depender de campos isolados.
 

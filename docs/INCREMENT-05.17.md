@@ -1,4 +1,4 @@
-# Incremento 05.17 — Geometria orientada por intenção, checkpoint 1
+# Incremento 05.17 — Geometria orientada por intenção
 
 ## Ajuste de direção canonizado
 
@@ -21,11 +21,21 @@ Intenção editorial, coesão estrutural e assistência estética orientam a evo
 - X, Y, largura ou altura exatos podem ser aplicados à seleção;
 - delta X/Y move o conjunto numa única transação;
 - operações liberam overrides gerenciados de forma explícita, respeitam clamps/mínimos existentes e são desfeitas como um comando;
-- `batchGeometry` integra o manifesto e o `CatalogAuthoringKit 1.5.7`.
+- `batchGeometry` integra o manifesto e o `CatalogAuthoringKit 1.5.8`.
+
+## Entregue no checkpoint 2
+
+- galeria selecionada aceita colagem de até 24 linhas no formato `legenda ⇥ assetId opcional`;
+- **Sincronizar coleção** preserva os átomos existentes por índice, cria os ausentes e remove excedentes; **Adicionar ao final** não substitui itens;
+- legendas cromáticas aceitam até 40 linhas no formato `nome ⇥ token ⇥ grupo`;
+- o lote pode materializar painel, subgrupos e itens visuais reutilizando as entidades canônicas;
+- cada aplicação gera uma única entrada de histórico e restaura foco/contexto após materialização;
+- multisseleção informa colisões e extrapolações que envolvem os itens selecionados;
+- `bulkCollectionEditing` e `selectionGeometryDiagnostics` passam a integrar o kit.
 
 ## Limites e próximo recorte
 
-Preview de colisão, reserva de regiões e constraints relacionais persistentes não foram introduzidos. Galerias e legendas como coleções permanecem no próximo recorte mensurável. O benchmark integral só deve ser repetido após esses editores e a validação real da seleção em Chromium.
+O diagnóstico descreve o estado atual; preview anterior ao commit, reserva de regiões e constraints relacionais persistentes não foram introduzidos. Importação binária em lote também permanece fora do recorte: a segunda coluna só referencia assets já cadastrados. O próximo checkpoint mensurável é o benchmark integral em Chromium.
 
 O teste Chromium foi adicionado, mas o binário disponível nesta sessão encerrou com `SIGSEGV` antes de abrir a página. Testes de domínio cobrem transação, equalização, valores exatos, deltas, mínimos e seleção atômica; o teste real permanece executável quando o runtime estiver saudável.
 

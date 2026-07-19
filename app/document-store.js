@@ -42,6 +42,7 @@
       "component-template-inserted": "Inserir componente salvo",
       "section-recipe-inserted": "Inserir estrutura pronta",
       "art-converted-to-gallery": "Criar galeria da arte",
+      "gallery-items-bulk-applied": "Editar galeria em lote",
       "component-template-removed": "Excluir componente salvo",
       "product-created": "Adicionar produto",
       "product-bulk-created": "Adicionar produtos em lote",
@@ -64,6 +65,7 @@
       "table-columns-updated": "Editar colunas da tabela",
       "color-legend-upserted": "Editar legenda semântica",
       "legend-materialized": "Materializar legenda",
+      "color-legends-bulk-applied": "Criar legendas em lote",
       "color-legend-removed": "Excluir legenda semântica",
       "component-presentation-updated": "Editar apresentação",
       "components-aligned": "Alinhar seleção",
@@ -1530,6 +1532,50 @@
         this.state.editor.selectedComponentId = variation.id;
         this.state.editor.selectedComponentIds = [variation.id];
         return gallery;
+      });
+    }
+
+    applyGalleryItemsBulk(galleryId, entries = [], options = {}) {
+      const gallery = this.findComponent(galleryId)?.component;
+      if (gallery?.type !== "art-gallery") throw new Error("Selecione uma galeria para editar suas variações.");
+      const mode = options.mode === "append" ? "append" : "replace";
+      const valid = entries.slice(0, 24).map((entry, index) => ({
+        caption: String(entry?.caption || `Variação ${index + 1}`).trim(),
+        assetId: entry?.assetId && this.getAsset(entry.assetId) ? entry.assetId : null
+      })).filter(entry => entry.caption || entry.assetId);
+      if (!valid.length) throw new Error("Informe ao menos uma legenda de imagem.");
+      return this.runCompoundChange({ type: "gallery-items-bulk-applied", componentId: galleryId, mode, count: valid.length }, () => {
+        const existing = (gallery.children || []).filter(child => child.type === "art");
+        const target = mode === "append" ? existing.length + valid.length : valid.length;
+        while (existing.length < target) {
+          const index = existing.length;
+          const item = createNode("art", { x: 0, y: 0, width: 120, height: 100 }, {
+            constraints: { minWidth: 44, minHeight: 44 },
+            props: { label: `VARIAÇÃO ${index + 1}`, hint: "Escolha a imagem", role: "product", caption: `Variação ${index + 1}`, captionPosition: "below", galleryItem: true },
+            layoutItem: { managed: true, grow: 1, span: 1 }
+          });
+          gallery.children.push(item);
+          existing.push(item);
+        }
+        if (mode === "replace" && existing.length > target) {
+          const removed = new Set(existing.slice(target).map(item => item.id));
+          gallery.children = gallery.children.filter(child => !removed.has(child.id));
+          existing.splice(target);
+        }
+        const offset = mode === "append" ? existing.length - valid.length : 0;
+        valid.forEach((entry, index) => {
+          const item = existing[offset + index];
+          item.props = { ...(item.props || {}), label: entry.caption.toUpperCase(), caption: entry.caption, captionPosition: "below", galleryItem: true };
+          if (entry.assetId) item.props.assetId = entry.assetId;
+        });
+        gallery.structureInitialized = true;
+        this.ensureContainerMinimum(gallery, this.getParentId(gallery.id));
+        reflowTree(gallery);
+        const record = this.findComponent(gallery.id);
+        if (record?.parent && usesAutoReflow(record.parent)) reflowTree(record.parent);
+        this.state.editor.selectedComponentId = gallery.id;
+        this.state.editor.selectedComponentIds = [gallery.id];
+        return existing;
       });
     }
 
@@ -3330,6 +3376,24 @@
       return item;
     }
 
+    upsertColorLegendsBulk(entries = [], options = {}) {
+      const valid = entries.slice(0, 40).filter(entry => String(entry?.label || "").trim());
+      if (!valid.length) throw new Error("Informe ao menos uma legenda válida.");
+      return this.runCompoundChange({ type: "color-legends-bulk-applied", count: valid.length, materialize: options.materialize === true }, () => {
+        const previousEditor = clone(this.state.editor);
+        const items = valid.map((entry, index) => this.upsertColorLegend({
+          label: String(entry.label).trim(),
+          textLabel: String(entry.label).trim(),
+          token: String(entry.token || "surface.neutral"),
+          groupLabel: String(entry.groupLabel || "Geral"),
+          order: index
+        }, { insideCompound: true, materialize: false }));
+        if (options.materialize === true) items.forEach(item => this.materializeLegendDefinition(item.metadata.key, { groupLabel: item.metadata.groupLabel }));
+        this.state.editor = previousEditor;
+        return items;
+      });
+    }
+
     getLegendPanels() {
       const panels = [];
       (this.getPage().children || []).forEach(component => visitSubtree(component, node => { if (node.type === "legend-panel") panels.push(node); }));
@@ -3454,6 +3518,18 @@
 
     getPublicationReport(target = "draft") {
       return window.CatalogDocumentValidator?.validate?.(this.getExportDocument(), { target }) || { ok: true, target, issues: [] };
+    }
+
+    getSelectionGeometryReport(componentIds = this.getSelectedIds()) {
+      const selected = new Set(componentIds || []);
+      const geometryCodes = new Set(["COMPONENT_COLLISION", "PAGE_OVERFLOW", "CHILD_OVERFLOW"]);
+      const report = this.getPublicationReport("draft");
+      const issues = (report.issues || []).filter(issue => {
+        if (!geometryCodes.has(issue.code)) return false;
+        const ids = [issue.componentId, issue.sourceId, issue.targetId, ...(issue.componentIds || [])].filter(Boolean);
+        return ids.some(componentId => selected.has(componentId));
+      });
+      return { ok: issues.length === 0, componentIds: [...selected], issues };
     }
 
     getAsset(assetId) {

@@ -98,5 +98,33 @@
     return { rows, issues, delimiter: parsed.delimiter, hasHeader };
   }
 
-  window.CatalogManualEntry = Object.freeze({ PRODUCT_FIELDS, detectDelimiter, parseDelimited, parseProducts, parseTable, fold });
+  function parseGallery(text) {
+    const parsed = parseDelimited(text);
+    const rows = parsed.rows.slice(0, 24).map((cells, index) => ({
+      caption: String(cells[0] || `Variação ${index + 1}`).trim(),
+      assetId: String(cells[1] || "").trim() || null
+    })).filter(item => item.caption || item.assetId);
+    const issues = [];
+    if (parsed.rows.length > 24) issues.push({ severity: "warning", code: "ITEM_LIMIT", message: "Somente as primeiras 24 variações foram aplicadas." });
+    if (!rows.length) issues.push({ severity: "error", code: "NO_VALID_ITEMS", message: "Cole ao menos uma legenda de imagem." });
+    return { rows, issues, delimiter: parsed.delimiter };
+  }
+
+  function parseLegends(text) {
+    const parsed = parseDelimited(text);
+    const header = parsed.rows[0]?.map(fold) || [];
+    const hasHeader = header.some(value => ["legenda", "nome", "label"].includes(value));
+    const sourceRows = (hasHeader ? parsed.rows.slice(1) : parsed.rows).slice(0, 40);
+    const rows = sourceRows.map(cells => ({
+      label: String(cells[0] || "").trim(),
+      token: String(cells[1] || "surface.neutral").trim() || "surface.neutral",
+      groupLabel: String(cells[2] || "Geral").trim() || "Geral"
+    })).filter(item => item.label);
+    const issues = [];
+    if (sourceRows.length < (hasHeader ? parsed.rows.length - 1 : parsed.rows.length)) issues.push({ severity: "warning", code: "ITEM_LIMIT", message: "Somente as primeiras 40 legendas foram aplicadas." });
+    if (!rows.length) issues.push({ severity: "error", code: "NO_VALID_LEGENDS", message: "Cole ao menos uma legenda válida." });
+    return { rows, issues, delimiter: parsed.delimiter, hasHeader };
+  }
+
+  window.CatalogManualEntry = Object.freeze({ PRODUCT_FIELDS, detectDelimiter, parseDelimited, parseProducts, parseTable, parseGallery, parseLegends, fold });
 })();

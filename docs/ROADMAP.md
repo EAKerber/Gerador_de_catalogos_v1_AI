@@ -403,7 +403,7 @@ Critérios de aceite:
 - manter mínimos, autoridade local e geometria solicitada/resolvida;
 - adiar constraints persistentes até que relações efêmeras demonstrem insuficiência.
 
-Checkpoint 1 entregue no domínio e na interface: seleção atômica, equalização, valores exatos e deltas. Galerias/legendas como coleção, preview de colisão e novo benchmark integral permanecem nos checkpoints seguintes. O contrato Chromium foi criado, mas sua execução ficou bloqueada por `SIGSEGV` do binário ambiental antes da abertura da página.
+Checkpoints 1 e 2 entregues no domínio e na interface: seleção atômica, equalização, valores exatos, deltas, diagnóstico geométrico atual e edição em lote de galerias/legendas. Preview anterior ao commit e constraints persistentes continuam adiados. O novo benchmark integral permanece dependente de Chromium saudável; o binário desta sessão encerrou com `SIGSEGV` antes da abertura da página.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

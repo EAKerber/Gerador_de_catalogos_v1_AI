@@ -216,6 +216,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.selectionGeometryDiagnostics",
+      "governance": "active",
+      "governanceReason": "Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação.",
+      "id": "selectionGeometryDiagnostics",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.batchPresentation",
       "governance": "audit",
       "governanceReason": "Consolidar com modos, presets e densidade sem duplicar superfícies.",
@@ -255,6 +262,13 @@
       "governance": "maintain",
       "governanceReason": "Manter a operação existente sem expandir mídia.",
       "id": "contextualArtGallery",
+      "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.bulkCollectionEditing",
+      "governance": "active",
+      "governanceReason": "Reduz a repetição manual em galerias e legendas sem criar entidades paralelas.",
+      "id": "bulkCollectionEditing",
       "value": true
     },
     {
@@ -1250,6 +1264,7 @@
         "multiSelection",
         "batchAlignment",
         "batchGeometry",
+        "selectionGeometryDiagnostics",
         "batchSpacing",
         "batchSeparators",
         "batchPresentation"
@@ -1259,6 +1274,26 @@
       ],
       "id": "layout.multi-selection",
       "recipeIds": []
+    },
+    {
+      "capabilityIds": [
+        "contextualArtGallery",
+        "semanticColorLegends",
+        "optionalLegendMaterialization",
+        "bulkCollectionEditing"
+      ],
+      "componentTypes": [
+        "art-gallery",
+        "art",
+        "data-table",
+        "legend-panel",
+        "legend-group",
+        "legend-item"
+      ],
+      "id": "content.bulk-collections",
+      "recipeIds": [
+        "section-packaging-legend"
+      ]
     },
     {
       "capabilityIds": [
@@ -1691,11 +1726,11 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 39,
+    "capabilities": 41,
     "components": 16,
-    "curatedFlows": 15,
+    "curatedFlows": 16,
     "governance": {
-      "active": 24,
+      "active": 26,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

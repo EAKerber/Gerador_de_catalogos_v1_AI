@@ -38,7 +38,7 @@ A pasta reúne as seguintes etapas evolutivas:
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
 - **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
 - **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
-- **Incremento 05.17 — geometria orientada por intenção (checkpoint 1):** seleção contextual atômica e uma superfície de multisseleção para relações, equalização, valores exatos e deltas reversíveis.
+- **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, diagnóstico da seleção e editores de coleção para galerias e legendas.
 
 ## Abrir
 
@@ -523,6 +523,7 @@ node tests/publication-gates.test.js
 node tests/catalog-compiler.test.js
 node tests/manual-efficiency.test.js
 node tests/manual-batch.test.js
+node tests/collection-bulk-editing.test.js
 node tests/section-recipes.test.js
 node tests/contextual-actions-spacing.test.js
 node tests/ui-contract.test.js

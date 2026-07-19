@@ -21,6 +21,10 @@
       this.tableBulkOpen = false;
       this.tableBulkFeedback = "";
       this.legendEditorOpen = false;
+      this.galleryBulkOpen = false;
+      this.galleryBulkFeedback = "";
+      this.legendBulkOpen = false;
+      this.legendBulkFeedback = "";
       this.taskStateByType = new Map();
       this.root.addEventListener("change", event => this.handleChange(event));
       this.root.addEventListener("click", event => this.handleClick(event));
@@ -230,6 +234,22 @@
         </section>`;
     }
 
+    renderGallerySection(component) {
+      if (component.type !== "art-gallery") return "";
+      const items = (component.children || []).filter(child => child.type === "art");
+      return `
+        <section class="inspector-section inspector-section--gallery">
+          <div class="inspector-section__heading"><h3 class="inspector-section__title">Imagens e legendas</h3><span>${items.length} variação(ões)</span></div>
+          <p class="inspector-note">Uma linha cria uma imagem canônica com legenda própria. A segunda coluna opcional aceita um <code>assetId</code> já existente.</p>
+          <details class="table-bulk-entry gallery-bulk-entry" ${this.galleryBulkOpen ? "open" : ""}>
+            <summary>Editar coleção <span>Legenda ⇥ assetId</span></summary>
+            <textarea rows="6" data-gallery-bulk-text placeholder="Cromado&#9;asset-opcional&#10;Preto&#10;Branco">${escapeHtml(items.map(item => `${item.props?.caption || item.props?.label || "Variação"}\t${item.props?.assetId || ""}`).join("\n"))}</textarea>
+            <div class="table-bulk-entry__actions"><select aria-label="Modo da coleção" data-gallery-bulk-mode><option value="replace">Sincronizar coleção</option><option value="append">Adicionar ao final</option></select><button type="button" data-gallery-bulk-apply>Aplicar imagens</button></div>
+            ${this.galleryBulkFeedback ? `<small role="status">${escapeHtml(this.galleryBulkFeedback)}</small>` : ""}
+          </details>
+        </section>`;
+    }
+
     renderTableRowsSection(component) {
       if (component.type !== "data-table") return "";
       const rows = this.store.getTableRows(component);
@@ -296,6 +316,13 @@
             </div>
             <label class="inspector-switch inspector-switch--wide"><input type="checkbox" data-new-legend-materialize checked /><span aria-hidden="true"></span><strong>Adicionar ao painel de legenda</strong></label>
             <button type="button" class="table-row-editor__add" data-color-legend-add>+ Criar legenda</button>
+            <details class="table-bulk-entry legend-bulk-entry" ${this.legendBulkOpen ? "open" : ""}>
+              <summary>Criar várias legendas <span>Nome ⇥ token ⇥ grupo</span></summary>
+              <textarea rows="6" data-legend-bulk-text placeholder="CX 1000&#9;pack.1000&#9;Embalagens&#10;CX 500&#9;pack.500&#9;Embalagens"></textarea>
+              <label class="inspector-switch inspector-switch--wide"><input type="checkbox" data-legend-bulk-materialize checked /><span aria-hidden="true"></span><strong>Adicionar ao painel de legenda</strong></label>
+              <button type="button" class="table-row-editor__add" data-legend-bulk-apply>Aplicar lista</button>
+              ${this.legendBulkFeedback ? `<small role="status">${escapeHtml(this.legendBulkFeedback)}</small>` : ""}
+            </details>
           </details>
           <p class="inspector-note">As linhas pertencem a <code>${escapeHtml(component.props.collectionId || "tableRows")}</code>. A tabela guarda colunas, ordem dos IDs e vínculos semânticos; valores continuam na coleção.</p>
         </section>`;
@@ -385,7 +412,9 @@
         showAllProperties: this.showAllProperties,
         tableColumnsOpen: this.tableColumnsOpen,
         tableBulkOpen: this.tableBulkOpen,
-        legendEditorOpen: this.legendEditorOpen
+        legendEditorOpen: this.legendEditorOpen,
+        galleryBulkOpen: this.galleryBulkOpen,
+        legendBulkOpen: this.legendBulkOpen
       });
     }
 
@@ -395,8 +424,10 @@
         activeTab: this.activeTab,
         showAllProperties: this.showAllProperties,
         tableColumnsOpen: this.root.querySelector(".table-column-editor")?.open === true,
-        tableBulkOpen: this.root.querySelector(".table-bulk-entry")?.open === true,
-        legendEditorOpen: this.root.querySelector(".semantic-legend-editor")?.open === true
+        tableBulkOpen: this.root.querySelector(".table-bulk-entry:not(.gallery-bulk-entry):not(.legend-bulk-entry)")?.open === true,
+        legendEditorOpen: this.root.querySelector(".semantic-legend-editor")?.open === true,
+        galleryBulkOpen: this.root.querySelector(".gallery-bulk-entry")?.open === true,
+        legendBulkOpen: this.root.querySelector(".legend-bulk-entry")?.open === true
       });
     }
 
@@ -407,7 +438,11 @@
       this.tableColumnsOpen = saved?.tableColumnsOpen === true;
       this.tableBulkOpen = saved?.tableBulkOpen === true;
       this.legendEditorOpen = saved?.legendEditorOpen === true;
+      this.galleryBulkOpen = saved?.galleryBulkOpen === true;
+      this.legendBulkOpen = saved?.legendBulkOpen === true;
       this.tableBulkFeedback = "";
+      this.galleryBulkFeedback = "";
+      this.legendBulkFeedback = "";
     }
 
     renderBatch(components) {
@@ -424,6 +459,7 @@
       const accentColor = this.commonValue(accentEligible, component => component.style?.accentColor || "brand.primary");
       const textColor = this.commonValue(textEligible, component => component.style?.textColor || "text.primary");
       const frameValues = Object.fromEntries(["x", "y", "width", "height"].map(path => [path, this.commonValue(components, component => Math.round(component.frame[path]))]));
+      const geometryReport = this.store.getSelectionGeometryReport(components.map(component => component.id));
       const mixedOption = value => value ? "" : '<option value="" selected disabled>Valores diferentes — escolher para aplicar</option>';
       const presets = Object.values(window.CatalogPresentations?.PRESETS || {});
       const separatorPresets = Object.values(window.CATALOG_SEPARATOR_PRESETS || {});
@@ -454,6 +490,7 @@
           <section class="inspector-section">
             <h3 class="inspector-section__title">Geometria do conjunto</h3>
             <p class="inspector-note">Precisão direta, relacional e numérica na mesma seleção. Itens gerenciados passam a posição independente; uma ação desfaz o comando inteiro.</p>
+            <div class="batch-geometry-status" data-geometry-state="${geometryReport.ok ? "valid" : "warning"}"><strong>${geometryReport.ok ? "Seleção sem conflitos detectados" : `${geometryReport.issues.length} conflito(s) geométrico(s)`}</strong><span>${geometryReport.ok ? "Nenhuma colisão ou extrapolação vinculada à seleção." : "Revise colisões e conteúdo fora dos limites antes de exportar."}</span></div>
             <div class="inspector-section__heading"><h4>Relações</h4><span>alinhar e distribuir</span></div>
             <div class="batch-command-grid" aria-label="Alinhamento da seleção">
               <button type="button" data-batch-align="left" title="Alinhar à esquerda">← Esquerda</button>
@@ -635,6 +672,7 @@
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="content" ${this.activeTab === "content" ? "" : "hidden"}>
           ${this.renderProductBindingSection(component)}
           ${this.renderAssetSection(component)}
+          ${this.renderGallerySection(component)}
           ${this.renderTableRowsSection(component)}
           ${contentSection}
         </div>
@@ -651,7 +689,9 @@
 
     handleDisclosureToggle(event) {
       if (event.target.matches(".table-column-editor")) this.tableColumnsOpen = event.target.open;
-      if (event.target.matches(".table-bulk-entry")) this.tableBulkOpen = event.target.open;
+      if (event.target.matches(".table-bulk-entry:not(.gallery-bulk-entry):not(.legend-bulk-entry)")) this.tableBulkOpen = event.target.open;
+      if (event.target.matches(".gallery-bulk-entry")) this.galleryBulkOpen = event.target.open;
+      if (event.target.matches(".legend-bulk-entry")) this.legendBulkOpen = event.target.open;
       if (event.target.matches(".semantic-legend-editor")) this.legendEditorOpen = event.target.open;
       this.rememberTaskState();
     }
@@ -847,6 +887,18 @@
           distance: this.root.querySelector("[data-duplicate-distance]")?.value,
           count: this.root.querySelector("[data-duplicate-count]")?.value
         });
+      } else if (event.target.closest("[data-gallery-bulk-apply]")) {
+        this.galleryBulkOpen = true;
+        const parsed = window.CatalogManualEntry.parseGallery(this.root.querySelector("[data-gallery-bulk-text]")?.value || "");
+        if (!parsed.rows.length) this.galleryBulkFeedback = parsed.issues[0]?.message || "Nenhuma variação válida foi encontrada.";
+        else {
+          try {
+            const items = this.store.applyGalleryItemsBulk(component.id, parsed.rows, { mode: this.root.querySelector("[data-gallery-bulk-mode]")?.value || "replace" });
+            const warning = parsed.issues.find(issue => issue.severity === "warning");
+            this.galleryBulkFeedback = `${items.length} imagem(ns) na galeria${warning ? `; ${warning.message}` : ""}.`;
+          } catch (error) { this.galleryBulkFeedback = error.message; }
+        }
+        this.render();
       } else if (event.target.closest("[data-table-bulk-apply]")) {
         this.tableBulkOpen = true;
         const text = this.root.querySelector("[data-table-bulk-text]")?.value || "";
@@ -883,6 +935,19 @@
         const groupLabel = this.root.querySelector("[data-new-legend-group]")?.value?.trim() || "Geral";
         const materialize = this.root.querySelector("[data-new-legend-materialize]")?.checked === true;
         if (label) this.store.upsertColorLegend({ label, token, textLabel: label, groupLabel }, { materialize, groupLabel });
+      } else if (event.target.closest("[data-legend-bulk-apply]")) {
+        this.legendEditorOpen = true;
+        this.legendBulkOpen = true;
+        const parsed = window.CatalogManualEntry.parseLegends(this.root.querySelector("[data-legend-bulk-text]")?.value || "");
+        if (!parsed.rows.length) this.legendBulkFeedback = parsed.issues[0]?.message || "Nenhuma legenda válida foi encontrada.";
+        else {
+          try {
+            const items = this.store.upsertColorLegendsBulk(parsed.rows, { materialize: this.root.querySelector("[data-legend-bulk-materialize]")?.checked === true });
+            const warning = parsed.issues.find(issue => issue.severity === "warning");
+            this.legendBulkFeedback = `${items.length} legenda(s) criada(s)${warning ? `; ${warning.message}` : ""}.`;
+          } catch (error) { this.legendBulkFeedback = error.message; }
+        }
+        this.render();
       } else if (event.target.closest("[data-color-legend-remove]")) {
         this.legendEditorOpen = true;
         this.store.removeColorLegend(event.target.closest("[data-color-legend-remove]").dataset.colorLegendRemove);

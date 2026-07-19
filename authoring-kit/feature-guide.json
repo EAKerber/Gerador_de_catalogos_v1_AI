@@ -115,10 +115,23 @@
       "result": "Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação",
       "example": "Igualar três cards, deslocar o conjunto e inserir divisórias verticais",
       "limits": ["Seleção cruzando pais é rejeitada"],
-      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "batchSpacing", "batchSeparators", "batchPresentation"],
+      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "selectionGeometryDiagnostics", "batchSpacing", "batchSeparators", "batchPresentation"],
       "componentTypes": ["separator"],
       "recipeIds": [],
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]
+    },
+    {
+      "id": "content.bulk-collections",
+      "intention": "Criar imagens legendadas e legendas cromáticas sem repetir formulários",
+      "access": "Galeria ou Tabela → Conteúdo → Editar coleção",
+      "preconditions": ["Uma linha por item", "Assets opcionais já cadastrados"],
+      "result": "Itens canônicos são sincronizados ou acrescentados em uma transação reversível",
+      "example": "Colar Cromado, Preto e Branco como três imagens com legenda; criar a faixa cromática correspondente",
+      "limits": ["A colagem não importa arquivos binários", "Até 24 imagens e 40 legendas por operação"],
+      "capabilityIds": ["contextualArtGallery", "semanticColorLegends", "optionalLegendMaterialization", "bulkCollectionEditing"],
+      "componentTypes": ["art-gallery", "art", "data-table", "legend-panel", "legend-group", "legend-item"],
+      "recipeIds": ["section-packaging-legend"],
+      "contracts": ["art.props.caption", "collections.colorLegends", "component.props.legendKey"]
     },
     {
       "id": "reuse.saved-component",
