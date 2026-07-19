@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.16.0",
+  "id": "document-example",
+  "title": "Catálogo de exemplo",
+  "activePageId": "page-1",
+  "collections": [
+    {
+      "id": "assets",
+      "label": "Artes e mídia",
+      "itemType": "asset",
+      "storagePolicy": "reference-only",
+      "items": []
+    },
+    {
+      "id": "products",
+      "label": "Produtos",
+      "itemType": "product",
+      "storagePolicy": "document",
+      "items": []
+    },
+    {
+      "id": "subcatalogs",
+      "label": "Subcatálogos",
+      "itemType": "subcatalog",
+      "storagePolicy": "document",
+      "items": []
+    },
+    {
+      "id": "templates",
+      "label": "Meus componentes",
+      "itemType": "template",
+      "storagePolicy": "document",
+      "items": []
+    },
+    {
+      "id": "tableRows",
+      "label": "Linhas de tabela",
+      "itemType": "table-row",
+      "storagePolicy": "document",
+      "items": []
+    },
+    {
+      "id": "colorLegends",
+      "label": "Legendas semânticas",
+      "itemType": "color-legend",
+      "storagePolicy": "document",
+      "items": []
+    }
+  ],
+  "numbering": {
+    "cardNext": 1
+  },
+  "pages": [
+    {
+      "id": "page-1",
+      "type": "page",
+      "name": "Página 01",
+      "size": {
+        "preset": "A4",
+        "orientation": "portrait",
+        "width": 794,
+        "height": 1123,
+        "unit": "px",
+        "printWidth": "210mm",
+        "printHeight": "297mm"
+      },
+      "grid": {
+        "unit": 4,
+        "majorEvery": 4,
+        "safeMargin": 24
+      },
+      "children": []
+    }
+  ]
+}

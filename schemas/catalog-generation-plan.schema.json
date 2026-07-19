@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://topmobili.local/schemas/catalog-generation-plan.schema.json",
+  "title": "CatalogGenerationPlan",
+  "type": "object",
+  "required": ["planFormat", "planVersion", "id", "catalogId", "strategy", "page", "layout", "header", "footer", "heroProductId", "productOrder", "products", "policies"],
+  "properties": {
+    "planFormat": { "const": "CatalogGenerationPlan" },
+    "planVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "catalogId": { "type": ["string", "null"] },
+    "strategy": { "enum": ["hero-grid", "grid-only"] },
+    "page": {
+      "type": "object",
+      "required": ["preset", "orientation", "width", "height", "safeMargin"],
+      "properties": {
+        "preset": { "const": "A4" },
+        "orientation": { "const": "portrait" },
+        "width": { "const": 794 },
+        "height": { "const": 1123 },
+        "safeMargin": { "type": "number", "minimum": 12, "maximum": 64 }
+      },
+      "additionalProperties": false
+    },
+    "layout": {
+      "type": "object",
+      "required": ["gap", "columns", "headerHeight", "heroHeight", "footerHeight", "maxGridRows"],
+      "properties": {
+        "gap": { "type": "number", "minimum": 4, "maximum": 32 },
+        "columns": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "headerHeight": { "type": "number", "minimum": 96, "maximum": 180 },
+        "heroHeight": { "type": "number", "minimum": 190, "maximum": 360 },
+        "footerHeight": { "type": "number", "minimum": 80, "maximum": 160 },
+        "maxGridRows": { "type": "integer", "minimum": 1, "maximum": 4 }
+      },
+      "additionalProperties": false
+    },
+    "header": {
+      "type": "object",
+      "required": ["enabled", "kicker", "title", "logoAssetId"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "kicker": { "type": "string" },
+        "title": { "type": "string" },
+        "logoAssetId": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "footer": {
+      "type": "object",
+      "required": ["enabled", "store", "city", "phone", "updatedAt"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "store": { "type": "string" },
+        "city": { "type": "string" },
+        "phone": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "heroProductId": { "type": ["string", "null"] },
+    "productOrder": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["productId", "role", "presetId", "mode", "density"],
+        "properties": {
+          "productId": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["hero", "grid"] },
+          "presetId": { "type": "string", "minLength": 1 },
+          "mode": { "enum": ["standard", "hero", "technical", "variants", "data-only"] },
+          "density": { "enum": ["compact", "standard", "comfortable"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "policies": {
+      "type": "object",
+      "required": ["overflow", "missingAsset", "safeRepair"],
+      "properties": {
+        "overflow": { "enum": ["error", "warn"] },
+        "missingAsset": { "enum": ["placeholder", "error"] },
+        "safeRepair": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

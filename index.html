@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Editor visual incremental para catálogos A4 da Top Mobili." />
+  <title>Catálogo V1 — Editor A4</title>
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/editor.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <script defer src="vendor/fflate.js"></script>
+  <script defer src="app/tokens.js"></script>
+  <script defer src="app/catalog-source.js"></script>
+  <script defer src="app/manual-entry.js"></script>
+  <script defer src="app/catalog-generation-plan.js"></script>
+  <script defer src="app/presentation-registry.js"></script>
+  <script defer src="app/catalog-icons.js"></script>
+  <script defer src="app/icon-library.js"></script>
+  <script defer src="app/layout-engine.js"></script>
+  <script defer src="app/component-registry.js"></script>
+  <script defer src="app/section-recipes.js"></script>
+  <script defer src="app/collection-registry.js"></script>
+  <script defer src="app/document-store.js"></script>
+  <script defer src="app/catalog-validator.js"></script>
+  <script defer src="app/catalog-compiler.js"></script>
+  <script defer src="app/asset-storage.js"></script>
+  <script defer src="app/authoring-kit-files.js"></script>
+  <script defer src="app/project-package.js"></script>
+  <script defer src="app/document-importer.js"></script>
+  <script defer src="app/asset-library.js"></script>
+  <script defer src="app/product-catalog.js"></script>
+  <script defer src="app/renderer.js"></script>
+  <script defer src="app/inspector.js"></script>
+  <script defer src="app/interactions.js"></script>
+  <script defer src="app/workspace-layout.js"></script>
+  <script defer src="app/print-export.js"></script>
+  <script defer src="app/main.js"></script>
+</head>
+<body>
+  <header class="app-toolbar">
+    <div class="app-toolbar__brand">
+      <span class="brand-mark" aria-hidden="true">TM</span>
+      <div>
+        <strong>Catálogo V1</strong>
+        <span>Editor A4 · Incremento 05.14</span>
+      </div>
+    </div>
+
+    <div class="app-toolbar__group" aria-label="Documento">
+      <div class="toolbar-history" aria-label="Histórico">
+        <button type="button" class="toolbar-button toolbar-button--icon" id="undoButton" title="Nada para desfazer" aria-label="Desfazer" disabled>↶</button>
+        <button type="button" class="toolbar-button toolbar-button--icon" id="redoButton" title="Nada para refazer" aria-label="Refazer" disabled>↷</button>
+      </div>
+      <button type="button" class="toolbar-button" id="newDocumentButton">Novo documento</button>
+      <button type="button" class="toolbar-button" id="importButton">Importar</button>
+      <button type="button" class="toolbar-button" id="saveButton">Salvar</button>
+      <details class="toolbar-menu" id="exportMenu">
+        <summary class="toolbar-button">Exportar</summary>
+        <div class="toolbar-menu__popover">
+          <button type="button" id="exportPackageButton"><strong>Pacote de rascunho</strong><span>ZIP portátil; pendências viram avisos</span></button>
+          <button type="button" id="exportPublicationPackageButton"><strong>Pacote para publicação</strong><span>Bloqueia assets e papéis obrigatórios pendentes</span></button>
+          <button type="button" id="exportButton"><strong>Documento JSON</strong><span>Somente dados e referências</span></button>
+          <button type="button" id="exportAuthoringKitButton"><strong>Kit de autoria</strong><span>Guide, schemas, exemplo e capacidades</span></button>
+        </div>
+      </details>
+      <button type="button" class="toolbar-button toolbar-button--primary" id="printButton" title="Abrir diálogo de impressão para salvar a página como PDF A4">Imprimir / PDF</button>
+    </div>
+
+    <details class="toolbar-menu toolbar-visualization" id="visualizationMenu">
+      <summary class="toolbar-button" aria-label="Abrir preferências de visualização">Visualização</summary>
+      <div class="toolbar-visualization__controls" aria-label="Preferências de visualização">
+        <label class="toolbar-toggle" title="Mostrar ou ocultar a grade"><input id="gridToggle" type="checkbox" checked /> Grade</label>
+        <label class="toolbar-toggle" title="Encaixar componentes na grade"><input id="snapToggle" type="checkbox" checked /> Snap</label>
+        <label class="toolbar-toggle" title="Alinhamento magnético por bordas, centros e distâncias"><input id="smartSnapToggle" type="checkbox" checked /> Smart</label>
+        <label class="toolbar-toggle"><input id="equalSpacingToggle" type="checkbox" checked /> Espaços</label>
+        <label class="toolbar-toggle"><input id="showGuidesToggle" type="checkbox" checked /> Guias</label>
+        <label class="toolbar-select">Tolerância
+          <select id="snapToleranceSelect">
+            <option value="3">3 px</option>
+            <option value="6" selected>6 px</option>
+            <option value="10">10 px</option>
+            <option value="14">14 px</option>
+          </select>
+        </label>
+        <label class="toolbar-select">Zoom
+          <select id="zoomSelect">
+            <option value="fit" selected>Ajustar</option>
+            <option value="0.55">55%</option>
+            <option value="0.7">70%</option>
+            <option value="0.85">85%</option>
+            <option value="1">100%</option>
+          </select>
+        </label>
+      </div>
+    </details>
+  </header>
+
+  <main class="editor-shell">
+    <aside class="side-panel side-panel--left" aria-label="Biblioteca e camadas">
+      <div class="side-panel__topbar">
+        <strong>Biblioteca e camadas</strong>
+        <button type="button" class="panel-collapse-button" data-toggle-panel="left" aria-expanded="true" aria-label="Recolher painel esquerdo">‹</button>
+      </div>
+      <div class="side-panel__body">
+        <nav class="panel-tabs" role="tablist" aria-label="Navegação do painel esquerdo">
+          <button type="button" role="tab" aria-selected="true" data-left-panel-tab="components">Componentes</button>
+          <button type="button" role="tab" aria-selected="false" data-left-panel-tab="products">Produtos</button>
+          <button type="button" role="tab" aria-selected="false" data-left-panel-tab="layers">Camadas</button>
+        </nav>
+        <div class="panel-tab-content" role="tabpanel" data-left-panel-content="components">
+          <section class="panel-section">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">Biblioteca</span>
+                <h2>Componentes</h2>
+              </div>
+              <span class="panel-badge">clique ou arraste</span>
+            </div>
+            <p class="panel-help">Use <strong>+</strong> para posicionar automaticamente ou arraste quando quiser escolher o ponto exato. A biblioteca acompanha o contexto aberto.</p>
+            <div id="componentPalette" class="component-palette"></div>
+          </section>
+        </div>
+
+        <div class="panel-tab-content" role="tabpanel" data-left-panel-content="products" hidden>
+          <section class="panel-section panel-section--products">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">Conteúdo</span>
+                <h2>Inventário</h2>
+              </div>
+              <span class="panel-badge">05.1</span>
+            </div>
+            <p class="panel-help">Cadastre uma vez, vincule a cards e atualize preço ou descrição sem reconstruir a página.</p>
+            <div id="productCatalogRoot" class="product-catalog"></div>
+          </section>
+        </div>
+
+        <div class="panel-tab-content" role="tabpanel" data-left-panel-content="layers" hidden>
+          <section class="panel-section panel-section--layers">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">Estrutura</span>
+                <h2>Camadas</h2>
+              </div>
+            </div>
+            <div id="layerList" class="layer-list" aria-live="polite"></div>
+          </section>
+        </div>
+      </div>
+    </aside>
+
+    <section class="workspace" aria-label="Área de edição">
+      <nav id="contextBreadcrumb" class="context-breadcrumb" aria-label="Contexto de edição"></nav>
+      <div id="workspaceViewport" class="workspace__viewport">
+        <div id="pageStage" class="page-stage">
+          <section id="pageCanvas" class="editor-page" tabindex="0" aria-label="Página A4 vazia">
+            <div class="editor-page__safe-area" aria-hidden="true"></div>
+            <div id="componentLayer" class="component-layer"></div>
+            <div id="smartGuideLayer" class="smart-guide-layer" aria-hidden="true"></div>
+            <div id="emptyPageHint" class="empty-page-hint">
+              <strong>Página A4 vazia</strong>
+              <span>Arraste cabeçalho, card, rodapé ou arte para começar.</span>
+            </div>
+          </section>
+        </div>
+      </div>
+      <footer class="workspace__status">
+        <span id="documentStatus">Documento pronto.</span>
+        <span><kbd>Ctrl</kbd>+<kbd>Z</kbd> desfaz · <kbd>Ctrl</kbd>+roda ajusta zoom · <kbd>Alt</kbd> ignora snap · <kbd>Esc</kbd> sai</span>
+      </footer>
+    </section>
+
+    <aside class="side-panel side-panel--right" aria-label="Propriedades do componente">
+      <div class="side-panel__topbar side-panel__topbar--right">
+        <button type="button" class="panel-collapse-button" data-toggle-panel="right" aria-expanded="true" aria-label="Recolher painel direito">›</button>
+        <strong>Propriedades</strong>
+      </div>
+      <div class="side-panel__body">
+      <div id="inspectorRoot" class="inspector-root">
+        <div class="inspector-empty">
+          <span class="inspector-empty__icon" aria-hidden="true">↖</span>
+          <strong>Nenhum componente selecionado</strong>
+          <p>Selecione um item da página para editar posição, tamanho e estilos definidos na biblioteca.</p>
+        </div>
+      </div>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="importDocumentDialog" class="import-document-dialog" aria-labelledby="importDocumentTitle">
+    <div class="import-document-dialog__shell">
+      <header class="import-document-dialog__header">
+        <div><span class="panel-kicker">Entrada segura</span><h2 id="importDocumentTitle">Importar ou gerar catálogo</h2></div>
+        <button type="button" data-close-document-import aria-label="Fechar importação">×</button>
+      </header>
+      <div class="import-document-dialog__body">
+        <section class="document-import-dropzone" data-document-import-dropzone data-drag-active="false">
+          <strong>Escolha dados, documento ou projeto</strong>
+          <span>CatalogSource ou CatalogDocument em JSON até 10 MB · ZIP portátil até 100 MB</span>
+          <label class="document-import-file-button">Escolher arquivo<input id="documentImportFileInput" type="file" accept=".json,.zip,application/json,application/zip,application/x-zip-compressed" /></label>
+        </section>
+        <section class="document-import-analysis" data-document-import-analysis hidden>
+          <div class="document-import-analysis__heading">
+            <div><span class="panel-kicker">Arquivo analisado</span><h3 data-document-import-filename></h3></div>
+            <span class="document-import-verdict" data-document-import-verdict></span>
+          </div>
+          <div class="document-import-summary" data-document-import-summary></div>
+          <div class="document-import-issues" data-document-import-issues></div>
+        </section>
+        <p class="document-import-feedback" data-document-import-feedback role="status" aria-live="polite"></p>
+      </div>
+      <footer class="import-document-dialog__footer">
+        <span>Documento e assets só serão persistidos após a confirmação; o estado anterior poderá ser recuperado com Desfazer.</span>
+        <div>
+          <button type="button" data-close-document-import>Cancelar</button>
+          <button type="button" class="document-import-confirm" data-confirm-document-import disabled>Importar documento</button>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="assetLibraryDialog" class="asset-library-dialog" aria-labelledby="assetLibraryTitle">
+    <div class="asset-library-dialog__shell">
+      <header class="asset-library-dialog__header">
+        <div><span class="panel-kicker">Artes do projeto</span><h2 id="assetLibraryTitle">Biblioteca de artes</h2></div>
+        <button type="button" data-close-asset-library aria-label="Fechar biblioteca">×</button>
+      </header>
+      <div class="asset-library-dialog__body">
+        <section class="asset-library-existing" aria-label="Artes disponíveis">
+          <div id="assetLibraryEmpty" class="asset-library-empty">
+            <strong>Nenhuma arte cadastrada</strong>
+            <span>Adicione o primeiro SVG, PNG, JPG ou WebP pelo computador.</span>
+          </div>
+          <div id="assetLibraryGrid" class="asset-library-grid"></div>
+        </section>
+        <section id="assetDropzone" class="asset-dropzone" data-drag-active="false" aria-label="Adicionar arquivos">
+          <strong>Adicionar do computador</strong>
+          <span>Arraste arquivos aqui ou escolha no dispositivo · SVG, PNG, JPG e WebP · até 25 MB</span>
+          <label class="asset-upload-button">Escolher arquivos<input id="assetFileInput" type="file" accept=".svg,.png,.jpg,.jpeg,.webp,image/svg+xml,image/png,image/jpeg,image/webp" multiple /></label>
+        </section>
+        <p id="assetLibraryFeedback" class="asset-library-feedback" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </dialog>
+
+  <template id="toastTemplate">
+    <div class="toast" role="status"></div>
+  </template>
+</body>
+</html>

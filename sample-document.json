@@ -1,0 +1,2409 @@
+{
+  "schemaVersion": "1.16.0",
+  "id": "document-example-nested",
+  "title": "Exemplo com card editável",
+  "createdAt": "2026-07-13T19:13:54.435Z",
+  "updatedAt": "2026-07-13T19:13:54.436Z",
+  "activePageId": "page-1",
+  "collections": [
+    {
+      "id": "assets",
+      "label": "Artes e mídia",
+      "itemType": "asset",
+      "storagePolicy": "reference-only",
+      "items": [
+        {
+          "id": "asset-box-sample",
+          "label": "Ícone de caixa",
+          "metadata": {
+            "fileName": "box.svg",
+            "mimeType": "image/svg+xml",
+            "size": 257,
+            "width": 24,
+            "height": 24,
+            "createdAt": "2026-07-13T19:13:54.435Z",
+            "isVector": true,
+            "provenance": {
+              "origin": "official",
+              "role": "generic",
+              "relatedProductIds": [],
+              "sourceAssetIds": [],
+              "method": "bundled-library",
+              "fidelity": "deterministic",
+              "generator": null
+            },
+            "approval": {
+              "status": "publish-ready",
+              "publishAllowed": true,
+              "reviewedAt": "2026-07-14T00:00:00.000Z"
+            }
+          },
+          "reference": {
+            "provider": "bundled",
+            "key": "assets/icons/box.svg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "products",
+      "label": "Produtos",
+      "itemType": "product",
+      "storagePolicy": "document",
+      "items": [
+        {
+          "id": "product-sample-1",
+          "label": "NOVO PRODUTO",
+          "metadata": {
+            "values": {
+              "title": "NOVO PRODUTO",
+              "specOne": "Alta resistência",
+              "specTwo": "Material",
+              "code": "0000",
+              "package": "PCT 100 UNID.",
+              "price": "R$ 0,00",
+              "assetId": null
+            },
+            "sourceVersion": "1.1.0",
+            "attributes": [],
+            "highlights": [],
+            "applications": [],
+            "variants": [],
+            "assetRoles": {
+              "main": null,
+              "gallery": [],
+              "technical": [],
+              "application": []
+            },
+            "tableColumns": [
+              {
+                "key": "code",
+                "label": "Código",
+                "role": "identifier",
+                "align": "center",
+                "width": 1,
+                "format": null
+              },
+              {
+                "key": "package",
+                "label": "Embalagem",
+                "role": "package",
+                "align": "center",
+                "width": 1.25,
+                "format": null
+              },
+              {
+                "key": "price",
+                "label": "Preço",
+                "role": "price",
+                "align": "center",
+                "width": 1.15,
+                "format": null
+              }
+            ],
+            "commercialRows": [
+              {
+                "id": "commercial-row-1",
+                "variantId": null,
+                "values": {
+                  "code": "0000",
+                  "package": "PCT 100 UNID.",
+                  "price": "R$ 0,00",
+                  "title": "NOVO PRODUTO",
+                  "specOne": "Alta resistência",
+                  "specTwo": "Material"
+                },
+                "legendKeys": {}
+              }
+            ]
+          },
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "subcatalogs",
+      "label": "Subcatálogos",
+      "itemType": "subcatalog",
+      "storagePolicy": "document",
+      "items": [
+        {
+          "id": "subcatalog-sample-1",
+          "label": "Seleção inicial",
+          "metadata": {
+            "productIds": [
+              "product-sample-1"
+            ]
+          },
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "templates",
+      "label": "Meus componentes",
+      "itemType": "template",
+      "storagePolicy": "document",
+      "items": [
+        {
+          "id": "template-sample-callout",
+          "label": "Chamada reutilizável",
+          "metadata": {
+            "rootType": "text",
+            "kind": "snapshot",
+            "savedAt": "2026-07-14T18:00:00.000Z",
+            "sourceComponentId": "text-sample-callout",
+            "component": {
+              "id": "text-sample-callout",
+              "type": "text",
+              "name": "Chamada reutilizável",
+              "frame": {
+                "width": 260,
+                "height": 80,
+                "x": 0,
+                "y": 0
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 34,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 34
+                  },
+                  "recommended": {
+                    "width": 260,
+                    "height": 80
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "content": "DICA DE APLICAÇÃO"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.body"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": null,
+              "structureInitialized": false,
+              "children": []
+            },
+            "tableRows": [],
+            "family": "text",
+            "version": "1.0.0",
+            "presentation": {
+              "templateId": null,
+              "mode": "standard",
+              "density": "standard",
+              "responsiveState": "auto",
+              "presetId": null,
+              "overrides": {}
+            },
+            "assetRequirements": []
+          },
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "tableRows",
+      "label": "Linhas de tabela",
+      "itemType": "table-row",
+      "storagePolicy": "document",
+      "items": [
+        {
+          "id": "table-row-sample-1",
+          "label": "Tabela de dados · linha 1",
+          "metadata": {
+            "values": {
+              "code": "0000",
+              "package": "PCT 100 UNID.",
+              "price": "R$ 0,00"
+            },
+            "legendKeys": {},
+            "sourceRowId": null,
+            "variantId": null
+          },
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "colorLegends",
+      "label": "Legendas semânticas",
+      "itemType": "color-legend",
+      "storagePolicy": "document",
+      "items": []
+    }
+  ],
+  "numbering": {
+    "cardNext": 2
+  },
+  "pages": [
+    {
+      "id": "page-1",
+      "type": "page",
+      "name": "Página 01",
+      "size": {
+        "preset": "A4",
+        "orientation": "portrait",
+        "width": 794,
+        "height": 1123,
+        "unit": "px",
+        "printWidth": "210mm",
+        "printHeight": "297mm"
+      },
+      "grid": {
+        "unit": 4,
+        "majorEvery": 4,
+        "safeMargin": 24
+      },
+      "children": [
+        {
+          "id": "catalog-header-mrjlp4as-icr5z",
+          "type": "catalog-header",
+          "name": "Cabeçalho",
+          "frame": {
+            "width": 746,
+            "height": 130,
+            "x": 24,
+            "y": 24
+          },
+          "constraints": {
+            "minWidth": 420,
+            "minHeight": 110,
+            "gridUnit": 4,
+            "snapX": true,
+            "snapY": true,
+            "freeX": false,
+            "freeY": false,
+            "minimums": {
+              "technical": {
+                "width": 420,
+                "height": 110
+              },
+              "recommended": {
+                "width": 730,
+                "height": 150
+              },
+              "custom": null
+            }
+          },
+          "props": {
+            "kicker": "CATÁLOGO",
+            "title": "FIXAÇÃO E ACESSÓRIOS"
+          },
+          "style": {
+            "surface": "surface.paper",
+            "border": "border.none",
+            "radius": "radius.none",
+            "accentColor": "brand.primary",
+            "textColor": "text.primary",
+            "mutedColor": "text.muted",
+            "typography": "type.display"
+          },
+          "slot": null,
+          "structureInitialized": true,
+          "children": [
+            {
+              "id": "art-mrlcvr2e-1dx4t",
+              "type": "art",
+              "name": "Arte / logo",
+              "frame": {
+                "x": 12,
+                "y": 12,
+                "width": 132,
+                "height": 106
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 60,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 60
+                  },
+                  "recommended": {
+                    "width": 210,
+                    "height": 160
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "label": "LOGO",
+                "hint": "Escolha uma arte da biblioteca",
+                "role": "logo",
+                "fit": "contain",
+                "assetId": null,
+                "alt": "Logo do catálogo",
+                "focalX": 50,
+                "focalY": 50,
+                "vectorMode": "original",
+                "caption": "",
+                "captionPosition": "below"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.strong",
+                "mutedColor": "text.muted",
+                "typography": "type.card-title"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "logo",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "text-mrlcvr2e-mutwp",
+              "type": "text",
+              "name": "Texto",
+              "frame": {
+                "x": 160,
+                "y": 18,
+                "width": 574,
+                "height": 34
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 34,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 34
+                  },
+                  "recommended": {
+                    "width": 260,
+                    "height": 80
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "content": "CATÁLOGO"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "textColor": "brand.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "kicker",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "text-mrlcvr2e-3feqq",
+              "type": "text",
+              "name": "Texto",
+              "frame": {
+                "x": 160,
+                "y": 52,
+                "width": 574,
+                "height": 58
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 34,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 34
+                  },
+                  "recommended": {
+                    "width": 260,
+                    "height": 80
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "content": "FIXAÇÃO E ACESSÓRIOS"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.display"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "title",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "separator-mrlcvr2e-23vo2",
+              "type": "separator",
+              "name": "Linha separadora",
+              "frame": {
+                "x": 160,
+                "y": 114,
+                "width": 574,
+                "height": 8
+              },
+              "constraints": {
+                "minWidth": 8,
+                "minHeight": 8,
+                "gridUnit": 4,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 8,
+                    "height": 8
+                  },
+                  "recommended": {
+                    "width": 220,
+                    "height": 8
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "orientation": "horizontal",
+                "cap": "round",
+                "marker": "outline",
+                "thickness": 2,
+                "presetId": "subtle"
+              },
+              "style": {
+                "accentColor": "brand.primary"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "rule",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "separator-mrlcvr2e-0r75d",
+              "type": "separator",
+              "name": "Linha separadora",
+              "frame": {
+                "x": 148,
+                "y": 18,
+                "width": 8,
+                "height": 94
+              },
+              "constraints": {
+                "minWidth": 8,
+                "minHeight": 8,
+                "gridUnit": 4,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 8,
+                    "height": 8
+                  },
+                  "recommended": {
+                    "width": 220,
+                    "height": 8
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "orientation": "vertical",
+                "cap": "square",
+                "marker": "none",
+                "thickness": 2,
+                "presetId": "subtle"
+              },
+              "style": {
+                "accentColor": "brand.primary"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "divider",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            }
+          ],
+          "layout": null,
+          "layoutItem": null,
+          "reflow": {
+            "mode": "auto"
+          }
+        },
+        {
+          "id": "product-card-mrjlp4as-6vxxm",
+          "type": "product-card",
+          "name": "Card de produto",
+          "frame": {
+            "width": 350,
+            "height": 260,
+            "x": 24,
+            "y": 180
+          },
+          "constraints": {
+            "minWidth": 270,
+            "minHeight": 220,
+            "gridUnit": 4,
+            "snapX": true,
+            "snapY": true,
+            "freeX": false,
+            "freeY": false,
+            "minimums": {
+              "technical": {
+                "width": 270,
+                "height": 220
+              },
+              "recommended": {
+                "width": 350,
+                "height": 260
+              },
+              "custom": null
+            }
+          },
+          "props": {
+            "number": "01",
+            "title": "NOVO PRODUTO",
+            "specOne": "Alta resistência",
+            "specTwo": "Material",
+            "code": "0000",
+            "package": "PCT 100 UNID.",
+            "price": "R$ 0,00",
+            "assetId": null
+          },
+          "style": {
+            "surface": "surface.paper",
+            "border": "border.default",
+            "radius": "radius.medium",
+            "accentColor": "brand.primary",
+            "textColor": "text.primary",
+            "mutedColor": "text.muted",
+            "typography": "type.card-title"
+          },
+          "binding": {
+            "productId": "product-sample-1",
+            "templateId": null,
+            "overrides": {
+              "title": false,
+              "specOne": false,
+              "specTwo": false,
+              "code": false,
+              "package": false,
+              "price": false,
+              "assetId": false
+            }
+          },
+          "slot": null,
+          "children": [
+            {
+              "id": "title-symbol-mrjlp4as-da8k1",
+              "type": "title-symbol",
+              "name": "Título com símbolo",
+              "frame": {
+                "x": 12,
+                "y": 12,
+                "width": 326,
+                "height": 38
+              },
+              "constraints": {
+                "minWidth": 140,
+                "minHeight": 32,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 140,
+                    "height": 32
+                  },
+                  "recommended": {
+                    "width": 260,
+                    "height": 38
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "number": "01",
+                "title": "NOVO PRODUTO"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.card-title",
+                "vectorColor": "brand.primary"
+              },
+              "slot": {
+                "name": "title",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "children": [],
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "structureInitialized": false
+            },
+            {
+              "id": "art-mrjlp4as-gm4dw",
+              "type": "art",
+              "name": "Arte / logo",
+              "frame": {
+                "x": 12,
+                "y": 60,
+                "width": 190,
+                "height": 140
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 60,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 60
+                  },
+                  "recommended": {
+                    "width": 210,
+                    "height": 160
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "label": "ARTE DO PRODUTO",
+                "hint": "Foto, render, SVG ou desenho técnico",
+                "role": "product",
+                "fit": "contain",
+                "assetId": null,
+                "alt": "Representação de uma caixa",
+                "focalX": 50,
+                "focalY": 50,
+                "vectorMode": "token",
+                "caption": "Embalagem ilustrativa do produto",
+                "captionPosition": "below"
+              },
+              "style": {
+                "surface": "surface.neutral",
+                "border": "border.default",
+                "radius": "radius.medium",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.strong",
+                "mutedColor": "text.muted",
+                "typography": "type.card-title"
+              },
+              "slot": {
+                "name": "art",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "children": [],
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "structureInitialized": false
+            },
+            {
+              "id": "specification-mrjlp4as-oe8s9",
+              "type": "specification",
+              "name": "Especificação",
+              "frame": {
+                "x": 212,
+                "y": 60,
+                "width": 126,
+                "height": 67
+              },
+              "constraints": {
+                "minWidth": 82,
+                "minHeight": 28,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 82,
+                    "height": 28
+                  },
+                  "recommended": {
+                    "width": 130,
+                    "height": 38
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "shield-star",
+                "label": "Alta resistência"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "slot": {
+                "name": "specifications",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "children": [],
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "structureInitialized": false
+            },
+            {
+              "id": "specification-mrjlp4as-whg5v",
+              "type": "specification",
+              "name": "Especificação",
+              "frame": {
+                "x": 212,
+                "y": 134,
+                "width": 126,
+                "height": 67
+              },
+              "constraints": {
+                "minWidth": 82,
+                "minHeight": 28,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 82,
+                    "height": 28
+                  },
+                  "recommended": {
+                    "width": 130,
+                    "height": 38
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "layers",
+                "label": "Material"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "slot": {
+                "name": "specifications",
+                "order": 1,
+                "managed": true,
+                "span": 1
+              },
+              "children": [],
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "structureInitialized": false
+            },
+            {
+              "id": "data-table-mrjlp4as-zvb0a",
+              "type": "data-table",
+              "name": "Tabela de dados",
+              "frame": {
+                "x": 12,
+                "y": 200,
+                "width": 326,
+                "height": 48
+              },
+              "constraints": {
+                "minWidth": 180,
+                "minHeight": 32,
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 180,
+                    "height": 32
+                  },
+                  "recommended": {
+                    "width": 300,
+                    "height": 48
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "collectionId": "tableRows",
+                "rowIds": [
+                  "table-row-sample-1"
+                ],
+                "columns": [
+                  {
+                    "key": "code",
+                    "label": "Código",
+                    "role": "identifier",
+                    "align": "center",
+                    "width": 1,
+                    "format": null
+                  },
+                  {
+                    "key": "package",
+                    "label": "Embalagem",
+                    "role": "package",
+                    "align": "center",
+                    "width": 1.25,
+                    "format": null
+                  },
+                  {
+                    "key": "price",
+                    "label": "Preço",
+                    "role": "price",
+                    "align": "center",
+                    "width": 1.15,
+                    "format": null
+                  }
+                ],
+                "code": "0000",
+                "package": "PCT 100 UNID.",
+                "price": "R$ 0,00"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.default",
+                "radius": "radius.small",
+                "accentColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.table-value"
+              },
+              "slot": {
+                "name": "table",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "children": [],
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "structureInitialized": false
+            }
+          ],
+          "layout": null,
+          "layoutItem": null,
+          "structureInitialized": true,
+          "reflow": {
+            "mode": "auto"
+          },
+          "presentation": {
+            "templateId": null,
+            "mode": "standard",
+            "density": "standard",
+            "responsiveState": "auto",
+            "presetId": "product-standard",
+            "overrides": {}
+          }
+        },
+        {
+          "id": "catalog-footer-mrjlp4as-0kb6b",
+          "type": "catalog-footer",
+          "name": "Rodapé",
+          "frame": {
+            "width": 746,
+            "height": 100,
+            "x": 24,
+            "y": 999
+          },
+          "constraints": {
+            "minWidth": 500,
+            "minHeight": 80,
+            "gridUnit": 4,
+            "snapX": true,
+            "snapY": true,
+            "freeX": false,
+            "freeY": false,
+            "minimums": {
+              "technical": {
+                "width": 500,
+                "height": 80
+              },
+              "recommended": {
+                "width": 746,
+                "height": 100
+              },
+              "custom": null
+            }
+          },
+          "props": {
+            "store": "Top Mobili Ferragens",
+            "city": "Canoas · RS",
+            "phone": "51 98977-6262",
+            "pageLabel": "Página 01",
+            "updatedAt": "Atualizado em 2026"
+          },
+          "style": {
+            "surface": "surface.paper",
+            "border": "border.default",
+            "radius": "radius.none",
+            "accentColor": "brand.primary",
+            "vectorColor": "brand.primary",
+            "textColor": "text.primary",
+            "mutedColor": "text.muted",
+            "typography": "type.label"
+          },
+          "slot": null,
+          "structureInitialized": true,
+          "children": [
+            {
+              "id": "footer-item-mrlcvr2f-fuzvj",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 0,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "location",
+                "title": "Top Mobili Ferragens",
+                "subtitle": "Canoas · RS"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2f-umoxs",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "location",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2f-kh0iw",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Top Mobili Ferragens"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2f-pkuif",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Canoas · RS"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "footer-item-mrlcvr2f-j0101",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 124,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "whatsapp",
+                "title": "51 98977-6262",
+                "subtitle": "Atendimento via WhatsApp"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 1,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2f-lely6",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "whatsapp",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2f-sz4k5",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "51 98977-6262"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-q6wsn",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Atendimento via WhatsApp"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "footer-item-mrlcvr2f-zfkry",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 249,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "shield-star",
+                "title": "Qualidade",
+                "subtitle": ""
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 2,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2g-02frn",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "shield-star",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-s93hl",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Qualidade"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-ff60f",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "footer-item-mrlcvr2f-s61je",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 373,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "truck",
+                "title": "Entrega",
+                "subtitle": ""
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 3,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2g-b2ymk",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "truck",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-gj1dg",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Entrega"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-7xe0d",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "footer-item-mrlcvr2f-p6gzi",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 497,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "headset",
+                "title": "Atendimento",
+                "subtitle": ""
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 4,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2g-luc6s",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "headset",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-lucu3",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Atendimento"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-alwsb",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "footer-item-mrlcvr2f-mmprg",
+              "type": "footer-item",
+              "name": "Item do rodapé",
+              "frame": {
+                "x": 622,
+                "y": 3,
+                "width": 124,
+                "height": 97
+              },
+              "constraints": {
+                "minWidth": 88,
+                "minHeight": 90,
+                "gridUnit": 1,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false,
+                "minimums": {
+                  "technical": {
+                    "width": 88,
+                    "height": 90
+                  },
+                  "recommended": {
+                    "width": 112,
+                    "height": 96
+                  },
+                  "custom": null
+                }
+              },
+              "props": {
+                "icon": "calendar",
+                "title": "Página 01",
+                "subtitle": "Atualizado em 2026"
+              },
+              "style": {
+                "surface": "surface.paper",
+                "border": "border.none",
+                "radius": "radius.none",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.primary",
+                "mutedColor": "text.muted",
+                "typography": "type.label"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": {
+                "mode": "auto"
+              },
+              "slot": {
+                "name": "items",
+                "order": 5,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": true,
+              "children": [
+                {
+                  "id": "icon-mrlcvr2g-7pjzo",
+                  "type": "icon",
+                  "name": "Ícone",
+                  "frame": {
+                    "x": 49,
+                    "y": 4,
+                    "width": 26,
+                    "height": 26
+                  },
+                  "constraints": {
+                    "minWidth": 24,
+                    "minHeight": 24,
+                    "gridUnit": 1,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 24,
+                        "height": 24
+                      },
+                      "recommended": {
+                        "width": 56,
+                        "height": 56
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "icon": "calendar",
+                    "label": ""
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "vectorColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "icon",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-9toyu",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 31,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Página 01"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.primary",
+                    "mutedColor": "text.muted",
+                    "typography": "type.label"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "title",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                },
+                {
+                  "id": "text-mrlcvr2g-t066f",
+                  "type": "text",
+                  "name": "Texto",
+                  "frame": {
+                    "x": 4,
+                    "y": 65,
+                    "width": 116,
+                    "height": 34
+                  },
+                  "constraints": {
+                    "minWidth": 80,
+                    "minHeight": 34,
+                    "gridUnit": 2,
+                    "snapX": true,
+                    "snapY": true,
+                    "freeX": false,
+                    "freeY": false,
+                    "minimums": {
+                      "technical": {
+                        "width": 80,
+                        "height": 34
+                      },
+                      "recommended": {
+                        "width": 260,
+                        "height": 80
+                      },
+                      "custom": null
+                    }
+                  },
+                  "props": {
+                    "content": "Atualizado em 2026"
+                  },
+                  "style": {
+                    "surface": "surface.paper",
+                    "border": "border.none",
+                    "radius": "radius.none",
+                    "accentColor": "brand.primary",
+                    "textColor": "text.muted",
+                    "mutedColor": "text.muted",
+                    "typography": "type.caption"
+                  },
+                  "layout": null,
+                  "layoutItem": null,
+                  "reflow": null,
+                  "slot": {
+                    "name": "subtitle",
+                    "order": 0,
+                    "managed": true,
+                    "span": 1
+                  },
+                  "structureInitialized": false,
+                  "children": []
+                }
+              ]
+            }
+          ],
+          "layout": null,
+          "layoutItem": null,
+          "reflow": {
+            "mode": "auto"
+          }
+        }
+      ]
+    }
+  ]
+}

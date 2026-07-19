@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://topmobili.local/schemas/catalog-source.schema.json",
+  "title": "CatalogSource",
+  "type": "object",
+  "required": ["sourceFormat", "sourceVersion", "catalog", "products", "legends"],
+  "properties": {
+    "sourceFormat": { "const": "CatalogSource" },
+    "sourceVersion": { "const": "1.1.0" },
+    "catalog": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "title": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "products": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/product" }
+    },
+    "legends": { "type": "array", "items": { "$ref": "#/$defs/legendDefinition" } }
+  },
+  "$defs": {
+    "semanticEntry": {
+      "type": "object",
+      "required": ["key", "label", "value", "unit", "icon"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "value": { "type": ["string", "null"] },
+        "unit": { "type": ["string", "null"] },
+        "icon": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "assetRoles": {
+      "type": "object",
+      "required": ["main", "gallery", "technical", "application"],
+      "properties": {
+        "main": { "type": ["string", "null"] },
+        "gallery": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "technical": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "application": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "variant": {
+      "type": "object",
+      "required": ["id", "label", "attributes", "assetIds", "commercialRowIds"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "attributes": { "type": "array", "items": { "$ref": "#/$defs/semanticEntry" } },
+        "assetIds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "commercialRowIds": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "tableColumn": {
+      "type": "object",
+      "required": ["key", "label", "role", "align", "width", "format"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "role": { "type": "string", "minLength": 1 },
+        "align": { "enum": ["start", "center", "end"] },
+        "width": { "type": "number", "minimum": 0.25, "maximum": 6 },
+        "format": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "commercialRow": {
+      "type": "object",
+      "required": ["id", "variantId", "values", "legendKeys"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "variantId": { "type": ["string", "null"] },
+        "values": { "type": "object", "additionalProperties": { "type": ["string", "number", "boolean"] } },
+        "legendKeys": { "type": "object", "additionalProperties": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "legendDefinition": {
+      "type": "object",
+      "required": ["key", "label", "token", "fallback", "groupId", "groupLabel", "groupOrder", "order", "emphasized"],
+      "properties": {
+        "key": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "token": { "type": "string", "minLength": 1 },
+        "fallback": { "type": "string", "minLength": 1 },
+        "groupId": { "type": "string", "minLength": 1 },
+        "groupLabel": { "type": "string", "minLength": 1 },
+        "groupOrder": { "type": "integer", "minimum": 0 },
+        "order": { "type": "integer", "minimum": 0 },
+        "emphasized": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "product": {
+      "type": "object",
+      "required": ["id", "label", "values", "sourceVersion", "attributes", "highlights", "applications", "variants", "assetRoles"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "values": { "type": "object", "additionalProperties": true },
+        "sourceVersion": { "const": "1.1.0" },
+        "attributes": { "type": "array", "items": { "$ref": "#/$defs/semanticEntry" } },
+        "highlights": { "type": "array", "items": { "$ref": "#/$defs/semanticEntry" } },
+        "applications": { "type": "array", "items": { "$ref": "#/$defs/semanticEntry" } },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/variant" } },
+        "tableColumns": { "type": "array", "minItems": 1, "maxItems": 12, "items": { "$ref": "#/$defs/tableColumn" } },
+        "commercialRows": { "type": "array", "minItems": 1, "maxItems": 12, "items": { "$ref": "#/$defs/commercialRow" } },
+        "assetRoles": { "$ref": "#/$defs/assetRoles" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

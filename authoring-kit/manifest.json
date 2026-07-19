@@ -1,0 +1,27 @@
+{
+  "kitFormat": "CatalogAuthoringKit",
+  "kitVersion": "1.5.3",
+  "editorIncrement": "05.14",
+  "defaultAssetPolicy": "assisted",
+  "guide": "GUIDE.md",
+  "capabilities": "capabilities.json",
+  "featureInventory": "feature-inventory.json",
+  "featureGuide": "feature-guide.json",
+  "featureGovernance": "feature-governance.json",
+  "schemas": [
+    "schemas/catalog-document.schema.json",
+    "schemas/catalog-project-package.schema.json",
+    "schemas/catalog-capabilities.schema.json",
+    "schemas/catalog-source.schema.json",
+    "schemas/catalog-generation-plan.schema.json"
+  ],
+  "examples": [
+    "examples/minimal-document.json",
+    "examples/catalog-project.json",
+    "examples/catalog-source.json",
+    "examples/catalog-generation-plan.json",
+    "examples/reference-catalog-source.json"
+  ],
+  "compiler": "compiler/compile-catalog.js",
+  "runtime": "runtime"
+}

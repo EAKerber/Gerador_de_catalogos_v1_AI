@@ -1,0 +1,136 @@
+{
+  "governanceFormat": "CatalogFeatureGovernance",
+  "governanceVersion": "1.0.0",
+  "editorIncrement": "05.14",
+  "statusVocabulary": {
+    "active": "Evolução permitida dentro do foco atual de usabilidade, fidelidade e confiabilidade.",
+    "maintain": "Contrato preservado e corrigido quando necessário, sem expansão funcional.",
+    "audit": "Resultado útil existe, mas acesso, vocabulário ou sobreposição precisam ser avaliados antes de ampliar.",
+    "frozen": "Expansão adiada; tocar somente para evitar dívida estrutural concreta ou regressão.",
+    "paused": "Previsto, mas dependente da estabilização do núcleo atual."
+  },
+  "principles": [
+    "Preservar contratos e decisões válidas não exige preservar toda opção ou implementação.",
+    "Toda opção persistente deve corresponder a uma intenção estável e compreensível.",
+    "Mecânicas internas não devem virar configurações apenas por serem configuráveis.",
+    "A criação manual do zero é benchmark de usabilidade e escape hatch, não fluxo principal.",
+    "Ações compostas materializam componentes normais, são reversíveis e não alteram fatos comerciais implicitamente."
+  ],
+  "frozenLanes": [
+    {
+      "id": "multimedia-expansion",
+      "label": "Expansão multimídia",
+      "allowed": "Manter compatibilidade e corrigir layout/fidelidade de componentes existentes."
+    },
+    {
+      "id": "online-platform",
+      "label": "Plataforma online, hospedagem e colaboração",
+      "allowed": "Evitar dependência de rede e preservar determinismo, IDs e portabilidade."
+    },
+    {
+      "id": "publication-workflow",
+      "label": "Workflow de publicação",
+      "allowed": "Manter PDF como saída de fidelidade e preservar contratos de validação existentes."
+    },
+    {
+      "id": "touch-mobile-expansion",
+      "label": "Expansão touch/mobile",
+      "allowed": "Não introduzir dependência exclusiva de mouse, hover ou teclado."
+    }
+  ],
+  "debtExceptionCriteria": [
+    "Evitar dependência irreversível de rede, dispositivo ou fornecedor.",
+    "Evitar duplicar o motor de layout ou o modelo de comandos.",
+    "Evitar quebra futura de schema, pacote, IDs ou importação.",
+    "Evitar acoplar o store à posição visual dos painéis ou ao desktop.",
+    "Evitar regressão em PDF, portabilidade ou assets já suportados."
+  ],
+  "capabilityDecisions": [
+    { "id": "jsonImport", "status": "active", "reason": "Entrada portátil e autoria por agente continuam centrais." },
+    { "id": "jsonExport", "status": "active", "reason": "Documento materializado e auditável continua central." },
+    { "id": "projectPackageImport", "status": "maintain", "reason": "Portabilidade existente é preservada sem ampliar plataforma." },
+    { "id": "projectPackageExport", "status": "maintain", "reason": "Portabilidade existente é preservada sem ampliar publicação." },
+    { "id": "packageAssetPolicy", "status": "frozen", "reason": "Governança avançada de mídia está fora do foco atual." },
+    { "id": "assetFormats", "status": "frozen", "reason": "Nenhum novo formato de mídia durante o ciclo de saneamento." },
+    { "id": "assetMaxBytes", "status": "frozen", "reason": "Limite atual permanece por compatibilidade." },
+    { "id": "undoRedo", "status": "active", "reason": "Toda ação pontual ou composta precisa ser reversível." },
+    { "id": "printPdf", "status": "active", "reason": "PDF permanece saída de fidelidade, não plataforma de publicação." },
+    { "id": "multiplePages", "status": "paused", "reason": "Depende de layout e reflow confiáveis." },
+    { "id": "semanticCatalogSource", "status": "active", "reason": "Fonte data-first é a direção principal do produto." },
+    { "id": "semanticTables", "status": "active", "reason": "Esquemas reutilizáveis são prioridade de redução de ações." },
+    { "id": "semanticColorLegends", "status": "maintain", "reason": "Preservar vínculos existentes; regras avançadas ficam congeladas." },
+    { "id": "semanticProductVariants", "status": "maintain", "reason": "Entidade semântica é preservada sem expansão multimídia." },
+    { "id": "linkedVariantRepresentations", "status": "audit", "reason": "Evitar duplicidade entre variante, linha e representação visual." },
+    { "id": "hierarchicalVisualLegends", "status": "audit", "reason": "Resultado existe, mas tarefa e hierarquia custaram 39 ações." },
+    { "id": "optionalLegendMaterialization", "status": "audit", "reason": "Automação é útil, mas altera disclosures e foco da tarefa." },
+    { "id": "draftPublicationGates", "status": "frozen", "reason": "Workflow de aprovação/publicação não será ampliado." },
+    { "id": "generationPlanCompiler", "status": "active", "reason": "Deve compartilhar comandos com a edição manual." },
+    { "id": "geometricPublicationGate", "status": "active", "reason": "Será tratado como validação de saída e confiabilidade geométrica." },
+    { "id": "catalogSourceDirectImport", "status": "active", "reason": "Fluxo principal de geração data-first." },
+    { "id": "manualBulkProductEntry", "status": "active", "reason": "Maior ganho observado na criação manual." },
+    { "id": "manualBulkTableEntry", "status": "active", "reason": "Base para esquema e dados em operações separadas." },
+    { "id": "manualProductCardBatch", "status": "active", "reason": "Operação composta de alto valor comprovado." },
+    { "id": "multiSelection", "status": "active", "reason": "Base para ações de grupo." },
+    { "id": "batchAlignment", "status": "active", "reason": "Intenção distinta de organização de irmãos." },
+    { "id": "batchPresentation", "status": "audit", "reason": "Consolidar com modos, presets e densidade sem duplicar superfícies." },
+    { "id": "oneClickInsertion", "status": "active", "reason": "O botão contextual demonstrou ganho geral de usabilidade." },
+    { "id": "officialSectionRecipes", "status": "active", "reason": "Receitas devem evoluir para comandos compostos compartilhados." },
+    { "id": "contextualInsertActions", "status": "active", "reason": "Expressam intenção de posicionamento sem exigir drag." },
+    { "id": "contextualTableRows", "status": "active", "reason": "Ação contextual clara, frequente e reversível." },
+    { "id": "contextualArtGallery", "status": "maintain", "reason": "Manter a operação existente sem expandir mídia." },
+    { "id": "batchSpacing", "status": "active", "reason": "Intenção frequente e adequada a comando de grupo." },
+    { "id": "batchSeparators", "status": "audit", "reason": "Candidato a ser opção da ação de espaçamento, não capacidade paralela." },
+    { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." }
+  ],
+  "interactionDecisions": [
+    {
+      "id": "layout-authority",
+      "currentMechanisms": ["Gerenciado pelo layout", "Posição independente", "Reintegrar ao layout", "reflow.mode legado"],
+      "status": "active",
+      "finding": "Autoridade local durável entregue; o modo de contêiner permanece somente para leitura compatível.",
+      "target": "Preservar o contrato local e remover o campo legado apenas em migração versionada."
+    },
+    {
+      "id": "duplication",
+      "currentMechanisms": ["duplicação simples", "série direcional", "duplicação da seleção", "cards de produtos em lote"],
+      "status": "audit",
+      "finding": "Resultados têm escopos diferentes, mas estão distribuídos em superfícies sobrepostas.",
+      "target": "Comando canônico de repetir, com variações contextuais progressivas."
+    },
+    {
+      "id": "layout-placement",
+      "currentMechanisms": ["drag", "frame exato", "auto-layout", "slots", "receitas", "ações contextuais"],
+      "status": "active",
+      "finding": "Frame solicitado, frame aplicado e motivo ficam observáveis na sessão.",
+      "target": "Ampliar o mesmo feedback para ações compostas sem persistir estado transitório."
+    },
+    {
+      "id": "minimums",
+      "currentMechanisms": ["mínimo técnico", "recomendado", "recomendado personalizado", "mínimo recursivo"],
+      "status": "audit",
+      "finding": "Valores editáveis podem ser inalcançáveis após breakpoint ou reflow.",
+      "target": "Técnico derivado; recomendado orientativo; divergências explicitadas antes do commit."
+    },
+    {
+      "id": "semantic-presentation",
+      "currentMechanisms": ["template", "modo", "preset", "densidade", "estado responsivo", "override"],
+      "status": "audit",
+      "finding": "Conceitos distintos existem, mas suas opções se mesclam no inspetor.",
+      "target": "Exibir somente dimensões relevantes à tarefa e manter contratos semânticos separados."
+    },
+    {
+      "id": "separators",
+      "currentMechanisms": ["átomo de linha", "separador contextual por limiar", "separadores em lote"],
+      "status": "audit",
+      "finding": "O limiar 3× e a ação separada são específicos e pouco descobríveis.",
+      "target": "Linha continua editável; inserção entre irmãos vira opção do comando de espaçamento."
+    }
+  ],
+  "removalPolicy": [
+    "Definir primeiro o caminho canônico e seu resultado exclusivo.",
+    "Rebaixar ou retirar o caminho redundante da UI antes de remover seu contrato.",
+    "Continuar importando documentos antigos durante a janela de compatibilidade.",
+    "Parar de gerar campos depreciados quando houver migração segura.",
+    "Migrar testes do mecanismo antigo para o resultado e a intenção preservados."
+  ]
+}

@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light;
+
+  --color-brand-50: #fff1f1;
+  --color-brand-100: #ffd7d7;
+  --color-brand-500: #fd0807;
+  --color-brand-600: #d90909;
+  --color-brand-700: #b50000;
+
+  --color-ink-950: #0a0909;
+  --color-ink-800: #252525;
+  --color-ink-600: #626262;
+  --color-line-400: #b9bdc1;
+  --color-line-250: #d9dcdf;
+  --color-neutral-100: #f5f6f7;
+  --color-paper: #ffffff;
+  --color-canvas: #e7e9ec;
+
+  --color-surface-warm: #fff8e9;
+  --color-surface-cool: #f4f9fd;
+  --color-surface-lilac: #faf6ff;
+
+  --font-display: "Arial Narrow", "Nimbus Sans Narrow", "Liberation Sans Narrow", "DejaVu Sans Condensed", Arial, sans-serif;
+  --font-sans: Arial, "Liberation Sans", Helvetica, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --page-width: 794px;
+  --page-height: 1123px;
+  --page-grid: 4px;
+  --page-major-grid: 16px;
+  --editor-zoom: .7;
+
+  --shadow-panel: 0 1px 0 rgb(0 0 0 / 7%);
+  --shadow-page: 0 24px 80px rgb(0 0 0 / 18%);
+  --shadow-selection: 0 0 0 2px var(--color-brand-500), 0 8px 20px rgb(253 8 7 / 16%);
+}

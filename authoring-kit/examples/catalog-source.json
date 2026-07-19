@@ -1,0 +1,66 @@
+{
+  "sourceFormat": "CatalogSource",
+  "sourceVersion": "1.1.0",
+  "catalog": {
+    "id": "document-example",
+    "title": "Catálogo de exemplo"
+  },
+  "products": [
+    {
+      "id": "product-1176",
+      "label": "Parafuso oval PHS",
+      "values": {
+        "title": "PARAFUSO OVAL PHS",
+        "specOne": "Alta resistência",
+        "specTwo": "Aço cromado",
+        "code": "1176",
+        "package": "CX 1000 UNID.",
+        "price": "R$ 35,90",
+        "assetId": null
+      },
+      "sourceVersion": "1.1.0",
+      "attributes": [
+        {
+          "key": "material",
+          "label": "Material",
+          "value": "Aço cromado",
+          "unit": null,
+          "icon": null
+        },
+        {
+          "key": "medida",
+          "label": "Medida",
+          "value": "4,0×16",
+          "unit": "mm",
+          "icon": null
+        }
+      ],
+      "highlights": [
+        {
+          "key": "alta-resistencia",
+          "label": "Alta resistência",
+          "value": null,
+          "unit": null,
+          "icon": "shield-star"
+        }
+      ],
+      "applications": [
+        {
+          "key": "mdf",
+          "label": "MDF",
+          "value": null,
+          "unit": null,
+          "icon": "layers"
+        }
+      ],
+      "variants": [],
+      "assetRoles": {
+        "main": null,
+        "gallery": [],
+        "technical": [],
+        "application": []
+      }
+    }
+  ],
+  "legends": []
+}

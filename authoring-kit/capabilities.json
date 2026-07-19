@@ -1,0 +1,1848 @@
+{
+  "capabilities": {
+    "assetFormats": [
+      "image/svg+xml",
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ],
+    "assetMaxBytes": 26214400,
+    "batchAlignment": true,
+    "batchPresentation": true,
+    "batchSeparators": true,
+    "batchSpacing": true,
+    "catalogSourceDirectImport": true,
+    "contextualArtGallery": true,
+    "contextualInsertActions": true,
+    "contextualTableRows": true,
+    "draftPublicationGates": true,
+    "generationPlanCompiler": true,
+    "geometricPublicationGate": true,
+    "hierarchicalVisualLegends": true,
+    "jsonExport": true,
+    "jsonImport": true,
+    "linkedVariantRepresentations": true,
+    "manualBulkProductEntry": true,
+    "manualBulkTableEntry": true,
+    "manualProductCardBatch": true,
+    "multiSelection": true,
+    "multiplePages": false,
+    "officialSectionRecipes": true,
+    "oneClickInsertion": true,
+    "optionalLegendMaterialization": true,
+    "packageAssetPolicy": "assisted",
+    "printPdf": true,
+    "progressiveInspectorVocabulary": [
+      "content",
+      "layout",
+      "visual",
+      "advanced"
+    ],
+    "projectPackageExport": true,
+    "projectPackageImport": true,
+    "semanticCatalogSource": true,
+    "semanticColorLegends": true,
+    "semanticProductVariants": true,
+    "semanticTables": true,
+    "undoRedo": true
+  },
+  "components": [
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Elementos",
+      "container": null,
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Identificação",
+          "path": "label",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Descrição",
+          "path": "hint",
+          "type": "textarea"
+        },
+        {
+          "label": "Função",
+          "options": [
+            {
+              "label": "Arte genérica",
+              "value": "generic"
+            },
+            {
+              "label": "Logo",
+              "value": "logo"
+            },
+            {
+              "label": "Produto",
+              "value": "product"
+            },
+            {
+              "label": "Desenho técnico",
+              "value": "technical"
+            }
+          ],
+          "path": "role",
+          "type": "select"
+        },
+        {
+          "label": "Ajuste",
+          "path": "fit",
+          "tokenGroup": "artFits",
+          "type": "token-select"
+        },
+        {
+          "label": "Foco horizontal (%)",
+          "max": 100,
+          "min": 0,
+          "path": "focalX",
+          "step": 1,
+          "type": "number"
+        },
+        {
+          "label": "Foco vertical (%)",
+          "max": 100,
+          "min": 0,
+          "path": "focalY",
+          "step": 1,
+          "type": "number"
+        },
+        {
+          "label": "Cor de SVG",
+          "options": [
+            {
+              "label": "Cores originais",
+              "value": "original"
+            },
+            {
+              "label": "Token do componente",
+              "value": "token"
+            }
+          ],
+          "path": "vectorMode",
+          "type": "select"
+        },
+        {
+          "full": true,
+          "label": "Texto alternativo",
+          "path": "alt",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Legenda vinculada",
+          "path": "caption",
+          "type": "textarea"
+        },
+        {
+          "label": "Posição da legenda",
+          "options": [
+            {
+              "label": "Faixa inferior",
+              "value": "below"
+            },
+            {
+              "label": "Sobre a arte",
+              "value": "overlay"
+            }
+          ],
+          "path": "captionPosition",
+          "type": "select"
+        }
+      ],
+      "defaultFrame": {
+        "height": 160,
+        "width": 210
+      },
+      "description": "Imagem, SVG, render ou logotipo reutilizável da biblioteca.",
+      "gridUnit": 2,
+      "icon": "art",
+      "label": "Arte / logo",
+      "minimum": {
+        "height": 60,
+        "width": 80
+      },
+      "recommendedMinimum": {
+        "height": 160,
+        "width": 210
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "vectorColor",
+        "textColor"
+      ],
+      "type": "art"
+    },
+    {
+      "capabilities": {
+        "autoLayout": true,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "art"
+        ],
+        "label": "Imagens da galeria",
+        "slots": []
+      },
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Identificação",
+          "path": "label",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 150,
+        "width": 260
+      },
+      "description": "Composição ordenável com uma legenda vinculada a cada imagem.",
+      "gridUnit": 2,
+      "icon": "art",
+      "label": "Galeria de imagens",
+      "minimum": {
+        "height": 96,
+        "width": 150
+      },
+      "recommendedMinimum": {
+        "height": 150,
+        "width": 260
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor"
+      ],
+      "type": "art-gallery"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "footer-item",
+          "text",
+          "icon"
+        ],
+        "label": "Itens do rodapé",
+        "slots": [
+          {
+            "accepts": [
+              "footer-item",
+              "text",
+              "icon"
+            ],
+            "capacity": 8,
+            "label": "Itens do rodapé",
+            "name": "items",
+            "optional": false
+          }
+        ]
+      },
+      "contentFields": [],
+      "defaultFrame": {
+        "height": 100,
+        "width": 746
+      },
+      "description": "Contatos, benefícios e identificação da página.",
+      "gridUnit": 4,
+      "icon": "footer",
+      "label": "Rodapé",
+      "minimum": {
+        "height": 80,
+        "width": 500
+      },
+      "recommendedMinimum": {
+        "height": 100,
+        "width": 746
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "vectorColor",
+        "textColor"
+      ],
+      "type": "catalog-footer"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "art",
+          "icon",
+          "text",
+          "title-symbol",
+          "separator"
+        ],
+        "label": "Conteúdo do cabeçalho",
+        "slots": [
+          {
+            "accepts": [
+              "separator"
+            ],
+            "capacity": 1,
+            "label": "Linha editorial",
+            "name": "rule",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "separator"
+            ],
+            "capacity": 1,
+            "label": "Divisor vertical",
+            "name": "divider",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "art",
+              "icon"
+            ],
+            "capacity": 1,
+            "label": "Logo",
+            "name": "logo",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "text"
+            ],
+            "capacity": 1,
+            "label": "Sobretítulo",
+            "name": "kicker",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "text",
+              "title-symbol"
+            ],
+            "capacity": 1,
+            "label": "Título principal",
+            "name": "title",
+            "optional": false
+          }
+        ]
+      },
+      "contentFields": [],
+      "defaultFrame": {
+        "height": 150,
+        "width": 730
+      },
+      "description": "Logo, sobretítulo, título e linha editorial.",
+      "gridUnit": 4,
+      "icon": "header",
+      "label": "Cabeçalho",
+      "minimum": {
+        "height": 110,
+        "width": 420
+      },
+      "recommendedMinimum": {
+        "height": 150,
+        "width": 730
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "catalog-header"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": null,
+      "contentFields": [],
+      "defaultFrame": {
+        "height": 48,
+        "width": 300
+      },
+      "description": "Colunas semânticas, valores e legendas por célula.",
+      "gridUnit": 2,
+      "icon": "card",
+      "label": "Tabela de dados",
+      "minimum": {
+        "height": 32,
+        "width": 180
+      },
+      "recommendedMinimum": {
+        "height": 48,
+        "width": 300
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "data-table"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": {
+        "accepts": [
+          "icon",
+          "text"
+        ],
+        "label": "Conteúdo do item de rodapé",
+        "slots": [
+          {
+            "accepts": [
+              "icon"
+            ],
+            "capacity": 1,
+            "label": "Ícone",
+            "name": "icon",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "text"
+            ],
+            "capacity": 1,
+            "label": "Título",
+            "name": "title",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "text"
+            ],
+            "capacity": 1,
+            "label": "Complemento",
+            "name": "subtitle",
+            "optional": false
+          }
+        ]
+      },
+      "contentFields": [],
+      "defaultFrame": {
+        "height": 96,
+        "width": 112
+      },
+      "description": "Molécula composta por átomos editáveis de ícone e texto.",
+      "gridUnit": 1,
+      "icon": "footer",
+      "label": "Item do rodapé",
+      "minimum": {
+        "height": 64,
+        "width": 80
+      },
+      "recommendedMinimum": {
+        "height": 96,
+        "width": 112
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius"
+      ],
+      "type": "footer-item"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Elementos",
+      "container": null,
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Ícone",
+          "path": "icon",
+          "type": "icon-select"
+        },
+        {
+          "full": true,
+          "label": "Legenda",
+          "path": "label",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 56,
+        "width": 56
+      },
+      "description": "Átomo SVG com grid mínimo de 1 px.",
+      "gridUnit": 1,
+      "icon": "shield-star",
+      "label": "Ícone",
+      "minimum": {
+        "height": 24,
+        "width": 24
+      },
+      "recommendedMinimum": {
+        "height": 56,
+        "width": 56
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "vectorColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "icon"
+    },
+    {
+      "capabilities": {
+        "autoLayout": true,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "layout-container",
+          "art-gallery",
+          "legend-panel",
+          "catalog-header",
+          "product-card",
+          "catalog-footer",
+          "art",
+          "icon",
+          "text",
+          "title-symbol",
+          "specification",
+          "data-table",
+          "separator"
+        ],
+        "label": "Área de composição",
+        "slots": []
+      },
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Identificação",
+          "path": "label",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 300,
+        "width": 360
+      },
+      "description": "Canvas interno com layout livre, linha, coluna ou grade.",
+      "gridUnit": 4,
+      "icon": "page",
+      "label": "Área de composição",
+      "minimum": {
+        "height": 120,
+        "width": 160
+      },
+      "recommendedMinimum": {
+        "height": 300,
+        "width": 360
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor"
+      ],
+      "type": "layout-container"
+    },
+    {
+      "capabilities": {
+        "autoLayout": true,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": {
+        "accepts": [
+          "legend-item"
+        ],
+        "label": "Itens da legenda",
+        "slots": []
+      },
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Nome do grupo",
+          "path": "label",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Chave do grupo",
+          "path": "groupId",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Destacar grupo",
+          "path": "emphasized",
+          "type": "checkbox"
+        }
+      ],
+      "defaultFrame": {
+        "height": 54,
+        "width": 320
+      },
+      "description": "Subgrupo ordenável e destacável de itens de legenda.",
+      "gridUnit": 2,
+      "icon": "layers",
+      "label": "Grupo de legenda",
+      "minimum": {
+        "height": 38,
+        "width": 140
+      },
+      "recommendedMinimum": {
+        "height": 54,
+        "width": 320
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "legend-group"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": null,
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Chave vinculada",
+          "path": "legendKey",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Rótulo local opcional",
+          "path": "labelOverride",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 30,
+        "width": 96
+      },
+      "description": "Representação visual vinculada a uma definição por legendKey.",
+      "gridUnit": 2,
+      "icon": "layers",
+      "label": "Item de legenda",
+      "minimum": {
+        "height": 24,
+        "width": 72
+      },
+      "recommendedMinimum": {
+        "height": 30,
+        "width": 96
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "textColor",
+        "typography"
+      ],
+      "type": "legend-item"
+    },
+    {
+      "capabilities": {
+        "autoLayout": true,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "legend-group",
+          "legend-item"
+        ],
+        "label": "Grupos da legenda",
+        "slots": []
+      },
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Título",
+          "path": "label",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 92,
+        "width": 360
+      },
+      "description": "Contêiner visual de grupos e itens vinculados a definições semânticas.",
+      "gridUnit": 2,
+      "icon": "layers",
+      "label": "Painel de legenda",
+      "minimum": {
+        "height": 54,
+        "width": 180
+      },
+      "recommendedMinimum": {
+        "height": 92,
+        "width": 360
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "legend-panel"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": true,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Estruturas",
+      "container": {
+        "accepts": [
+          "title-symbol",
+          "art",
+          "art-gallery",
+          "specification",
+          "data-table",
+          "text",
+          "icon"
+        ],
+        "label": "Conteúdo do card",
+        "slots": [
+          {
+            "accepts": [
+              "title-symbol",
+              "text"
+            ],
+            "capacity": 1,
+            "label": "Título",
+            "name": "title",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "art",
+              "art-gallery"
+            ],
+            "capacity": 1,
+            "label": "Arte",
+            "name": "art",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "specification",
+              "text",
+              "icon"
+            ],
+            "capacity": 4,
+            "label": "Especificações",
+            "name": "specifications",
+            "optional": false
+          },
+          {
+            "accepts": [
+              "data-table",
+              "text"
+            ],
+            "capacity": 1,
+            "label": "Tabela",
+            "name": "table",
+            "optional": false
+          }
+        ]
+      },
+      "contentFields": [],
+      "defaultFrame": {
+        "height": 260,
+        "width": 350
+      },
+      "description": "Contêiner com slots internos editáveis.",
+      "gridUnit": 4,
+      "icon": "card",
+      "label": "Card de produto",
+      "minimum": {
+        "height": 190,
+        "width": 220
+      },
+      "recommendedMinimum": {
+        "height": 220,
+        "width": 270
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor"
+      ],
+      "type": "product-card"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Elementos",
+      "container": null,
+      "contentFields": [
+        {
+          "label": "Preset",
+          "options": [
+            {
+              "label": "Discreta",
+              "value": "subtle"
+            },
+            {
+              "label": "Padrão",
+              "value": "standard"
+            },
+            {
+              "label": "Destaque",
+              "value": "emphasis"
+            },
+            {
+              "label": "Bolinha sólida",
+              "value": "solid-dot"
+            },
+            {
+              "label": "Bolinha contorno",
+              "value": "outline-dot"
+            }
+          ],
+          "path": "presetId",
+          "type": "select"
+        },
+        {
+          "label": "Orientação",
+          "options": [
+            {
+              "label": "Horizontal",
+              "value": "horizontal"
+            },
+            {
+              "label": "Vertical",
+              "value": "vertical"
+            }
+          ],
+          "path": "orientation",
+          "type": "select"
+        },
+        {
+          "label": "Ponta",
+          "options": [
+            {
+              "label": "Reta",
+              "value": "square"
+            },
+            {
+              "label": "Arredondada",
+              "value": "round"
+            }
+          ],
+          "path": "cap",
+          "type": "select"
+        },
+        {
+          "label": "Marcador",
+          "options": [
+            {
+              "label": "Nenhum",
+              "value": "none"
+            },
+            {
+              "label": "Bolinha sólida",
+              "value": "solid"
+            },
+            {
+              "label": "Bolinha contorno",
+              "value": "outline"
+            }
+          ],
+          "path": "marker",
+          "type": "select"
+        },
+        {
+          "label": "Espessura",
+          "max": 8,
+          "min": 2,
+          "path": "thickness",
+          "step": 1,
+          "type": "number"
+        }
+      ],
+      "defaultFrame": {
+        "height": 8,
+        "width": 220
+      },
+      "description": "Átomo de linha horizontal ou vertical com terminação editorial.",
+      "gridUnit": 4,
+      "icon": "minus",
+      "label": "Linha separadora",
+      "minimum": {
+        "height": 8,
+        "width": 8
+      },
+      "recommendedMinimum": {
+        "height": 8,
+        "width": 220
+      },
+      "styleFields": [
+        "accentColor"
+      ],
+      "type": "separator"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": null,
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Ícone",
+          "path": "icon",
+          "type": "icon-select"
+        },
+        {
+          "full": true,
+          "label": "Especificação",
+          "path": "label",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 38,
+        "width": 130
+      },
+      "description": "Ícone e informação técnica curta.",
+      "gridUnit": 1,
+      "icon": "shield-star",
+      "label": "Especificação",
+      "minimum": {
+        "height": 28,
+        "width": 82
+      },
+      "recommendedMinimum": {
+        "height": 38,
+        "width": 130
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "vectorColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "specification"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Elementos",
+      "container": null,
+      "contentFields": [
+        {
+          "full": true,
+          "label": "Conteúdo",
+          "path": "content",
+          "type": "textarea"
+        }
+      ],
+      "defaultFrame": {
+        "height": 80,
+        "width": 260
+      },
+      "description": "Bloco de texto com estilo tipográfico da biblioteca.",
+      "gridUnit": 2,
+      "icon": "text",
+      "label": "Texto",
+      "minimum": {
+        "height": 34,
+        "width": 80
+      },
+      "recommendedMinimum": {
+        "height": 80,
+        "width": 260
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "textColor",
+        "typography"
+      ],
+      "type": "text"
+    },
+    {
+      "capabilities": {
+        "autoLayout": false,
+        "container": false,
+        "hasRecommendedMinimum": true,
+        "repeatableChildren": false,
+        "supportsDuplicate": true,
+        "supportsSnapshot": true
+      },
+      "category": "Peças internas",
+      "container": null,
+      "contentFields": [
+        {
+          "label": "Número",
+          "path": "number",
+          "type": "text"
+        },
+        {
+          "full": true,
+          "label": "Título",
+          "path": "title",
+          "type": "text"
+        }
+      ],
+      "defaultFrame": {
+        "height": 38,
+        "width": 260
+      },
+      "description": "Número ou símbolo seguido de título editorial.",
+      "gridUnit": 2,
+      "icon": "text",
+      "label": "Título com símbolo",
+      "minimum": {
+        "height": 32,
+        "width": 140
+      },
+      "recommendedMinimum": {
+        "height": 38,
+        "width": 260
+      },
+      "styleFields": [
+        "surface",
+        "border",
+        "radius",
+        "accentColor",
+        "textColor",
+        "typography"
+      ],
+      "type": "title-symbol"
+    }
+  ],
+  "document": {
+    "editorSessionRequired": false,
+    "logicalSize": {
+      "height": 1123,
+      "unit": "px",
+      "width": 794
+    },
+    "pagePreset": "A4"
+  },
+  "editor": {
+    "increment": "05.14",
+    "name": "Catálogo V1",
+    "schemaVersion": "1.16.0"
+  },
+  "icons": [
+    {
+      "category": "Aplicações",
+      "id": "application",
+      "label": "Aplicação genérica",
+      "svgBody": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"14\" rx=\"2\"/><path d=\"M8 9h8M8 13h8\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "award",
+      "label": "Qualidade",
+      "svgBody": "<circle cx=\"12\" cy=\"9\" r=\"5\"/><path d=\"m8.5 13-1 8 4.5-2 4.5 2-1-8\"/><path d=\"m12 6.2.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.3.8-1.6Z\"/>"
+    },
+    {
+      "category": "Catálogo",
+      "id": "box",
+      "label": "Embalagem",
+      "svgBody": "<path d=\"m4 7 8-4 8 4-8 4-8-4Z\"/><path d=\"M4 7v10l8 4 8-4V7M12 11v10\"/>"
+    },
+    {
+      "category": "Comunicação",
+      "id": "bulb",
+      "label": "Dica",
+      "svgBody": "<path d=\"M9 18h6M10 22h4M8 15c-1.6-1.2-3-3-3-6a7 7 0 0 1 14 0c0 3-1.4 4.8-3 6-.7.5-1 1.2-1 2H9c0-.8-.3-1.5-1-2Z\"/><path d=\"M12 2V0M4.8 4.8 3.3 3.3M19.2 4.8l1.5-1.5\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "cabinet",
+      "label": "Armários",
+      "svgBody": "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"1.5\"/><path d=\"M12 4v16M7.5 12h1M15.5 12h1\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "calendar",
+      "label": "Data de atualização",
+      "svgBody": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"1.5\"/><path d=\"M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 18h2M14 18h2\"/>"
+    },
+    {
+      "category": "Especificações",
+      "id": "check-circle",
+      "label": "Fácil instalação",
+      "svgBody": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m8 12 2.5 2.5L16.5 9\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "hanger",
+      "label": "Closets",
+      "svgBody": "<path d=\"M10 7.2a2.2 2.2 0 1 1 3.4 1.8L12 10.2\"/><path d=\"m12 10.2 8 6.3c.8.6.4 2-1 2H5c-1.4 0-1.8-1.4-1-2l8-6.3Z\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "headset",
+      "label": "Atendimento",
+      "svgBody": "<path d=\"M4 13v-2a8 8 0 0 1 16 0v2\"/><path d=\"M4 13h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2ZM20 13h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2ZM17 19c0 2-2 3-5 3\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "kitchen",
+      "label": "Cozinhas",
+      "svgBody": "<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"1.5\"/><path d=\"M3 12h18M9 12v8M15 12v8M7 4v3M12 3v4M17 4v3\"/><circle cx=\"6\" cy=\"9.5\" r=\".7\"/><circle cx=\"18\" cy=\"9.5\" r=\".7\"/>"
+    },
+    {
+      "category": "Materiais",
+      "id": "layers",
+      "label": "Camadas / chapas",
+      "svgBody": "<path d=\"m12 3 9 5-9 5-9-5 9-5Z\"/><path d=\"m3 12 9 5 9-5\"/><path d=\"m3 16 9 5 9-5\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "location",
+      "label": "Localização",
+      "svgBody": "<path d=\"M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "niche",
+      "label": "Nichos",
+      "svgBody": "<path d=\"m4 8 8-5 8 5v12H4V8Z\"/><path d=\"M9 20v-7h6v7\"/>"
+    },
+    {
+      "category": "Catálogo",
+      "id": "palette",
+      "label": "Variações de cor",
+      "svgBody": "<path d=\"M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h3a6 6 0 0 0 0-12h-3Z\"/><circle cx=\"7.5\" cy=\"9\" r=\".8\"/><circle cx=\"10\" cy=\"6\" r=\".8\"/><circle cx=\"14\" cy=\"6\" r=\".8\"/><circle cx=\"17\" cy=\"9\" r=\".8\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "panel",
+      "label": "Painéis",
+      "svgBody": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"1.5\"/><path d=\"M7 4v16M12 4v16M17 4v16\"/>"
+    },
+    {
+      "category": "Especificações",
+      "id": "phillips",
+      "label": "Encaixe Philips",
+      "svgBody": "<path d=\"M9.4 3.5h5.2v5.9h5.9v5.2h-5.9v5.9H9.4v-5.9H3.5V9.4h5.9V3.5Z\"/>"
+    },
+    {
+      "category": "Catálogo",
+      "id": "ruler",
+      "label": "Medida",
+      "svgBody": "<path d=\"m4 17 13-13 3 3L7 20H4v-3Z\"/><path d=\"m12 9 3 3M9.5 11.5l1.5 1.5M14.5 6.5 16 8\"/>"
+    },
+    {
+      "category": "Catálogo",
+      "id": "screw",
+      "label": "Parafuso",
+      "svgBody": "<path d=\"M5 19 17.5 6.5M7 21l-4-4 2-2 4 4-2 2ZM15 5l4 4M13.5 7.5l4 4M10 12l2 2M7.5 14.5l2 2\"/><path d=\"m17.5 6.5 1-3.5L22 2l-1 3.5-3.5 1Z\"/>"
+    },
+    {
+      "category": "Aplicações",
+      "id": "shelf",
+      "label": "Prateleiras suspensas",
+      "svgBody": "<path d=\"M3 17h18M5 14h14v3H5zM7 6v8M17 6v8M5 6h4M15 6h4\"/>"
+    },
+    {
+      "category": "Especificações",
+      "id": "shield-star",
+      "label": "Proteção / qualidade",
+      "svgBody": "<path d=\"M12 2.5 20 5.6v5.7c0 4.8-3.4 8-8 10.7-4.6-2.7-8-5.9-8-10.7V5.6L12 2.5Z\"/><path d=\"m12 7.3 1.2 2.4 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4L12 7.3Z\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "stock",
+      "label": "Estoque",
+      "svgBody": "<path d=\"M4 7h16v13H4z\"/><path d=\"M8 7V4h8v3M8 11h8M12 11v6\"/>"
+    },
+    {
+      "category": "Catálogo",
+      "id": "tag",
+      "label": "Preço / etiqueta",
+      "svgBody": "<path d=\"M3 11V4h7l11 11-6 6L4 10Z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1\"/>"
+    },
+    {
+      "category": "Especificações",
+      "id": "target",
+      "label": "Área de apoio / alvo",
+      "svgBody": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M2 12h3M19 12h3\"/>"
+    },
+    {
+      "category": "Especificações",
+      "id": "thumb-up",
+      "label": "Alta resistência",
+      "svgBody": "<path d=\"M7 10v10H4V10h3Zm0 9h9.2a2 2 0 0 0 1.9-1.4l1.8-5.5A2 2 0 0 0 18 9h-4l.6-3A2.5 2.5 0 0 0 12.2 3L7 10\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "truck",
+      "label": "Entrega rápida",
+      "svgBody": "<path d=\"M3 6h11v10H3zM14 9h4l3 3v4h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><path d=\"M3 10H1M5 13H2\"/>"
+    },
+    {
+      "category": "Rodapé",
+      "id": "whatsapp",
+      "label": "Atendimento por mensagem",
+      "svgBody": "<path d=\"M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7A8.5 8.5 0 1 1 20.5 11.6Z\"/><path d=\"M8.3 7.5c.5 3.9 3.2 6.5 7 7.1M8.4 7.6l1.6-.7 1.2 2.4-1.1.9M15.2 14.6l.8-1.2 2.3 1.3-.6 1.6\"/>"
+    },
+    {
+      "category": "Materiais",
+      "id": "wood",
+      "label": "Madeira maciça",
+      "svgBody": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M7 16c3-1 3-7 7-8M8 8c2 1 3 3 4 5M14 14c1 0 2 .5 3 2\"/><path d=\"M6.5 11.5c1.5.2 2.6.8 3.4 1.8\"/>"
+    }
+  ],
+  "manifestType": "CatalogCapabilities",
+  "manifestVersion": "1.0.0",
+  "presentations": {
+    "densities": {
+      "comfortable": {
+        "fontScale": 1.08,
+        "gap": 14,
+        "iconScale": 1.12,
+        "label": "Confortável",
+        "padding": 16
+      },
+      "compact": {
+        "fontScale": 0.88,
+        "gap": 6,
+        "iconScale": 0.9,
+        "label": "Compacta",
+        "padding": 8
+      },
+      "standard": {
+        "fontScale": 1,
+        "gap": 10,
+        "iconScale": 1,
+        "label": "Padrão",
+        "padding": 12
+      }
+    },
+    "manifestVersion": "1.0.0",
+    "modes": {
+      "data-only": {
+        "description": "Prioriza tabela e conteúdo textual.",
+        "label": "Dados"
+      },
+      "hero": {
+        "description": "Prioriza a imagem principal e o título.",
+        "label": "Destaque"
+      },
+      "standard": {
+        "description": "Equilibra imagem, atributos e tabela.",
+        "label": "Padrão"
+      },
+      "technical": {
+        "description": "Prioriza desenho, medidas e dados.",
+        "label": "Técnico"
+      },
+      "variants": {
+        "description": "Prioriza múltiplas imagens e legendas.",
+        "label": "Variações"
+      }
+    },
+    "presets": {
+      "product-hero": {
+        "assetRequirements": [
+          {
+            "acceptedStates": [
+              "publish-ready"
+            ],
+            "fallback": "request-or-generate",
+            "required": true,
+            "role": "product-main"
+          }
+        ],
+        "density": "comfortable",
+        "id": "product-hero",
+        "label": "Produto em destaque",
+        "mode": "hero",
+        "rootType": "product-card",
+        "version": "1.0.0"
+      },
+      "product-standard": {
+        "assetRequirements": [
+          {
+            "acceptedStates": [
+              "publish-ready",
+              "review-required"
+            ],
+            "fallback": "component-placeholder",
+            "required": false,
+            "role": "product-main"
+          }
+        ],
+        "density": "standard",
+        "id": "product-standard",
+        "label": "Produto padrão",
+        "mode": "standard",
+        "rootType": "product-card",
+        "version": "1.0.0"
+      },
+      "product-technical": {
+        "assetRequirements": [
+          {
+            "acceptedStates": [
+              "publish-ready",
+              "review-required"
+            ],
+            "fallback": "data-only",
+            "required": true,
+            "role": "technical"
+          }
+        ],
+        "density": "compact",
+        "id": "product-technical",
+        "label": "Ficha técnica",
+        "mode": "technical",
+        "rootType": "product-card",
+        "version": "1.0.0"
+      },
+      "product-variants": {
+        "assetRequirements": [
+          {
+            "acceptedStates": [
+              "publish-ready",
+              "review-required"
+            ],
+            "fallback": "product-standard",
+            "minimum": 2,
+            "required": true,
+            "role": "product-gallery"
+          }
+        ],
+        "density": "compact",
+        "id": "product-variants",
+        "label": "Variações",
+        "mode": "variants",
+        "rootType": "product-card",
+        "version": "1.0.0"
+      }
+    }
+  },
+  "recipes": [
+    {
+      "contexts": [
+        "page"
+      ],
+      "description": "Cabeçalho, conteúdo principal e rodapé prontos para preencher.",
+      "focusRole": "primary-content",
+      "id": "page-catalog-base",
+      "label": "Página de catálogo",
+      "rootType": "layout-container",
+      "version": "1.0.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Três aplicações com ícones e textos editáveis.",
+      "focusRole": null,
+      "id": "section-applications",
+      "label": "Faixa de aplicações",
+      "rootType": "layout-container",
+      "version": "1.0.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Faixa cromática pronta para adaptar às embalagens do projeto.",
+      "focusRole": null,
+      "id": "section-packaging-legend",
+      "label": "Legenda de embalagens",
+      "rootType": "layout-container",
+      "version": "1.0.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Ícone, título e texto em uma composição editável.",
+      "focusRole": null,
+      "id": "section-tip-callout",
+      "label": "Chamada de dica",
+      "rootType": "layout-container",
+      "version": "1.0.0"
+    }
+  ],
+  "separatorPresets": [
+    {
+      "cap": "round",
+      "id": "subtle",
+      "label": "Discreta",
+      "marker": "none",
+      "thickness": 2
+    },
+    {
+      "cap": "square",
+      "id": "standard",
+      "label": "Padrão",
+      "marker": "none",
+      "thickness": 2
+    },
+    {
+      "cap": "round",
+      "id": "emphasis",
+      "label": "Destaque",
+      "marker": "none",
+      "thickness": 4
+    },
+    {
+      "cap": "round",
+      "id": "solid-dot",
+      "label": "Bolinha sólida",
+      "marker": "solid",
+      "thickness": 2
+    },
+    {
+      "cap": "round",
+      "id": "outline-dot",
+      "label": "Bolinha contorno",
+      "marker": "outline",
+      "thickness": 2
+    }
+  ],
+  "templates": [],
+  "tokens": {
+    "artFits": {
+      "contain": {
+        "label": "Conter"
+      },
+      "cover": {
+        "label": "Preencher"
+      },
+      "original": {
+        "label": "Tamanho original"
+      }
+    },
+    "borders": {
+      "border.brand": {
+        "colorToken": "brand.primary",
+        "label": "Borda da marca",
+        "width": 2
+      },
+      "border.default": {
+        "colorToken": "line.default",
+        "label": "Borda neutra",
+        "width": 1
+      },
+      "border.none": {
+        "colorToken": "line.default",
+        "label": "Sem borda",
+        "width": 0
+      },
+      "border.strong": {
+        "colorToken": "line.strong",
+        "label": "Borda forte",
+        "width": 1
+      }
+    },
+    "colors": {
+      "brand.dark": {
+        "group": "Marca",
+        "label": "Vermelho escuro",
+        "value": "#b50000"
+      },
+      "brand.deep": {
+        "group": "Marca",
+        "label": "Vermelho profundo",
+        "value": "#d90909"
+      },
+      "brand.light": {
+        "group": "Marca",
+        "label": "Vermelho claro",
+        "value": "#ffd7d7"
+      },
+      "brand.primary": {
+        "group": "Marca",
+        "label": "Vermelho Top Mobili",
+        "value": "#fd0807"
+      },
+      "brand.soft": {
+        "group": "Marca",
+        "label": "Vermelho suave",
+        "value": "#fff1f1"
+      },
+      "line.default": {
+        "group": "Bordas",
+        "label": "Divisória",
+        "value": "#d9dcdf"
+      },
+      "line.strong": {
+        "group": "Bordas",
+        "label": "Divisória forte",
+        "value": "#b9bdc1"
+      },
+      "pack.100": {
+        "group": "Embalagens",
+        "label": "CX 100",
+        "value": "#c7efb7"
+      },
+      "pack.1000": {
+        "group": "Embalagens",
+        "label": "CX 1000",
+        "value": "#e9e9e9"
+      },
+      "pack.150": {
+        "group": "Embalagens",
+        "label": "CX 150",
+        "value": "#b9e8a4"
+      },
+      "pack.200": {
+        "group": "Embalagens",
+        "label": "CX 200",
+        "value": "#b9dfff"
+      },
+      "pack.250": {
+        "group": "Embalagens",
+        "label": "CX 250",
+        "value": "#ffd79a"
+      },
+      "pack.300": {
+        "group": "Embalagens",
+        "label": "CX 300",
+        "value": "#fff0b8"
+      },
+      "pack.500": {
+        "group": "Embalagens",
+        "label": "CX 500",
+        "value": "#f0f0f0"
+      },
+      "pack.pct": {
+        "group": "Embalagens",
+        "label": "PCT",
+        "value": "#dcbaf4"
+      },
+      "paper": {
+        "group": "Superfícies",
+        "label": "Papel",
+        "value": "#ffffff"
+      },
+      "surface.cool": {
+        "group": "Superfícies",
+        "label": "Card frio",
+        "value": "#f4f9fd"
+      },
+      "surface.lilac": {
+        "group": "Superfícies",
+        "label": "Card lilás",
+        "value": "#faf6ff"
+      },
+      "surface.neutral": {
+        "group": "Superfícies",
+        "label": "Fundo neutro",
+        "value": "#f5f6f7"
+      },
+      "surface.warm": {
+        "group": "Superfícies",
+        "label": "Card quente",
+        "value": "#fff8e9"
+      },
+      "text.muted": {
+        "group": "Texto",
+        "label": "Texto secundário",
+        "value": "#626262"
+      },
+      "text.primary": {
+        "group": "Texto",
+        "label": "Preto editorial",
+        "value": "#0a0909"
+      },
+      "text.strong": {
+        "group": "Texto",
+        "label": "Texto forte",
+        "value": "#252525"
+      }
+    },
+    "meta": {
+      "name": "Top Mobili — Catálogo V1",
+      "version": "2.0.0-alpha.3"
+    },
+    "radii": {
+      "radius.large": {
+        "label": "Grande · 12 px",
+        "value": "12px"
+      },
+      "radius.medium": {
+        "label": "Médio · 8 px",
+        "value": "8px"
+      },
+      "radius.none": {
+        "label": "Sem arredondamento",
+        "value": "0px"
+      },
+      "radius.pill": {
+        "label": "Pílula",
+        "value": "999px"
+      },
+      "radius.small": {
+        "label": "Pequeno · 4 px",
+        "value": "4px"
+      }
+    },
+    "surfaces": {
+      "surface.cool": {
+        "colorToken": "surface.cool",
+        "label": "Frio suave"
+      },
+      "surface.lilac": {
+        "colorToken": "surface.lilac",
+        "label": "Lilás suave"
+      },
+      "surface.neutral": {
+        "colorToken": "surface.neutral",
+        "label": "Neutro claro"
+      },
+      "surface.pack-100": {
+        "colorToken": "pack.100",
+        "label": "Embalagem CX 100"
+      },
+      "surface.pack-1000": {
+        "colorToken": "pack.1000",
+        "label": "Embalagem CX 1000"
+      },
+      "surface.pack-150": {
+        "colorToken": "pack.150",
+        "label": "Embalagem CX 150"
+      },
+      "surface.pack-200": {
+        "colorToken": "pack.200",
+        "label": "Embalagem CX 200"
+      },
+      "surface.pack-250": {
+        "colorToken": "pack.250",
+        "label": "Embalagem CX 250"
+      },
+      "surface.pack-300": {
+        "colorToken": "pack.300",
+        "label": "Embalagem CX 300"
+      },
+      "surface.pack-pct": {
+        "colorToken": "pack.pct",
+        "label": "Embalagem PCT"
+      },
+      "surface.paper": {
+        "colorToken": "paper",
+        "label": "Papel branco"
+      },
+      "surface.warm": {
+        "colorToken": "surface.warm",
+        "label": "Quente suave"
+      }
+    },
+    "typography": {
+      "type.body": {
+        "family": "var(--font-sans)",
+        "label": "Texto corrido",
+        "letterSpacing": "0",
+        "lineHeight": 1.38,
+        "size": "14px",
+        "transform": "none",
+        "weight": 400
+      },
+      "type.caption": {
+        "family": "var(--font-sans)",
+        "label": "Legenda",
+        "letterSpacing": ".01em",
+        "lineHeight": 1.3,
+        "size": "10px",
+        "transform": "none",
+        "weight": 600
+      },
+      "type.card-title": {
+        "family": "var(--font-display)",
+        "label": "Título de card",
+        "letterSpacing": "-.01em",
+        "lineHeight": 1,
+        "size": "18px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.display": {
+        "family": "var(--font-display)",
+        "label": "Título principal",
+        "letterSpacing": "-.03em",
+        "lineHeight": 0.95,
+        "size": "34px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.kicker": {
+        "family": "var(--font-sans)",
+        "label": "Sobretítulo espaçado",
+        "letterSpacing": ".42em",
+        "lineHeight": 1.1,
+        "size": "11px",
+        "transform": "uppercase",
+        "weight": 700
+      },
+      "type.label": {
+        "family": "var(--font-display)",
+        "label": "Rótulo técnico",
+        "letterSpacing": "0",
+        "lineHeight": 1.1,
+        "size": "11px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.price": {
+        "family": "var(--font-display)",
+        "label": "Preço em destaque",
+        "letterSpacing": "-.01em",
+        "lineHeight": 1,
+        "size": "19px",
+        "transform": "none",
+        "weight": 900
+      },
+      "type.section": {
+        "family": "var(--font-display)",
+        "label": "Título de seção grande",
+        "letterSpacing": "-.015em",
+        "lineHeight": 1,
+        "size": "22px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.table-head": {
+        "family": "var(--font-display)",
+        "label": "Cabeçalho de tabela",
+        "letterSpacing": ".01em",
+        "lineHeight": 1.1,
+        "size": "10px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.table-value": {
+        "family": "var(--font-display)",
+        "label": "Valor de tabela",
+        "letterSpacing": "0",
+        "lineHeight": 1.15,
+        "size": "12px",
+        "transform": "none",
+        "weight": 800
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://topmobili.local/schemas/catalog-capabilities.schema.json",
+  "title": "CatalogCapabilities",
+  "type": "object",
+  "required": ["manifestType", "manifestVersion", "editor", "document", "components", "templates", "presentations", "tokens", "icons", "capabilities"],
+  "properties": {
+    "manifestType": { "const": "CatalogCapabilities" },
+    "manifestVersion": { "const": "1.0.0" },
+    "editor": { "type": "object", "required": ["name", "increment", "schemaVersion"] },
+    "document": { "type": "object", "required": ["pagePreset", "logicalSize", "editorSessionRequired"] },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "label", "category", "minimum", "defaultFrame", "contentFields", "styleFields", "capabilities", "container"]
+      }
+    },
+    "templates": { "type": "array" },
+    "recipes": { "type": "array" },
+    "separatorPresets": { "type": "array" },
+    "presentations": { "type": "object" },
+    "tokens": { "type": "object" },
+    "icons": {
+      "type": "array",
+      "items": { "type": "object", "required": ["id", "label", "category", "svgBody"] }
+    },
+    "capabilities": { "type": "object" }
+  },
+  "additionalProperties": true
+}

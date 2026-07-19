@@ -1,0 +1,137 @@
+window.CATALOG_ICON_LIBRARY = {
+  "layers": {
+    "label": "Camadas / chapas",
+    "category": "Materiais",
+    "body": "<path d=\"m12 3 9 5-9 5-9-5 9-5Z\"/><path d=\"m3 12 9 5 9-5\"/><path d=\"m3 16 9 5 9-5\"/>"
+  },
+  "shield-star": {
+    "label": "Proteção / qualidade",
+    "category": "Especificações",
+    "body": "<path d=\"M12 2.5 20 5.6v5.7c0 4.8-3.4 8-8 10.7-4.6-2.7-8-5.9-8-10.7V5.6L12 2.5Z\"/><path d=\"m12 7.3 1.2 2.4 2.7.4-2 1.9.5 2.7-2.4-1.3-2.4 1.3.5-2.7-2-1.9 2.7-.4L12 7.3Z\"/>"
+  },
+  "phillips": {
+    "label": "Encaixe Philips",
+    "category": "Especificações",
+    "body": "<path d=\"M9.4 3.5h5.2v5.9h5.9v5.2h-5.9v5.9H9.4v-5.9H3.5V9.4h5.9V3.5Z\"/>"
+  },
+  "target": {
+    "label": "Área de apoio / alvo",
+    "category": "Especificações",
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M2 12h3M19 12h3\"/>"
+  },
+  "wood": {
+    "label": "Madeira maciça",
+    "category": "Materiais",
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M7 16c3-1 3-7 7-8M8 8c2 1 3 3 4 5M14 14c1 0 2 .5 3 2\"/><path d=\"M6.5 11.5c1.5.2 2.6.8 3.4 1.8\"/>"
+  },
+  "thumb-up": {
+    "label": "Alta resistência",
+    "category": "Especificações",
+    "body": "<path d=\"M7 10v10H4V10h3Zm0 9h9.2a2 2 0 0 0 1.9-1.4l1.8-5.5A2 2 0 0 0 18 9h-4l.6-3A2.5 2.5 0 0 0 12.2 3L7 10\"/>"
+  },
+  "check-circle": {
+    "label": "Fácil instalação",
+    "category": "Especificações",
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m8 12 2.5 2.5L16.5 9\"/>"
+  },
+  "cabinet": {
+    "label": "Armários",
+    "category": "Aplicações",
+    "body": "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"1.5\"/><path d=\"M12 4v16M7.5 12h1M15.5 12h1\"/>"
+  },
+  "hanger": {
+    "label": "Closets",
+    "category": "Aplicações",
+    "body": "<path d=\"M10 7.2a2.2 2.2 0 1 1 3.4 1.8L12 10.2\"/><path d=\"m12 10.2 8 6.3c.8.6.4 2-1 2H5c-1.4 0-1.8-1.4-1-2l8-6.3Z\"/>"
+  },
+  "kitchen": {
+    "label": "Cozinhas",
+    "category": "Aplicações",
+    "body": "<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"1.5\"/><path d=\"M3 12h18M9 12v8M15 12v8M7 4v3M12 3v4M17 4v3\"/><circle cx=\"6\" cy=\"9.5\" r=\".7\"/><circle cx=\"18\" cy=\"9.5\" r=\".7\"/>"
+  },
+  "shelf": {
+    "label": "Prateleiras suspensas",
+    "category": "Aplicações",
+    "body": "<path d=\"M3 17h18M5 14h14v3H5zM7 6v8M17 6v8M5 6h4M15 6h4\"/>"
+  },
+  "niche": {
+    "label": "Nichos",
+    "category": "Aplicações",
+    "body": "<path d=\"m4 8 8-5 8 5v12H4V8Z\"/><path d=\"M9 20v-7h6v7\"/>"
+  },
+  "panel": {
+    "label": "Painéis",
+    "category": "Aplicações",
+    "body": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"1.5\"/><path d=\"M7 4v16M12 4v16M17 4v16\"/>"
+  },
+  "location": {
+    "label": "Localização",
+    "category": "Rodapé",
+    "body": "<path d=\"M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/>"
+  },
+  "whatsapp": {
+    "label": "Atendimento por mensagem",
+    "category": "Rodapé",
+    "body": "<path d=\"M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7A8.5 8.5 0 1 1 20.5 11.6Z\"/><path d=\"M8.3 7.5c.5 3.9 3.2 6.5 7 7.1M8.4 7.6l1.6-.7 1.2 2.4-1.1.9M15.2 14.6l.8-1.2 2.3 1.3-.6 1.6\"/>"
+  },
+  "award": {
+    "label": "Qualidade",
+    "category": "Rodapé",
+    "body": "<circle cx=\"12\" cy=\"9\" r=\"5\"/><path d=\"m8.5 13-1 8 4.5-2 4.5 2-1-8\"/><path d=\"m12 6.2.8 1.6 1.8.3-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.3.8-1.6Z\"/>"
+  },
+  "stock": {
+    "label": "Estoque",
+    "category": "Rodapé",
+    "body": "<path d=\"M4 7h16v13H4z\"/><path d=\"M8 7V4h8v3M8 11h8M12 11v6\"/>"
+  },
+  "truck": {
+    "label": "Entrega rápida",
+    "category": "Rodapé",
+    "body": "<path d=\"M3 6h11v10H3zM14 9h4l3 3v4h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><path d=\"M3 10H1M5 13H2\"/>"
+  },
+  "headset": {
+    "label": "Atendimento",
+    "category": "Rodapé",
+    "body": "<path d=\"M4 13v-2a8 8 0 0 1 16 0v2\"/><path d=\"M4 13h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2ZM20 13h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2ZM17 19c0 2-2 3-5 3\"/>"
+  },
+  "calendar": {
+    "label": "Data de atualização",
+    "category": "Rodapé",
+    "body": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"1.5\"/><path d=\"M8 3v4M16 3v4M4 10h16M8 14h2M14 14h2M8 18h2M14 18h2\"/>"
+  },
+  "bulb": {
+    "label": "Dica",
+    "category": "Comunicação",
+    "body": "<path d=\"M9 18h6M10 22h4M8 15c-1.6-1.2-3-3-3-6a7 7 0 0 1 14 0c0 3-1.4 4.8-3 6-.7.5-1 1.2-1 2H9c0-.8-.3-1.5-1-2Z\"/><path d=\"M12 2V0M4.8 4.8 3.3 3.3M19.2 4.8l1.5-1.5\"/>"
+  },
+  "application": {
+    "label": "Aplicação genérica",
+    "category": "Aplicações",
+    "body": "<rect x=\"4\" y=\"5\" width=\"16\" height=\"14\" rx=\"2\"/><path d=\"M8 9h8M8 13h8\"/>"
+  },
+  "box": {
+    "label": "Embalagem",
+    "category": "Catálogo",
+    "body": "<path d=\"m4 7 8-4 8 4-8 4-8-4Z\"/><path d=\"M4 7v10l8 4 8-4V7M12 11v10\"/>"
+  },
+  "screw": {
+    "label": "Parafuso",
+    "category": "Catálogo",
+    "body": "<path d=\"M5 19 17.5 6.5M7 21l-4-4 2-2 4 4-2 2ZM15 5l4 4M13.5 7.5l4 4M10 12l2 2M7.5 14.5l2 2\"/><path d=\"m17.5 6.5 1-3.5L22 2l-1 3.5-3.5 1Z\"/>"
+  },
+  "ruler": {
+    "label": "Medida",
+    "category": "Catálogo",
+    "body": "<path d=\"m4 17 13-13 3 3L7 20H4v-3Z\"/><path d=\"m12 9 3 3M9.5 11.5l1.5 1.5M14.5 6.5 16 8\"/>"
+  },
+  "tag": {
+    "label": "Preço / etiqueta",
+    "category": "Catálogo",
+    "body": "<path d=\"M3 11V4h7l11 11-6 6L4 10Z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1\"/>"
+  },
+  "palette": {
+    "label": "Variações de cor",
+    "category": "Catálogo",
+    "body": "<path d=\"M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h3a6 6 0 0 0 0-12h-3Z\"/><circle cx=\"7.5\" cy=\"9\" r=\".8\"/><circle cx=\"10\" cy=\"6\" r=\".8\"/><circle cx=\"14\" cy=\"6\" r=\".8\"/><circle cx=\"17\" cy=\"9\" r=\".8\"/>"
+  }
+};

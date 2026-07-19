@@ -1,0 +1,81 @@
+{
+  "$schema": "authoring-kit/schemas/catalog-project-package.schema.json",
+  "packageFormat": "CatalogProjectPackage",
+  "packageVersion": "1.0.0",
+  "createdAt": "2026-07-14T00:00:00.000Z",
+  "generator": {
+    "name": "Agente de catálogo",
+    "increment": "05.14",
+    "schemaVersion": "1.16.0"
+  },
+  "project": {
+    "id": "document-example",
+    "title": "Catálogo de exemplo"
+  },
+  "policy": {
+    "assetMode": "assisted",
+    "publicationGate": "draft"
+  },
+  "document": {
+    "path": "document/catalog.json",
+    "schemaVersion": "1.16.0"
+  },
+  "catalogSource": {
+    "path": "source/catalog-source.json",
+    "sourceVersion": "1.1.0"
+  },
+  "generationPlan": {
+    "path": "plan/catalog-generation-plan.json",
+    "planVersion": "1.0.0"
+  },
+  "capabilities": {
+    "path": "manifests/catalog-capabilities.json",
+    "manifestVersion": "1.0.0"
+  },
+  "authoringKit": {
+    "root": "authoring-kit",
+    "manifestPath": "authoring-kit/manifest.json",
+    "version": "1.5.3"
+  },
+  "report": {
+    "path": "reports/export-report.json"
+  },
+  "assets": [],
+  "files": [
+    {
+      "path": "document/catalog.json",
+      "role": "document",
+      "mimeType": "application/json",
+      "size": 1,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "source/catalog-source.json",
+      "role": "support",
+      "mimeType": "application/json",
+      "size": 1,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "plan/catalog-generation-plan.json",
+      "role": "support",
+      "mimeType": "application/json",
+      "size": 1,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "manifests/catalog-capabilities.json",
+      "role": "capabilities",
+      "mimeType": "application/json",
+      "size": 1,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "reports/export-report.json",
+      "role": "report",
+      "mimeType": "application/json",
+      "size": 1,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ]
+}

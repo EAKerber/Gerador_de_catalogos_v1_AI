@@ -1,0 +1,17 @@
+{
+  "planFormat": "CatalogGenerationPlan",
+  "planVersion": "1.0.0",
+  "id": "plan-document-example",
+  "catalogId": "document-example",
+  "strategy": "hero-grid",
+  "page": { "preset": "A4", "orientation": "portrait", "width": 794, "height": 1123, "safeMargin": 24 },
+  "layout": { "gap": 12, "columns": 3, "headerHeight": 110, "heroHeight": 222, "footerHeight": 100, "maxGridRows": 2 },
+  "header": { "enabled": true, "kicker": "CATÁLOGO", "title": "CATÁLOGO DE EXEMPLO", "logoAssetId": null },
+  "footer": { "enabled": true, "store": "Top Mobili Ferragens", "city": "Canoas · RS", "phone": "51 98977-6262", "updatedAt": "Atualizado em 2026" },
+  "heroProductId": "product-1176",
+  "productOrder": ["product-1176"],
+  "products": [
+    { "productId": "product-1176", "role": "hero", "presetId": "product-standard", "mode": "hero", "density": "comfortable" }
+  ],
+  "policies": { "overflow": "error", "missingAsset": "placeholder", "safeRepair": true }
+}

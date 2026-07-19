@@ -1,0 +1,425 @@
+# Roadmap incremental
+
+## Incremento 00 — Fundação arquitetônica ✅
+
+- modelo JSON versionado;
+- registro de tipos;
+- biblioteca de tokens;
+- schema inicial;
+- separação de domínio, renderização, inspetor e interações;
+- decisões arquitetônicas documentadas.
+
+## Incremento 01 — Editor base A4 ✅
+
+- página A4 vazia;
+- drag and drop da biblioteca;
+- cabeçalho, card, rodapé, arte/logo, ícone SVG e texto;
+- seleção e lista de camadas;
+- painel lateral por tipo;
+- cores, tipografia, bordas e raios por seleção de token;
+- movimento e resize básico;
+- snap no grid;
+- override com `Alt`;
+- trava de eixo com `Shift`;
+- salvamento local;
+- exportação JSON.
+
+## Incremento 02 — Containers, slots e edição interna ✅
+
+Critérios de aceite:
+
+- entrar e sair de um componente;
+- breadcrumb de contexto;
+- filhos em coordenadas locais;
+- slots de título, arte, especificações e tabela;
+- inserir, substituir e reordenar filhos;
+- card continua selecionável como unidade.
+
+## Incremento 03 — Layout e snap inteligente ✅
+
+Critérios de aceite:
+
+- guias por borda e centro;
+- alinhamento por distâncias iguais;
+- tolerância magnética;
+- override por eixo;
+- auto-layout em linha, coluna e grid;
+- redimensionamento com conteúdo mínimo calculado;
+- regras responsivas por largura.
+
+## Incremento 03.1 — Estabilização do editor ✅
+
+Critérios de aceite:
+
+- interface utilizável em 1366×768 com zoom do navegador em 100%;
+- painéis esquerdo e direito recolhíveis;
+- A4 ajustada automaticamente à área disponível;
+- recoloração independente de ícones/vetores por token;
+- duplicação simples de componentes e subárvores;
+- contrato de coleções genéricas sem binários/base64 no documento;
+- matriz de cobertura da imagem de referência;
+- schema 1.3.0, migração e testes atualizados.
+
+## Incremento 04 — Biblioteca de artes ✅
+
+Critérios de aceite:
+
+- upload e drag and drop de arquivos;
+- logo como arte com role `logo`;
+- SVG, PNG, JPG e WebP;
+- fit, recorte e ponto focal;
+- metadados e reutilização de assets;
+- placeholders substituíveis sem destruir layout.
+
+Implementado com coleção `assets` referencial, blobs em IndexedDB, limite de 25 MB, metadados de dimensão/MIME, seletor que prioriza itens do projeto e migração para o schema 1.4.0.
+
+## Incremento 04.1 — Conteúdo repetível e composição ✅
+
+Critérios de aceite:
+
+- tabelas derivadas de coleções genéricas com múltiplas linhas;
+- legendas vinculadas a artes;
+- duplicação direcional para esquerda/direita e deslocamento configurável;
+- distribuição de cópias com espaçamento explícito;
+- cobertura e testes sem acoplar essas regras ao pipeline binário de assets.
+
+Implementado com coleção `tableRows`, referências ordenadas por `rowIds`, altura mínima derivada da quantidade de linhas, legendas como propriedade de `art`, cópias independentes e migração para o schema 1.5.0.
+
+## Incremento 04.2 — Hierarquia estrutural e navegação ✅
+
+Critérios de aceite:
+
+- transformar cabeçalho e rodapé em contêineres compostos por peças editáveis;
+- separar biblioteca, camadas e propriedades por abas ou navegação superior equivalente;
+- reduzir scroll obrigatório e explicitar hierarquia informacional;
+- destacar átomos e moléculas pertencentes ao card selecionado;
+- zoom do workspace por `Ctrl/Cmd + roda`, sem alterar o zoom do navegador e preservando o seletor;
+- corrigir contraste das opções do seletor de zoom.
+
+Implementado com cabeçalho de três slots, rodapé com coleção de moléculas, abas nos dois painéis, subárvore enfatizada, zoom lógico intermediário e migração para o schema 1.6.0.
+
+## Incremento 04.2.1 - Impressão e PDF A4 da página atual ✅
+
+Critérios de aceite:
+
+- ação **Imprimir / PDF** abre o diálogo nativo;
+- a página atual é projetada em A4 vertical, sem escala do workspace, grid ou controles do editor;
+- o usuário pode escolher **Salvar como PDF** sem backend nem duplicação do documento JSON;
+- a limpeza do estado de impressão restaura o editor após fechar o diálogo.
+
+Implementado com `window.print()`, CSS `@page`/`@media print`, nome transitório `catalogo-a4` e teste de navegador. O schema continua em 1.6.0.
+
+## Incremento 04.3 — Layout editorial e linhas ✅
+
+Entregue:
+
+- novas Áreas de composição iniciam em modo `row`;
+- distribuição por preenchimento, `space between` e `space around`;
+- padding e espaçamento configuráveis;
+- cálculo de mínimo de filhos nos slots;
+- átomo de linha separadora usado pelo cabeçalho.
+
+O reflow recursivo Auto/Manual e o bloqueio vertical completo foram refinados pelas capturas e movidos para o 04.5.
+
+## Incremento 04.4 — Ocupação múltipla de slots ✅
+
+- capacidade ponderada por `slot.span`;
+- controle de ocupação no inspetor;
+- distribuição proporcional em slots de linha, coluna e grade;
+- migração para o schema `1.7.0`;
+- compatibilidade com inserção, duplicação, movimentação e substituição.
+
+## Incremento 04.5 — Consistência recursiva e saída visual ✅
+
+Entregue:
+
+- reflow recursivo em modo Auto por padrão, com override Manual;
+- mínimo vertical do pai calculado após reflow completo dos descendentes;
+- comparação visual canvas×PDF e estabilização física de linhas finas.
+
+## Incremento 04.6 — Estruturas opcionais e PDF limpo ✅
+
+Entregue:
+
+- colapso automático de tipos internos ausentes e ação estrutural para recriá-los;
+- separador contextual quando o espaçamento supera três espessuras mínimas;
+- itens de rodapé compostos por átomos independentes de ícone e texto;
+- migração compatível por `structureInitialized` no schema `1.9.0`;
+- Área de composição invisível no PDF, com filhos preservados;
+- remoção de outlines editoriais das subárvores na impressão.
+
+## Incremento 05.0 — Reuso editorial, galerias e numeração ✅
+
+Entregue:
+
+- componentes editados salvos como snapshots reutilizáveis na categoria **Meus componentes**;
+- inserção com novos IDs, referências de assets preservadas e linhas de tabela independentes;
+- `art-gallery` com múltiplas imagens ordenáveis e legenda própria por imagem, cobrindo os itens 04 e 07 da referência;
+- numeração incremental de cards;
+- confirmação para compactar conflitos e opção de continuar a sequência a partir de um valor manual superior;
+- migração para o schema `1.10.0`.
+
+## Incremento 05.1 — Inventário e binding de conteúdo ✅
+
+Entregue:
+
+- catálogo geral de produtos;
+- seleção de itens;
+- card vinculado por `productId`;
+- template separado do conteúdo;
+- overrides locais explícitos;
+- atualização de preço sem reconstruir página;
+- criação de subcatálogo;
+- distinguir templates de apresentação vinculada dos snapshots autônomos já entregues em **Meus componentes**.
+- coleção `subcatalogs` com seleção persistida de produtos;
+- migração para o schema `1.11.0`.
+
+## Definição canônica — Produto data-first e autoria por agente ✅
+
+Direção aceita:
+
+- o produto é um compilador editorial orientado a dados com editor visual secundário;
+- um `CatalogAuthoringKit` versionado é entregue uma única vez a um chat, projeto ou agente;
+- cada criação recebe somente dados disponíveis e considerações opcionais;
+- preferências ausentes ficam a cargo do agente; fatos ausentes nunca são inventados;
+- o agente escolhe reutilizar, gerar, omitir, usar placeholder ou solicitar assets conforme política explícita;
+- `CatalogSource`, `CatalogGenerationPlan`, `CatalogDocument` e `CatalogProjectPackage` possuem responsabilidades separadas;
+- o pacote final contém JSON, assets, manifestos e relatório e deve ser importável para revisão e PDF.
+
+Referências: `PRODUCT-DEFINITION.md`, `LLM-CATALOG-AUTHORING-FLOW.md`, `ASSET-AUTHORING-POLICY.md`, `ADR-014-agent-authored-portable-catalogs.md` e `ADR-015-risk-based-asset-generation.md`.
+
+## Incremento 05.2 — Segurança de edição e importação JSON ✅
+
+Entregue:
+
+- histórico transacional de até 100 ações com desfazer/refazer e coalescência;
+- `Novo documento` separado de futuras ações de página;
+- importação de JSON com análise, migração e preview antes da substituição;
+- commit atômico confirmado e recuperação do documento anterior por Desfazer;
+- estado sujo/salvo e sessão transitória opcional, omitida da exportação autoral;
+- bloqueio de schema futuro, tipos desconhecidos, IDs duplicados e frames inválidos;
+- relatório de referências indisponíveis e dependências locais de IndexedDB;
+- testes de documentos válidos, migráveis, inválidos e malformados;
+- migração para o schema `1.12.0`.
+
+## Incremento 05.3 — Pacote portátil e manifestos de autoria ✅
+
+Entregue:
+
+- importar e exportar `CatalogProjectPackage` com manifesto e assets;
+- verificar caminhos, MIME, tamanho e hashes antes de persistir arquivos;
+- remapear referências portáteis para o storage local;
+- manifesto declarativo de componentes, templates, tokens, ícones e capacidades;
+- primeira versão do `CatalogAuthoringKit` com guide, schemas e exemplos;
+- relatório de importação com erros, avisos e informações;
+- contrato inicial de proveniência e estado de publicação dos assets;
+- política Assistida registrada no manifesto do projeto.
+- preflight de ZIP com bloqueio de path traversal, criptografia, ZIP64 e limites de descompactação;
+- migração para o schema `1.13.0`.
+
+## Incremento 05.4 — Conteúdo semântico, apresentações e UI progressiva ✅
+
+Entregue:
+
+- `CatalogSource 1.0.0` extensível para produtos, atributos, destaques, aplicações, variantes e papéis de assets;
+- tabelas por colunas e valores semânticos arbitrários;
+- vocabulário de template, modo, densidade, estado responsivo, preset, override e snapshot;
+- requisitos, estados aceitos e fallbacks de asset por preset oficial;
+- presets compacto, padrão e confortável para escala/espaçamento interno;
+- mínimo técnico separado do recomendável/personalizado;
+- inspetor priorizado por Intenção, Composição e Exato, com divulgação progressiva;
+- legenda cromática por chave estável, token e fallback textual acessível;
+- gates separados para pacote de rascunho e pacote para publicação;
+- migração para o schema `1.14.0`.
+
+## Incremento 05.5 — Plano editorial, compilador e validação ✅
+
+Entregue:
+
+- schema `CatalogGenerationPlan 1.0.0`, plano `hero-grid` automático e alternativa `grid-only`;
+- compilador determinístico para IDs, componentes, slots, frames, linhas e bindings;
+- decisões documentadas de template, modo, densidade e fallback;
+- validação estrutural, referencial, editorial e geométrica integrada ao pacote;
+- reparos automáticos limitados a arredondamento seguro de até 2 px;
+- exemplo de referência compilado com 7 produtos, 16 linhas, zero colisões e zero overflow;
+- importação direta de `CatalogSource` em três ações e uma transação reversível;
+- `CatalogAuthoringKit 1.1.0` com CLI e runtime autocontido;
+- migração para `CatalogDocument 1.15.0`.
+
+## Incremento 05.6 — Eficiência da construção manual ✅
+
+Entregue:
+
+- colagem de produtos vindos de Excel, Sheets, TSV ou CSV;
+- criação, organização e vínculo de cards a partir da seleção do inventário;
+- colagem de várias linhas na tabela selecionada;
+- modos substituir e acrescentar com limite seguro de 12 linhas;
+- operações compostas atômicas e reversíveis;
+- sete produtos e sete cards em cinco ações manuais observáveis;
+- distinção documental entre ações automatizadas e ações da construção manual;
+- reflow imediato ao alterar apresentação e correção da grade de especificações em modo compacto.
+
+## Incremento 05.7 — Refinamento manual em lote ✅
+
+Entregue:
+
+- multisseleção contextual de irmãos no canvas e em Camadas;
+- `Shift/Ctrl/Cmd+clique` e `Ctrl/Cmd+A` no contexto aberto;
+- alinhamento e distribuição por uma única transação;
+- aplicação de preset, modo, densidade e tokens aos itens elegíveis;
+- duplicação e exclusão de conjunto com um único desfazer;
+- inspetor específico de seleção múltipla;
+- refinamento de densidade de sete cards em duas ações observáveis;
+- preservação do fluxo individual e do schema autoral sem estado de sessão obrigatório.
+
+## Incremento 05.8 — Estruturas prontas e inserção contextual ✅
+
+Entregue:
+
+- registro oficial e versionado de receitas, separado dos templates salvos pelo usuário;
+- página-base composta por cabeçalho, conteúdo principal e rodapé em uma transação;
+- foco automático no papel `primary-content` após a criação da página-base;
+- faixas prontas de aplicações, legenda de embalagens e dica editorial;
+- inserção por `+` no primeiro slot compatível ou espaço livre, mantendo drag and drop para posicionamento exato;
+- hidratação dos filhos padrão de cabeçalho e rodapé sem duplicar o modelo de documento;
+- manifesto de receitas no `CatalogAuthoringKit 1.2.0`;
+- página-base e sete cards vinculados em seis ações, com zero colisão e zero overflow.
+
+## Incremento 05.9 — Ações contextuais e composição em lote ✅
+
+Entregue:
+
+- `+` contextual para adicionar linha à tabela, converter arte em galeria e acrescentar imagens;
+- preservação do ID, asset e conteúdo da arte original na conversão;
+- gap uniforme horizontal, vertical ou automático para seleções irmãs;
+- separadores em lote com cinco presets oficiais e edição posterior como átomos comuns;
+- integração ao auto-layout quando o conjunto selecionado corresponde aos filhos gerenciados;
+- toggles para estados binários persistentes;
+- inspetor reorganizado em Conteúdo, Layout, Visual e divulgação Avançada;
+- saneamento geométrico da toolbar e das abas esquerdas em `1366×768`;
+- `CatalogAuthoringKit 1.3.0` com ações e presets declarados.
+
+## Incremento 05.10 — Variantes semânticas e legendas visuais ✅
+
+Entregue:
+
+- identidade estável de variante vinculando imagens e linhas comerciais;
+- ação **Adicionar variação** com materialização automática opcional;
+- painel de legenda composto por grupos e itens editáveis;
+- criação ou reutilização de item visual ao adicionar uma definição de legenda;
+- células, itens e tokens vinculados por `legendKey`, com fallback textual;
+- migração conservadora das legendas cromáticas do 05.4;
+- validação de contraste, vínculos quebrados e fatos ausentes antes da publicação.
+- `CatalogDocument 1.16.0`, `CatalogSource 1.1.0` e `CatalogAuthoringKit 1.4.0`;
+- `+` contextual para grupos e itens de legenda, com uma transação por materialização.
+
+## Incremento 05.11 — Saneamento visual e atlas funcional ✅
+
+Critérios de aceite:
+
+- barra de comandos sem corte, colisão ou scroll horizontal em 1280, 1366 e 1800 px;
+- comandos de documento sempre descobríveis e preferências de visualização agrupadas progressivamente;
+- cards da biblioteca com regiões independentes para conteúdo, `+` e menu secundário;
+- ações essenciais acessíveis por teclado e sem dependência de hover;
+- inventário de capacidades gerado a partir do manifesto;
+- primeiro guia curado de funcionalidades, com intenção, acesso, pré-condições, exemplo, limites e IDs de contrato;
+- testes geométricos e screenshots que cubram as duas regressões visuais;
+- nenhuma mudança de schema salvo se uma inconsistência for descoberta e promovida explicitamente.
+
+Entregue com `CatalogAuthoringKit 1.5.0`, inventário gerado, quinze fluxos curados e cobertura de regressão dedicada. `CatalogDocument` permanece em `1.16.0`.
+
+## Incremento 05.12 — Auditoria de construção manual e intenção contextual ✅
+
+Critérios de aceite:
+
+- repetir a referência usada na linha de base de 319 ações em `1366×768`, somente pela interface pública;
+- contar cliques, preenchimentos, arrastes, trocas de contexto, correções e tentativas sem efeito;
+- relacionar frequência de uso, dificuldade, severidade e capacidade de representação;
+- comparar geração automatizada e construção manual sem misturar as métricas;
+- propor a próxima redução de ações a partir dos dados, sem implementar otimizações durante a medição.
+
+Entregue com ensaio integral em Chromium real e somente pela interface pública: **267 ações**, contra 319 na linha de base (−52; **−16,3%**), 39 trocas de contexto, 43 mudanças de foco, 29 correções e 7 tentativas sem efeito. A reconstrução alcançou 65% da matriz visual, mas terminou com 8 colisões e 2 overflows; tabelas e geometria responderam por 157 ações (58,8%). A evidência inclui JSON, log categorizado, screenshots e PDF A4. `CatalogDocument` permanece em `1.16.0` e o kit passa a `1.5.1` para identificar o editor 05.12.
+
+## Incremento 05.13 — Auditoria subtrativa e governança de recursos ✅
+
+Critérios de aceite:
+
+- inventariar todas as capacidades declaradas e atribuir estado de governança;
+- mapear intenções para caminhos de interface e identificar autoridades concorrentes;
+- testar o papel real do reflow Auto/Manual e dos reajustes de slot/auto-layout;
+- formalizar política de consolidação, depreciação e remoção compatível;
+- congelar expansão multimídia, plataforma online, touch/mobile e publicação;
+- preservar schema e documentos anteriores enquanto o caminho substituto não existir.
+
+Entregue com governança das 35 capacidades: 20 ativas, 5 mantidas, 5 em auditoria, 4 congeladas e 1 pausada. O teste de autoridade confirmou que o reflow Auto restaura overrides descendentes e o Manual preserva exceções ao interromper garantias recursivas. Nenhuma remoção ou migração foi feita; `CatalogDocument` permanece em `1.16.0` e o kit passa a `1.5.2`.
+
+## Incremento 05.14 — Confiabilidade estrutural e autoridade de layout ✅
+
+Critérios de aceite:
+
+- substituir a escolha técnica Auto/Manual por autoridade gerenciada/independente/reintegrar no fluxo normal;
+- manter overrides locais duráveis sem desligar validade recursiva da subárvore;
+- tornar previsível o commit geométrico e expor valor solicitado, resolvido e motivo;
+- permitir selecionar uma camada fora do contexto atual sem clique silenciosamente inerte;
+- estabilizar galeria, dica e legenda em larguras compactas;
+- excluir mensagens transitórias da projeção PDF e apresentar diagnóstico de saída;
+- preservar leitura do schema 1.16.0 e definir janela de depreciação sem quebra.
+
+Entregue com autoridade local durável, reintegração explícita, seleção entre contextos, geometria solicitada/resolvida e preflight de impressão. O recálculo deixa de reativar exceções descendentes; `reflow.mode` permanece apenas para leitura compatível. A estabilização visual específica de galeria, dica e legenda foi mantida no 05.15 para ser tratada junto das receitas, sem misturar novamente autoridade estrutural e presets. `CatalogDocument` permanece em `1.16.0` e o kit passa a `1.5.3`.
+
+## Incremento 05.15 — Comandos compostos e esquemas reutilizáveis
+
+Critérios de aceite:
+
+- criar camada de comandos semânticos compartilhada por UI, histórico, compilador e kit;
+- salvar e aplicar esquemas de tabela separadamente dos valores comerciais;
+- aplicar esquema a uma seleção compatível com preview e exceções locais;
+- organizar seleção como hero + grade + faixa final sem criar modelo paralelo;
+- consolidar duplicação e separadores em superfícies progressivas;
+- garantir uma transação reversível por comando.
+
+## Incremento 05.16 — Interface orientada à tarefa e nova medição
+
+Critérios de aceite:
+
+- manter aba, disclosure e tarefa ao navegar entre itens equivalentes;
+- priorizar ações por intenção atual sem esconder o escape hatch avançado;
+- repetir separadamente criação manual, geração e refinamento do catálogo gerado;
+- medir ações, correções, trocas de contexto, tentativas sem efeito e validade final;
+- demonstrar zero ação silenciosa e zero colisão/overflow produzidos por receitas oficiais.
+
+## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
+
+Critérios de aceite:
+
+- adicionar, duplicar, ordenar e excluir páginas;
+- numeração automática;
+- paginação e balanceamento determinísticos a partir do plano editorial;
+- preview de impressão multipágina;
+- PDF A4 com sangria e margem segura, além da impressão da página atual entregue no 04.2.1;
+- exportação de dados para XLSX;
+- validação do pacote completo antes da publicação.
+
+## Incremento 07 — Colaboração local-first opcional ❄️
+
+Critérios de aceite:
+
+- checkpoints e restauração por snapshots portáteis antes da colaboração ao vivo;
+- sala browser-only com link, senha, apelido ilustrativo e visualização por padrão;
+- hoster como única autoridade para importações de projeto e snapshot canônico;
+- comandos validados e serializados pelo hoster, com log por sessão;
+- WebRTC direto com sinalização efêmera de código próprio;
+- protótipo sem TURN, com falha explicada e fallback por download manual;
+- nenhuma conta, autenticação de identidade, banco central ou persistência remota de catálogo.
+
+O antigo plano de API central, autenticação, banco remoto e storage compartilhado foi substituído pela decisão local-first registrada em `ADR-024-browser-local-first-collaboration.md`.
+
+## Frentes congeladas sem incremento ativo
+
+- hospedagem estática e deploy por Git;
+- expansão multimídia e novos formatos/pipelines de assets;
+- workflow de publicação e aprovação avançada;
+- interface touch/mobile completa;
+- colaboração e infraestrutura de sala.
+
+Essas frentes preservam seus documentos de decisão e só podem ser tocadas para evitar dívida estrutural concreta ou regressão do núcleo atual.
