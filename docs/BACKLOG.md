@@ -37,16 +37,26 @@ O 05.13 não remove recursos nem migra documentos. `CatalogDocument` permanece e
 
 O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colunas, componentes e vínculos já canônicos. Continuidade de tarefa e nova medição passam para 05.16.
 
-### Em andamento — Incremento 05.16 Interface orientada à tarefa
+### Concluído — Incremento 05.16 Interface orientada à tarefa
 
 | Prioridade | Problema | Critério de saída |
 | --- | --- | --- |
 | P1 | Perda de continuidade entre itens equivalentes | Checkpoint 1: aba, avançado e disclosures são lembrados por tipo durante a sessão. |
 | P1 | Ações silenciosas | Checkpoint 1: inserção e ações contextuais sem resultado atualizam o status com causa compreensível. |
 | P1 | Receita focal geometricamente inválida | Corrigido: mínimo real da grade e faixa produz zero colisão/overflow. |
-| P1 | Nova medição integral | Pendente: repetir reconstrução completa; o recorte estrutural atual mede nove ações e não é apresentado como comparação integral. |
+| P1 | Nova medição integral | Concluída: 223 ações, −16,5% desde 05.12; zero overflow e oito colisões. |
 
-O próximo checkpoint deve medir a reconstrução completa e usar as trocas/tentativas observadas para decidir quais superfícies podem ser consolidadas ou removidas.
+### Próxima fila — refinamento pós-auditoria
+
+| Prioridade | Problema confirmado | Critério de saída |
+| --- | --- | --- |
+| P1 | Seleção contextual ainda cobra correção | Selecionar qualquer descendente visível ajusta contexto e foco em uma ação; zero tentativa sem efeito no benchmark. |
+| P1 | Geometria domina o fluxo manual | Ações de grupo distribuem, alinham e dimensionam irmãos sem editar quatro campos por componente. |
+| P1 | Composição final permanece inválida | Mesmo alvo encerra com zero colisão e zero overflow, sem retirar edição individual. |
+| P2 | Galerias exigem edição imagem por imagem | Entrada de coleção permite adicionar imagens/legendas em lote e refinar exceções. |
+| P2 | Legendas exigem três ações por definição | Entrada de coleção materializa várias definições e itens visuais em uma transação. |
+
+O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. Não há evidência para remover separadores, mínimos, autoridade, presets ou geometria exata; geometria exata deve sair do caminho normal, não do modelo.
 
 ### Frentes congeladas
 
@@ -86,7 +96,7 @@ Essas perguntas permanecem documentadas, mas não competem com o backlog ativo.
 | P1 | Modelo semântico de produto | Substituir a limitação `specOne/specTwo` por atributos, destaques, aplicações, variantes, assets e valores comerciais tipados. | CatalogSource | Base concluída 05.4; binding semântico no compilador 05.5 |
 | P1 | Plano e compilador editorial | Materializar páginas, IDs, slots e frames a partir de intenção editorial validável. | Templates oficiais, modelo de produto | Concluído 05.5 para estratégias `hero-grid` e `grid-only`; novas famílias seguem incrementais |
 | P1 | Interface progressiva | Priorizar conteúdo e problemas, depois layout e visual; manter geometria e restrições em divulgação avançada. | Manifesto de capacidades | Vocabulário atual auditado; continuidade de tarefa passa ao 05.16 |
-| P1 | Redução de ações manuais | Agrupar cadastro, vínculo, preenchimento e composição repetitivos sem retirar controle nem edição individual. | Histórico, inventário, tabelas | Medição 05.12: 267 ações; comandos compostos 05.15 e nova medição 05.16 |
+| P1 | Redução de ações manuais | Agrupar cadastro, vínculo, preenchimento e composição repetitivos sem retirar controle nem edição individual. | Histórico, inventário, tabelas | 05.16: 223 ações, −16,5% desde 05.12 e −30,1% desde a base |
 | P1 | Tamanho recomendável | Separar mínimo técnico de mínimo recomendado/personalizado e permitir override explícito com aviso de overflow. | Histórico, layout | Concluído 05.4 |
 | P1 | Escala interna dos átomos | Fonte, ícone, padding, gap e presets compacto/padrão/confortável, sem CSS arbitrário. | Tokens de densidade | Presets mantidos; novos controles congelados salvo dívida concreta |
 | P1 | Templates, modos e densidades | Formalizar vocabulário, IDs, requisitos, fallback e bindings das apresentações oficiais. | Manifesto, modelo de produto | Contratos mantidos; exposição conjunta em auditoria 05.13 |

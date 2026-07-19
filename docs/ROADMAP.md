@@ -390,7 +390,7 @@ Critérios de aceite:
 - medir ações, correções, trocas de contexto, tentativas sem efeito e validade final;
 - demonstrar zero ação silenciosa e zero colisão/overflow produzidos por receitas oficiais.
 
-Checkpoint 1 entregue: memória de aba/disclosures por tipo durante a sessão, diagnóstico explícito para inserções sem resultado, correção geométrica da receita hero + grade + faixa e medição isolada do núcleo estrutural em nove ações. A reconstrução integral continua pendente e permanece deliberadamente separada dessa medição parcial.
+Concluído: memória de aba/disclosures por tipo durante a sessão, diagnóstico explícito para inserções sem resultado, correção geométrica da receita hero + grade + faixa e reconstrução integral comparável. O benchmark caiu de 267 para 223 ações; tabelas caíram de 82 para 56 e overflows de dois para zero. O próximo ciclo deve atacar seleção contextual, ações geométricas de grupo e coleções de galeria/legenda até a mesma composição terminar sem colisões.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
