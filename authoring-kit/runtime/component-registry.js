@@ -189,7 +189,21 @@
     const table = (component.children || []).find(child => child.slot?.name === "table" && child.type === "data-table");
     if (!table) return 0;
     const metrics = tableMetrics(table, component.presentation?.density || table.props?.density);
-    return metrics.header + dataTableRowCount(table) * metrics.row;
+    const intrinsic = tableMetrics(table);
+    const rows = dataTableRowCount(table);
+    return Math.max(Number(table.constraints?.minHeight) || 0, metrics.header + rows * metrics.row, intrinsic.header + rows * intrinsic.row);
+  }
+
+  function artSlotMinimumHeight(component) {
+    const gallery = (component.children || []).find(child => child.slot?.name === "art" && child.type === "art-gallery");
+    if (!gallery) return 0;
+    const count = Math.max(1, (gallery.children || []).filter(child => child.type === "art").length);
+    const columns = Math.max(1, Math.min(Number(gallery.layout?.columns) || 3, count));
+    const rows = Math.ceil(count / columns);
+    const padding = Math.max(0, Number(gallery.layout?.padding) || 4);
+    const gap = Math.max(0, Number(gallery.layout?.gap) || 6);
+    const childMinimum = Math.max(44, ...(gallery.children || []).filter(child => child.type === "art").map(child => Number(child.constraints?.minHeight) || 44));
+    return padding * 2 + rows * childMinimum + Math.max(0, rows - 1) * gap;
   }
 
   function headerContentLeft(component) {
@@ -203,6 +217,7 @@
     const artPresent = hasSlot(component, "art");
     const specificationsPresent = hasSlot(component, "specifications");
     const tableHeight = tableSlotHeight(component);
+    const artMinimumHeight = artSlotMinimumHeight(component);
     const tablePresent = tableHeight > 0;
     const edge = dense ? 8 : 12;
     const contentTop = titlePresent ? (dense ? 48 : 60) : edge;
@@ -215,7 +230,7 @@
     if (compact && artPresent && specificationsPresent) {
       const specsHeight = dense ? 42 : 60;
       const between = dense ? 6 : 14;
-      const artHeight = Math.max(dense ? 60 : 72, Math.min(dense ? 92 : 84, contentHeight - specsHeight - between));
+      const artHeight = Math.max(dense ? 60 : 72, artMinimumHeight, Math.min(dense ? 92 : 84, contentHeight - specsHeight - between));
       art = { x: edge, y: contentTop, width: fullWidth, height: artHeight };
       specifications = { x: edge, y: contentTop + artHeight + between, width: fullWidth, height: Math.max(specsHeight, contentBottom - contentTop - artHeight - between) };
     } else if (!compact && artPresent && specificationsPresent) {
@@ -518,8 +533,10 @@
         const compact = component.presentation?.responsiveState === "compact" || (component.presentation?.responsiveState !== "wide" && Number(proposedFrame?.width || component.frame.width) < 320);
         const tableHeight = tableSlotHeight(component);
         const dense = component.presentation?.density === "compact";
-        if (compact && dense) return { width: 220, height: 170 + tableHeight };
-        return { width: 220, height: compact ? 210 + tableHeight : Math.max(220, 174 + tableHeight) };
+        const galleryHeight = artSlotMinimumHeight(component);
+        const galleryExtra = Math.max(0, galleryHeight - (dense ? 92 : 84));
+        if (compact && dense) return { width: 220, height: 170 + tableHeight + galleryExtra };
+        return { width: 220, height: compact ? 210 + tableHeight + galleryExtra : Math.max(220, 174 + tableHeight) };
       },
       responsiveRules: [
         { label: "Compacto", maxWidth: 319, description: "Arte em largura total e especificações em grade de duas colunas." },

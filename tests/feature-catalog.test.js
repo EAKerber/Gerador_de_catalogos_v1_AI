@@ -19,7 +19,7 @@ const inventoryCapabilityIds = inventory.capabilities.map(item => item.id).sort(
 const componentTypes = new Set(capabilities.components.map(component => component.type));
 const recipeIds = new Set(capabilities.recipes.map(recipe => recipe.id));
 
-assert(manifest.kitVersion === "1.5.3" && manifest.editorIncrement === "05.14", "O manifesto não identifica o atlas do 05.14.");
+assert(manifest.kitVersion === "1.5.4" && manifest.editorIncrement === "05.15", "O manifesto não identifica o atlas do 05.15.");
 assert(manifest.featureInventory === "feature-inventory.json" && manifest.featureGuide === "feature-guide.json" && manifest.featureGovernance === "feature-governance.json", "O manifesto não publica os três artefatos do atlas.");
 assert(JSON.stringify(capabilityIds) === JSON.stringify(inventoryCapabilityIds), "O inventário não cobre exatamente as capacidades do manifesto.");
 assert(JSON.stringify(capabilityIds) === JSON.stringify(governance.capabilityDecisions.map(item => item.id).sort()), "A governança não cobre exatamente as capacidades do manifesto.");

@@ -1,0 +1,33 @@
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+const root = path.resolve(__dirname, "..");
+global.window = global;
+global.localStorage = { getItem() { return null; }, setItem() {} };
+global.CatalogEditorIcon = () => "";
+for (const file of ["app/catalog-source.js", "app/presentation-registry.js", "app/layout-engine.js", "app/component-registry.js", "app/section-recipes.js", "app/collection-registry.js", "app/document-store.js"]) vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file });
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const bottom = component => component.frame.y + component.frame.height;
+
+const store = new CatalogDocumentStore(createBlankCatalogDocument());
+const tip = store.insertComponentFromTemplate("section-tip-callout");
+store.updateComponent(tip.id, { frame: { width: 236, height: 120 } });
+assert(tip.frame.width === 236, "A receita de dica não alcançou a largura focal de 236 px.");
+assert(tip.children.every(child => child.frame.x >= 0 && child.frame.y >= 0 && child.frame.x + child.frame.width <= tip.frame.width && bottom(child) <= tip.frame.height), "Um filho direto da dica ultrapassou o pai.");
+const copy = tip.children.find(child => child.name === "Textos da dica");
+assert(copy?.children.every(child => child.frame.x + child.frame.width <= copy.frame.width && bottom(child) <= copy.frame.height), "Título ou corpo da dica ultrapassou o grupo responsivo.");
+
+const card = store.addComponent("product-card", { x: 20, y: 200, width: 270, height: 220 });
+store.setComponentPresentation(card.id, { density: "compact", responsiveState: "compact" });
+const art = card.children.find(child => child.type === "art");
+const gallery = store.addArtVariation(art.id);
+store.addComponent("art", { x: 0, y: 0 }, { parentId: gallery.id });
+store.addComponent("art", { x: 0, y: 0 }, { parentId: gallery.id });
+store.addComponent("art", { x: 0, y: 0 }, { parentId: gallery.id });
+store.updateComponent(card.id, { frame: { width: 270, height: 220 } });
+const specifications = card.children.filter(child => child.slot?.name === "specifications");
+const firstSpecificationY = Math.min(...specifications.map(item => item.frame.y));
+assert(gallery.children.length === 5 && bottom(gallery) <= firstSpecificationY, "A galeria de cinco imagens colidiu com as especificações.");
+const table = card.children.find(child => child.type === "data-table");
+assert(bottom(table) <= card.frame.height, "A tabela saiu do card após reservar espaço para a galeria.");
+console.log("✓ Dica estreita e galeria compacta de cinco imagens respeitam os mínimos focais.");

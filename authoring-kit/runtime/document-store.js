@@ -1348,14 +1348,25 @@
       return slots.find(slot => this.getSlotUsage(parentId, slot.name) < slot.capacity) || null;
     }
 
+    getContextualInsertionTarget(type, options = {}) {
+      if (options.parentId !== undefined) return options.parentId;
+      const currentContextId = this.state.editor.editingContextId;
+      if (options.preferCurrentContext === true) return currentContextId;
+      const selected = this.getSelected();
+      if (selected && this.isContainer(selected.id) && this.isTypeAllowed(type, selected.id)) return selected.id;
+      return currentContextId;
+    }
+
     insertComponent(type, options = {}) {
       const definition = definitionFor(type);
-      const parentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+      const previousContextId = this.state.editor.editingContextId;
+      const parentId = this.getContextualInsertionTarget(type, options);
       if (!definition || !this.isTypeAllowed(type, parentId)) return null;
       const compatibleSlots = parentId ? this.getSlotDefinitions(parentId).filter(item => item.accepts.includes(type)) : [];
       const slot = options.slotName ? this.getSlotDefinitions(parentId).find(item => item.name === options.slotName) : this.getPreferredSlot(parentId, type);
       if (compatibleSlots.length && !slot) throw new Error("Todos os slots compatíveis estão ocupados. Remova uma peça, aumente a capacidade ou arraste para criar um override livre.");
       const frame = slot ? { ...definition.defaultFrame, x: 0, y: 0 } : this.getSuggestedFrame(definition.defaultFrame, parentId);
+      if (parentId !== previousContextId && parentId) this.state.editor.editingContextId = parentId;
       return this.addComponent(type, frame, { ...options, parentId, slotName: slot?.name || null });
     }
 
@@ -1373,13 +1384,24 @@
       if (selected.length !== 1) return [];
       const component = selected[0];
       const record = this.findComponent(component.id);
-      if (component.type === "data-table") return [{
-        id: "add-table-row",
-        componentId: component.id,
-        label: "Linha da tabela",
-        description: "Acrescenta uma linha editável com as colunas atuais.",
-        icon: "card"
-      }];
+      if (component.type === "data-table") {
+        const card = this.getProductCard(component.id);
+        const actions = [{
+          id: "add-table-row",
+          componentId: component.id,
+          label: "Linha da tabela",
+          description: "Acrescenta uma linha visual com as colunas atuais.",
+          icon: "card"
+        }];
+        if (card?.binding?.productId) actions.push({
+          id: "add-table-variant",
+          componentId: component.id,
+          label: "Variação do produto",
+          description: "Cria a entidade de variação, sua linha vinculada e uma imagem legendada.",
+          icon: "layers"
+        });
+        return actions;
+      }
       if (component.type === "legend-panel") return [{
         id: "add-legend-group",
         componentId: component.id,
@@ -1420,6 +1442,20 @@
           column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""
         ]));
         return this.addTableRow(component.id, values);
+      }
+      if (actionId === "add-table-variant") {
+        const table = this.findComponent(componentId)?.component;
+        const card = table?.type === "data-table" ? this.getProductCard(table.id) : null;
+        const productId = card?.binding?.productId;
+        if (!productId) return null;
+        const product = this.getProduct(productId);
+        const index = (product.metadata?.variants || []).length + 1;
+        const rows = this.getTableRows(table);
+        const sourceValues = rows[rows.length - 1]?.metadata?.values || product.metadata?.values || {};
+        return this.addProductVariant(productId, {
+          label: `Variação ${index}`,
+          commercialValues: { ...sourceValues, code: "0000", price: "R$ 0,00" }
+        }, { materializeVisual: true, materializeRow: true });
       }
       if (actionId === "add-gallery-art" || actionId === "convert-art-gallery") return this.addArtVariation(componentId);
       if (actionId === "add-legend-group") return this.createLegendGroup(componentId);
@@ -2227,7 +2263,8 @@
       const template = this.getInsertableTemplate(templateId);
       const type = template?.metadata?.rootType || template?.metadata?.component?.type;
       if (!template || !type) return null;
-      const parentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+      const previousContextId = this.state.editor.editingContextId;
+      const parentId = this.getContextualInsertionTarget(type, options);
       const contexts = template.metadata?.contexts;
       const contextType = parentId ? this.findComponent(parentId)?.component?.type : "page";
       if (Array.isArray(contexts) && !contexts.includes(contextType)) return null;
@@ -2235,6 +2272,7 @@
       const slot = options.slotName ? this.getSlotDefinitions(parentId).find(item => item.name === options.slotName) : this.getPreferredSlot(parentId, type);
       if (compatibleSlots.length && !slot) throw new Error("Todos os slots compatíveis estão ocupados. Remova uma peça ou arraste para criar um override livre.");
       const frame = slot ? { ...template.metadata.component.frame, x: 0, y: 0 } : this.getSuggestedFrame(template.metadata.component.frame, parentId);
+      if (parentId !== previousContextId && parentId) this.state.editor.editingContextId = parentId;
       return this.addComponentFromTemplate(templateId, frame, { ...options, parentId, slotName: slot?.name || null });
     }
 

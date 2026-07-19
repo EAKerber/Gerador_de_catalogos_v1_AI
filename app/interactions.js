@@ -59,8 +59,9 @@
         event.preventDefault();
         event.stopPropagation();
         try {
-          if (template) this.store.insertComponentFromTemplate(template.dataset.insertTemplate);
-          else this.store.insertComponent(component.dataset.insertComponent);
+          const insertionOptions = { preferCurrentContext: event.shiftKey };
+          if (template) this.store.insertComponentFromTemplate(template.dataset.insertTemplate, insertionOptions);
+          else this.store.insertComponent(component.dataset.insertComponent, insertionOptions);
         } catch (error) {
           this.reportError(error);
         }
@@ -71,8 +72,9 @@
         if (!item) return;
         event.preventDefault();
         try {
-          if (item.dataset.templateId) this.store.insertComponentFromTemplate(item.dataset.templateId);
-          else this.store.insertComponent(item.dataset.componentType);
+          const insertionOptions = { preferCurrentContext: event.shiftKey };
+          if (item.dataset.templateId) this.store.insertComponentFromTemplate(item.dataset.templateId, insertionOptions);
+          else this.store.insertComponent(item.dataset.componentType, insertionOptions);
         } catch (error) {
           this.reportError(error);
         }
@@ -211,6 +213,18 @@
       return this.draggedTemplateId || event.dataTransfer.getData("application/x-catalog-template") || null;
     }
 
+    dropContextAtEvent(event, type) {
+      const currentContextId = this.store.getState().editor.editingContextId;
+      if (event.shiftKey) return currentContextId;
+      const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+      for (const node of path) {
+        const componentId = node?.dataset?.componentId;
+        if (componentId && this.store.isContainer(componentId) && this.store.isTypeAllowed(type, componentId)) return componentId;
+        if (node === this.page) break;
+      }
+      return currentContextId;
+    }
+
     smartSnap(frame, componentId, contextId, mode, snapX, snapY, disabled = false) {
       const state = this.store.getState();
       if (disabled || !state.editor.smartSnapEnabled || (!snapX && !snapY)) return { frame, guides: [] };
@@ -228,8 +242,8 @@
 
     handleDragOver(event) {
       event.preventDefault();
-      const contextId = this.store.getState().editor.editingContextId;
       const type = this.dragType(event);
+      const contextId = type ? this.dropContextAtEvent(event, type) : this.store.getState().editor.editingContextId;
       const allowed = Boolean(type && this.store.isTypeAllowed(type, contextId));
       const inside = this.isInsideContext(event, contextId);
       event.dataTransfer.dropEffect = allowed && inside ? "copy" : "none";
@@ -247,7 +261,8 @@
       event.preventDefault();
       const type = this.dragType(event);
       const templateId = this.dragTemplateId(event);
-      const contextId = this.store.getState().editor.editingContextId;
+      const currentContextId = this.store.getState().editor.editingContextId;
+      const contextId = type ? this.dropContextAtEvent(event, type) : currentContextId;
       if (!type || !this.store.isTypeAllowed(type, contextId) || !this.isInsideContext(event, contextId)) {
         this.clearDropIndicators();
         return;
@@ -288,6 +303,7 @@
       }
 
       try {
+        if (contextId !== currentContextId && contextId) this.store.setEditingContext(contextId);
         if (templateId) this.store.addComponentFromTemplate(templateId, frame, { parentId: contextId, slotName: slot?.name || null, replace });
         else this.store.addComponent(type, frame, { parentId: contextId, slotName: slot?.name || null, replace });
       } catch (error) {

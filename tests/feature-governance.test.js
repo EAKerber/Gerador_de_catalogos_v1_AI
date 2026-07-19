@@ -14,7 +14,7 @@ const capabilityIds = Object.keys(capabilities.capabilities).sort();
 const decisions = new Map(governance.capabilityDecisions.map(item => [item.id, item]));
 const allowedStatuses = new Set(["active", "maintain", "audit", "frozen", "paused"]);
 
-assert(governance.governanceFormat === "CatalogFeatureGovernance" && governance.editorIncrement === "05.14", "Formato ou incremento da governança inválido.");
+assert(governance.governanceFormat === "CatalogFeatureGovernance" && governance.editorIncrement === "05.15", "Formato ou incremento da governança inválido.");
 assert(manifest.featureGovernance === "feature-governance.json", "O kit não publica a governança.");
 assert(decisions.size === capabilityIds.length && capabilityIds.every(id => decisions.has(id)), "Toda capacidade deve ter exatamente uma decisão.");
 assert([...decisions.values()].every(item => allowedStatuses.has(item.status) && item.reason), "Status ou motivo de governança ausente.");

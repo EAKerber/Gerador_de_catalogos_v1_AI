@@ -126,7 +126,7 @@
 .component-legend-group[data-emphasized="true"] { background: color-mix(in srgb, var(--component-accent, #fd0807) 8%, transparent); box-shadow: inset 3px 0 0 var(--component-accent, #fd0807); }
 .component-legend-group > header { position: absolute; z-index: 4; left: 5px; top: 3px; color: var(--component-text, #252525); font-size: 7px; font-weight: 850; text-transform: uppercase; }
 .component-legend-item { display: grid; grid-template-columns: 16px minmax(0, 1fr); align-items: center; gap: 6px; width: 100%; height: 100%; padding: 4px 7px; }
-.component-legend-item > span { width: 14px; height: 14px; border: 1px solid rgb(0 0 0 / 14%); border-radius: 4px; background: var(--legend-item-color, #f5f6f7); }
+.component-legend-item > span { width: 14px; height: 14px; border: 1px solid rgb(0 0 0 / 34%); border-radius: 4px; background: var(--legend-item-color, #f5f6f7); }
 .component-legend-item > strong { overflow: hidden; color: var(--component-text, #252525); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .component-legend-item[data-legend-state="missing"] > span { background: repeating-linear-gradient(135deg, #fff 0 4px, #e3e5e7 4px 8px); }
 .component-legend-item[data-legend-state="missing"] > strong::after { content: " · vínculo ausente"; color: #8b2525; font-size: 6px; }

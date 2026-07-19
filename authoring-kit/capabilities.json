@@ -1142,7 +1142,7 @@
     "pagePreset": "A4"
   },
   "editor": {
-    "increment": "05.14",
+    "increment": "05.15",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -1448,7 +1448,7 @@
       "id": "page-catalog-base",
       "label": "Página de catálogo",
       "rootType": "layout-container",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "contexts": [
@@ -1460,7 +1460,7 @@
       "id": "section-applications",
       "label": "Faixa de aplicações",
       "rootType": "layout-container",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "contexts": [
@@ -1472,7 +1472,7 @@
       "id": "section-packaging-legend",
       "label": "Legenda de embalagens",
       "rootType": "layout-container",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     {
       "contexts": [
@@ -1484,7 +1484,7 @@
       "id": "section-tip-callout",
       "label": "Chamada de dica",
       "rootType": "layout-container",
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ],
   "separatorPresets": [
@@ -1623,12 +1623,12 @@
       "pack.300": {
         "group": "Embalagens",
         "label": "CX 300",
-        "value": "#fff0b8"
+        "value": "#d9a800"
       },
       "pack.500": {
         "group": "Embalagens",
         "label": "CX 500",
-        "value": "#f0f0f0"
+        "value": "#aeb5bd"
       },
       "pack.pct": {
         "group": "Embalagens",

@@ -1,0 +1,28 @@
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+const root = path.resolve(__dirname, "..");
+global.window = global;
+global.localStorage = { getItem() { return null; }, setItem() {} };
+global.CatalogEditorIcon = () => "";
+for (const file of ["app/catalog-source.js", "app/presentation-registry.js", "app/layout-engine.js", "app/component-registry.js", "app/collection-registry.js", "app/document-store.js"]) vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file });
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+
+const store = new CatalogDocumentStore(createBlankCatalogDocument());
+const product = store.createProduct({ title: "Produto", code: "10", package: "CX", price: "R$ 10" });
+const card = store.addComponent("product-card", { x: 20, y: 20, width: 270, height: 260 });
+store.bindProduct(card.id, product.id);
+const table = card.children.find(child => child.type === "data-table");
+store.setSelection(table.id);
+assert(store.getContextualActions().some(action => action.id === "add-table-variant"), "A tabela vinculada não ofereceu a ação de variação.");
+const historyBefore = store.getHistoryState().undoCount;
+const variant = store.performContextualAction("add-table-variant", table.id);
+const source = store.getProduct(product.id);
+const gallery = card.children.find(child => child.type === "art-gallery");
+const row = store.getTableRows(table).find(item => item.metadata?.variantId === variant.id);
+assert(source.metadata.variants.some(item => item.id === variant.id), "A ação não criou a entidade semântica de variação.");
+assert(gallery?.children.some(item => item.props?.variantId === variant.id) && row?.metadata?.sourceRowId, "Galeria e linha não foram materializadas com vínculo estável.");
+assert(store.getHistoryState().undoCount === historyBefore + 1, "A variação composta não foi registrada como uma ação reversível.");
+store.undo();
+assert(!store.getProduct(product.id).metadata.variants.length, "Desfazer não removeu a variação composta.");
+console.log("✓ Variação de tabela cria entidade, imagem e linha vinculadas em uma ação.");

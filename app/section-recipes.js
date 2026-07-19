@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const node = (id, type, frame, options = {}) => ({
     id,
@@ -68,11 +68,20 @@
     name: "Chamada de dica",
     props: { label: "DICA" },
     style: { surface: "surface.paper", border: "border.default", radius: "radius.medium", accentColor: "brand.primary" },
-    layout: { mode: "free", padding: 0, gap: 8, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 260, mode: "column" } },
+    layout: { mode: "row", padding: 10, gap: 8, columns: 2, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 180, mode: "column" } },
     children: [
-      node("recipe-tip-icon", "icon", { x: 14, y: 24, width: 58, height: 58 }, { props: { icon: "bulb", label: "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", typography: "type.caption" } }),
-      node("recipe-tip-title", "text", { x: 82, y: 14, width: 232, height: 36 }, { props: { content: "DICA DO CATÁLOGO" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" } }),
-      node("recipe-tip-body", "text", { x: 82, y: 50, width: 232, height: 56 }, { props: { content: "Edite esta chamada com uma orientação útil para o cliente." }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.body" } })
+      node("recipe-tip-icon", "icon", { x: 10, y: 10, width: 54, height: 100 }, { props: { icon: "bulb", label: "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", typography: "type.caption" }, layoutItem: { managed: true, grow: 0, span: 1 } }),
+      node("recipe-tip-copy", "layout-container", { x: 72, y: 10, width: 248, height: 100 }, {
+        name: "Textos da dica",
+        props: { label: "CONTEÚDO DA DICA" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "column", padding: 0, gap: 4, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 120, mode: "column" } },
+        layoutItem: { managed: true, grow: 1, span: 1 },
+        children: [
+          node("recipe-tip-title", "text", { x: 0, y: 0, width: 248, height: 36 }, { props: { content: "DICA DO CATÁLOGO" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" }, layoutItem: { managed: true, grow: 0, span: 1 } }),
+          node("recipe-tip-body", "text", { x: 0, y: 40, width: 248, height: 60 }, { props: { content: "Edite esta chamada com uma orientação útil para o cliente." }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.body" }, layoutItem: { managed: true, grow: 1, span: 1 } })
+        ]
+      })
     ]
   });
 

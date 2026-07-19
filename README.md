@@ -36,6 +36,7 @@ A pasta reúne vinte e sete etapas evolutivas:
 - **Incremento 05.12 — auditoria manual e intenção contextual:** reconstrução integral da referência em Chromium real, log de 267 ações, matriz de 65% e evidências JSON/PNG/PDF que promovem as fricções mensuradas ao backlog.
 - **Incremento 05.13 — auditoria subtrativa e governança:** 35 capacidades classificadas, frentes externas congeladas, redundâncias mapeadas e autoridade Auto/Manual testada antes de qualquer remoção.
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
+- **Incremento 05.15 — destino contextual e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica em uma ação, dica estreita responsiva, galeria compacta segura e legendas mais distintas.
 
 ## Abrir
 
@@ -527,6 +528,10 @@ node tests/reference-coverage.test.js
 node tests/reference-manual-audit-contract.test.js
 node tests/subtractive-layout-authority.test.js
 node tests/layout-authority-geometry.test.js
+node tests/contextual-insertion-target.test.js
+node tests/compound-table-variant.test.js
+node tests/focal-recipe-layout.test.js
+node tests/legend-token-contrast.test.js
 node tests/feature-governance.test.js
 python tests/validate-schema.py
 ```

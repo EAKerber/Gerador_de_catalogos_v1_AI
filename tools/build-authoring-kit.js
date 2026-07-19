@@ -163,7 +163,7 @@ fs.writeFileSync(path.join(kitRoot, "feature-inventory.json"), window.CatalogPro
 const markdownCell = value => String(value).replace(/\|/g, "\\|").replace(/\n/g, " ");
 const list = values => values?.length ? values.map(value => `\`${value}\``).join(", ") : "—";
 const catalogLines = [
-  "# Atlas de funcionalidades — Incremento 05.14",
+  "# Atlas de funcionalidades — Incremento 05.15",
   "",
   "Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.",
   "",
@@ -209,4 +209,4 @@ const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
 
-console.log(`✓ CatalogAuthoringKit 1.5.3 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
+console.log(`✓ CatalogAuthoringKit 1.5.4 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);

@@ -52,6 +52,7 @@ assert(inspector.includes("data-slot-span") && read("app/document-store.js").inc
 assert(read("schemas/catalog-document.schema.json").includes('"span": { "type": "integer"'), "O schema não formaliza slot.span.");
 assert(inspector.includes("data-reintegrate-layout") && inspector.includes("Gerenciado pelo layout") && read("app/document-store.js").includes("setComponentLayoutAuthority"), "A autoridade local de layout não está conectada ao store e ao inspetor.");
 assert(interactions.includes("selectComponentInContext"), "A árvore de camadas não realiza seleção com transição de contexto.");
+assert(interactions.includes("dropContextAtEvent") && interactions.includes("event.shiftKey") && read("app/document-store.js").includes("getContextualInsertionTarget"), "A inserção não prioriza o contêiner alvo nem oferece override por Shift.");
 assert(editorCss.includes(".toast { display: none !important; }") || editorCss.includes(".side-panel__topbar, .toast"), "Mensagens transitórias ainda podem aparecer na impressão.");
 assert(componentCss.includes("print-color-adjust: exact") && componentCss.includes(".6mm") && componentCss.includes(".editor-component--separator { border: 0"), "A impressão não estabiliza cor, espessura e borda dos separadores.");
 assert(inspector.includes("data-restore-default-child") && read("app/document-store.js").includes("restoreDefaultChild"), "A aba Estrutura não restaura tipos internos ausentes.");
