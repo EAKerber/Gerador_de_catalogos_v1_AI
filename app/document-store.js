@@ -54,8 +54,11 @@
       "product-unbound": "Desvincular produto",
       "product-template-applied": "Aplicar apresentação",
       "product-cards-created": "Criar cards da seleção",
+      "hero-grid-strip-created": "Criar hero, grade e faixa",
       "table-row-added": "Adicionar linha",
       "table-rows-replaced": "Colar linhas da tabela",
+      "table-schema-applied": "Aplicar esquema da tabela",
+      "table-schema-batch-applied": "Aplicar esquema às tabelas",
       "table-row-updated": "Editar linha",
       "table-row-removed": "Excluir linha",
       "table-columns-updated": "Editar colunas da tabela",
@@ -1941,6 +1944,53 @@
       });
     }
 
+    createHeroGridStripForProducts(productIds = [], options = {}) {
+      const products = Array.from(new Set((productIds || []).map(String))).map(productId => this.getProduct(productId)).filter(Boolean);
+      if (!products.length) return { composition: null, hero: null, cards: [], strip: null };
+      const columns = Math.max(2, Math.min(4, Math.round(Number(options.columns) || 3)));
+      return this.runCompoundChange({ type: "hero-grid-strip-created", count: products.length, columns }, () => {
+        const requestedParentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+        const parentId = requestedParentId && this.isTypeAllowed("layout-container", requestedParentId) ? requestedParentId : null;
+        const template = this.getInsertableTemplate("section-hero-grid-strip");
+        const frame = this.getSuggestedFrame(template.metadata.component.frame, parentId);
+        const composition = this.addComponentFromTemplate("section-hero-grid-strip", frame, { parentId });
+        let heroRegion = null;
+        let gridRegion = null;
+        let strip = null;
+        visitSubtree(composition, component => {
+          if (component.props?.recipeRole === "hero") heroRegion = component;
+          if (component.props?.recipeRole === "grid") gridRegion = component;
+          if (component.props?.recipeRole === "strip") strip = component;
+        });
+        if (!heroRegion || !gridRegion || !strip) throw new Error("A receita hero + grade + faixa está incompleta.");
+        gridRegion.layout.columns = columns;
+
+        const createBoundCard = (product, parent, presentation) => {
+          const card = this.addComponent("product-card", { x: 0, y: 0, width: parent.frame.width, height: presentation.mode === "hero" ? 280 : 220 }, { parentId: parent.id });
+          this.bindProduct(card.id, product.id);
+          this.setComponentPresentation(card.id, presentation);
+          const table = cardDataTable(card);
+          if (table) {
+            this.updateComponent(table.id, { props: { density: presentation.density } });
+            this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+          }
+          return card;
+        };
+
+        const hero = createBoundCard(products[0], heroRegion, { presetId: "product-hero", mode: "hero", density: "comfortable", responsiveState: "auto" });
+        const cards = products.slice(1).map(product => createBoundCard(product, gridRegion, { presetId: "product-standard", mode: "standard", density: "compact", responsiveState: "compact" }));
+        this.ensureContainerMinimum(heroRegion, composition.id);
+        this.ensureContainerMinimum(gridRegion, composition.id);
+        reflowTree(heroRegion);
+        reflowTree(gridRegion);
+        this.state.editor.editingContextId = gridRegion.id;
+        this.state.editor.selectedComponentId = cards[cards.length - 1]?.id || hero.id;
+        this.state.editor.selectedComponentIds = [this.state.editor.selectedComponentId];
+        return { composition, hero, cards, strip };
+      });
+    }
+
     updateProduct(productId, patch = {}) {
       const product = this.getProduct(productId);
       if (!product) return null;
@@ -3137,6 +3187,54 @@
     getTableColumns(componentOrId) {
       const component = typeof componentOrId === "string" ? this.findComponent(componentOrId)?.component : componentOrId;
       return component?.type === "data-table" ? tableColumns(component.props?.columns) : [];
+    }
+
+    getTableSchemas() {
+      return window.CatalogTableSchemas?.list?.() || [];
+    }
+
+    getTablesForComponents(componentIds = []) {
+      const tables = [];
+      const seen = new Set();
+      (Array.isArray(componentIds) ? componentIds : [componentIds]).forEach(componentId => {
+        const component = typeof componentId === "string" ? this.findComponent(componentId)?.component : componentId;
+        if (!component) return;
+        visitSubtree(component, child => {
+          if (child.type !== "data-table" || seen.has(child.id)) return;
+          seen.add(child.id);
+          tables.push(child);
+        });
+      });
+      return tables;
+    }
+
+    applyTableSchema(componentIds, schemaId) {
+      const schema = window.CatalogTableSchemas?.get?.(schemaId);
+      const tables = this.getTablesForComponents(componentIds);
+      if (!schema || !tables.length) return [];
+      const changeType = tables.length > 1 ? "table-schema-batch-applied" : "table-schema-applied";
+      return this.runCompoundChange({ type: changeType, schemaId, componentIds: tables.map(table => table.id) }, () => {
+        const previousEditor = clone(this.state.editor);
+        tables.forEach(table => {
+          const previousColumns = this.getTableColumns(table);
+          const previousRows = this.getTableRows(table).map(row => ({
+            row,
+            values: { ...(row.metadata?.values || {}) },
+            legendKeys: { ...(row.metadata?.legendKeys || {}) }
+          }));
+          this.updateTableColumns(table.id, schema.columns);
+          previousRows.forEach(({ row, values, legendKeys }) => {
+            const valueByRole = Object.fromEntries(previousColumns.map(column => [column.role, values[column.key] ?? ""]));
+            const legendByRole = Object.fromEntries(previousColumns.map(column => [column.role, legendKeys[column.key] || null]));
+            row.metadata.values = Object.fromEntries(schema.columns.map(column => [column.key, values[column.key] ?? valueByRole[column.role] ?? ""]));
+            row.metadata.legendKeys = Object.fromEntries(schema.columns.map(column => [column.key, legendKeys[column.key] || legendByRole[column.role]]).filter(([, value]) => value));
+          });
+          table.props.tableSchemaId = schema.id;
+          this.refreshTableLayout(table.id);
+        });
+        this.state.editor = previousEditor;
+        return tables;
+      });
     }
 
     getColorLegends() {

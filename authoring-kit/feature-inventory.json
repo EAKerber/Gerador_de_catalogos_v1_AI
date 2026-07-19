@@ -167,10 +167,31 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.reusableTableSchemas",
+      "governance": "active",
+      "governanceReason": "Reduz configuração repetida sem criar um segundo modelo de tabela.",
+      "id": "reusableTableSchemas",
+      "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.batchTableSchemas",
+      "governance": "active",
+      "governanceReason": "Aplica a mesma intenção estrutural a várias tabelas em uma transação reversível.",
+      "id": "batchTableSchemas",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.manualProductCardBatch",
       "governance": "active",
       "governanceReason": "Operação composta de alto valor comprovado.",
       "id": "manualProductCardBatch",
+      "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.heroGridStripComposition",
+      "governance": "active",
+      "governanceReason": "Materializa uma organização frequente com componentes canônicos e editáveis.",
+      "id": "heroGridStripComposition",
       "value": true
     },
     {
@@ -1149,6 +1170,7 @@
     {
       "capabilityIds": [
         "manualProductCardBatch",
+        "heroGridStripComposition",
         "undoRedo"
       ],
       "componentTypes": [
@@ -1156,13 +1178,17 @@
         "layout-container"
       ],
       "id": "content.cards-from-products",
-      "recipeIds": []
+      "recipeIds": [
+        "section-hero-grid-strip"
+      ]
     },
     {
       "capabilityIds": [
         "semanticTables",
         "contextualTableRows",
-        "manualBulkTableEntry"
+        "manualBulkTableEntry",
+        "reusableTableSchemas",
+        "batchTableSchemas"
       ],
       "componentTypes": [
         "data-table"
@@ -1563,7 +1589,7 @@
       "id": "page-catalog-base",
       "label": "Página de catálogo",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1575,7 +1601,7 @@
       "id": "section-applications",
       "label": "Faixa de aplicações",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1587,7 +1613,7 @@
       "id": "section-packaging-legend",
       "label": "Legenda de embalagens",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1599,7 +1625,19 @@
       "id": "section-tip-callout",
       "label": "Chamada de dica",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Um destaque, uma grade de produtos e uma faixa complementar editável.",
+      "focusRole": "grid",
+      "id": "section-hero-grid-strip",
+      "label": "Hero + grade + faixa",
+      "rootType": "layout-container",
+      "version": "1.2.0"
     }
   ],
   "separatorPresets": [
@@ -1645,11 +1683,11 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 35,
+    "capabilities": 38,
     "components": 16,
     "curatedFlows": 15,
     "governance": {
-      "active": 20,
+      "active": 23,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,
@@ -1657,7 +1695,7 @@
     },
     "icons": 27,
     "presentations": 4,
-    "recipes": 4,
+    "recipes": 5,
     "separatorPresets": 5
   },
   "tokenGroups": [

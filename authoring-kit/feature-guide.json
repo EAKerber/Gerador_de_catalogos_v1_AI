@@ -45,14 +45,14 @@
     {
       "id": "content.cards-from-products",
       "intention": "Criar e vincular cards para uma seleção de produtos",
-      "access": "Produtos → selecionar → Criar cards",
+      "access": "Produtos → selecionar → escolher organização → Criar composição",
       "preconditions": ["Produtos existentes", "Contêiner de destino com espaço"],
       "result": "Cards vinculados e organizados em uma única transação",
-      "example": "Materializar sete cards no conteúdo principal",
+      "example": "Materializar um hero, seis cards em grade e uma faixa complementar",
       "limits": ["Capacidade e gate geométrico continuam obrigatórios"],
-      "capabilityIds": ["manualProductCardBatch", "undoRedo"],
+      "capabilityIds": ["manualProductCardBatch", "heroGridStripComposition", "undoRedo"],
       "componentTypes": ["product-card", "layout-container"],
-      "recipeIds": [],
+      "recipeIds": ["section-hero-grid-strip"],
       "contracts": ["component.binding.productId", "CatalogDocument.collections.products"]
     },
     {
@@ -61,9 +61,9 @@
       "access": "Selecionar tabela → Conteúdo; ou + para nova linha",
       "preconditions": ["Tabela selecionada"],
       "result": "Colunas semânticas, múltiplas linhas e valores editáveis",
-      "example": "Adicionar coluna Medida e colar duas linhas comerciais",
+      "example": "Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais",
       "limits": ["Regras condicionais avançadas permanecem fora desta versão"],
-      "capabilityIds": ["semanticTables", "contextualTableRows", "manualBulkTableEntry"],
+      "capabilityIds": ["semanticTables", "contextualTableRows", "manualBulkTableEntry", "reusableTableSchemas", "batchTableSchemas"],
       "componentTypes": ["data-table"],
       "recipeIds": [],
       "contracts": ["component.props.columns", "collection.tableRows"]

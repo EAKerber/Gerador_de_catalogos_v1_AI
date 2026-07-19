@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const node = (id, type, frame, options = {}) => ({
     id,
@@ -85,6 +85,34 @@
     ]
   });
 
+  const heroGridStrip = node("recipe-hero-grid-strip-root", "layout-container", { x: 0, y: 0, width: 746, height: 800 }, {
+    name: "Hero, grade e faixa",
+    props: { label: "HERO + GRADE + FAIXA", recipeRole: "product-composition" },
+    style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+    layout: { mode: "free", padding: 0, gap: 12, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "column" } },
+    children: [
+      node("recipe-hero-region", "layout-container", { x: 0, y: 0, width: 746, height: 280 }, {
+        name: "Produto em destaque",
+        props: { label: "PRODUTO EM DESTAQUE", recipeRole: "hero" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "grid", padding: 0, gap: 0, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
+      }),
+      node("recipe-grid-region", "layout-container", { x: 0, y: 292, width: 746, height: 400 }, {
+        name: "Grade de produtos",
+        props: { label: "GRADE DE PRODUTOS", recipeRole: "grid" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "grid", padding: 0, gap: 12, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
+      }),
+      node("recipe-strip-region", "layout-container", { x: 0, y: 704, width: 746, height: 88 }, {
+        name: "Faixa complementar",
+        props: { label: "FAIXA COMPLEMENTAR", recipeRole: "strip" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "row", padding: 0, gap: 8, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: true, breakpoint: 360, mode: "column" } },
+        children: clone(applicationStrip.children)
+      })
+    ]
+  });
+
   const recipes = Object.freeze({
     "page-catalog-base": Object.freeze({
       id: "page-catalog-base",
@@ -122,6 +150,16 @@
       icon: "bulb",
       contexts: ["page", "layout-container"],
       component: tipCallout
+    }),
+    "section-hero-grid-strip": Object.freeze({
+      id: "section-hero-grid-strip",
+      version: VERSION,
+      label: "Hero + grade + faixa",
+      description: "Um destaque, uma grade de produtos e uma faixa complementar editável.",
+      icon: "page",
+      contexts: ["page", "layout-container"],
+      focusRole: "grid",
+      component: heroGridStrip
     })
   });
 

@@ -24,6 +24,7 @@ fs.mkdirSync(runtimeRoot, { recursive: true });
 [
   "tokens.js",
   "catalog-source.js",
+  "table-schema-registry.js",
   "catalog-generation-plan.js",
   "presentation-registry.js",
   "catalog-icons.js",
@@ -64,7 +65,7 @@ sandbox.globalThis = sandbox;
 window.window = window;
 vm.createContext(sandbox);
 
-["app/tokens.js", "app/catalog-source.js", "app/catalog-generation-plan.js", "app/presentation-registry.js", "app/catalog-icons.js", "app/component-registry.js", "app/section-recipes.js", "app/project-package.js"].forEach(relativePath => {
+["app/tokens.js", "app/catalog-source.js", "app/table-schema-registry.js", "app/catalog-generation-plan.js", "app/presentation-registry.js", "app/catalog-icons.js", "app/component-registry.js", "app/section-recipes.js", "app/project-package.js"].forEach(relativePath => {
   vm.runInContext(fs.readFileSync(path.join(root, relativePath), "utf8"), sandbox, { filename: relativePath });
 });
 
@@ -209,4 +210,4 @@ const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
 
-console.log(`✓ CatalogAuthoringKit 1.5.4 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
+  console.log(`✓ CatalogAuthoringKit 1.5.5 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);

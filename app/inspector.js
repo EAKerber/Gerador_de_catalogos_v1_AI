@@ -232,6 +232,7 @@
       if (component.type !== "data-table") return "";
       const rows = this.store.getTableRows(component);
       const columns = this.store.getTableColumns(component);
+      const schemas = this.store.getTableSchemas();
       const legends = this.store.getColorLegends();
       const legendOptions = selected => `<option value="">Sem legenda</option>${selected && !legends.some(legend => legend.metadata?.key === selected) ? `<option value="${escapeHtml(selected)}" selected>Legenda ausente · ${escapeHtml(selected)}</option>` : ""}${legends.map(legend => `<option value="${escapeHtml(legend.metadata?.key)}" ${legend.metadata?.key === selected ? "selected" : ""}>${escapeHtml(legend.metadata?.textLabel || legend.label)}</option>`).join("")}`;
       return `
@@ -239,6 +240,10 @@
           <div class="inspector-section__heading">
             <h3 class="inspector-section__title">Tabela semântica</h3>
             <span>${columns.length} coluna(s) · ${rows.length} linha(s)</span>
+          </div>
+          <div class="inspector-grid table-schema-apply">
+            <div class="inspector-field inspector-field--full"><label>Esquema reutilizável</label><select data-table-schema>${schemas.map(schema => `<option value="${escapeHtml(schema.id)}" ${component.props?.tableSchemaId === schema.id ? "selected" : ""}>${escapeHtml(schema.label)} · ${escapeHtml(schema.description)}</option>`).join("")}</select></div>
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-table-schema-apply>Aplicar esquema</button>
           </div>
           <details class="table-bulk-entry" ${this.tableBulkOpen ? "open" : ""}>
             <summary>Colar várias linhas <span>Excel, Sheets, TSV ou CSV</span></summary>
@@ -371,6 +376,8 @@
       const records = components.map(component => this.store.findComponent(component.id)).filter(Boolean);
       const contextLabel = records[0]?.parent?.name || this.store.getPage().name;
       const cards = Array.from(new Map(components.map(component => this.store.getProductCard(component.id)).filter(Boolean).map(card => [card.id, card])).values());
+      const tables = this.store.getTablesForComponents(components);
+      const tableSchemas = this.store.getTableSchemas();
       const accentEligible = components.filter(component => window.CATALOG_COMPONENT_REGISTRY[component.type]?.styleFields?.includes("accentColor"));
       const textEligible = components.filter(component => window.CATALOG_COMPONENT_REGISTRY[component.type]?.styleFields?.includes("textColor"));
       const density = this.commonValue(cards, card => card.presentation?.density || "standard");
@@ -437,6 +444,12 @@
               <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(mode)}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${mode === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
               <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(density)}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${density === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             </div>
+          </section>` : ""}
+          ${tables.length ? `<section class="inspector-section">
+            <div class="inspector-section__heading"><h3 class="inspector-section__title">Esquema das tabelas</h3><span>${tables.length} elegível(is)</span></div>
+            <p class="inspector-note">Aplica a mesma estrutura de colunas em uma única transação, preservando valores pelo papel semântico.</p>
+            <div class="inspector-field inspector-field--full"><label>Esquema reutilizável</label><select data-batch-table-schema>${tableSchemas.map(schema => `<option value="${escapeHtml(schema.id)}">${escapeHtml(schema.label)} · ${escapeHtml(schema.description)}</option>`).join("")}</select></div>
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-table-schema-apply>Aplicar a ${tables.length} tabela(s)</button>
           </section>` : ""}
           ${accentEligible.length || textEligible.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Visual compartilhado</h3><span>somente elegíveis</span></div>
@@ -732,6 +745,9 @@
             if (status) status.textContent = error.message;
           }
         }
+        else if (event.target.closest("[data-batch-table-schema-apply]")) {
+          this.store.applyTableSchema(selectedIds, this.root.querySelector("[data-batch-table-schema]")?.value);
+        }
         else if (event.target.closest("[data-batch-duplicate]")) this.store.duplicateComponents(selectedIds);
         else if (event.target.closest("[data-batch-delete]")) this.store.deleteComponents(selectedIds);
         else return;
@@ -778,6 +794,8 @@
           this.tableBulkFeedback = error.message;
         }
         this.render();
+      } else if (event.target.closest("[data-table-schema-apply]")) {
+        this.store.applyTableSchema([component.id], this.root.querySelector("[data-table-schema]")?.value);
       } else if (event.target.closest("[data-table-row-add]")) {
         const values = Object.fromEntries(this.store.getTableColumns(component).map(column => [column.key, column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""]));
         this.store.addTableRow(component.id, values);

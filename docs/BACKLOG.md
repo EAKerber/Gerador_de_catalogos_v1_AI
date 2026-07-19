@@ -26,16 +26,16 @@ O 05.13 não remove recursos nem migra documentos. `CatalogDocument` permanece e
 | P1 | Autoridades concorrentes | Gerenciado/independente/reintegrar substituem Auto/Manual no fluxo normal. | ADR-026 e testes de reflow. |
 | P2 | Impressão confiável | Preflight pede confirmação diante de erros e `.toast` é excluído da mídia impressa. | Contrato de UI e teste de impressão. |
 
-### Em andamento — Incremento 05.15 Receitas e ações compostas
+### Concluído — Incremento 05.15 Receitas e ações compostas
 
 | Prioridade | Problema | Critério de saída |
 | --- | --- | --- |
 | P1 | Destino de inserção ignora o alvo visual | Entregue: contêiner selecionado/sob o ponteiro vira destino; `Shift` insere no contexto atual. |
-| P1 | Receitas compactas frágeis | Parcial entregue: galeria de cinco imagens e dica a 236 px; benchmark integral ainda pendente. |
-| P1 | Tabela domina a construção manual | Parcial entregue: linha simples e variação semântica; esquemas e aplicação em lote pendentes. |
+| P1 | Receitas compactas frágeis | Entregue: galeria de cinco imagens, dica a 236 px e organização hero + grade + faixa; benchmark integral segue no 05.16. |
+| P1 | Tabela domina a construção manual | Entregue: linha simples, variação semântica, quatro esquemas reutilizáveis e aplicação em lote. |
 | P2 | Contraste de tokens de legenda | Entregue para `pack.500`/`pack.300`, com borda de amostra reforçada. |
 
-Esquemas de tabela e receita hero + grade + faixa permanecem no 05.15. Continuidade de tarefa e nova medição passam para 05.16.
+O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colunas, componentes e vínculos já canônicos. Continuidade de tarefa e nova medição passam para 05.16.
 
 ### Frentes congeladas
 

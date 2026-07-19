@@ -4,12 +4,12 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 ## Resumo
 
-- 35 capacidades de produto;
+- 38 capacidades de produto;
 - 16 tipos de componente;
-- 4 receitas oficiais;
+- 5 receitas oficiais;
 - 15 fluxos curados;
 - 27 ícones declarados.
-- governança: 20 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 23 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Fluxos por intenção
 
@@ -18,7 +18,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `start.semantic-source` | Gerar um catálogo a partir de produtos estruturados | Importar → CatalogSource JSON → analisar → gerar | Fonte normalizada, plano editorial e página materializada deterministicamente |
 | `start.page-structure` | Começar uma página manual sem montar a estrutura peça por peça | Componentes → Estruturas prontas → Página-base → + | Cabeçalho, área principal e rodapé editáveis, com foco no conteúdo |
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
-| `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → Criar cards | Cards vinculados e organizados em uma única transação |
+| `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
 | `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas, múltiplas linhas e valores editáveis |
 | `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset persistido por referência e reutilizável |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
@@ -73,14 +73,14 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 ## Criar e vincular cards para uma seleção de produtos
 
 - **ID:** `content.cards-from-products`
-- **Acesso:** Produtos → selecionar → Criar cards
+- **Acesso:** Produtos → selecionar → escolher organização → Criar composição
 - **Pré-condições:** Produtos existentes; Contêiner de destino com espaço
 - **Resultado:** Cards vinculados e organizados em uma única transação
-- **Exemplo:** Materializar sete cards no conteúdo principal
+- **Exemplo:** Materializar um hero, seis cards em grade e uma faixa complementar
 - **Limites:** Capacidade e gate geométrico continuam obrigatórios
-- **Capacidades:** `manualProductCardBatch`, `undoRedo`
+- **Capacidades:** `manualProductCardBatch`, `heroGridStripComposition`, `undoRedo`
 - **Componentes:** `product-card`, `layout-container`
-- **Receitas:** —
+- **Receitas:** `section-hero-grid-strip`
 - **Contratos:** `component.binding.productId`, `CatalogDocument.collections.products`
 
 ## Editar estrutura e dados de uma tabela
@@ -89,9 +89,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Acesso:** Selecionar tabela → Conteúdo; ou + para nova linha
 - **Pré-condições:** Tabela selecionada
 - **Resultado:** Colunas semânticas, múltiplas linhas e valores editáveis
-- **Exemplo:** Adicionar coluna Medida e colar duas linhas comerciais
+- **Exemplo:** Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais
 - **Limites:** Regras condicionais avançadas permanecem fora desta versão
-- **Capacidades:** `semanticTables`, `contextualTableRows`, `manualBulkTableEntry`
+- **Capacidades:** `semanticTables`, `contextualTableRows`, `manualBulkTableEntry`, `reusableTableSchemas`, `batchTableSchemas`
 - **Componentes:** `data-table`
 - **Receitas:** —
 - **Contratos:** `component.props.columns`, `collection.tableRows`
@@ -253,7 +253,10 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `catalogSourceDirectImport` | `true` | **active** | Fluxo principal de geração data-first. | `CatalogCapabilities.capabilities.catalogSourceDirectImport` |
 | `manualBulkProductEntry` | `true` | **active** | Maior ganho observado na criação manual. | `CatalogCapabilities.capabilities.manualBulkProductEntry` |
 | `manualBulkTableEntry` | `true` | **active** | Base para esquema e dados em operações separadas. | `CatalogCapabilities.capabilities.manualBulkTableEntry` |
+| `reusableTableSchemas` | `true` | **active** | Reduz configuração repetida sem criar um segundo modelo de tabela. | `CatalogCapabilities.capabilities.reusableTableSchemas` |
+| `batchTableSchemas` | `true` | **active** | Aplica a mesma intenção estrutural a várias tabelas em uma transação reversível. | `CatalogCapabilities.capabilities.batchTableSchemas` |
 | `manualProductCardBatch` | `true` | **active** | Operação composta de alto valor comprovado. | `CatalogCapabilities.capabilities.manualProductCardBatch` |
+| `heroGridStripComposition` | `true` | **active** | Materializa uma organização frequente com componentes canônicos e editáveis. | `CatalogCapabilities.capabilities.heroGridStripComposition` |
 | `multiSelection` | `true` | **active** | Base para ações de grupo. | `CatalogCapabilities.capabilities.multiSelection` |
 | `batchAlignment` | `true` | **active** | Intenção distinta de organização de irmãos. | `CatalogCapabilities.capabilities.batchAlignment` |
 | `batchPresentation` | `true` | **audit** | Consolidar com modos, presets e densidade sem duplicar superfícies. | `CatalogCapabilities.capabilities.batchPresentation` |

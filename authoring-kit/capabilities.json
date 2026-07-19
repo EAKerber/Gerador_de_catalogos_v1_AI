@@ -11,6 +11,7 @@
     "batchPresentation": true,
     "batchSeparators": true,
     "batchSpacing": true,
+    "batchTableSchemas": true,
     "catalogSourceDirectImport": true,
     "contextualArtGallery": true,
     "contextualInsertActions": true,
@@ -18,6 +19,7 @@
     "draftPublicationGates": true,
     "generationPlanCompiler": true,
     "geometricPublicationGate": true,
+    "heroGridStripComposition": true,
     "hierarchicalVisualLegends": true,
     "jsonExport": true,
     "jsonImport": true,
@@ -40,6 +42,7 @@
     ],
     "projectPackageExport": true,
     "projectPackageImport": true,
+    "reusableTableSchemas": true,
     "semanticCatalogSource": true,
     "semanticColorLegends": true,
     "semanticProductVariants": true,
@@ -1448,7 +1451,7 @@
       "id": "page-catalog-base",
       "label": "Página de catálogo",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1460,7 +1463,7 @@
       "id": "section-applications",
       "label": "Faixa de aplicações",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1472,7 +1475,7 @@
       "id": "section-packaging-legend",
       "label": "Legenda de embalagens",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     {
       "contexts": [
@@ -1484,7 +1487,19 @@
       "id": "section-tip-callout",
       "label": "Chamada de dica",
       "rootType": "layout-container",
-      "version": "1.1.0"
+      "version": "1.2.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Um destaque, uma grade de produtos e uma faixa complementar editável.",
+      "focusRole": "grid",
+      "id": "section-hero-grid-strip",
+      "label": "Hero + grade + faixa",
+      "rootType": "layout-container",
+      "version": "1.2.0"
     }
   ],
   "separatorPresets": [
@@ -1522,6 +1537,134 @@
       "label": "Bolinha contorno",
       "marker": "outline",
       "thickness": 2
+    }
+  ],
+  "tableSchemas": [
+    {
+      "columns": [
+        {
+          "align": "center",
+          "key": "code",
+          "label": "CÓDIGO",
+          "role": "identifier",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "package",
+          "label": "EMBALAGEM",
+          "role": "package",
+          "width": 1
+        },
+        {
+          "align": "end",
+          "key": "price",
+          "label": "PREÇO",
+          "role": "price",
+          "width": 1
+        }
+      ],
+      "description": "Código, embalagem e preço.",
+      "id": "commercial",
+      "label": "Comercial"
+    },
+    {
+      "columns": [
+        {
+          "align": "center",
+          "key": "code",
+          "label": "CÓDIGO",
+          "role": "identifier",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "measure",
+          "label": "MEDIDA",
+          "role": "measure",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "package",
+          "label": "EMBALAGEM",
+          "role": "package",
+          "width": 1
+        },
+        {
+          "align": "end",
+          "key": "price",
+          "label": "PREÇO",
+          "role": "price",
+          "width": 1
+        }
+      ],
+      "description": "Código, medida, embalagem e preço.",
+      "id": "measured",
+      "label": "Medida e embalagem"
+    },
+    {
+      "columns": [
+        {
+          "align": "center",
+          "key": "code",
+          "label": "CÓDIGO",
+          "role": "identifier",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "variant",
+          "label": "VARIAÇÃO",
+          "role": "value",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "package",
+          "label": "EMBALAGEM",
+          "role": "package",
+          "width": 1
+        },
+        {
+          "align": "end",
+          "key": "price",
+          "label": "PREÇO",
+          "role": "price",
+          "width": 1
+        }
+      ],
+      "description": "Código, variação, embalagem e preço.",
+      "id": "variants",
+      "label": "Variações"
+    },
+    {
+      "columns": [
+        {
+          "align": "center",
+          "key": "code",
+          "label": "CÓDIGO",
+          "role": "identifier",
+          "width": 1
+        },
+        {
+          "align": "center",
+          "key": "variant",
+          "label": "VARIAÇÃO",
+          "role": "value",
+          "width": 1
+        },
+        {
+          "align": "end",
+          "key": "price",
+          "label": "VALOR UNITÁRIO",
+          "role": "price",
+          "width": 1
+        }
+      ],
+      "description": "Código, variação e valor unitário.",
+      "id": "unit",
+      "label": "Valor unitário"
     }
   ],
   "templates": [],

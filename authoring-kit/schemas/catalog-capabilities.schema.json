@@ -18,6 +18,7 @@
     },
     "templates": { "type": "array" },
     "recipes": { "type": "array" },
+    "tableSchemas": { "type": "array" },
     "separatorPresets": { "type": "array" },
     "presentations": { "type": "object" },
     "tokens": { "type": "object" },

@@ -3,7 +3,7 @@
 
   const PACKAGE_FORMAT = "CatalogProjectPackage";
   const PACKAGE_VERSION = "1.0.0";
-  const AUTHORING_KIT_VERSION = "1.5.4";
+  const AUTHORING_KIT_VERSION = "1.5.5";
   const CAPABILITIES_VERSION = "1.0.0";
   const MAX_PACKAGE_SIZE = 100 * 1024 * 1024;
   const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
@@ -238,6 +238,7 @@
         contexts: clone(recipe.contexts || []),
         focusRole: recipe.focusRole || null
       })),
+      tableSchemas: window.CatalogTableSchemas?.list?.() || [],
       separatorPresets: Object.values(window.CATALOG_SEPARATOR_PRESETS || {}).map(preset => clone(preset)),
       presentations: {
         manifestVersion: window.CatalogPresentations?.VERSION || "1.0.0",
@@ -271,7 +272,10 @@
         catalogSourceDirectImport: true,
         manualBulkProductEntry: true,
         manualBulkTableEntry: true,
+        reusableTableSchemas: true,
+        batchTableSchemas: true,
         manualProductCardBatch: true,
+        heroGridStripComposition: true,
         multiSelection: true,
         batchAlignment: true,
         batchPresentation: true,

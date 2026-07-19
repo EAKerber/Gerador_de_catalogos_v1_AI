@@ -367,7 +367,7 @@ Critérios de aceite:
 
 Entregue com autoridade local durável, reintegração explícita, seleção entre contextos, geometria solicitada/resolvida e preflight de impressão. O recálculo deixa de reativar exceções descendentes; `reflow.mode` permanece apenas para leitura compatível. A estabilização visual específica de galeria, dica e legenda foi mantida no 05.15 para ser tratada junto das receitas, sem misturar novamente autoridade estrutural e presets. `CatalogDocument` permanece em `1.16.0` e o kit passa a `1.5.3`.
 
-## Incremento 05.15 — Comandos compostos e receitas focais 🚧
+## Incremento 05.15 — Comandos compostos e receitas focais ✅
 
 Critérios de aceite:
 
@@ -378,7 +378,7 @@ Critérios de aceite:
 - consolidar duplicação e separadores em superfícies progressivas;
 - garantir uma transação reversível por comando.
 
-Primeiro checkpoint entregue: destino contextual para `+`/arraste com override por `Shift`, variação semântica em uma transação, dica responsiva a 236 px, galeria compacta de cinco imagens sem invadir especificações/tabela e contraste de legendas. Esquemas reutilizáveis de tabela, aplicação em lote e organização hero + grade + faixa permanecem no escopo do incremento.
+Entregue: destino contextual para `+`/arraste com override por `Shift`, variação semântica em uma transação, dica responsiva a 236 px, galeria compacta de cinco imagens, contraste de legendas, quatro esquemas reutilizáveis, aplicação em lote e organização hero + grade + faixa. Os comandos materializam o modelo existente e permanecem reversíveis; `CatalogDocument` continua em `1.16.0` e o kit passa a `1.5.5`.
 
 ## Incremento 05.16 — Interface orientada à tarefa e nova medição
 

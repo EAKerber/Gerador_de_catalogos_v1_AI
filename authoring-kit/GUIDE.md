@@ -1,4 +1,4 @@
-# CatalogAuthoringKit 1.5.4
+# CatalogAuthoringKit 1.5.5
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
 
@@ -100,7 +100,7 @@ Seleções irmãs no mesmo contexto podem receber espaçamento uniforme por eixo
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.5.4
+## Limites 1.5.5
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

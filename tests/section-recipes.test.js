@@ -22,7 +22,7 @@ global.CatalogEditorIcon = () => "";
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const store = new CatalogDocumentStore(createBlankCatalogDocument());
-assert(store.getSectionRecipes().length === 4, "A página vazia não expôs as quatro estruturas oficiais.");
+assert(store.getSectionRecipes().length === 5, "A página vazia não expôs as cinco estruturas oficiais.");
 
 const historyBefore = store.getHistoryState().undoCount;
 const scaffold = store.insertComponentFromTemplate("page-catalog-base");
