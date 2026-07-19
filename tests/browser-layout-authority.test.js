@@ -17,6 +17,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
     CatalogEditor.store.setEditingContext(area.id);
     return { areaId: area.id, textId: text.id, siblingId: sibling.id };
   });
+  await page.locator('[data-left-panel-tab="layers"]').click();
   await page.locator(`[data-layer-id="${ids.areaId}"]`).click();
   const selection = await page.evaluate(() => ({ selected: CatalogEditor.store.getState().editor.selectedComponentId, context: CatalogEditor.store.getState().editor.editingContextId }));
   assert(selection.selected === ids.areaId && selection.context === null, "A camada do pai não foi selecionada com transição de contexto.");
@@ -28,7 +29,8 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   const siblingSelection = await page.evaluate(() => ({ selected: CatalogEditor.store.getState().editor.selectedComponentId, context: CatalogEditor.store.getState().editor.editingContextId }));
   assert(siblingSelection.selected === ids.siblingId && siblingSelection.context === ids.areaId, "Alternar entre irmãos exigiu correção de contexto.");
   await page.locator(`[data-layer-id="${ids.textId}"]`).click();
-  await page.locator('[data-layout-item-managed]').click();
+  await page.locator('[data-inspector-tab="structure"]').click();
+  await page.locator('.inspector-switch:has([data-layout-item-managed])').click();
   const independent = await page.evaluate(textId => CatalogEditor.store.findComponent(textId).component.layoutItem.managed, ids.textId);
   assert(independent === false, "O toggle não criou posição independente.");
   assert(await page.locator('[data-reintegrate-layout]').isVisible(), "A ação única de reintegração não apareceu.");

@@ -24,10 +24,11 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   });
 
   await page.locator(".table-column-editor > summary").click();
-  await page.locator(".table-bulk-entry > summary").click();
+  const tableBulkEntry = page.locator("details.table-bulk-entry:not(.legend-bulk-entry):not(.gallery-bulk-entry)");
+  await tableBulkEntry.locator(":scope > summary").click();
   await page.evaluate(id => CatalogEditor.store.selectComponentInContext(id), ids.second);
   assert(await page.locator(".table-column-editor").getAttribute("open") !== null, "Configurar colunas foi fechado ao trocar por tabela equivalente.");
-  assert(await page.locator(".table-bulk-entry").getAttribute("open") !== null, "Colar várias linhas foi fechado ao trocar por tabela equivalente.");
+  assert(await page.locator("details.table-bulk-entry:not(.legend-bulk-entry):not(.gallery-bulk-entry)").getAttribute("open") !== null, "Colar várias linhas foi fechado ao trocar por tabela equivalente.");
 
   await page.locator('[data-inspector-tab="style"]').click();
   await page.evaluate(id => CatalogEditor.store.selectComponentInContext(id), ids.first);

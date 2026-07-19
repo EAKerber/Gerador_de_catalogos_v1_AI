@@ -541,6 +541,8 @@ python tests/validate-schema.py
 
 Os smoke tests reais `tests/browser-assets.test.js`, `tests/browser-repeatable.test.js`, `tests/browser-hierarchy.test.js`, `tests/browser-print.test.js`, `tests/browser-slot-span.test.js`, `tests/browser-reflow.test.js`, `tests/browser-print-fidelity.test.js`, `tests/browser-composition-dynamics.test.js`, `tests/browser-print-structure.test.js`, `tests/browser-reusable-components.test.js`, `tests/browser-product-catalog.test.js`, `tests/browser-history-import.test.js`, `tests/browser-project-package.test.js`, `tests/browser-catalog-compiler.test.js`, `tests/browser-manual-efficiency.test.js`, `tests/browser-manual-batch.test.js`, `tests/browser-section-recipes.test.js`, `tests/browser-contextual-actions-spacing.test.js`, `tests/browser-chrome-responsive.test.js` e `tests/browser-reference-manual-audit.test.js` usam Playwright e requerem um Chromium disponível em `CATALOG_CHROMIUM_EXECUTABLE`. `CATALOG_BASE_URL` pode apontar para servidor local ou para o `file://` absoluto do `index.html`.
 
+Antes de atribuir `SIGSEGV` ao editor, valide o executável com `file`, tamanho e `chromium --version`. Um ELF truncado pode conservar permissão de execução e ainda falhar antes de o Playwright abrir a página. Em sandboxes sem diretório pessoal gravável, defina `HOME` e `XDG_CACHE_HOME` para uma pasta temporária gravável, principalmente para o cache do Fontconfig.
+
 Os testes cobrem também variantes vinculadas a galerias/linhas, legendas hierárquicas, migração conservadora e schema `1.16.0`, além dos contratos estruturais, editoriais, geométricos, de pacote e de impressão anteriores.
 
 ## Limites intencionais

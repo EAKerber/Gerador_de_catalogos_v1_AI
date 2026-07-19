@@ -37,6 +37,6 @@ Intenção editorial, coesão estrutural e assistência estética orientam a evo
 
 O diagnóstico descreve o estado atual; preview anterior ao commit, reserva de regiões e constraints relacionais persistentes não foram introduzidos. Importação binária em lote também permanece fora do recorte: a segunda coluna só referencia assets já cadastrados. O próximo checkpoint mensurável é o benchmark integral em Chromium.
 
-O teste Chromium foi adicionado, mas o binário disponível nesta sessão encerrou com `SIGSEGV` antes de abrir a página. Testes de domínio cobrem transação, equalização, valores exatos, deltas, mínimos e seleção atômica; o teste real permanece executável quando o runtime estiver saudável.
+O bloqueio Chromium foi diagnosticado depois do checkpoint: três candidatos eram arquivos vazios e o único executável tinha 7,8 MB, embora o cabeçalho ELF apontasse para seções próximas de 200 MB. O `SIGSEGV` ocorria no binário truncado, antes do Playwright e do editor. Uma distribuição íntegra de 191 MB, com cache de fontes em diretório temporário gravável, abriu o editor e validou geometria em lote, seleção/autoridade local, inserção contextual, continuidade de tarefa, fidelidade de impressão e chrome responsivo. Os testes de autoridade e continuidade também foram corrigidos para abrir explicitamente as superfícies que exercitam.
 
 `CatalogDocument` permanece em `1.16.0`; nenhum novo campo persistido foi criado.
