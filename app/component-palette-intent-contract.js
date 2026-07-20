@@ -105,6 +105,16 @@
     renderer.__intentPaletteQuery = query;
   }
 
+  function bindKeyboardShortcut(renderer, root) {
+    if (renderer.__intentPaletteKeyboardBound) return;
+    root.addEventListener("keydown", event => {
+      if (event.key !== "/" || event.target.matches("input, textarea, select")) return;
+      event.preventDefault();
+      root.querySelector("[data-palette-intent-search]")?.focus();
+    });
+    renderer.__intentPaletteKeyboardBound = true;
+  }
+
   function enhancePalette(renderer) {
     const root = renderer.paletteRoot;
     const registry = window.CATALOG_COMPONENT_REGISTRY || {};
@@ -137,11 +147,7 @@
       input.value = "";
       applySearch(renderer, root, "");
     });
-    root.addEventListener("keydown", event => {
-      if (event.key !== "/" || event.target.matches("input, textarea, select")) return;
-      event.preventDefault();
-      input.focus();
-    }, { once: true });
+    bindKeyboardShortcut(renderer, root);
     applySearch(renderer, root, renderer.__intentPaletteQuery || "");
   }
 
