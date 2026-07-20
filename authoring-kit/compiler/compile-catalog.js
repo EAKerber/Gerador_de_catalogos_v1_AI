@@ -47,6 +47,7 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
   "product-hero-contract.js",
   "product-technical-contract.js",
   "product-variants-contract.js",
+  "product-data-only-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => vm.runInThisContext(fs.readFileSync(path.join(runtimeRoot, fileName), "utf8"), { filename: fileName }));
@@ -58,6 +59,7 @@ CatalogIconScaleContract.install();
 CatalogProductHeroContract.install();
 CatalogProductTechnicalContract.install();
 CatalogProductVariantsContract.install();
+CatalogProductDataOnlyContract.install();
 
 const source = readJSON(args.source);
 const plan = args.plan ? readJSON(args.plan) : null;
