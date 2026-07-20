@@ -12,7 +12,8 @@ const contracts = [
   "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
-  "product-variants-contract.js"
+  "product-variants-contract.js",
+  "product-data-only-contract.js"
 ];
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
@@ -47,7 +48,8 @@ for (const globalName of [
   "CatalogIconScaleContract",
   "CatalogProductHeroContract",
   "CatalogProductTechnicalContract",
-  "CatalogProductVariantsContract"
+  "CatalogProductVariantsContract",
+  "CatalogProductDataOnlyContract"
 ]) {
   const installIndex = compilerSource.indexOf(`${globalName}.install()`);
   assert(installIndex > compilerRuntimeIndex && installIndex < compileCallIndex, `${globalName} não é instalado antes da compilação.`);
