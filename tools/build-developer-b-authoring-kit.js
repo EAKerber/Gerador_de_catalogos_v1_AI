@@ -31,6 +31,23 @@ for (const fileName of contractFiles) {
   fs.copyFileSync(source, path.join(runtimeRoot, fileName));
 }
 
+const capabilitiesPath = path.join(kitRoot, "capabilities.json");
+const inventoryPath = path.join(kitRoot, "feature-inventory.json");
+const capabilities = JSON.parse(fs.readFileSync(capabilitiesPath, "utf8"));
+const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
+inventory.summary.iconBatches = capabilities.iconBatches?.length || 0;
+inventory.iconBatches = capabilities.iconBatches || [];
+inventory.icons = (capabilities.icons || []).map(icon => ({
+  id: icon.id,
+  label: icon.label,
+  category: icon.category,
+  ...(icon.batch ? { batch: icon.batch } : {}),
+  ...(icon.contexts ? { contexts: icon.contexts } : {}),
+  ...(icon.keywords ? { keywords: icon.keywords } : {}),
+  ...(icon.examples ? { examples: icon.examples } : {})
+}));
+fs.writeFileSync(inventoryPath, `${JSON.stringify(inventory, null, 2)}\n`);
+
 function walk(directory, prefix = "") {
   const result = {};
   fs.readdirSync(directory, { withFileTypes: true })
@@ -47,4 +64,4 @@ function walk(directory, prefix = "") {
 const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
-console.log(`✓ Build Developer B sincronizou ${contractFiles.length} contratos e regenerou o bundle com ${Object.keys(files).length} arquivos.`);
+console.log(`✓ Build Developer B sincronizou ${contractFiles.length} contratos, ${inventory.summary.iconBatches} lote(s) de ícones e regenerou o bundle com ${Object.keys(files).length} arquivos.`);
