@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const node = (id, type, frame, options = {}) => ({
     id,
@@ -85,6 +85,39 @@
     ]
   });
 
+  const sectionHeading = node("recipe-section-heading-root", "layout-container", { x: 0, y: 0, width: 620, height: 124 }, {
+    name: "Título de seção",
+    props: { label: "TÍTULO DE SEÇÃO", recipeRole: "section-heading" },
+    style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary" },
+    layout: { mode: "column", padding: 0, gap: 4, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 320, mode: "column" } },
+    children: [
+      node("recipe-section-heading-kicker", "text", { x: 0, y: 0, width: 620, height: 34 }, {
+        name: "Sobretítulo opcional",
+        props: { content: "LINHA DE PRODUTOS", align: "start", verticalAlign: "center", scale: 80, overflow: "ellipsis", recipeRole: "kicker" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "brand.primary", typography: "type.label" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      }),
+      node("recipe-section-heading-title", "text", { x: 0, y: 38, width: 620, height: 34 }, {
+        name: "Título da seção",
+        props: { content: "TÍTULO DA SEÇÃO", align: "start", verticalAlign: "center", scale: 120, overflow: "ellipsis", recipeRole: "title" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      }),
+      node("recipe-section-heading-support", "text", { x: 0, y: 76, width: 620, height: 34 }, {
+        name: "Complemento da seção",
+        props: { content: "Complemento editorial opcional para contextualizar os itens abaixo.", align: "start", verticalAlign: "center", scale: 80, overflow: "wrap", recipeRole: "support" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.muted", typography: "type.body" },
+        layoutItem: { managed: true, grow: 1, span: 1 }
+      }),
+      node("recipe-section-heading-rule", "separator", { x: 0, y: 114, width: 620, height: 8 }, {
+        name: "Divisor da seção",
+        props: { orientation: "horizontal", cap: "round", marker: "none", thickness: 2, presetId: "subtle", recipeRole: "divider" },
+        style: { accentColor: "brand.primary" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      })
+    ]
+  });
+
   const heroGridStrip = node("recipe-hero-grid-strip-root", "layout-container", { x: 0, y: 0, width: 746, height: 900 }, {
     name: "Hero, grade e faixa",
     props: { label: "HERO + GRADE + FAIXA", recipeRole: "product-composition" },
@@ -150,6 +183,15 @@
       icon: "bulb",
       contexts: ["page", "layout-container"],
       component: tipCallout
+    }),
+    "section-heading": Object.freeze({
+      id: "section-heading",
+      version: VERSION,
+      label: "Título de seção",
+      description: "Sobretítulo opcional, título, complemento e divisor em uma composição editável.",
+      icon: "text",
+      contexts: ["page", "layout-container"],
+      component: sectionHeading
     }),
     "section-hero-grid-strip": Object.freeze({
       id: "section-hero-grid-strip",
