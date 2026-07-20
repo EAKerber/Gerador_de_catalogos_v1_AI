@@ -1,11 +1,15 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.13";
+  const CONTRACT_VERSION = "05.18.14";
   const clone = value => JSON.parse(JSON.stringify(value));
   const ICON_BATCH_LABELS = Object.freeze({
     "technical-performance": "Técnica e desempenho",
     "commercial-contact-trust": "Comercial, contato e confiança"
+  });
+  const ICON_BATCH_VERSIONS = Object.freeze({
+    "technical-performance": "05.18.13",
+    "commercial-contact-trust": "05.18.14"
   });
 
   function enrichIcons(manifest) {
@@ -23,7 +27,7 @@
       if (source.batch) {
         const current = batches.get(source.batch) || {
           id: source.batch,
-          version: CONTRACT_VERSION,
+          version: ICON_BATCH_VERSIONS[source.batch] || CONTRACT_VERSION,
           label: ICON_BATCH_LABELS[source.batch] || source.batch,
           iconIds: [],
           requiredContexts: []
@@ -36,11 +40,13 @@
       }
       return enriched;
     });
-    manifest.iconBatches = Array.from(batches.values()).map(batch => ({
-      ...batch,
-      iconIds: batch.iconIds.sort(),
-      requiredContexts: batch.requiredContexts.sort()
-    }));
+    manifest.iconBatches = Array.from(batches.values())
+      .map(batch => ({
+        ...batch,
+        iconIds: batch.iconIds.sort(),
+        requiredContexts: batch.requiredContexts.sort()
+      }))
+      .sort((left, right) => left.id.localeCompare(right.id));
     return manifest;
   }
 
