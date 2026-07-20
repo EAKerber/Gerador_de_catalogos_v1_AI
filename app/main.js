@@ -5,7 +5,8 @@
   const runtimeContracts = [
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
-    { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" }
+    { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
+    { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" }
   ];
 
   function loadRuntimeContract(contract) {
@@ -28,6 +29,7 @@
     window.CatalogTextAlignmentContract?.install();
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
+    window.CatalogIconScaleContract?.install();
 
     function toast(message) {
       const template = document.getElementById("toastTemplate");
