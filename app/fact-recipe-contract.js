@@ -27,7 +27,7 @@
     component: node("recipe-fact-root", "layout-container", { x: 0, y: 0, width: 180, height: 180 }, {
       name: "Dado destacado",
       props: { label: "DADO DESTACADO", recipeRole: "fact" },
-      style: { surface: "surface.paper", border: "border.default", radius: "radius.medium", accentColor: "brand.primary" },
+      style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary" },
       layout: { mode: "column", padding: 8, gap: 6, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 160, mode: "column" } },
       children: [
         node("recipe-fact-icon", "icon", { x: 8, y: 8, width: 164, height: 42 }, {
