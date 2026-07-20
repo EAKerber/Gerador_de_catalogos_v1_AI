@@ -106,6 +106,8 @@ let browser;
   assert(await page.evaluate(() => document.activeElement?.matches("[data-palette-intent-search]")), "O atalho / não focou a busca após rerender.");
   await page.locator("[data-palette-intent-search]").press("Escape");
 
+  await page.evaluate(() => CatalogEditor.store.setSelection(null));
+  await page.waitForFunction(() => CatalogEditor.store.getSelected() === null);
   const beforeKeyboard = await page.evaluate(() => CatalogEditor.store.getPage().children.length);
   const iconItem = page.locator('.palette-item[data-component-type="icon"]');
   await iconItem.focus();
