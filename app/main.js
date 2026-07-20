@@ -10,6 +10,7 @@
     { file: "component-palette-intent-contract.js", globalName: "CatalogComponentPaletteIntentContract" },
     { file: "component-initial-placement-contract.js", globalName: "CatalogComponentInitialPlacementContract" },
     { file: "fact-recipe-contract.js", globalName: "CatalogFactRecipeContract" },
+    { file: "callout-recipe-contract.js", globalName: "CatalogCalloutRecipeContract" },
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
     { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
@@ -43,6 +44,7 @@
     window.CatalogComponentPaletteIntentContract?.install();
     window.CatalogComponentInitialPlacementContract?.install();
     window.CatalogFactRecipeContract?.install();
+    window.CatalogCalloutRecipeContract?.install();
     window.CatalogTextAlignmentContract?.install();
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
