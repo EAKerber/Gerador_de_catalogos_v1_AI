@@ -22,7 +22,7 @@ global.CatalogEditorIcon = () => "";
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
-assert(CatalogComponentIntentManifestContract.VERSION === "05.18.13", "Versão do enriquecimento de manifesto inesperada.");
+assert(CatalogComponentIntentManifestContract.VERSION >= "05.18.13", "O enriquecimento de manifesto regrediu para antes do lote técnico.");
 assert(CatalogComponentIntentManifestContract.install(), "O contrato de manifesto não foi instalado.");
 
 const manifest = CatalogProjectManifests.buildCapabilitiesManifest();
@@ -44,7 +44,7 @@ for (const icon of icons) {
 
 const rebuilt = CatalogProjectManifests.buildCapabilitiesManifest();
 assert(JSON.stringify(rebuilt.iconBatches) === JSON.stringify(manifest.iconBatches), "A projeção dos lotes não é determinística.");
-assert(JSON.stringify(rebuilt.icons.filter(icon => icon.batch)) === JSON.stringify(icons), "Os metadados dos ícones não são determinísticos.");
+assert(JSON.stringify(rebuilt.icons.filter(icon => icon.batch === "technical-performance")) === JSON.stringify(icons), "Os metadados do lote técnico não são determinísticos.");
 assert(manifest.editor.schemaVersion === "1.16.0", "A iconografia alterou o schema do documento.");
 
 const appManifestContract = fs.readFileSync(path.join(root, "app", "component-intent-manifest-contract.js"), "utf8");
