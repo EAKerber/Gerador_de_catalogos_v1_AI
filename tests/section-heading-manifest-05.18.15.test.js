@@ -16,11 +16,13 @@ global.CatalogEditorIcon = () => "";
   "app/component-registry.js",
   "app/component-intent-registry.js",
   "app/section-recipes.js",
+  "app/fact-recipe-contract.js",
   "app/project-package.js",
   "app/component-intent-manifest-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+CatalogFactRecipeContract.install();
 CatalogComponentIntentManifestContract.install();
 const manifest = CatalogProjectManifests.buildCapabilitiesManifest();
 const recipe = manifest.recipes.find(item => item.id === "section-heading");
@@ -34,7 +36,7 @@ assert(JSON.stringify(recipe.contexts) === JSON.stringify(["page", "layout-conta
 assert(recipe.label === "Título de seção" && recipe.description.includes("Sobretítulo opcional"), "A receita não possui vocabulário suficiente para descoberta.");
 
 const allRecipes = manifest.recipes.map(item => item.id).sort();
-assert(allRecipes.includes("section-heading") && allRecipes.length === 6, `O manifesto deveria publicar seis receitas: ${allRecipes.join(", ")}.`);
+assert(allRecipes.includes("section-heading") && allRecipes.includes("fact") && allRecipes.length === 7, `O manifesto deveria publicar sete receitas: ${allRecipes.join(", ")}.`);
 const rebuilt = CatalogProjectManifests.buildCapabilitiesManifest();
 assert(JSON.stringify(rebuilt.recipes) === JSON.stringify(manifest.recipes), "A projeção das receitas não é determinística.");
 
@@ -43,4 +45,4 @@ const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "section
 assert(app === kit, "A receita divergiu entre editor e AuthoringKit.");
 assert(manifest.editor.schemaVersion === "1.16.0", "A receita alterou o schema do documento.");
 
-console.log("✓ DB-05.18.15 publicou section-heading como receita, preservando os 16 tipos e o schema.");
+console.log("✓ DB-05.18.15 publicou section-heading como receita, preservando os 16 tipos e convivendo com receitas posteriores.");
