@@ -5,6 +5,7 @@
   const runtimeContracts = [
     { file: "component-intent-registry.js", globalName: "CatalogComponentIntents" },
     { file: "component-intent-manifest-contract.js", globalName: "CatalogComponentIntentManifestContract" },
+    { file: "component-palette-intent-contract.js", globalName: "CatalogComponentPaletteIntentContract" },
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
     { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
@@ -33,6 +34,7 @@
 
   function bootstrap() {
     window.CatalogComponentIntentManifestContract?.install();
+    window.CatalogComponentPaletteIntentContract?.install();
     window.CatalogTextAlignmentContract?.install();
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
