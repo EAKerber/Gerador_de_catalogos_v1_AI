@@ -12,6 +12,7 @@
     const root = recipe.component;
     root.frame.height = 140;
     root.props = { ...(root.props || {}), recipeRole: "callout" };
+    root.style = { ...(root.style || {}), surface: "surface.paper", border: "border.none", radius: "radius.none" };
     root.layout = {
       ...(root.layout || {}),
       mode: "row",
