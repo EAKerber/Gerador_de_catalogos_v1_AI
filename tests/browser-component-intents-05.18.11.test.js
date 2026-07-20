@@ -1,4 +1,4 @@
-/* DB-05.18.11 — taxonomia consumível sem alterar a biblioteca visual atual. */
+/* DB-05.18.11 — taxonomia consumível e acesso integral aos tipos. */
 const path = require("path");
 const playwrightRoot = process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES;
 const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwright") : "playwright");
@@ -22,7 +22,6 @@ let browser;
     const groups = CatalogComponentIntents.grouped(CATALOG_COMPONENT_REGISTRY);
     const manifest = CatalogProjectManifests.buildCapabilitiesManifest();
     const paletteTypes = Array.from(document.querySelectorAll("[data-insert-component]")).map(button => button.dataset.insertComponent).sort();
-    const headings = Array.from(document.querySelectorAll("#componentPalette .palette-group > h3")).map(element => element.textContent.trim());
     const buttons = Object.keys(CATALOG_COMPONENT_REGISTRY).sort().map(type => ({
       type,
       count: document.querySelectorAll(`[data-insert-component="${type}"]`).length,
@@ -34,7 +33,6 @@ let browser;
       manifest,
       registryTypes: Object.keys(CATALOG_COMPONENT_REGISTRY).sort(),
       paletteTypes,
-      headings,
       buttons
     };
   });
@@ -45,14 +43,11 @@ let browser;
   assert(state.buttons.every(item => item.count === 1 && !item.disabled), `Botão ausente ou desabilitado: ${JSON.stringify(state.buttons.filter(item => item.count !== 1 || item.disabled))}.`);
   assert(state.groups.length === 5 && state.groups.flatMap(group => group.componentTypes).length === 16, "A UI não consegue consumir os cinco grupos completos.");
   assert(state.manifest.componentIntents.groups.length === 5 && state.manifest.components.every(component => component.intent?.id), "O manifesto do navegador não contém a taxonomia completa.");
-
-  assert(state.headings.includes("Estruturas") && state.headings.includes("Elementos") && state.headings.includes("Peças internas"), "As categorias visuais legadas foram alteradas prematuramente.");
-  assert(!state.headings.includes("Página") && !state.headings.includes("Estrutura avançada"), "O incremento de classificação alterou a apresentação visual antes do DB-05.18.12.");
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
 
   await browser.close();
-  console.log("✓ DB-05.18.11 publica cinco intenções e mantém os 16 tipos acessíveis na biblioteca legada.");
+  console.log("✓ DB-05.18.11 publica cinco intenções e mantém os 16 tipos acessíveis após mudanças de apresentação.");
 })().catch(async error => {
   console.error(error);
   if (browser) await browser.close();
