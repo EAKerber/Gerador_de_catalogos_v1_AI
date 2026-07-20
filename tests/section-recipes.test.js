@@ -15,15 +15,18 @@ global.CatalogEditorIcon = () => "";
   "app/layout-engine.js",
   "app/component-registry.js",
   "app/section-recipes.js",
+  "app/fact-recipe-contract.js",
   "app/collection-registry.js",
   "app/document-store.js",
   "app/catalog-validator.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
+CatalogFactRecipeContract.install();
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const store = new CatalogDocumentStore(createBlankCatalogDocument());
 const recipeIds = store.getSectionRecipes().map(recipe => recipe.id).sort();
 const expectedRecipeIds = [
+  "fact",
   "page-catalog-base",
   "section-applications",
   "section-heading",
@@ -31,7 +34,7 @@ const expectedRecipeIds = [
   "section-packaging-legend",
   "section-tip-callout"
 ].sort();
-assert(JSON.stringify(recipeIds) === JSON.stringify(expectedRecipeIds), `A página vazia não expôs as seis estruturas oficiais: ${recipeIds.join(", ")}.`);
+assert(JSON.stringify(recipeIds) === JSON.stringify(expectedRecipeIds), `A página vazia não expôs as sete estruturas oficiais: ${recipeIds.join(", ")}.`);
 
 const historyBefore = store.getHistoryState().undoCount;
 const scaffold = store.insertComponentFromTemplate("page-catalog-base");
@@ -73,4 +76,4 @@ store.setEditingContext(card.id);
 const specification = store.insertComponent("specification");
 assert(specification.slot?.name === "specifications" && store.getSlotUsage(card.id, "specifications") === 3, "A inserção contextual não escolheu o slot compatível disponível.");
 
-console.log("✓ Seis receitas oficiais, foco contextual, hidratação, posicionamento livre, slot preferencial e histórico validados.");
+console.log("✓ Sete receitas oficiais, foco contextual, hidratação, posicionamento livre, slot preferencial e histórico validados.");
