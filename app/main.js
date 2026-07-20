@@ -6,7 +6,8 @@
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
     { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
-    { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" }
+    { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" },
+    { file: "product-hero-contract.js", globalName: "CatalogProductHeroContract" }
   ];
 
   function loadRuntimeContract(contract) {
@@ -30,6 +31,7 @@
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
     window.CatalogIconScaleContract?.install();
+    window.CatalogProductHeroContract?.install();
 
     function toast(message) {
       const template = document.getElementById("toastTemplate");
