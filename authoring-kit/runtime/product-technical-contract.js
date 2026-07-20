@@ -23,10 +23,7 @@
     const rows = Math.ceil(count / columns);
     const padding = Math.max(0, Number(art.layout?.padding) || 4);
     const gap = Math.max(0, Number(art.layout?.gap) || 6);
-    const childMinimum = Math.max(
-      Number(registry?.art?.minSize?.height) || 44,
-      ...items.map(child => Number(child.constraints?.minHeight) || 44)
-    );
+    const childMinimum = Math.max(44, ...items.map(child => Number(child.constraints?.minHeight) || 44));
     return padding * 2 + rows * childMinimum + Math.max(0, rows - 1) * gap;
   }
 
