@@ -3,6 +3,8 @@
 
   const mainScriptURL = document.currentScript?.src || new URL("app/main.js", window.location.href).href;
   const runtimeContracts = [
+    { file: "component-intent-registry.js", globalName: "CatalogComponentIntents" },
+    { file: "component-intent-manifest-contract.js", globalName: "CatalogComponentIntentManifestContract" },
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
     { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
@@ -30,6 +32,7 @@
   }
 
   function bootstrap() {
+    window.CatalogComponentIntentManifestContract?.install();
     window.CatalogTextAlignmentContract?.install();
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
