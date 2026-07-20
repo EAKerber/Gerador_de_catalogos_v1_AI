@@ -22,7 +22,8 @@ const contractFiles = [
   "component-intent-manifest-contract.js",
   "component-placement-registry.js",
   "component-placement-manifest-contract.js",
-  "fact-recipe-contract.js"
+  "fact-recipe-contract.js",
+  "callout-recipe-contract.js"
 ];
 
 require("./build-authoring-kit.js");
@@ -37,28 +38,33 @@ const recipeWindow = {};
 const recipeSandbox = { window: recipeWindow, console, Object, Array, JSON };
 recipeWindow.window = recipeWindow;
 vm.createContext(recipeSandbox);
-for (const fileName of ["section-recipes.js", "fact-recipe-contract.js"]) {
+for (const fileName of ["section-recipes.js", "fact-recipe-contract.js", "callout-recipe-contract.js"]) {
   vm.runInContext(fs.readFileSync(path.join(root, "app", fileName), "utf8"), recipeSandbox, { filename: fileName });
 }
 if (!recipeWindow.CatalogFactRecipeContract.install()) throw new Error("O contrato da receita fact não foi instalado no build.");
-const factRecipe = recipeWindow.CatalogSectionRecipes.get("fact");
-const factManifestEntry = {
-  id: factRecipe.id,
-  version: factRecipe.version,
-  label: factRecipe.label,
-  description: factRecipe.description,
-  icon: factRecipe.icon,
-  rootType: factRecipe.component?.type || null,
-  contexts: factRecipe.contexts || [],
-  focusRole: factRecipe.focusRole || null
-};
+if (!recipeWindow.CatalogCalloutRecipeContract.install()) throw new Error("O contrato da receita callout não foi instalado no build.");
+
+const recipeManifestEntry = recipe => ({
+  id: recipe.id,
+  version: recipe.version,
+  label: recipe.label,
+  description: recipe.description,
+  icon: recipe.icon,
+  rootType: recipe.component?.type || null,
+  contexts: recipe.contexts || [],
+  focusRole: recipe.focusRole || null
+});
+const developerRecipes = ["fact", "section-tip-callout"]
+  .map(recipeId => recipeWindow.CatalogSectionRecipes.get(recipeId))
+  .map(recipeManifestEntry);
+const developerRecipeIds = new Set(developerRecipes.map(recipe => recipe.id));
 
 const capabilitiesPath = path.join(kitRoot, "capabilities.json");
 const inventoryPath = path.join(kitRoot, "feature-inventory.json");
 const capabilities = JSON.parse(fs.readFileSync(capabilitiesPath, "utf8"));
 capabilities.recipes = [
-  ...(capabilities.recipes || []).filter(recipe => recipe.id !== factManifestEntry.id),
-  factManifestEntry
+  ...(capabilities.recipes || []).filter(recipe => !developerRecipeIds.has(recipe.id)),
+  ...developerRecipes
 ].sort((left, right) => left.id.localeCompare(right.id));
 fs.writeFileSync(capabilitiesPath, `${JSON.stringify(capabilities, null, 2)}\n`);
 
