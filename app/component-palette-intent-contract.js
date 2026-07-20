@@ -93,12 +93,12 @@
       if (normalized && hasVisible && group.matches("details")) group.open = true;
     });
     root.querySelectorAll(".palette-group:not([data-intent-group])").forEach(group => {
-      if (group.classList.contains("palette-group--saved") && !normalized) {
+      const groupItems = Array.from(group.querySelectorAll(".palette-item"));
+      if (!normalized) {
         group.hidden = false;
         return;
       }
-      const groupItems = Array.from(group.querySelectorAll(".palette-item"));
-      if (groupItems.length) group.hidden = !groupItems.some(item => !item.hidden);
+      group.hidden = !groupItems.length || !groupItems.some(item => !item.hidden);
     });
     const status = root.querySelector("[data-palette-search-status]");
     if (status) status.textContent = normalized ? `${visible} resultado(s)` : "Todos os componentes";
@@ -113,6 +113,14 @@
       root.querySelector("[data-palette-intent-search]")?.focus();
     });
     renderer.__intentPaletteKeyboardBound = true;
+  }
+
+  function placeNavigation(root, navigation) {
+    const contextual = root.querySelector(".palette-group--contextual");
+    const context = root.querySelector(".palette-context");
+    if (contextual) contextual.insertAdjacentElement("afterend", navigation);
+    else if (context) context.insertAdjacentElement("afterend", navigation);
+    else root.prepend(navigation);
   }
 
   function enhancePalette(renderer) {
@@ -133,7 +141,7 @@
     const navigation = document.createElement("section");
     navigation.className = "palette-intent-navigation";
     navigation.innerHTML = `<label><span>Buscar na biblioteca</span><input type="search" value="${escapeHtml(renderer.__intentPaletteQuery || "")}" placeholder="Nome, função ou descrição" data-palette-intent-search /></label><small data-palette-search-status>Todos os componentes</small>`;
-    root.appendChild(navigation);
+    placeNavigation(root, navigation);
 
     layout.primary.forEach(group => root.appendChild(createPrimarySection(group, itemsByType)));
     const advanced = createAdvancedSection(layout.advanced, itemsByType, contextOpen);
