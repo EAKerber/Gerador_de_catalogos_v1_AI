@@ -32,6 +32,8 @@ fs.mkdirSync(runtimeRoot, { recursive: true });
   "component-registry.js",
   "component-intent-registry.js",
   "component-intent-manifest-contract.js",
+  "component-placement-registry.js",
+  "component-placement-manifest-contract.js",
   "section-recipes.js",
   "collection-registry.js",
   "document-store.js",
@@ -84,13 +86,16 @@ vm.createContext(sandbox);
   "app/catalog-icons.js",
   "app/component-registry.js",
   "app/component-intent-registry.js",
+  "app/component-placement-registry.js",
   "app/section-recipes.js",
   "app/project-package.js",
-  "app/component-intent-manifest-contract.js"
+  "app/component-intent-manifest-contract.js",
+  "app/component-placement-manifest-contract.js"
 ].forEach(relativePath => {
   vm.runInContext(fs.readFileSync(path.join(root, relativePath), "utf8"), sandbox, { filename: relativePath });
 });
 window.CatalogComponentIntentManifestContract.install();
+window.CatalogComponentPlacementManifestContract.install();
 
 const capabilities = window.CatalogProjectManifests.buildCapabilitiesManifest();
 fs.writeFileSync(path.join(kitRoot, "capabilities.json"), window.CatalogProjectManifests.stableJSON(capabilities));
@@ -149,6 +154,7 @@ const featureInventory = {
     capabilities: capabilityIds.size,
     components: capabilities.components.length,
     componentIntents: capabilities.componentIntents?.groups?.length || 0,
+    componentPlacements: capabilities.componentPlacements?.hints?.length || 0,
     recipes: capabilities.recipes.length,
     presentations: Object.keys(capabilities.presentations.presets || {}).length,
     separatorPresets: capabilities.separatorPresets.length,
@@ -157,6 +163,7 @@ const featureInventory = {
     governance: governanceSummary
   },
   componentIntents: capabilities.componentIntents,
+  componentPlacements: capabilities.componentPlacements,
   capabilities: Object.entries(capabilities.capabilities).map(([id, value]) => ({
     id,
     value,
@@ -169,6 +176,7 @@ const featureInventory = {
     label: component.label,
     category: component.category,
     intent: component.intent,
+    initialPlacement: component.initialPlacement,
     container: Boolean(component.container),
     accepts: component.container?.accepts || [],
     slots: component.container?.slots || [],
@@ -199,6 +207,7 @@ const catalogLines = [
   `- ${featureInventory.summary.capabilities} capacidades de produto;`,
   `- ${featureInventory.summary.components} tipos de componente;`,
   `- ${featureInventory.summary.componentIntents} grupos de descoberta por intenção;`,
+  `- ${featureInventory.summary.componentPlacements} posições iniciais prováveis;`,
   `- ${featureInventory.summary.recipes} receitas oficiais;`,
   `- ${featureInventory.summary.curatedFlows} fluxos curados;`,
   `- ${featureInventory.summary.icons} ícones declarados.`,
@@ -209,6 +218,12 @@ const catalogLines = [
   "| Intenção | Camada | Tipos |",
   "| --- | --- | --- |",
   ...(featureInventory.componentIntents?.groups || []).map(group => `| ${markdownCell(group.label)} | ${markdownCell(group.tier)} | ${list(group.componentTypes)} |`),
+  "",
+  "## Posições iniciais prováveis",
+  "",
+  "| Tipo | Âncora | Largura | Política de colisão |",
+  "| --- | --- | --- | --- |",
+  ...(featureInventory.componentPlacements?.hints || []).map(hint => `| \`${hint.componentType}\` | ${markdownCell(hint.blockAnchor)} | ${markdownCell(hint.inlineSizing)} | ${markdownCell(hint.collisionPolicy)} |`),
   "",
   "## Fluxos por intenção",
   "",
@@ -221,8 +236,8 @@ featureGuide.entries.forEach(entry => {
 });
 catalogLines.push("", "## Inventário completo de capacidades", "", "| ID | Valor | Governança | Motivo | Contrato |", "| --- | --- | --- | --- | --- |");
 featureInventory.capabilities.forEach(item => catalogLines.push(`| \`${item.id}\` | \`${JSON.stringify(item.value)}\` | **${item.governance}** | ${markdownCell(item.governanceReason)} | \`${item.contract}\` |`));
-catalogLines.push("", "## Inventário de componentes", "", "| Tipo | Intenção | Categoria legada | Contêiner | Mínimo técnico | Recomendado |", "| --- | --- | --- | --- | --- | --- |");
-featureInventory.components.forEach(component => catalogLines.push(`| \`${component.type}\` — ${markdownCell(component.label)} | ${markdownCell(component.intent?.label || "Sem classificação")} | ${markdownCell(component.category)} | ${component.container ? "sim" : "não"} | ${component.minimum.width}×${component.minimum.height} | ${component.recommendedMinimum.width}×${component.recommendedMinimum.height} |`));
+catalogLines.push("", "## Inventário de componentes", "", "| Tipo | Intenção | Categoria legada | Posição inicial | Contêiner | Mínimo técnico | Recomendado |", "| --- | --- | --- | --- | --- | --- | --- |");
+featureInventory.components.forEach(component => catalogLines.push(`| \`${component.type}\` — ${markdownCell(component.label)} | ${markdownCell(component.intent?.label || "Sem classificação")} | ${markdownCell(component.category)} | ${markdownCell(component.initialPlacement?.blockAnchor || "genérica")} | ${component.container ? "sim" : "não"} | ${component.minimum.width}×${component.minimum.height} | ${component.recommendedMinimum.width}×${component.recommendedMinimum.height} |`));
 catalogLines.push("");
 fs.writeFileSync(path.join(root, "docs", "FEATURE-CATALOG.md"), `${catalogLines.join("\n")}\n`);
 
@@ -243,4 +258,4 @@ const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
 
-console.log(`✓ CatalogAuthoringKit 1.6.0 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${featureInventory.summary.componentIntents} intenções, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
+console.log(`✓ CatalogAuthoringKit 1.6.0 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${featureInventory.summary.componentIntents} intenções, ${featureInventory.summary.componentPlacements} posições prováveis, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
