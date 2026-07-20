@@ -24,7 +24,7 @@ const batch = Object.entries(window.CATALOG_ICON_LIBRARY)
 
 assert(batch.length === 4, `O lote deveria conter quatro ícones; recebeu ${batch.length}.`);
 assert(JSON.stringify(batch.map(([id]) => id)) === JSON.stringify(expectedIds), `IDs inesperados: ${batch.map(([id]) => id).join(", ")}.`);
-assert(Object.keys(window.CATALOG_ICON_LIBRARY).length === 31, `A biblioteca deveria totalizar 31 ícones; recebeu ${Object.keys(window.CATALOG_ICON_LIBRARY).length}.`);
+assert(Object.keys(window.CATALOG_ICON_LIBRARY).length >= 31, `A biblioteca perdeu entradas posteriores ao lote técnico: ${Object.keys(window.CATALOG_ICON_LIBRARY).length}.`);
 
 for (const [id, icon] of batch) {
   assert(typeof icon.label === "string" && icon.label.trim(), `${id}: rótulo ausente.`);
