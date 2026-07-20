@@ -133,5 +133,41 @@ window.CATALOG_ICON_LIBRARY = {
     "label": "Variações de cor",
     "category": "Catálogo",
     "body": "<path d=\"M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h3a6 6 0 0 0 0-12h-3Z\"/><circle cx=\"7.5\" cy=\"9\" r=\".8\"/><circle cx=\"10\" cy=\"6\" r=\".8\"/><circle cx=\"14\" cy=\"6\" r=\".8\"/><circle cx=\"17\" cy=\"9\" r=\".8\"/>"
+  },
+  "load-capacity": {
+    "label": "Capacidade de carga",
+    "category": "Desempenho",
+    "body": "<path d=\"M9 7a3 3 0 1 1 6 0\"/><path d=\"M6 7h12l2 14H4L6 7Z\"/><path d=\"M12 7V4\"/>",
+    "batch": "technical-performance",
+    "contexts": ["specification", "icon"],
+    "keywords": ["carga", "peso", "capacidade", "suporte", "resistência"],
+    "examples": ["Capacidade de carga de uma ferragem", "Destaque autônomo de desempenho em uma seção"]
+  },
+  "corrosion-resistant": {
+    "label": "Resistência à corrosão",
+    "category": "Desempenho",
+    "body": "<path d=\"M12 2.5 20 5.6v5.7c0 4.8-3.4 8-8 10.7-4.6-2.7-8-5.9-8-10.7V5.6L12 2.5Z\"/><path d=\"M12 7c2 2.4 3 4 3 5.4a3 3 0 0 1-6 0C9 11 10 9.4 12 7Z\"/>",
+    "batch": "technical-performance",
+    "contexts": ["specification", "icon"],
+    "keywords": ["corrosão", "umidade", "proteção", "oxidação", "revestimento"],
+    "examples": ["Especificação de acabamento anticorrosivo", "Chamada visual sobre uso em ambiente úmido"]
+  },
+  "torque": {
+    "label": "Torque / aperto",
+    "category": "Técnica",
+    "body": "<path d=\"M14.5 6.5a4 4 0 0 0-5-3.6l2.3 2.3-2.6 2.6-2.3-2.3A4 4 0 0 0 9.5 12L4 17.5a2 2 0 1 0 2.8 2.8l5.5-5.5a4 4 0 0 0 5.7-5.7l-2.3 2.3-2.6-2.6 2.3-2.3a4 4 0 0 0-.9 0Z\"/>",
+    "batch": "technical-performance",
+    "contexts": ["specification", "icon"],
+    "keywords": ["torque", "aperto", "instalação", "ferramenta", "montagem"],
+    "examples": ["Valor de torque recomendado na ficha técnica", "Orientação de montagem em um bloco de comunicação"]
+  },
+  "diameter": {
+    "label": "Diâmetro / espessura",
+    "category": "Técnica",
+    "body": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"m7 17 10-10M7 13v4h4M17 11V7h-4\"/>",
+    "batch": "technical-performance",
+    "contexts": ["specification", "icon"],
+    "keywords": ["diâmetro", "espessura", "bitola", "medida circular", "dimensão"],
+    "examples": ["Diâmetro de parafuso ou furo", "Legenda técnica para espessura ou bitola"]
   }
 };
