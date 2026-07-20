@@ -33,6 +33,12 @@ fs.mkdirSync(runtimeRoot, { recursive: true });
   "section-recipes.js",
   "collection-registry.js",
   "document-store.js",
+  "text-alignment-contract.js",
+  "text-scale-contract.js",
+  "text-overflow-contract.js",
+  "icon-scale-contract.js",
+  "product-hero-contract.js",
+  "product-technical-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => fs.copyFileSync(path.join(root, "app", fileName), path.join(runtimeRoot, fileName)));
@@ -210,4 +216,4 @@ const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
 
-  console.log(`✓ CatalogAuthoringKit 1.6.0 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
+console.log(`✓ CatalogAuthoringKit 1.6.0 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
