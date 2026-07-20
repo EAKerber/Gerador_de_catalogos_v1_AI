@@ -19,7 +19,8 @@ Sem essa integração, o editor e o compilador poderiam produzir geometrias dife
 - `icon-scale-contract.js`;
 - `product-hero-contract.js`;
 - `product-technical-contract.js`;
-- `product-variants-contract.js`.
+- `product-variants-contract.js`;
+- `product-data-only-contract.js`.
 
 ## Ordem do compilador
 
@@ -32,7 +33,7 @@ O compilador carrega:
 5. instalações dos contratos;
 6. chamada `CatalogCompiler.compile`.
 
-Alinhamento, overflow e variants precisam da store para compor seus wrappers. Hero, técnico e variants precisam ser instalados antes que o compilador consulte os frames e mínimos dos slots.
+Alinhamento, overflow, variants e data-only precisam da store para compor seus wrappers. Hero, técnico, variants e data-only precisam ser instalados antes que o compilador consulte frames e mínimos dos slots.
 
 ## Build
 
