@@ -2,21 +2,30 @@
   "use strict";
 
   const mainScriptURL = document.currentScript?.src || new URL("app/main.js", window.location.href).href;
+  const runtimeContracts = [
+    { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
+    { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" }
+  ];
 
-  function loadTextAlignmentContract() {
-    if (window.CatalogTextAlignmentContract) return Promise.resolve();
+  function loadRuntimeContract(contract) {
+    if (window[contract.globalName]) return Promise.resolve();
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = new URL("text-alignment-contract.js", mainScriptURL).href;
-      script.dataset.runtimeContract = "text-alignment";
+      script.src = new URL(contract.file, mainScriptURL).href;
+      script.dataset.runtimeContract = contract.globalName;
       script.addEventListener("load", resolve, { once: true });
-      script.addEventListener("error", () => reject(new Error("Não foi possível carregar o contrato de alinhamento de texto.")), { once: true });
+      script.addEventListener("error", () => reject(new Error(`Não foi possível carregar ${contract.file}.`)), { once: true });
       document.head.appendChild(script);
     });
   }
 
+  async function loadRuntimeContracts() {
+    for (const contract of runtimeContracts) await loadRuntimeContract(contract);
+  }
+
   function bootstrap() {
     window.CatalogTextAlignmentContract?.install();
+    window.CatalogTextScaleContract?.install();
 
     function toast(message) {
       const template = document.getElementById("toastTemplate");
@@ -160,10 +169,10 @@
     window.CatalogEditor = { store, renderer, inspector, workspaceLayout, assetStorage, assetLibrary, productCatalog, printExport, documentImporter, projectPackage };
   }
 
-  loadTextAlignmentContract()
+  loadRuntimeContracts()
     .then(bootstrap)
     .catch(error => {
-      console.error("Contrato de alinhamento não carregado; iniciando editor com o comportamento anterior.", error);
+      console.error("Contratos editoriais não carregados integralmente; iniciando editor com os contratos disponíveis.", error);
       bootstrap();
     });
 })();
