@@ -39,6 +39,7 @@ fs.mkdirSync(runtimeRoot, { recursive: true });
   "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
+  "product-variants-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => fs.copyFileSync(path.join(root, "app", fileName), path.join(runtimeRoot, fileName)));
