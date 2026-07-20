@@ -1,15 +1,15 @@
-# Atlas de funcionalidades — Incremento 05.17
+# Atlas de funcionalidades — Incremento 05.18
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 42 capacidades de produto;
+- 45 capacidades de produto;
 - 16 tipos de componente;
 - 5 receitas oficiais;
-- 16 fluxos curados;
+- 17 fluxos curados;
 - 27 ícones declarados.
-- governança: 27 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 30 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Fluxos por intenção
 
@@ -24,6 +24,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
 | `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação |
+| `visual.editorial-depth` | Ajustar hierarquia visual sem desmontar componentes | Texto, Ícone, Especificação ou Card → Conteúdo/Visual | Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo |
 | `content.bulk-collections` | Criar imagens legendadas e legendas cromáticas sem repetir formulários | Galeria ou Tabela → Conteúdo → Editar coleção | Itens canônicos são sincronizados ou acrescentados em uma transação reversível |
 | `reuse.saved-component` | Reutilizar uma composição editada | Selecionar componente → Estrutura → Salvar em Meus componentes | Snapshot reutilizável com novos IDs a cada inserção |
 | `safety.history` | Reverter ou reaplicar uma mudança | Toolbar → Histórico; Ctrl/Cmd+Z e Ctrl/Cmd+Shift+Z ou Ctrl+Y | Estado anterior ou posterior restaurado atomicamente |
@@ -148,6 +149,19 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Componentes:** `separator`
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
+
+## Ajustar hierarquia visual sem desmontar componentes
+
+- **ID:** `visual.editorial-depth`
+- **Acesso:** Texto, Ícone, Especificação ou Card → Conteúdo/Visual
+- **Pré-condições:** Componente compatível selecionado
+- **Resultado:** Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo
+- **Exemplo:** Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa
+- **Limites:** Escalas são discretas; Texto não aceita HTML; Modo não remove conteúdo da subárvore
+- **Capacidades:** `editorialTextControls`, `internalIconScale`, `distinctProductModes`
+- **Componentes:** `text`, `icon`, `specification`, `product-card`
+- **Receitas:** —
+- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.presentation.mode`
 
 ## Criar imagens legendadas e legendas cromáticas sem repetir formulários
 
@@ -286,6 +300,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `batchSpacing` | `true` | **active** | Intenção frequente e adequada a comando de grupo. | `CatalogCapabilities.capabilities.batchSpacing` |
 | `batchSeparators` | `true` | **audit** | Candidato a ser opção da ação de espaçamento, não capacidade paralela. | `CatalogCapabilities.capabilities.batchSeparators` |
 | `progressiveInspectorVocabulary` | `["content","layout","visual","advanced"]` | **active** | Precisa evoluir de abas por propriedade para continuidade de tarefa. | `CatalogCapabilities.capabilities.progressiveInspectorVocabulary` |
+| `editorialTextControls` | `true` | **active** | Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário. | `CatalogCapabilities.capabilities.editorialTextControls` |
+| `internalIconScale` | `true` | **active** | Separa escala visual interna da geometria externa do componente. | `CatalogCapabilities.capabilities.internalIconScale` |
+| `distinctProductModes` | `true` | **active** | Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card. | `CatalogCapabilities.capabilities.distinctProductModes` |
 
 ## Inventário de componentes
 

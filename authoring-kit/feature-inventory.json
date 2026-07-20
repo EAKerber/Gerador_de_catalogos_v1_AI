@@ -303,6 +303,27 @@
         "visual",
         "advanced"
       ]
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.editorialTextControls",
+      "governance": "active",
+      "governanceReason": "Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário.",
+      "id": "editorialTextControls",
+      "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.internalIconScale",
+      "governance": "active",
+      "governanceReason": "Separa escala visual interna da geometria externa do componente.",
+      "id": "internalIconScale",
+      "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.distinctProductModes",
+      "governance": "active",
+      "governanceReason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card.",
+      "id": "distinctProductModes",
+      "value": true
     }
   ],
   "components": [
@@ -682,6 +703,11 @@
           "label": "Legenda",
           "path": "label",
           "type": "text"
+        },
+        {
+          "label": "Escala do ícone",
+          "path": "iconScale",
+          "type": "select"
         }
       ],
       "label": "Ícone",
@@ -1051,6 +1077,11 @@
           "label": "Especificação",
           "path": "label",
           "type": "text"
+        },
+        {
+          "label": "Escala do ícone",
+          "path": "iconScale",
+          "type": "select"
         }
       ],
       "label": "Especificação",
@@ -1091,6 +1122,26 @@
           "label": "Conteúdo",
           "path": "content",
           "type": "textarea"
+        },
+        {
+          "label": "Alinhamento",
+          "path": "align",
+          "type": "select"
+        },
+        {
+          "label": "Alinhamento vertical",
+          "path": "verticalAlign",
+          "type": "select"
+        },
+        {
+          "label": "Escala tipográfica",
+          "path": "scale",
+          "type": "select"
+        },
+        {
+          "label": "Excedente",
+          "path": "overflow",
+          "type": "select"
         }
       ],
       "label": "Texto",
@@ -1285,6 +1336,21 @@
     },
     {
       "capabilityIds": [
+        "editorialTextControls",
+        "internalIconScale",
+        "distinctProductModes"
+      ],
+      "componentTypes": [
+        "text",
+        "icon",
+        "specification",
+        "product-card"
+      ],
+      "id": "visual.editorial-depth",
+      "recipeIds": []
+    },
+    {
+      "capabilityIds": [
         "contextualArtGallery",
         "semanticColorLegends",
         "optionalLegendMaterialization",
@@ -1361,7 +1427,7 @@
     }
   ],
   "editor": {
-    "increment": "05.17",
+    "increment": "05.18",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -1528,27 +1594,32 @@
         "padding": 12
       }
     },
-    "manifestVersion": "1.0.0",
+    "manifestVersion": "1.1.0",
     "modes": {
       "data-only": {
         "description": "Prioriza tabela e conteúdo textual.",
-        "label": "Dados"
+        "label": "Dados",
+        "visualPriority": "data"
       },
       "hero": {
         "description": "Prioriza a imagem principal e o título.",
-        "label": "Destaque"
+        "label": "Destaque",
+        "visualPriority": "art"
       },
       "standard": {
         "description": "Equilibra imagem, atributos e tabela.",
-        "label": "Padrão"
+        "label": "Padrão",
+        "visualPriority": "balanced"
       },
       "technical": {
         "description": "Prioriza desenho, medidas e dados.",
-        "label": "Técnico"
+        "label": "Técnico",
+        "visualPriority": "specifications"
       },
       "variants": {
         "description": "Prioriza múltiplas imagens e legendas.",
-        "label": "Variações"
+        "label": "Variações",
+        "visualPriority": "gallery"
       }
     },
     "presets": {
@@ -1734,11 +1805,11 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 42,
+    "capabilities": 45,
     "components": 16,
-    "curatedFlows": 16,
+    "curatedFlows": 17,
     "governance": {
-      "active": 27,
+      "active": 30,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

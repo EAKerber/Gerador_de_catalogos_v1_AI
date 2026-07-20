@@ -87,7 +87,10 @@
     { "id": "bulkCollectionEditing", "status": "active", "reason": "Reduz a repetição manual em galerias e legendas sem criar entidades paralelas." },
     { "id": "batchSpacing", "status": "active", "reason": "Intenção frequente e adequada a comando de grupo." },
     { "id": "batchSeparators", "status": "audit", "reason": "Candidato a ser opção da ação de espaçamento, não capacidade paralela." },
-    { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." }
+    { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." },
+    { "id": "editorialTextControls", "status": "active", "reason": "Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário." },
+    { "id": "internalIconScale", "status": "active", "reason": "Separa escala visual interna da geometria externa do componente." },
+    { "id": "distinctProductModes", "status": "active", "reason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card." }
   ],
   "interactionDecisions": [
     {

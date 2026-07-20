@@ -121,6 +121,19 @@
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]
     },
     {
+      "id": "visual.editorial-depth",
+      "intention": "Ajustar hierarquia visual sem desmontar componentes",
+      "access": "Texto, Ícone, Especificação ou Card → Conteúdo/Visual",
+      "preconditions": ["Componente compatível selecionado"],
+      "result": "Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo",
+      "example": "Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa",
+      "limits": ["Escalas são discretas", "Texto não aceita HTML", "Modo não remove conteúdo da subárvore"],
+      "capabilityIds": ["editorialTextControls", "internalIconScale", "distinctProductModes"],
+      "componentTypes": ["text", "icon", "specification", "product-card"],
+      "recipeIds": [],
+      "contracts": ["component.props.align", "component.props.iconScale", "component.presentation.mode"]
+    },
+    {
       "id": "content.bulk-collections",
       "intention": "Criar imagens legendadas e legendas cromáticas sem repetir formulários",
       "access": "Galeria ou Tabela → Conteúdo → Editar coleção",

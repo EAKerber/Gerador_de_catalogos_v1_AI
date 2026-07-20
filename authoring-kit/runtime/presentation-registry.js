@@ -1,13 +1,13 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const MODES = Object.freeze({
-    standard: { label: "Padrão", description: "Equilibra imagem, atributos e tabela." },
-    hero: { label: "Destaque", description: "Prioriza a imagem principal e o título." },
-    technical: { label: "Técnico", description: "Prioriza desenho, medidas e dados." },
-    variants: { label: "Variações", description: "Prioriza múltiplas imagens e legendas." },
-    "data-only": { label: "Dados", description: "Prioriza tabela e conteúdo textual." }
+    standard: { label: "Padrão", description: "Equilibra imagem, atributos e tabela.", visualPriority: "balanced" },
+    hero: { label: "Destaque", description: "Prioriza a imagem principal e o título.", visualPriority: "art" },
+    technical: { label: "Técnico", description: "Prioriza desenho, medidas e dados.", visualPriority: "specifications" },
+    variants: { label: "Variações", description: "Prioriza múltiplas imagens e legendas.", visualPriority: "gallery" },
+    "data-only": { label: "Dados", description: "Prioriza tabela e conteúdo textual.", visualPriority: "data" }
   });
   const DENSITIES = Object.freeze({
     compact: { label: "Compacta", gap: 6, padding: 8, fontScale: .88, iconScale: .9 },

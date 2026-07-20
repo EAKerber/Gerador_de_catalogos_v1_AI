@@ -130,7 +130,7 @@
   document.getElementById("exportAuthoringKitButton").addEventListener("click", event => {
     document.getElementById("exportMenu").open = false;
     projectPackage.exportAuthoringKit();
-    toast("CatalogAuthoringKit 1.5.9 exportado.");
+    toast("CatalogAuthoringKit 1.6.0 exportado.");
   });
   document.getElementById("printButton").addEventListener("click", () => {
     if (printExport.printCurrentPage()) toast("No diálogo do navegador, escolha Salvar como PDF.");

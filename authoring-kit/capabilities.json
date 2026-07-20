@@ -19,11 +19,14 @@
     "contextualArtGallery": true,
     "contextualInsertActions": true,
     "contextualTableRows": true,
+    "distinctProductModes": true,
     "draftPublicationGates": true,
+    "editorialTextControls": true,
     "generationPlanCompiler": true,
     "geometricPublicationGate": true,
     "heroGridStripComposition": true,
     "hierarchicalVisualLegends": true,
+    "internalIconScale": true,
     "jsonExport": true,
     "jsonImport": true,
     "linkedVariantRepresentations": true,
@@ -527,6 +530,25 @@
           "label": "Legenda",
           "path": "label",
           "type": "text"
+        },
+        {
+          "label": "Escala do ícone",
+          "options": [
+            {
+              "label": "100% · padrão",
+              "value": 100
+            },
+            {
+              "label": "80% · discreto",
+              "value": 80
+            },
+            {
+              "label": "120% · destaque",
+              "value": 120
+            }
+          ],
+          "path": "iconScale",
+          "type": "select"
         }
       ],
       "defaultFrame": {
@@ -1015,6 +1037,25 @@
           "label": "Especificação",
           "path": "label",
           "type": "text"
+        },
+        {
+          "label": "Escala do ícone",
+          "options": [
+            {
+              "label": "100% · padrão",
+              "value": 100
+            },
+            {
+              "label": "80% · discreto",
+              "value": 80
+            },
+            {
+              "label": "120% · destaque",
+              "value": 120
+            }
+          ],
+          "path": "iconScale",
+          "type": "select"
         }
       ],
       "defaultFrame": {
@@ -1061,6 +1102,82 @@
           "label": "Conteúdo",
           "path": "content",
           "type": "textarea"
+        },
+        {
+          "label": "Alinhamento",
+          "options": [
+            {
+              "label": "Início",
+              "value": "start"
+            },
+            {
+              "label": "Centro",
+              "value": "center"
+            },
+            {
+              "label": "Fim",
+              "value": "end"
+            }
+          ],
+          "path": "align",
+          "type": "select"
+        },
+        {
+          "label": "Alinhamento vertical",
+          "options": [
+            {
+              "label": "Meio",
+              "value": "center"
+            },
+            {
+              "label": "Topo",
+              "value": "start"
+            },
+            {
+              "label": "Base",
+              "value": "end"
+            }
+          ],
+          "path": "verticalAlign",
+          "type": "select"
+        },
+        {
+          "label": "Escala tipográfica",
+          "options": [
+            {
+              "label": "100% · padrão",
+              "value": 100
+            },
+            {
+              "label": "80% · discreta",
+              "value": 80
+            },
+            {
+              "label": "120% · destaque",
+              "value": 120
+            }
+          ],
+          "path": "scale",
+          "type": "select"
+        },
+        {
+          "label": "Excedente",
+          "options": [
+            {
+              "label": "Quebrar linhas",
+              "value": "wrap"
+            },
+            {
+              "label": "Uma linha com reticências",
+              "value": "ellipsis"
+            },
+            {
+              "label": "Cortar na caixa",
+              "value": "clip"
+            }
+          ],
+          "path": "overflow",
+          "type": "select"
         }
       ],
       "defaultFrame": {
@@ -1149,7 +1266,7 @@
     "pagePreset": "A4"
   },
   "editor": {
-    "increment": "05.17",
+    "increment": "05.18",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -1343,27 +1460,32 @@
         "padding": 12
       }
     },
-    "manifestVersion": "1.0.0",
+    "manifestVersion": "1.1.0",
     "modes": {
       "data-only": {
         "description": "Prioriza tabela e conteúdo textual.",
-        "label": "Dados"
+        "label": "Dados",
+        "visualPriority": "data"
       },
       "hero": {
         "description": "Prioriza a imagem principal e o título.",
-        "label": "Destaque"
+        "label": "Destaque",
+        "visualPriority": "art"
       },
       "standard": {
         "description": "Equilibra imagem, atributos e tabela.",
-        "label": "Padrão"
+        "label": "Padrão",
+        "visualPriority": "balanced"
       },
       "technical": {
         "description": "Prioriza desenho, medidas e dados.",
-        "label": "Técnico"
+        "label": "Técnico",
+        "visualPriority": "specifications"
       },
       "variants": {
         "description": "Prioriza múltiplas imagens e legendas.",
-        "label": "Variações"
+        "label": "Variações",
+        "visualPriority": "gallery"
       }
     },
     "presets": {

@@ -117,8 +117,16 @@
 .component-art[data-has-asset="true"]:focus-within .component-art__trigger { color: #fff; }
 .component-art[data-has-asset="false"] .component-art__trigger span { opacity: 1; }
 
-.component-text { display: grid; align-content: center; width: 100%; height: 100%; padding: 10px 12px; }
-.component-text p { margin: 0; font-family: var(--component-title-family, var(--font-sans)); font-size: var(--component-title-size, 14px); font-weight: var(--component-title-weight, 400); line-height: var(--component-title-line, 1.35); letter-spacing: var(--component-title-tracking, 0); text-transform: var(--component-title-transform, none); }
+.component-text { display: grid; align-content: center; width: 100%; height: 100%; min-height: 0; padding: 10px 12px; overflow: hidden; }
+.component-text p { min-width: 0; margin: 0; overflow: hidden; font-family: var(--component-title-family, var(--font-sans)); font-size: calc(var(--component-title-size, 14px) * var(--text-content-scale, 1)); font-weight: var(--component-title-weight, 400); line-height: var(--component-title-line, 1.35); letter-spacing: var(--component-title-tracking, 0); text-transform: var(--component-title-transform, none); white-space: pre-wrap; overflow-wrap: anywhere; }
+.component-text[data-text-align="start"] { text-align: left; }
+.component-text[data-text-align="center"] { text-align: center; }
+.component-text[data-text-align="end"] { text-align: right; }
+.component-text[data-text-vertical="start"] { align-content: start; }
+.component-text[data-text-vertical="center"] { align-content: center; }
+.component-text[data-text-vertical="end"] { align-content: end; }
+.component-text[data-text-overflow="ellipsis"] p { text-overflow: ellipsis; white-space: nowrap; }
+.component-text[data-text-overflow="clip"] p { text-overflow: clip; }
 
 .component-legend-panel, .component-legend-group { position: relative; width: 100%; height: 100%; }
 .component-legend-panel > header { position: absolute; z-index: 4; left: 9px; top: 6px; color: var(--component-text, #252525); font-family: var(--font-display); font-size: 9px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
@@ -169,7 +177,7 @@
 
 .component-icon { display: grid; width: 100%; height: 100%; place-items: center; align-content: center; gap: 3px; padding: 4px; color: var(--component-vector, var(--component-accent, #fd0807)); text-align: center; }
 .component-icon__svg { display: grid; width: min(72%, 40px); height: min(72%, 40px); place-items: center; }
-.component-icon__svg svg { width: 100%; height: 100%; }
+.component-icon__svg svg { width: 100%; height: 100%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
 .component-icon > span:last-child { max-width: 100%; overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-sans)); font-size: min(var(--component-title-size, 10px), 11px); font-weight: var(--component-title-weight, 600); line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Incremento 02 — componentes aninhados e slots */
@@ -202,8 +210,8 @@
 
 .component-specification { display: grid; grid-template-columns: minmax(25px, 30%) minmax(0, 1fr); align-items: center; gap: min(7px, var(--presentation-gap, 7px)); width: 100%; height: 100%; padding: 2px 4px; }
 .component-specification__icon { display: grid; width: min(29px, 100%); aspect-ratio: 1; place-items: center; border: 1px solid var(--component-border, #cfd2d5); border-radius: 50%; color: var(--component-vector, var(--component-accent, #fd0807)); background: #fff; }
-.component-specification__icon svg { width: 56%; height: 56%; }
-.editor-component--product-card .component-specification__icon svg { transform: scale(var(--presentation-icon-scale, 1)); }
+.component-specification__icon svg { width: 56%; height: 56%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
+.editor-component--product-card .component-specification__icon svg { transform: scale(calc(var(--presentation-icon-scale, 1) * var(--icon-content-scale, 1))); }
 .component-specification > span:last-child { overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-display)); font-size: min(var(--component-title-size, 11px), 11px); font-weight: var(--component-title-weight, 900); line-height: 1.05; text-overflow: ellipsis; text-transform: var(--component-title-transform, uppercase); white-space: nowrap; }
 
 .component-data-table { display: grid; grid-template-rows: 20px minmax(0, 1fr); width: 100%; height: 100%; overflow: hidden; border-radius: inherit; }
@@ -225,6 +233,13 @@
 
 .editor-component--product-card[data-presentation-density="compact"] { --presentation-font-scale: .88; --presentation-icon-scale: .9; }
 .editor-component--product-card[data-presentation-density="comfortable"] { --presentation-font-scale: 1.08; --presentation-icon-scale: 1.12; }
+.editor-component--product-card[data-presentation-mode="hero"] .component-card-shell__accent { width: 7px; opacity: 1; }
+.editor-component--product-card[data-presentation-mode="technical"] .component-card-shell__accent { width: 100%; height: 4px; }
+.editor-component--product-card[data-presentation-mode="variants"] .component-card-shell__accent { right: 0; left: auto; width: 5px; }
+.editor-component--product-card[data-presentation-mode="data-only"] .component-card-shell__accent { width: 100%; height: 3px; opacity: .55; }
+.editor-component--product-card[data-presentation-mode="hero"] > .component-children-layer .component-title-symbol h3 { font-size: calc(var(--component-title-size, 18px) * var(--presentation-font-scale, 1) * 1.08); }
+.editor-component--product-card[data-presentation-mode="technical"] > .component-children-layer .component-title-symbol__number { border: 1px solid var(--component-accent, #fd0807); color: var(--component-accent, #fd0807); background: transparent; }
+.editor-component--product-card[data-presentation-mode="variants"] > .component-children-layer .component-title-symbol__number { border-radius: 999px; }
 .editor-component--product-card .component-title-symbol h3 { font-size: calc(var(--component-title-size, 18px) * var(--presentation-font-scale, 1)); }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table { grid-template-rows: 16px minmax(0, 1fr); }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__body { grid-auto-rows: minmax(20px, 1fr); }

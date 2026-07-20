@@ -58,6 +58,23 @@ O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colu
 
 O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. A revisão posterior corrige a interpretação: geometria exata permanece central, mas deve cooperar com manipulação direta, relações e conjuntos em vez de depender de campos isolados.
 
+### Fila ativa — auditoria da biblioteca após o Incremento 05.17
+
+A biblioteca possui dezesseis tipos e cobre bem estrutura de página, produto, dados, arte e legendas. A expansão passa por um gate subtrativo: primeiro aprofundar peças existentes, depois admitir somente componentes com intenção recorrente que não possa ser expressa com clareza por composição ou preset.
+
+| Prioridade | Lacuna confirmada | Decisão canônica | Critério de saída |
+| --- | --- | --- | --- |
+| P1 | Presets de produto semanticamente distintos, mas visualmente próximos | Tornar `standard`, `hero`, `technical`, `variants` e `data-only` organizações efetivamente diferentes, preservando a mesma subárvore e seus vínculos. | Trocar o modo altera proporção/prioridade dos slots de forma observável, reversível e geometricamente válida. |
+| P1 | Texto livre com pouca responsabilidade editorial | Manter um único átomo `text`; acrescentar alinhamento, escala discreta e política de overflow sem HTML/CSS arbitrário. | Texto oferece início/centro/fim, topo/meio/base, 80/100/120% e quebra/reticências/corte, com PDF equivalente. |
+| P1 | Escala interna de ícones depende principalmente da caixa externa | Expor escala discreta no átomo e na molécula de especificação, preservando tokens e grid. | Ícone muda de 80 a 120% sem alterar o frame nem escapar do componente. |
+| P1 | Cabeçalho intermediário exige composição manual | Reservar `section-heading`: kicker opcional, título, complemento e divisor; implementar somente depois da consolidação dos átomos. | Casos de seção/categoria deixam de depender de `catalog-header` ou montagem repetitiva. |
+| P1 | Dados técnicos simples são simulados como texto ou tabela | Reservar molécula `fact`: ícone opcional, rótulo, valor e unidade. | Dimensão, peso, material e compatibilidade ficam semanticamente legíveis sem tabela. |
+| P2 | Callout existe apenas como receita de baixo nível | Manter a receita atual durante 05.18; promover a componente apenas se edição/reuso continuarem custosos. | Evidência de repetição ou inconsistência antes de criar novo tipo. |
+| P2 | Iconografia concentrada na referência de ferragens | Ampliar de forma curada por significado: técnico, desempenho, comercial, contato e confiança; evitar biblioteca indiscriminada. | Cada novo ícone atende ao menos dois fluxos plausíveis e possui categoria, rótulo e SVG monocromático por token. |
+| P2 | Biblioteca expõe infraestrutura junto de escolhas editoriais | Manter `layout-container` e peças internas no modelo, mas mover sua descoberta inicial para **Estrutura avançada** ou contexto compatível. | Fluxo inicial prioriza página, produto, dados e comunicação sem remover poder avançado. |
+
+Não entram como novos tipos neste ciclo: preço, selo, chip, botão, QR code, caixa colorida, card de contato, aplicação ou variações paralelas de tabela. Esses resultados devem usar `text`, tokens, `specification`, `footer-item`, `legend-item`, `art`, receitas e presets até que uma intenção exclusiva seja demonstrada.
+
 ### Frentes congeladas
 
 Expansão multimídia, hospedagem, colaboração, touch/mobile completo e workflow de publicação não possuem incremento ativo. PDF continua no núcleo de fidelidade; portabilidade existente é apenas mantida.

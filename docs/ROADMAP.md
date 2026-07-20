@@ -405,6 +405,20 @@ Critérios de aceite:
 
 Checkpoints 1–3 concluídos: seleção atômica, relações, valores exatos, deltas, diagnóstico, coleções em lote e grade de caixas heterogêneas. O `SIGSEGV` foi isolado em uma cópia Chromium truncada. No runtime íntegro, o benchmark integral caiu de 223 para 157 ações e terminou com zero colisão/overflow. Preview anterior ao commit e constraints persistentes continuam adiados por falta de evidência de necessidade.
 
+## Incremento 05.18 — Profundidade da biblioteca e linguagem editorial
+
+Critérios de aceite:
+
+- manter os dezesseis tipos atuais durante o primeiro checkpoint e aprofundar os átomos existentes antes de ampliar o registro;
+- oferecer composição tipográfica previsível com alinhamento, escala discreta e overflow explícito;
+- oferecer escala interna de ícone sem depender de redimensionar a caixa externa;
+- tornar os modos de `product-card` visual e geometricamente distintos usando a mesma estrutura canônica;
+- preservar tokens, histórico, mínimos, PDF e documentos 1.16.0;
+- reservar `section-heading` e `fact` como únicas candidatas imediatas, sujeitas a teste de intenção após a consolidação;
+- reorganizar futuramente a descoberta por intenção, mantendo peças internas e `layout-container` disponíveis no caminho avançado.
+
+O incremento não reabre expansão multimídia, publicação, colaboração ou touch/mobile. Também não introduz editor rico, CSS arbitrário nem famílias redundantes de preço, selo, botão, QR code ou tabela.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Critérios de aceite:

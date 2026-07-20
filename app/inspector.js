@@ -52,7 +52,8 @@
       }
       if (field.type === "select") {
         const options = (field.options || []).map(option => `<option value="${escapeHtml(option.value)}" ${option.value === value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
-        return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}">${options}</select></div>`;
+        const valueType = (field.options || []).length && field.options.every(option => typeof option.value === "number") ? "number" : "text";
+        return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}" data-prop-type="${valueType}">${options}</select></div>`;
       }
       if (field.type === "token-select") {
         return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}">${this.options(field.tokenGroup, value)}</select></div>`;
