@@ -40,9 +40,22 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
   "component-registry.js",
   "collection-registry.js",
   "document-store.js",
+  "text-alignment-contract.js",
+  "text-scale-contract.js",
+  "text-overflow-contract.js",
+  "icon-scale-contract.js",
+  "product-hero-contract.js",
+  "product-technical-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => vm.runInThisContext(fs.readFileSync(path.join(runtimeRoot, fileName), "utf8"), { filename: fileName }));
+
+CatalogTextAlignmentContract.install();
+CatalogTextScaleContract.install();
+CatalogTextOverflowContract.install();
+CatalogIconScaleContract.install();
+CatalogProductHeroContract.install();
+CatalogProductTechnicalContract.install();
 
 const source = readJSON(args.source);
 const plan = args.plan ? readJSON(args.plan) : null;
