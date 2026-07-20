@@ -169,5 +169,41 @@ window.CATALOG_ICON_LIBRARY = {
     "contexts": ["specification", "icon"],
     "keywords": ["diâmetro", "espessura", "bitola", "medida circular", "dimensão"],
     "examples": ["Diâmetro de parafuso ou furo", "Legenda técnica para espessura ou bitola"]
+  },
+  "phone": {
+    "label": "Telefone",
+    "category": "Contato",
+    "body": "<path d=\"M6.5 3h3l1.5 4-2 1.5a15 15 0 0 0 6.5 6.5l1.5-2 4 1.5v3A3.5 3.5 0 0 1 17.5 21C9.5 20 4 14.5 3 6.5A3.5 3.5 0 0 1 6.5 3Z\"/>",
+    "batch": "commercial-contact-trust",
+    "contexts": ["footer-item", "icon"],
+    "keywords": ["telefone", "ligação", "contato", "vendas", "suporte"],
+    "examples": ["Número de atendimento no rodapé", "Chamada comercial para contato por telefone"]
+  },
+  "email": {
+    "label": "E-mail",
+    "category": "Contato",
+    "body": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"m4 7 8 6 8-6\"/>",
+    "batch": "commercial-contact-trust",
+    "contexts": ["footer-item", "icon"],
+    "keywords": ["email", "e-mail", "mensagem", "contato", "orçamento"],
+    "examples": ["Endereço de e-mail no rodapé", "Canal para solicitar orçamento ou ficha técnica"]
+  },
+  "warranty": {
+    "label": "Garantia",
+    "category": "Confiança",
+    "body": "<path d=\"M8 3h8l3 3v8l-3 3H8l-3-3V6l3-3Z\"/><path d=\"m9 17-1 4 4-2 4 2-1-4\"/><path d=\"m9 10 2 2 4-4\"/>",
+    "batch": "commercial-contact-trust",
+    "contexts": ["specification", "footer-item", "icon"],
+    "keywords": ["garantia", "certificação", "confiança", "procedência", "cobertura"],
+    "examples": ["Prazo ou condição de garantia do produto", "Sinal de procedência ou confiança institucional"]
+  },
+  "payment": {
+    "label": "Pagamento / condições",
+    "category": "Comercial",
+    "body": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 9h18M7 15h4\"/>",
+    "batch": "commercial-contact-trust",
+    "contexts": ["footer-item", "icon"],
+    "keywords": ["pagamento", "condições", "parcelamento", "comercial", "cartão"],
+    "examples": ["Condições comerciais no rodapé", "Destaque de formas ou prazo de pagamento"]
   }
 };
