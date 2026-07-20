@@ -9,6 +9,7 @@ const contracts = [
   "text-alignment-contract.js",
   "text-scale-contract.js",
   "text-overflow-contract.js",
+  "footer-item-containment-contract.js",
   "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
@@ -18,6 +19,7 @@ const contracts = [
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const buildSource = fs.readFileSync(path.join(root, "tools", "build-authoring-kit.js"), "utf8");
+const developerBuildSource = fs.readFileSync(path.join(root, "tools", "build-developer-b-authoring-kit.js"), "utf8");
 const compilerSource = fs.readFileSync(path.join(root, "authoring-kit", "compiler", "compile-catalog.js"), "utf8");
 const mainSource = fs.readFileSync(path.join(root, "app", "main.js"), "utf8");
 
@@ -27,7 +29,7 @@ for (const fileName of contracts) {
   assert(fs.existsSync(appPath), `Contrato ausente no app: ${fileName}.`);
   assert(fs.existsSync(kitPath), `Contrato ausente no runtime do kit: ${fileName}.`);
   assert(fs.readFileSync(appPath, "utf8") === fs.readFileSync(kitPath, "utf8"), `Contrato divergente entre app e kit: ${fileName}.`);
-  assert(buildSource.includes(`"${fileName}"`), `O build não copia ${fileName}.`);
+  assert(buildSource.includes(`"${fileName}"`) || developerBuildSource.includes(`"${fileName}"`), `Nenhum build sincroniza ${fileName}.`);
   assert(compilerSource.includes(`"${fileName}"`), `O compilador não carrega ${fileName}.`);
   assert(mainSource.includes(`file: "${fileName}"`), `O editor não carrega ${fileName}.`);
 }
@@ -45,6 +47,7 @@ for (const globalName of [
   "CatalogTextAlignmentContract",
   "CatalogTextScaleContract",
   "CatalogTextOverflowContract",
+  "CatalogFooterItemContainmentContract",
   "CatalogIconScaleContract",
   "CatalogProductHeroContract",
   "CatalogProductTechnicalContract",
@@ -72,4 +75,4 @@ const reportData = JSON.parse(fs.readFileSync(report, "utf8"));
 assert(document.schemaVersion === "1.16.0", `Schema compilado inesperado: ${document.schemaVersion}.`);
 assert(reportData.ok === true, `Relatório de compilação bloqueado: ${JSON.stringify(reportData.issues || [])}.`);
 
-console.log("✓ AuthoringKit copia, carrega, instala e executa os contratos incrementais antes da compilação.");
+console.log("✓ AuthoringKit sincroniza, carrega, instala e executa os contratos incrementais antes da compilação.");
