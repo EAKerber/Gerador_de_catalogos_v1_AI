@@ -18,7 +18,8 @@ Sem essa integração, o editor e o compilador poderiam produzir geometrias dife
 - `text-overflow-contract.js`;
 - `icon-scale-contract.js`;
 - `product-hero-contract.js`;
-- `product-technical-contract.js`.
+- `product-technical-contract.js`;
+- `product-variants-contract.js`.
 
 ## Ordem do compilador
 
@@ -31,11 +32,11 @@ O compilador carrega:
 5. instalações dos contratos;
 6. chamada `CatalogCompiler.compile`.
 
-Alinhamento e overflow precisam da store para compor seus wrappers. Hero e técnico precisam ser instalados antes que o compilador consulte os frames dos slots.
+Alinhamento, overflow e variants precisam da store para compor seus wrappers. Hero, técnico e variants precisam ser instalados antes que o compilador consulte os frames e mínimos dos slots.
 
 ## Build
 
-`tools/build-authoring-kit.js` passa a copiar cada contrato de `app/` para `authoring-kit/runtime/` antes de gerar manifestos, inventário e o bundle embutido `app/authoring-kit-files.js`.
+`tools/build-authoring-kit.js` copia cada contrato de `app/` para `authoring-kit/runtime/` antes de gerar manifestos, inventário e o bundle embutido `app/authoring-kit-files.js`.
 
 Isso restaura a regra operacional:
 
