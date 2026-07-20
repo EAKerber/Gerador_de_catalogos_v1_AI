@@ -46,6 +46,7 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
   "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
+  "product-variants-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => vm.runInThisContext(fs.readFileSync(path.join(runtimeRoot, fileName), "utf8"), { filename: fileName }));
@@ -56,6 +57,7 @@ CatalogTextOverflowContract.install();
 CatalogIconScaleContract.install();
 CatalogProductHeroContract.install();
 CatalogProductTechnicalContract.install();
+CatalogProductVariantsContract.install();
 
 const source = readJSON(args.source);
 const plan = args.plan ? readJSON(args.plan) : null;
