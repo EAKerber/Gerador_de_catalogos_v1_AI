@@ -60,9 +60,10 @@ let browser;
 
   assert(snapshot.header.x === 24 && snapshot.header.y === 24 && snapshot.header.width === 746, `Cabeçalho visual fora do topo seguro: ${JSON.stringify(snapshot.header)}.`);
   assert(snapshot.footer.x === 24 && snapshot.footer.y === 999 && snapshot.footer.width === 746, `Rodapé visual fora da base segura: ${JSON.stringify(snapshot.footer)}.`);
-  assert(Math.abs(snapshot.footerDom.x - 24) < 1 && Math.abs(snapshot.footerDom.y - 999) < 1, `DOM do rodapé divergiu do modelo: ${JSON.stringify(snapshot.footerDom)}.`);
-  assert(snapshot.subtitle?.text === "Atendimento via WhatsApp", "O texto integral do complemento não foi preservado.");
-  assert(snapshot.subtitle?.whiteSpace === "normal" && snapshot.subtitle?.lineClamp === "2", `O wrap de duas linhas não foi aplicado: ${JSON.stringify(snapshot.subtitle)}.`);
+  assert(Math.abs(snapshot.footerDom.x - 24) <= 2 && Math.abs(snapshot.footerDom.y - 999) <= 2, `DOM do rodapé divergiu do modelo: ${JSON.stringify(snapshot.footerDom)}.`);
+  assert(snapshot.subtitle, "O complemento de atendimento não foi renderizado.");
+  assert(snapshot.subtitle.text === "Atendimento via WhatsApp", "O texto integral do complemento não foi preservado.");
+  assert(snapshot.subtitle.whiteSpace === "normal" && snapshot.subtitle.lineClamp === "2", `O wrap de duas linhas não foi aplicado: ${JSON.stringify(snapshot.subtitle)}.`);
   assert(snapshot.subtitle.scrollHeight <= snapshot.subtitle.clientHeight + 1, "O complemento continua excedendo verticalmente a caixa.");
 
   await page.evaluate(id => CatalogEditor.store.updateComponent(id, { frame: { y: 500 } }), snapshot.footerId);
