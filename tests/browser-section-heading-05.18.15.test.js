@@ -15,7 +15,7 @@ let browser;
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogSectionRecipes?.VERSION === "1.3.0");
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogSectionRecipes?.get?.("section-heading") && window.CatalogSectionRecipes?.VERSION >= "1.3.0");
 
   await page.evaluate(() => {
     CatalogEditor.store.reset();
