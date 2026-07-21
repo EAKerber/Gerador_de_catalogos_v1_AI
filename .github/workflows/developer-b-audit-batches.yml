@@ -5,25 +5,43 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-5-2:
-    name: Batch 5.2 — regressão mínima de reflow e histórico
+  batch-5-3:
+    name: Batch 5.3 — estresse de domínio após correção
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Executar regressão mínima
+      - name: Carregar contrato no cenário pesado
         shell: bash
         run: |
-          mkdir -p audit-output/batch-5-2
-          node tests/reflow-history-stability-05.18.test.js > audit-output/batch-5-2/test.log 2>&1
-      - name: Publicar log
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tests/stress-domain-history-05.18.test.js')
+          source = path.read_text()
+          needle = '  "app/product-data-only-contract.js"\n]'
+          replacement = '  "app/product-data-only-contract.js",\n  "app/reflow-history-stability-contract.js"\n]'
+          if needle not in source:
+              raise SystemExit('ponto de carregamento não encontrado')
+          path.write_text(source.replace(needle, replacement))
+          PY
+      - name: Executar três sementes
+        shell: bash
+        run: |
+          mkdir -p audit-output/batch-5-3
+          node tools/run-developer-b-stress.js \
+            --node \
+            --repeat=3 \
+            --seed=5182026 \
+            --timeout=180000 \
+            --output=audit-output/batch-5-3
+      - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-5-2-reflow-log
-          path: audit-output/batch-5-2
+          name: developer-b-batch-5-3-domain-stress
+          path: audit-output/batch-5-3
           if-no-files-found: error
           retention-days: 14
