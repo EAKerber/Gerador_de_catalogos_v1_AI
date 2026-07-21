@@ -18,7 +18,7 @@ let browser;
   await page.waitForFunction(() => window.CatalogEditor
     && window.CatalogTextAlignmentContract?.VERSION === "05.18.2"
     && window.CatalogTextScaleContract?.VERSION === "05.18.3"
-    && window.CatalogTextOverflowContract?.VERSION === "05.18.4");
+    && window.CatalogTextOverflowContract?.VERSION === "05.18.4.1");
 
   const ids = await page.evaluate(() => {
     CatalogEditor.store.reset();
