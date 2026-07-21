@@ -44,6 +44,38 @@ const stable = state => {
   return value;
 };
 const signature = state => JSON.stringify(stable(state));
+const differences = (left, right, limit = 20) => {
+  const result = [];
+  const walk = (a, b, current = "$") => {
+    if (result.length >= limit) return;
+    if (typeof a !== typeof b || Array.isArray(a) !== Array.isArray(b) || (a === null) !== (b === null)) {
+      result.push(`${current}: tipo/estrutura divergente`);
+      return;
+    }
+    if (Array.isArray(a)) {
+      if (a.length !== b.length) result.push(`${current}: tamanho ${a.length} != ${b.length}`);
+      for (let index = 0; index < Math.min(a.length, b.length); index += 1) walk(a[index], b[index], `${current}[${index}]`);
+      return;
+    }
+    if (a && typeof a === "object") {
+      const keys = [...new Set([...Object.keys(a), ...Object.keys(b)])].sort();
+      for (const key of keys) {
+        if (!(key in a)) result.push(`${current}.${key}: ausente no esperado`);
+        else if (!(key in b)) result.push(`${current}.${key}: ausente no atual`);
+        else walk(a[key], b[key], `${current}.${key}`);
+        if (result.length >= limit) break;
+      }
+      return;
+    }
+    if (a !== b) result.push(`${current}: ${JSON.stringify(a)} != ${JSON.stringify(b)}`);
+  };
+  walk(left, right);
+  return result;
+};
+const assertEquivalent = (expected, actual, message) => {
+  const diff = differences(expected, actual);
+  assert(diff.length === 0, `${message}\n${diff.join("\n")}`);
+};
 
 const store = new CatalogDocumentStore(createBlankCatalogDocument());
 const area = store.addComponent("layout-container", { x: 24, y: 24, width: 746, height: 900 }, {
@@ -55,9 +87,9 @@ for (let index = 0; index < 15; index += 1) {
 }
 const card = store.addComponent("product-card", { x: 0, y: 0, width: 280, height: 240 }, { parentId: area.id });
 
-const beforeExtreme = signature(store.getState());
+const beforeExtremeState = stable(store.getState());
 store.updateComponent(area.id, { layout: { mode: "grid", columns: 12, padding: 0, gap: 0 } });
-const afterExtreme = signature(store.getState());
+const afterExtremeState = stable(store.getState());
 const widthAfterOperation = store.findComponent(card.id).component.frame.width;
 assert(widthAfterOperation >= 220, `A operação registrada terminou abaixo do mínimo do card: ${widthAfterOperation}.`);
 
@@ -66,9 +98,9 @@ store.reflowComponentTree(area.id);
 assert(signature(store.getState()) === beforeSecondReflow, "Um segundo reflow alterou o estado já registrado.");
 
 assert(store.undo(), "Não foi possível desfazer o layout extremo.");
-assert(signature(store.getState()) === beforeExtreme, "Undo não restaurou o estado anterior ao layout extremo.");
+assertEquivalent(beforeExtremeState, stable(store.getState()), "Undo não restaurou o estado anterior ao layout extremo.");
 assert(store.redo(), "Não foi possível refazer o layout extremo.");
-assert(signature(store.getState()) === afterExtreme, "Redo não restaurou a geometria convergida capturada no histórico.");
+assertEquivalent(afterExtremeState, stable(store.getState()), "Redo não restaurou a geometria convergida capturada no histórico.");
 const widthAfterRedo = store.findComponent(card.id).component.frame.width;
 assert(widthAfterRedo === widthAfterOperation, `Redo alterou a largura do card: ${widthAfterOperation} -> ${widthAfterRedo}.`);
 
@@ -77,7 +109,7 @@ store.reflowComponentTree(area.id);
 assert(signature(store.getState()) === afterRedo, "Reflow após redo ainda encontrou geometria pendente.");
 
 const imported = new CatalogDocumentStore(store.getExportDocument());
-assert(signature(imported.getState()) === afterExtreme, "Importação não preservou a geometria convergida.");
+assertEquivalent(afterExtremeState, stable(imported.getState()), "Importação não preservou a geometria convergida.");
 assert(imported.getLastReflowStability()?.roots >= 1, "O contrato não registrou estabilização de raízes.");
 assert(imported.getState().schemaVersion === "1.16.0", "A correção alterou o schema.");
 
