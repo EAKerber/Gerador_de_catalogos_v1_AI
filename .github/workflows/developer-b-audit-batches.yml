@@ -5,8 +5,8 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-7-3:
-    name: Batch 7.3 — specification compacta
+  batch-7-4:
+    name: Batch 7.4 — diagnóstico da specification compacta
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -26,7 +26,16 @@ jobs:
             sleep 1
           done
           exit 1
-      - name: Executar teste focado
+      - name: Executar diagnóstico existente
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-        run: timeout 120s node tests/browser-specification-scale-05.18.6.test.js
+          CATALOG_DIAGNOSTIC_OUTPUT_DIR: ${{ github.workspace }}/audit-output/batch-7-4
+        run: node tests/browser-medium-diagnostics-05.18.test.js
+      - name: Publicar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-batch-7-4-spec-diagnostic
+          path: audit-output/batch-7-4
+          if-no-files-found: error
+          retention-days: 14
