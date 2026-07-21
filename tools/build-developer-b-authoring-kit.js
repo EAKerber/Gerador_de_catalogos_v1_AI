@@ -18,6 +18,7 @@ const contractFiles = [
   "product-technical-contract.js",
   "product-variants-contract.js",
   "product-data-only-contract.js",
+  "reflow-history-stability-contract.js",
   "component-intent-registry.js",
   "component-intent-manifest-contract.js",
   "component-placement-registry.js",

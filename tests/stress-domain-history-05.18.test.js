@@ -14,7 +14,12 @@ const stableSnapshot = state => {
   delete snapshot.updatedAt;
   return snapshot;
 };
-const signature = state => JSON.stringify(stableSnapshot(state));
+const canonicalize = value => {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
+  return value;
+};
+const signature = state => JSON.stringify(canonicalize(stableSnapshot(state)));
 
 fs.mkdirSync(outputDir, { recursive: true });
 global.window = global;
@@ -47,7 +52,8 @@ global.CatalogEditorIcon = () => "";
   "app/product-hero-contract.js",
   "app/product-technical-contract.js",
   "app/product-variants-contract.js",
-  "app/product-data-only-contract.js"
+  "app/product-data-only-contract.js",
+  "app/reflow-history-stability-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 [
