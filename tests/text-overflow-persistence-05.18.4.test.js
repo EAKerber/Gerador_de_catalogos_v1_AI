@@ -52,9 +52,10 @@ for (const overflow of ["wrap", "ellipsis", "clip"]) {
 }
 
 const frameBefore = clone(store.findComponent(text.id).component.frame);
+store.addComponent("icon", { x: 220, y: 20, width: 40, height: 40 }, { props: { icon: "check-circle", label: "Sentinela de histórico" } });
 const historyBefore = store.getHistoryState().undoCount;
 store.updateComponent(text.id, { props: { overflow: "ellipsis" } });
-assert(store.getHistoryState().undoCount === historyBefore + 1, "A mudança de overflow não gerou uma entrada de histórico.");
+assert(store.getHistoryState().undoCount === historyBefore + 1, "A mudança de overflow isolada não gerou uma entrada de histórico.");
 assert(JSON.stringify(store.findComponent(text.id).component.frame) === JSON.stringify(frameBefore), "O overflow modificou o frame externo.");
 assert(store.undo(), "Não foi possível desfazer overflow.");
 assert(store.findComponent(text.id).component.props.overflow === "clip", "Desfazer não restaurou a política anterior.");
