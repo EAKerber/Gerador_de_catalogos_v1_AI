@@ -40,7 +40,6 @@ fs.mkdirSync(runtimeRoot, { recursive: true });
   "text-alignment-contract.js",
   "text-scale-contract.js",
   "text-overflow-contract.js",
-  "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
   "product-variants-contract.js",

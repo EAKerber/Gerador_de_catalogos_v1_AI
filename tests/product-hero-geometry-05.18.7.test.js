@@ -17,7 +17,6 @@ global.CatalogEditorIcon = name => `<svg data-icon="${name}"></svg>`;
   "app/text-alignment-contract.js",
   "app/text-scale-contract.js",
   "app/text-overflow-contract.js",
-  "app/icon-scale-contract.js",
   "app/product-hero-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
@@ -34,7 +33,6 @@ const slotFrames = card => ({
 CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
-CatalogIconScaleContract.install();
 const installation = CatalogProductHeroContract.install();
 assert(installation.geometryInstalled, "O contrato geométrico do hero não foi instalado.");
 

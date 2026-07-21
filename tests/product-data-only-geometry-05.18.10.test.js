@@ -17,7 +17,6 @@ global.CatalogEditorIcon = name => `<svg data-icon="${name}"></svg>`;
   "app/text-alignment-contract.js",
   "app/text-scale-contract.js",
   "app/text-overflow-contract.js",
-  "app/icon-scale-contract.js",
   "app/product-hero-contract.js",
   "app/product-technical-contract.js",
   "app/product-variants-contract.js",
@@ -48,7 +47,6 @@ const assertContained = (card, label) => {
 CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
-CatalogIconScaleContract.install();
 CatalogProductHeroContract.install();
 CatalogProductTechnicalContract.install();
 CatalogProductVariantsContract.install();

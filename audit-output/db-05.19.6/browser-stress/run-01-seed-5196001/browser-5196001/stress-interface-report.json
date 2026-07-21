@@ -1,0 +1,460 @@
+{
+  "suite": "Developer B 05.18 — browser/interface stress",
+  "seed": 5196001,
+  "generatedAt": "2026-07-21T22:13:17.422Z",
+  "baseURL": "http://127.0.0.1:8080",
+  "fixture": {
+    "scaffoldId": "layout-container-mrv7mezt-5g5db",
+    "contentId": "layout-container-mrv7mezt-cbyt1",
+    "footerId": "catalog-footer-mrv7mezt-nwguo",
+    "footerItemIds": [
+      "footer-item-mrv7mezv-vv5wf",
+      "footer-item-mrv7mezv-v1fyb",
+      "footer-item-mrv7mezv-x2pnh",
+      "footer-item-mrv7mezv-6tfqk",
+      "footer-item-mrv7mezv-ba1t7",
+      "footer-item-mrv7mezv-8bbhq"
+    ],
+    "cardIds": [
+      "product-card-mrv7mf5g-0srsx",
+      "product-card-mrv7mf6o-ktb1a",
+      "product-card-mrv7mf7r-pi6la",
+      "product-card-mrv7mf8v-a8w0n",
+      "product-card-mrv7mfaq-u0vrh",
+      "product-card-mrv7mfcf-6ab8z",
+      "product-card-mrv7mfdr-4dcky",
+      "product-card-mrv7mff6-ddgah",
+      "product-card-mrv7mfgp-mel22",
+      "product-card-mrv7mfie-9ts9a",
+      "product-card-mrv7mfk8-ckqff",
+      "product-card-mrv7mfm6-q59n2"
+    ],
+    "primaryCardId": "product-card-mrv7mf5g-0srsx",
+    "tableId": "data-table-mrv7mf5g-7nfl4",
+    "galleryId": "art-gallery-mrv7mfp8-i5wdx",
+    "factId": "layout-container-mrv7mg3f-mqfy5",
+    "calloutId": "layout-container-mrv7mg55-ut6x6",
+    "nestedId": "layout-container-mrv7mg65-8lrbq",
+    "nestedIds": [
+      "icon-mrv7mg6x-pra9j",
+      "text-mrv7mg7h-89e0u",
+      "text-mrv7mg80-yqo6m",
+      "icon-mrv7mg8j-t3iwu",
+      "text-mrv7mg93-7o1di",
+      "text-mrv7mg9m-nfemc",
+      "icon-mrv7mga7-m3tbs",
+      "text-mrv7mgar-qdjf8",
+      "text-mrv7mgba-gbiml",
+      "icon-mrv7mgbu-bxem9",
+      "text-mrv7mgcd-1sbl6",
+      "text-mrv7mgcx-ln87j",
+      "icon-mrv7mgdh-ruaxe",
+      "text-mrv7mge3-toztn",
+      "text-mrv7mgep-jsmor",
+      "icon-mrv7mgf9-9r1tx",
+      "text-mrv7mgfu-aj0ko",
+      "text-mrv7mggg-xyinp",
+      "icon-mrv7mgh2-8db4g",
+      "text-mrv7mghn-z1fnd",
+      "text-mrv7mgi9-n8yj1",
+      "icon-mrv7mgiv-5zxjs",
+      "text-mrv7mgjh-rbeay",
+      "text-mrv7mgk4-fs3m9"
+    ],
+    "expectedPlacementFailure": {
+      "code": "NO_AUTOMATIC_PLACEMENT",
+      "message": "Não há espaço livre suficiente no contexto atual para inserir este item automaticamente. Arraste para uma posição específica ou aumente o contêiner."
+    },
+    "initialModelCount": 164,
+    "limits": {
+      "tableRows": 12,
+      "galleryItems": 24
+    }
+  },
+  "historyRoundTrips": {
+    "button": {
+      "operations": 8,
+      "restoredBefore": true,
+      "restoredAfter": true
+    },
+    "keyboard": {
+      "operations": 4,
+      "restoredBefore": true,
+      "restoredAfter": true
+    }
+  },
+  "supportedScreen": {
+    "label": "supported-screen",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "modelCount": 172,
+    "domCount": 172,
+    "uniqueModelIds": 172,
+    "uniqueDOMIds": 172,
+    "nonFiniteFrames": [],
+    "invalidStyles": [],
+    "missingDOM": [],
+    "duplicateDOM": [],
+    "parentLeaks": [
+      {
+        "id": "layout-container-mrv7mezt-cbyt1",
+        "parentId": "layout-container-mrv7mezt-5g5db",
+        "child": {
+          "left": 479.8843688964844,
+          "top": 124.0718765258789,
+          "right": 988.7564086914062,
+          "bottom": 1371.135841369629
+        },
+        "parent": {
+          "left": 479.8843688964844,
+          "top": 124.0718765258789,
+          "right": 887.2003784179688,
+          "bottom": 711.0218276977539
+        }
+      }
+    ],
+    "footerLeaks": [],
+    "selectedMissing": [],
+    "documentOverflow": {
+      "horizontal": 0,
+      "vertical": 0
+    },
+    "geometry": {
+      "shell": {
+        "width": 1366,
+        "height": 712
+      },
+      "workspace": {
+        "width": 778,
+        "height": 712
+      },
+      "leftPanel": {
+        "width": 294,
+        "height": 712
+      },
+      "rightPanel": {
+        "width": 294,
+        "height": 712
+      },
+      "pageCanvas": {
+        "width": 433.5240478515625,
+        "height": 613.1580200195312
+      }
+    },
+    "publication": {
+      "pages": 1,
+      "components": 172,
+      "products": 12,
+      "tableRows": 23,
+      "collisions": 4,
+      "overflows": 1,
+      "missingReferences": 0
+    },
+    "history": {
+      "canUndo": true,
+      "canRedo": false,
+      "undoLabel": "Editar componente",
+      "redoLabel": null,
+      "undoCount": 65,
+      "redoCount": 0,
+      "dirty": true
+    },
+    "schemaVersion": "1.16.0"
+  },
+  "supportedPrint": {
+    "label": "supported-print",
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "modelCount": 172,
+    "domCount": 172,
+    "uniqueModelIds": 172,
+    "uniqueDOMIds": 172,
+    "nonFiniteFrames": [],
+    "invalidStyles": [],
+    "missingDOM": [],
+    "duplicateDOM": [],
+    "parentLeaks": [
+      {
+        "id": "layout-container-mrv7mezt-cbyt1",
+        "parentId": "layout-container-mrv7mezt-5g5db",
+        "child": {
+          "left": 310.15625,
+          "top": 24,
+          "right": 1242.15625,
+          "bottom": 2308
+        },
+        "parent": {
+          "left": 310.15625,
+          "top": 24,
+          "right": 1056.15625,
+          "bottom": 1099
+        }
+      }
+    ],
+    "footerLeaks": [],
+    "selectedMissing": [],
+    "documentOverflow": {
+      "horizontal": 0,
+      "vertical": 355
+    },
+    "geometry": {
+      "shell": {
+        "width": 1366,
+        "height": 1122.515625
+      },
+      "workspace": {
+        "width": 1366,
+        "height": 1122.515625
+      },
+      "leftPanel": {
+        "width": 0,
+        "height": 0
+      },
+      "rightPanel": {
+        "width": 0,
+        "height": 0
+      },
+      "pageCanvas": {
+        "width": 793.6875,
+        "height": 1122.515625
+      }
+    },
+    "publication": {
+      "pages": 1,
+      "components": 172,
+      "products": 12,
+      "tableRows": 23,
+      "collisions": 4,
+      "overflows": 1,
+      "missingReferences": 0
+    },
+    "history": {
+      "canUndo": true,
+      "canRedo": false,
+      "undoLabel": "Editar componente",
+      "redoLabel": null,
+      "undoCount": 65,
+      "redoCount": 0,
+      "dirty": true
+    },
+    "schemaVersion": "1.16.0"
+  },
+  "undersizedScreen": {
+    "label": "undersized-screen",
+    "viewport": {
+      "width": 1100,
+      "height": 650
+    },
+    "modelCount": 172,
+    "domCount": 172,
+    "uniqueModelIds": 172,
+    "uniqueDOMIds": 172,
+    "nonFiniteFrames": [],
+    "invalidStyles": [],
+    "missingDOM": [],
+    "duplicateDOM": [],
+    "parentLeaks": [
+      {
+        "id": "layout-container-mrv7mezt-cbyt1",
+        "parentId": "layout-container-mrv7mezt-5g5db",
+        "child": {
+          "left": 385.9468688964844,
+          "top": 121.4000015258789,
+          "right": 796.9588623046875,
+          "bottom": 1128.6440200805664
+        },
+        "parent": {
+          "left": 385.9468688964844,
+          "top": 121.4000015258789,
+          "right": 714.932861328125,
+          "bottom": 595.474983215332
+        }
+      }
+    ],
+    "footerLeaks": [],
+    "selectedMissing": [],
+    "documentOverflow": {
+      "horizontal": 0,
+      "vertical": 0
+    },
+    "geometry": {
+      "shell": {
+        "width": 1100,
+        "height": 594
+      },
+      "workspace": {
+        "width": 512,
+        "height": 594
+      },
+      "leftPanel": {
+        "width": 294,
+        "height": 594
+      },
+      "rightPanel": {
+        "width": 294,
+        "height": 594
+      },
+      "pageCanvas": {
+        "width": 350.154052734375,
+        "height": 495.2430419921875
+      }
+    },
+    "publication": {
+      "pages": 1,
+      "components": 172,
+      "products": 12,
+      "tableRows": 23,
+      "collisions": 4,
+      "overflows": 1,
+      "missingReferences": 0
+    },
+    "history": {
+      "canUndo": true,
+      "canRedo": false,
+      "undoLabel": "Editar componente",
+      "redoLabel": null,
+      "undoCount": 65,
+      "redoCount": 0,
+      "dirty": true
+    },
+    "schemaVersion": "1.16.0"
+  },
+  "expectedFindings": {
+    "automaticPlacement": {
+      "code": "NO_AUTOMATIC_PLACEMENT",
+      "message": "Não há espaço livre suficiente no contexto atual para inserir este item automaticamente. Arraste para uma posição específica ou aumente o contêiner."
+    },
+    "publicationGeometry": {
+      "supportedScreen": {
+        "pages": 1,
+        "components": 172,
+        "products": 12,
+        "tableRows": 23,
+        "collisions": 4,
+        "overflows": 1,
+        "missingReferences": 0
+      },
+      "supportedPrint": {
+        "pages": 1,
+        "components": 172,
+        "products": 12,
+        "tableRows": 23,
+        "collisions": 4,
+        "overflows": 1,
+        "missingReferences": 0
+      },
+      "undersizedScreen": {
+        "pages": 1,
+        "components": 172,
+        "products": 12,
+        "tableRows": 23,
+        "collisions": 4,
+        "overflows": 1,
+        "missingReferences": 0
+      }
+    },
+    "containedButCrowded": {
+      "parentLeaksScreen": [
+        {
+          "id": "layout-container-mrv7mezt-cbyt1",
+          "parentId": "layout-container-mrv7mezt-5g5db",
+          "child": {
+            "left": 479.8843688964844,
+            "top": 124.0718765258789,
+            "right": 988.7564086914062,
+            "bottom": 1371.135841369629
+          },
+          "parent": {
+            "left": 479.8843688964844,
+            "top": 124.0718765258789,
+            "right": 887.2003784179688,
+            "bottom": 711.0218276977539
+          }
+        }
+      ],
+      "parentLeaksPrint": [
+        {
+          "id": "layout-container-mrv7mezt-cbyt1",
+          "parentId": "layout-container-mrv7mezt-5g5db",
+          "child": {
+            "left": 310.15625,
+            "top": 24,
+            "right": 1242.15625,
+            "bottom": 2308
+          },
+          "parent": {
+            "left": 310.15625,
+            "top": 24,
+            "right": 1056.15625,
+            "bottom": 1099
+          }
+        }
+      ],
+      "parentLeaksUndersized": [
+        {
+          "id": "layout-container-mrv7mezt-cbyt1",
+          "parentId": "layout-container-mrv7mezt-5g5db",
+          "child": {
+            "left": 385.9468688964844,
+            "top": 121.4000015258789,
+            "right": 796.9588623046875,
+            "bottom": 1128.6440200805664
+          },
+          "parent": {
+            "left": 385.9468688964844,
+            "top": 121.4000015258789,
+            "right": 714.932861328125,
+            "bottom": 595.474983215332
+          }
+        }
+      ]
+    },
+    "unsupportedViewportPressure": {
+      "viewport": {
+        "width": 1100,
+        "height": 650
+      },
+      "documentOverflow": {
+        "horizontal": 0,
+        "vertical": 0
+      },
+      "geometry": {
+        "shell": {
+          "width": 1100,
+          "height": 594
+        },
+        "workspace": {
+          "width": 512,
+          "height": 594
+        },
+        "leftPanel": {
+          "width": 294,
+          "height": 594
+        },
+        "rightPanel": {
+          "width": 294,
+          "height": 594
+        },
+        "pageCanvas": {
+          "width": 350.154052734375,
+          "height": 495.2430419921875
+        }
+      }
+    }
+  },
+  "blockers": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "requestFailures": [],
+  "screenshots": [
+    "supported-full.png",
+    "supported-canvas.png",
+    "supported-print.png",
+    "undersized-full.png"
+  ],
+  "status": "pass-with-findings"
+}

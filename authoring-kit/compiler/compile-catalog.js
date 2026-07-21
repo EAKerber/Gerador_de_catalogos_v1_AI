@@ -43,7 +43,6 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
   "text-alignment-contract.js",
   "text-scale-contract.js",
   "text-overflow-contract.js",
-  "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",
   "product-variants-contract.js",
@@ -56,7 +55,6 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
 CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
-CatalogIconScaleContract.install();
 CatalogProductHeroContract.install();
 CatalogProductTechnicalContract.install();
 CatalogProductVariantsContract.install();
