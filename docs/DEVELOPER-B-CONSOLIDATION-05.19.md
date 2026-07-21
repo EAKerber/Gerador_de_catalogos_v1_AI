@@ -38,24 +38,42 @@ Arquivo, carregamentos, instalação e referência de build removidos. Regressõ
 
 **Commit:** `fc6a47fc8305f90fd9400682ce7935c42d9db5fb`.
 
-## Gate estável
+### DB-05.19.5 — Contenção canônica da escala de ícone
 
-Aprovado no run `29847805074` com:
+A limitação do invólucro SVG de ícones do rodapé foi transferida para `styles/components.css`. O registro e o render continuam responsáveis por publicar `iconScale`; o contrato foi reduzido a no-op sem injeção de estilos.
 
-- suíte completa Node, build e Chromium;
-- estresse de domínio;
-- semente visual `5194999`;
-- ausência dos dois shims removidos;
-- build idempotente.
-
-Artefato: `developer-b-db-05.19-stable-audit` — `sha256:945f73015e585ed53425a773aa5542696d9e4bbdb7b70778d288141675ee1cbc`.
-
-## Próximo par
-
-### DB-05.19.5 — Contenção do ícone no CSS canônico
-
-Transferir a limitação do invólucro SVG do `icon-scale-contract.js` para `styles/components.css`, preservando escalas 80/100/120, frame, histórico e impressão. O contrato permanece como shim sem injeção.
+**Commit:** `d6ea7c030591856546936dfe10946faf983fa81a`.
 
 ### DB-05.19.6 — Remoção do shim de escala de ícone
 
-Após aprovação do 05.19.5, remover arquivo, carregamento, instalação e referências de build; manter a capacidade no registro/render/CSS canônicos e executar auditoria completa.
+O arquivo foi removido do editor e do AuthoringKit. Bootstrap, compilador, builds e testes deixaram de depender de `CatalogIconScaleContract`; a capacidade permanece no registro, render e CSS canônicos.
+
+**Commit:** `b24597e1004489caf8f4c8a4fb07b66aefe7eb6c`.
+
+## Gate estável final
+
+Aprovado no run `29873047487` com:
+
+- suíte completa Node, build e Chromium;
+- estresse de domínio;
+- semente visual `5196999`;
+- ausência dos três shims removidos;
+- ausência dos globais de compatibilidade;
+- build Developer B idempotente;
+- paridade entre editor e AuthoringKit.
+
+## Resultado estrutural
+
+Após os seis incrementos:
+
+- `replaceTableRowsBulk` é a única implementação dos overrides tabulares;
+- a geometria e o recorte do `footer-item` pertencem às superfícies canônicas;
+- a escala interna de `icon` e `specification` pertence ao registro, render e CSS principal;
+- editor e compilador não carregam contratos adicionais para esses comportamentos;
+- o build Developer B não copia os três shims removidos;
+- regressões e estresse não dependem de globais de compatibilidade;
+- schema, tipos, receitas e capacidades permanecem inalterados.
+
+## Próxima etapa
+
+O próximo trabalho não é outra consolidação automática. A branch deve passar por um benchmark de generalização baseado em uma peça promocional diferente da referência original, medindo criação, edição, undo/redo, exportação, reimportação e impressão sem criar novos tipos durante o teste.
