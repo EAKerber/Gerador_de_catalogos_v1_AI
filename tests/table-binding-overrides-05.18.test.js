@@ -1,4 +1,4 @@
-/* Auditoria 05.18 â€” ediÃ§Ã£o tabular em lote deve preservar overrides de cards vinculados. */
+/* DB-05.19.1 â€” overrides de tabela em lote pertencem ao document-store canÃ´nico. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -20,9 +20,14 @@ global.CatalogEditorIcon = () => "";
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 CatalogReflowHistoryStabilityContract.install();
-CatalogTableBindingOverridesContract.install();
+const storeClassBeforeShim = CatalogDocumentStore;
+assert(CatalogTableBindingOverridesContract.install(), "O shim nÃ£o encontrou o document-store.");
+assert(CatalogDocumentStore === storeClassBeforeShim, "O shim ainda substitui a classe canÃ´nica.");
 
-const assert = (condition, message) => { if (!condition) throw new Error(message); };
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
 const clone = value => JSON.parse(JSON.stringify(value));
 const findType = (component, type) => {
   if (component?.type === type) return component;
@@ -32,7 +37,8 @@ const findType = (component, type) => {
   }
   return null;
 };
-const commercial = store => {
+
+function commercial(store, cardId) {
   const card = store.getProductCard(cardId);
   const table = findType(card, "data-table");
   const row = store.getTableRows(table)[0];
@@ -42,7 +48,7 @@ const commercial = store => {
     values: clone(row?.metadata?.values || {}),
     overrides: clone(card?.binding?.overrides || {})
   };
-};
+}
 
 const seed = new CatalogDocumentStore(createBlankCatalogDocument());
 const product = seed.createProduct({
@@ -56,19 +62,43 @@ seed.bindProduct(createdCard.id, product.id);
 const cardId = createdCard.id;
 const store = new CatalogDocumentStore(seed.getExportDocument());
 
-let state = commercial(store);
-assert(state.values.code === "ST-0001" && state.values.package === "CAIXA 100" && state.values.price === "R$ 111,99", `A fixture vinculada nÃ£o recebeu os dados do produto: ${JSON.stringify(state.values)}.`);
-assert(["code", "package", "price"].every(field => state.overrides[field] !== true), `A fixture comeÃ§ou com overrides indevidos: ${JSON.stringify(state.overrides)}.`);
+let state = commercial(store, cardId);
+assert(state.values.code === "ST-0001", `A fixture nÃ£o recebeu o cÃ³digo: ${JSON.stringify(state.values)}.`);
+assert(["code", "package", "price"].every(field => state.overrides[field] !== true), `A fixture comeÃ§ou com overrides: ${JSON.stringify(state.overrides)}.`);
 
 store.replaceTableRowsBulk(state.table.id, [{
   values: { code: "VAR-001", package: "PACOTE 1", price: "R$ 17,00" }
 }], { mode: "replace" });
 
-state = commercial(store);
-assert(state.values.code === "VAR-001" && state.values.package === "PACOTE 1" && state.values.price === "R$ 17,00", `A substituiÃ§Ã£o em lote nÃ£o persistiu: ${JSON.stringify(state.values)}.`);
-assert(["code", "package", "price"].every(field => state.overrides[field] === true), `A substituiÃ§Ã£o em lote nÃ£o marcou os overrides: ${JSON.stringify(state.overrides)}.`);
-assert(store.getHistoryState().undoCount === 1, `A substituiÃ§Ã£o em lote deveria criar uma Ãºnica aÃ§Ã£o"G´¥4ôâç7G&–æv–g’‡7F÷&RævWD†—7F÷'•7FFR‚’—Òæ“° ¦6öç7B–×÷'FVBÒæWr6FÆötFö7VÖVçE7F÷&R‡7F÷&RævWDW‡÷'DFö7VÖVçB‚’“°¦ÆWB–×÷'FVE7FFRÒ‚‚’Óâ°¢6öç7B6&BÒ–×÷'FVBævWE&öGV7D6&B†6&D–B“°¢6öç7BF&ÆRÒf–æEG—R†6&BÂ&FF×F&ÆR"“°¢6öç7B&÷rÒ–×÷'FVBævWEF&ÆU&÷w2‡F&ÆR•³Ó°¢&WGW&â²fÇVW3¢6ÆöæR‡&÷sòæÖWFFFòçfÇVW2ÇÂ·Ò’Â÷fW'&–FW3¢6ÆöæR†6&Còæ&–æF–æsòæ÷fW'&–FW2ÇÂ·Ò’Ó°§Ò’‚“°¦76W'B†–×÷'FVE7FFRçfÇVW2æ6öFRÓÓÒ%d"Ó"bb–×÷'FVE7FFRçfÇVW2ç6¶vRÓÓÒ%4õDR"bb–×÷'FVE7FFRçfÇVW2ç&–6RÓÓÒ%"BrÃ"Â–×÷'F:|:6òW&FWRVFœ:|:6òF'VÆ#¢G´¥4ôâç7G&–æv–g’†–×÷'FVE7FFRçfÇVW2—Òæ“°¦76W'B…²&6öFR"Â'6¶vR"Â'&–6R%ÒæWfW'’†f–VÆBÓâ–×÷'FVE7FFRæ÷fW'&–FW5¶f–VÆEÒÓÓÒG'VR’Â–×÷'F:|:6òW&FWR÷2÷fW'&–FW3¢G´¥4ôâç7G&–æv–g’†–×÷'FVE7FFRæ÷fW'&–FW2—Òæ“° §7F÷&RæFD6ö×öæVçB‚'FW‡B"Â²ƒ¢C#Â“¢#BÂv–GFƒ¢#Â†V–v‡C¢CÒÂ²&VçD–C¢çVÆÂÂ&÷3¢²6öçFVçC¢$:|:6ò÷7FW&–÷""ÒÒ“°¦76W'B‡7F÷&RçVæFò‚’Â$ì:6òfö’÷7<:×fVÂFW6f¦W":|:6ò÷7FW&–÷"â"“°§7FFRÒ6öÖÖW&6–Â‡7F÷&R“°¦76W'B‡7FFRçfÇVW2æ6öFRÓÓÒ%d"Ó"bb7FFRçfÇVW2ç6¶vRÓÓÒ%4õDR"bb7FFRçfÇVW2ç&–6RÓÓÒ%"BrÃ"ÂVæFò÷7FW&–÷"&W7FW&÷RFF÷2Fò&öGWFò6ö'&Rò÷fW'&–FS¢G´¥4ôâç7G&–æv–g’‡7FFRçfÇVW2—Òæ“°¦76W'B…²&6öFR"Â'6¶vR"Â'&–6R%ÒæWfW'’†f–VÆBÓâ7FFRæ÷fW'&–FW5¶f–VÆEÒÓÓÒG'VR’Â%VæFò÷7FW&–÷"&VÖ÷fWR÷2÷fW'&–FW2â"“° ¦76W'B‡7F÷&RçVæFò‚’Â$ì:6òfö’÷7<:×fVÂFW6f¦W"7V'7F—GVœ:|:6òVÒÆ÷FRâ"“°§7FFRÒ6öÖÖW&6–Â‡7F÷&R“°¦76W'B‡7FFRçfÇVW2æ6öFRÓÓÒ%5BÓ"bb7FFRçfÇVW2ç6¶vRÓÓÒ$4•„"bb7FFRçfÇVW2ç&–6RÓÓÒ%"BÃ“’"ÂVæFòF7V'7F—GVœ:|:6òì:6ò&W7FW"÷Rò&öGWFó¢G´¥4ôâç7G&–æv–g’‡7FFRçfÇVW2—Òæ“°¦76W'B…²&6öFR"Â'6¶vR"Â'&–6R%ÒæWfW'’†f–VÆBÓâ7FFRæ÷fW'&–FW5¶f–VÆEÒÓÒG'VR’ÂVæFòF7V'7F—GVœ:|:6òÖçFWfR÷fW'&–FW3¢G´¥4ôâç7G&–æv–g’‡7FFRæ÷fW'&–FW2—Òæ“° ¦76W'B‡7F÷&Rç&VFò‚’Â$ì:6òfö’÷7<:×fVÂ&Vf¦W"7V'7F—GVœ:|:6òVÒÆ÷FRâ"“°§7FFRÒ6öÖÖW&6–Â‡7F÷&R“°¦76W'B‡7FFRçfÇVW2æ6öFRÓÓÒ%d"Ó"bb7FFRçfÇVW2ç6¶vRÓÓÒ%4õDR"bb7FFRçfÇVW2ç&–6RÓÓÒ%"BrÃ"Â&VFòF7V'7F—GVœ:|:6òW&FWRVFœ:|:6ò: ${JSON.stringify(state.values)}.`);
-assert(["code", "package", "price"].every(field => state.overrides[field] === true), "Redo da substituiÃ§Ã£o nÃ£o restaur ou os overrides.");
+state = commercial(store, cardId);
+assert(state.values.code === "VAR-001" && state.values.package === "PACOTE 1" && state.values.price === "R$ 17,00", `A substituiÃ§Ã£o nÃ£o persistiu: ${JSON.stringify(state.values)}.`);
+assert(["code", "package", "price"].every(field => state.overrides[field] === true), `A substituiÃ§Ã£o nÃ£o marcou overrides: ${JSON.stringify(state.overrides)}.`);
+assert(store.getHistoryState().undoCount === 1, `A substituiÃ§Ã£o deveria criar uma aÃ§Ã£o: ${JSON.stringify(store.getHistoryState())}.`);
+
+assert(store.undo(), "NÃ£o foi possÃ­vel desfazer a substituiÃ§Ã£o.");
+state = commercial(store, cardId);
+assert(state.values.code === "ST-0001" && state.values.package === "CAIXA 100" && state.values.price === "R$ 111,99", `Undo nÃ£o restaurou o produto: ${JSON.stringify(state.values)}.`);
+assert(["code", "package", "price"].every(field => state.overrides[field] !== true), `Undo nÃ£o removeu overrides: ${JSON.stringify(state.overrides)}.`);
+
+assert(store.redo(), "NÃ£o foi possÃ­vel refazer a substituiÃ§Ã£o.");
+state = commercial(store, cardId);
+assert(state.values.code === "VAR-001" && state.values.package === "PACOTE 1" && state.values.price === "R$ 17,00", `Redo nÃ£o restaurou a substituiÃ§Ã£o: ${JSON.stringify(state.values)}.`);
+assert(["code", "package", "price"].every(field => state.overrides[field] === true), "Redo nÃ£o restaurou os overrides.");
+
+const partial = new CatalogDocumentStore(seed.getExportDocument());
+let partialState = commercial(partial, cardId);
+partial.replaceTableRowsBulk(partialState.table.id, [{ values: { price: "R$ 9,00" } }], { mode: "replace" });
+partialState = commercial(partial, cardId);
+assert(partialState.overrides.price === true, "Campo presente nÃ£o virou override.");
+assert(partialState.overrides.code !== true && partialState.overrides.package !== true, `Campos ausentes viraram override: ${JSON.stringify(partialState.overrides)}.`);
+
+const synchronized = new CatalogDocumentStore(seed.getExportDocument());
+let synchronizedState = commercial(synchronized, cardId);
+synchronized.replaceTableRowsBulk(synchronizedState.table.id, [{
+  values: { code: "SYNC-001", package: "SYNC", price: "R$ 1,00" }
+}], { mode: "replace", bindingSync: true });
+synchronizedState = commercial(synchronized, cardId);
+assert(["code", "package", "price"].every(field => synchronizedState.overrides[field] !== true), `SincronizaÃ§Ã£o interna virou override: ${JSON.stringify(synchronizedState.overrides)}.`);
 
 const generated = new CatalogDocumentStore(createBlankCatalogDocument());
 const generatedProduct = generated.createProduct({
@@ -82,11 +112,14 @@ const generatedCard = composition.cards[0];
 const generatedTable = findType(generatedCard, "data-table");
 const generatedRow = generated.getTableRows(generatedTable)[0];
 assert(generatedRow?.metadata?.values?.code === "GEN-001", `A geraÃ§Ã£o interna nÃ£o materializou o produto: ${JSON.stringify(generatedRow?.metadata?.values)}.`);
-assert(["code", "package", "price"].every(field => generatedCard.binding?.overrides?.[field] !== true), `A geraÃ§Ã£o interna foi confundida com override local: ${JSON.stringify(generatedCard.binding?.overrides)}.`);
+assert(["code", "package", "price"].every(field => generatedCard.binding?.overrides?.[field] !== true), `A geraÃ§Ã£o interna virou override: ${JSON.stringify(generatedCard.binding?.overrides)}.`);
 
-const app = fs.readFileSync(path.join(root, "app", "table-binding-overrides-contract.js"), "utf8");
-const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "table-binding-overrides-contract.js"), "utf8");
-assert(app === kit, "O contrato de overrides divergiu entre editor e AuthoringKit.");
-assert(CatalogTableBindingOverridesContract.VERSION === "05.18.audit.2", "VersÃ§o inesperada do contrato.");
+const appStore = fs.readFileSync(path.join(root, "app", "document-store.js"), "utf8");
+const kitStore = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "document-store.js"), "utf8");
+const appShim = fs.readFileSync(path.join(root, "app", "table-binding-overrides-contract.js"), "utf8");
+const kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "table-binding-overrides-contract.js"), "utf8");
+assert(appStore === kitStore, "O document-store divergiu entre editor e AuthoringKit.");
+assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");
+assert(CatalogTableBindingOverridesContract.VERSION === "05.19.1", "VersÃ£o inesperada do shim.");
 
-console.log("âœ“ Overrides de tabela em lote sobrevivem a importaÃ§Ã£o, undo/redo e nÃ£o contaminam sincronizaÃ§Ã£o interna.");
+console.log("âœ“ Overrides de tabela pertencem ao store canÃ´nico; shim nÃ£o substitui classe e sincronizaÃ§Ãµes internas permanecem limpas.");
