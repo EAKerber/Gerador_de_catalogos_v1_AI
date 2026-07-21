@@ -19,6 +19,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Apply benchmark harness corrections
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          file = Path('tests/browser-promotional-generalization-05.20.test.js')
+          source = file.read_text()
+          old = '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n'
+          new = '''  if (await page.locator("#gridToggle").isChecked()) {
+            await act("Abrir preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+            await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
+            await act("Fechar preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+          }
+          '''
+          if old not in source:
+              raise SystemExit('Grid harness target not found.')
+          file.write_text(source.replace(old, new, 1))
+          PY
       - name: Validate benchmark syntax
         run: node --check tests/browser-promotional-generalization-05.20.test.js
       - name: Install Playwright and select system Chrome
