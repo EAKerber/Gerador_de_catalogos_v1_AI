@@ -1,67 +1,44 @@
 name: Developer B Audit Batches
-
 on:
   pull_request:
-    branches:
-      - development
-
+    branches: [development]
 permissions:
   contents: read
-
 jobs:
-  batch-2-text-icons:
-    name: Batch 2 — texto, ícones e especificações
+  batch-3:
+    name: Batch 3 — geometria e contenção
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Executar contratos editoriais
+      - name: Executar lote
         shell: bash
         run: |
-          mkdir -p audit-output/batch-2
+          mkdir -p audit-output/batch-3
           failures=0
-          : > audit-output/batch-2/summary.txt
-          tests=(
-            tests/component-intent-classification-05.18.11.test.js
-            tests/text-alignment-persistence-05.18.2.test.js
-            tests/text-alignment-runtime-parity-05.18.2.test.js
-            tests/text-scale-persistence-05.18.3.test.js
-            tests/text-scale-runtime-parity-05.18.3.test.js
-            tests/text-overflow-persistence-05.18.4.test.js
-            tests/text-overflow-runtime-parity-05.18.4.test.js
-            tests/icon-scale-persistence-05.18.5.test.js
-            tests/icon-scale-runtime-parity-05.18.5.test.js
-            tests/specification-scale-persistence-05.18.6.test.js
-            tests/technical-icons-05.18.13.test.js
-            tests/commercial-icons-05.18.14.test.js
-          )
-          for file in "${tests[@]}"; do
-            log="audit-output/batch-2/$(basename "$file" .test.js).log"
-            echo "=== $file ===" | tee -a audit-output/batch-2/summary.txt
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            log="audit-output/batch-3/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-3/summary.txt
             if node "$file" >"$log" 2>&1; then
-              echo "PASS" | tee -a audit-output/batch-2/summary.txt
+              echo PASS | tee -a audit-output/batch-3/summary.txt
             else
               status=$?
-              echo "FAIL status=$status" | tee -a audit-output/batch-2/summary.txt
+              echo "FAIL status=$status" | tee -a audit-output/batch-3/summary.txt
               cat "$log"
               failures=$((failures + 1))
             fi
-          done
-          echo "failures=$failures" | tee -a audit-output/batch-2/summary.txt
+          done < tests/batches/developer-b-batch-3.txt
+          echo "failures=$failures" | tee -a audit-output/batch-3/summary.txt
           exit "$failures"
-
-      - name: Publicar evidências do lote 2
+      - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-2-text-icons
-          path: audit-output/batch-2
+          name: developer-b-batch-3-geometry
+          path: audit-output/batch-3
           if-no-files-found: error
           retention-days: 14
