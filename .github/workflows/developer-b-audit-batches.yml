@@ -3,64 +3,17 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  derived-reflow-history-fix:
-    name: Correção — histórico de reflow derivado
+  consolidated-audit:
+    name: Auditoria consolidada — Node, build e Chromium
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Marcar reflows internos
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          for path in ['app/product-variants-contract.js', 'app/product-data-only-contract.js']:
-              file = Path(path)
-              source = file.read_text()
-              old = '        this.reflowComponentTree(card);'
-              new = '        this.reflowComponentTree(card, { derived: true });'
-              if new not in source:
-                  if source.count(old) != 1:
-                      raise SystemExit(f'Reflow interno não encontrado de forma única em {path}')
-                  file.write_text(source.replace(old, new, 1))
-          PY
-          node tools/build-developer-b-authoring-kit.js
-          git diff --check
-      - name: Testes Node focados
-        shell: bash
-        run: |
-          mkdir -p audit-output/derived-reflow/node
-          failures=0
-          tests=(
-            tests/icon-scale-runtime-parity-05.18.5.test.js
-            tests/text-overflow-runtime-parity-05.18.4.test.js
-            tests/reflow-history-stability-05.18.test.js
-            tests/reflow-manual-baseline-05.18.test.js
-            tests/product-variants-geometry-05.18.9.test.js
-            tests/product-variants-runtime-parity-05.18.9.test.js
-            tests/product-data-only-geometry-05.18.10.test.js
-            tests/product-data-only-runtime-parity-05.18.10.test.js
-          )
-          for file in "${tests[@]}"; do
-            name="$(basename "$file" .test.js)"
-            if node "$file" >"audit-output/derived-reflow/node/$name.log" 2>&1; then
-              echo "PASS $file" | tee -a audit-output/derived-reflow/node/summary.txt
-            else
-              status=$?
-              echo "FAIL $file status=$status" | tee -a audit-output/derived-reflow/node/summary.txt
-              cat "audit-output/derived-reflow/node/$name.log"
-              failures=$((failures + 1))
-            fi
-          done
-          exit "$failures"
       - name: Instalar Playwright e Chromium
         run: |
           npm install --no-save playwright@latest
@@ -74,54 +27,25 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Testes Chromium focados
+      - name: Executar auditoria completa
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-        shell: bash
-        run: |
-          mkdir -p audit-output/derived-reflow/browser
-          failures=0
-          tests=(
-            tests/browser-product-variants-05.18.9.test.js
-            tests/browser-product-data-only-05.18.10.test.js
-          )
-          for file in "${tests[@]}"; do
-            name="$(basename "$file" .test.js)"
-            if timeout 150s node "$file" >"audit-output/derived-reflow/browser/$name.log" 2>&1; then
-              echo "PASS $file" | tee -a audit-output/derived-reflow/browser/summary.txt
-            else
-              status=$?
-              echo "FAIL $file status=$status" | tee -a audit-output/derived-reflow/browser/summary.txt
-              cat "audit-output/derived-reflow/browser/$name.log"
-              failures=$((failures + 1))
-            fi
-          done
-          exit "$failures"
-      - name: Verificar e commitar correção
-        shell: bash
         run: |
           set -euo pipefail
-          allowed=$'app/authoring-kit-files.js\napp/product-data-only-contract.js\napp/product-variants-contract.js\nauthoring-kit/runtime/product-data-only-contract.js\nauthoring-kit/runtime/product-variants-contract.js\nauthoring-kit/runtime/reflow-history-stability-contract.js'
-          actual="$(git diff --name-only | sort)"
-          if [ "$actual" != "$allowed" ]; then
-            echo "Conjunto inesperado de arquivos:"
-            printf '%s\n' "$actual"
+          mkdir -p audit-output/consolidated
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/consolidated/audit.log
+          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/consolidated/idempotence.log
+          if ! git diff --quiet; then
+            git status --short | tee audit-output/consolidated/unexpected-diff.txt
+            git diff --stat | tee -a audit-output/consolidated/unexpected-diff.txt
             exit 1
           fi
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add $actual
-          git commit -m "fix: mantém reflow derivado dentro da ação composta"
-          git push origin HEAD:agent/developer-b-05.18
-      - name: Provar build idempotente
-        run: |
-          node tools/build-developer-b-authoring-kit.js
-          git diff --exit-code
+          git status --short > audit-output/consolidated/final-status.txt
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-derived-reflow-fix
-          path: audit-output/derived-reflow
-          if-no-files-found: warn
+          name: developer-b-consolidated-audit-final
+          path: audit-output/consolidated
+          if-no-files-found: error
           retention-days: 14
