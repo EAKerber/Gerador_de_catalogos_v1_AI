@@ -26,16 +26,50 @@ jobs:
           from pathlib import Path
           file = Path('tests/browser-promotional-generalization-05.20.test.js')
           source = file.read_text()
-          old = '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n'
-          new = '''  if (await page.locator("#gridToggle").isChecked()) {
+
+          grid_old = '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n'
+          grid_new = '''  if (await page.locator("#gridToggle").isChecked()) {
             await act("Abrir preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
             await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
             await act("Fechar preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
           }
           '''
-          if old not in source:
+          if grid_old not in source:
               raise SystemExit('Grid harness target not found.')
-          file.write_text(source.replace(old, new, 1))
+          source = source.replace(grid_old, grid_new, 1)
+
+          selection_old = '''async function selectComponent(id) {
+            const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
+            const root = page.locator(selectorForComponent(id)).first();
+            const target = await content.count() ? content : root;
+            await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
+            await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+          }
+          '''
+          selection_new = '''async function selectComponent(id) {
+            const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
+            const root = page.locator(selectorForComponent(id)).first();
+            const target = await content.count() ? content : root;
+            await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
+            try {
+              await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 500 });
+              return;
+            } catch {}
+
+            const layersTab = page.locator('[data-left-panel-tab="layers"]');
+            if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
+            const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
+            await layerItem.waitFor({ state: "visible" });
+            await act(`Selecionar ${id} pela árvore de camadas`, () => layerItem.click());
+            await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+            const componentsTab = page.locator('[data-left-panel-tab="components"]');
+            if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
+          }
+          '''
+          if selection_old not in source:
+              raise SystemExit('Selection harness target not found.')
+          source = source.replace(selection_old, selection_new, 1)
+          file.write_text(source)
           PY
       - name: Validate benchmark syntax
         run: node --check tests/browser-promotional-generalization-05.20.test.js
