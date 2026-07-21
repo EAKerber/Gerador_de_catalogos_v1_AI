@@ -5,40 +5,49 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-3:
-    name: Batch 3 — geometria e contenção
+  batch-4:
+    name: Batch 4 — receitas, manifestos e build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Executar lote
+      - name: Executar testes de autoria
         shell: bash
         run: |
-          mkdir -p audit-output/batch-3
+          mkdir -p audit-output/batch-4
           failures=0
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            log="audit-output/batch-3/$(basename "$file" .test.js).log"
-            echo "=== $file ===" | tee -a audit-output/batch-3/summary.txt
+            log="audit-output/batch-4/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-4/summary.txt
             if node "$file" >"$log" 2>&1; then
-              echo PASS | tee -a audit-output/batch-3/summary.txt
+              echo PASS | tee -a audit-output/batch-4/summary.txt
             else
               status=$?
-              echo "FAIL status=$status" | tee -a audit-output/batch-3/summary.txt
+              echo "FAIL status=$status" | tee -a audit-output/batch-4/summary.txt
               cat "$log"
               failures=$((failures + 1))
             fi
-          done < tests/batches/developer-b-batch-3.txt
-          echo "failures=$failures" | tee -a audit-output/batch-3/summary.txt
+          done < tests/batches/developer-b-batch-4.txt
+          echo "test_failures=$failures" | tee -a audit-output/batch-4/summary.txt
           exit "$failures"
+      - name: Regenerar AuthoringKit
+        id: build
+        shell: bash
+        run: |
+          mkdir -p audit-output/batch-4
+          node tools/build-developer-b-authoring-kit.js | tee audit-output/batch-4/build.log
+          git status --short > audit-output/batch-4/build-status.txt
+          git diff --stat > audit-output/batch-4/build-diff-stat.txt
+          git diff > audit-output/batch-4/build.diff
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-3-geometry
-          path: audit-output/batch-3
+          name: developer-b-batch-4-recipes-build
+          path: audit-output/batch-4
           if-no-files-found: error
           retention-days: 14
