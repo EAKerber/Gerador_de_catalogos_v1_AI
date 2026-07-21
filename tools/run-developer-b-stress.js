@@ -22,6 +22,7 @@ const runBrowser = runAll || has("--browser");
 const runNode = runAll || has("--node") || (!runBrowser && !listOnly);
 const repeat = Math.max(1, Math.min(50, Math.round(Number(valueFor("--repeat", "1")) || 1));
 const baseSeed = Number(valueFor("--seed", process.env.CATALOG_STRESS_SEED || "5182026"));
+const timeoutMs = Math.max(10000, Math.min(15 * 60 * 1000, Math.round(Number(valueFor("--timeout", process.env.CATALOG_STRESS_TIMEOUT_MS || "180000")) || 180000));
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const outputRoot = path.resolve(valueFor("--output", process.env.CATALOG_STRESS_OUTPUT_DIR || "/tmp/catalog-developer-b-stress-batch"));
 const tests = {
@@ -33,6 +34,7 @@ function printPlan() {
   console.log("Batch de estresse Developer B / 05.18");
   console.log(`  repetições: ${repeat}`);
   console.log(`  semente inicial: ${baseSeed}`);
+  console.log(`  timeout por teste: ${timeoutMs} ms`);
   console.log(`  saída: ${outputRoot}`);
   console.log(`  URL do editor: ${baseURL}`);
   console.log("\nDomínio:");
@@ -68,10 +70,13 @@ function execute(file, seed, runOutput) {
       ...process.env,
       CATALOG_STRESS_SEED: String(seed),
       CATALOG_STRESS_OUTPUT_DIR: runOutput,
+      CATALOG_STRESS_TIMEOUT_MS: String(timeoutMs),
       CATALOG_BASE_URL: baseURL
     },
     encoding: "utf8",
-    maxBuffer: 16 * 1024 * 1024
+    maxBuffer: 16 * 1024 * 1024,
+    timeout: timeoutMs,
+    killSignal: "SIGTERM"
   });
   if (execution.stdout) process.stdout.write(execution.stdout);
   if (execution.stderr) process.stderr.write(execution.stderr);
@@ -80,6 +85,8 @@ function execute(file, seed, runOutput) {
     seed,
     status: execution.status,
     signal: execution.signal || null,
+    timedOut: execution.error?.code === "ETIMEDOUT",
+    error: execution.error ? { code: execution.error.code || null, message: execution.error.message } : null,
     durationMs: Date.now() - startedAt,
     stdoutTail: String(execution.stdout || "").trim().split("\n").slice(-10),
     stderrTail: String(execution.stderr || "").trim().split("\n").slice(-20)
@@ -112,7 +119,7 @@ async function main() {
     }
   }
 
-  const failures = results.filter(result => result.status !== 0);
+  const failures = results.filter(result => result.status !== 0 || result.timedOut || result.error);
   const summary = {
     suite: "Developer B 05.18 stress batch",
     generatedAt: new Date().toISOString(),
@@ -120,11 +127,13 @@ async function main() {
     outputRoot,
     baseSeed,
     repeat,
+    timeoutMs,
     phases: { node: runNode, browser: runBrowser },
     totals: {
       executions: results.length,
       passed: results.length - failures.length,
       failed: failures.length,
+      timedOut: failures.filter(result => result.timedOut).length,
       durationMs: results.reduce((total, result) => total + result.durationMs, 0)
     },
     results,
@@ -134,7 +143,7 @@ async function main() {
 
   if (failures.length) {
     console.error(`\n✗ Batch encerrado com ${failures.length} falha(s). Resumo: ${path.join(outputRoot, "stress-batch-summary.json")}`);
-    failures.forEach(failure => console.error(`  - seed ${failure.seed} · ${failure.phase} · ${failure.file} · status ${failure.status}${failure.signal ? ` · ${failure.signal}` : ""}`));
+    failures.forEach(failure => console.error(`  - seed ${failure.seed} · ${failure.phase} · ${failure.file} · ${failure.timedOut ? "timeout" : `status ${failure.status}`}${failure.signal ? ` · ${failure.signal}` : ""}`));
     process.exitCode = 1;
     return;
   }
