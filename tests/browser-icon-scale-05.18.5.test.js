@@ -1,4 +1,4 @@
-/* DB-05.18.5 — escala interna de icon validada em tela e impressão. */
+/* DB-05.19.5 — escala interna de icon validada em tela e impressão com CSS canônico. */
 const path = require("path");
 const playwrightRoot = process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES;
 const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwright") : "playwright");
@@ -15,7 +15,7 @@ let browser;
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogIconScaleContract?.VERSION === "05.18.5");
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogIconScaleContract?.VERSION === "05.19.5");
 
   const ids = await page.evaluate(() => {
     CatalogEditor.store.reset();
@@ -88,13 +88,20 @@ let browser;
   }
   assert(standaloneStates[80].svg.width < standaloneStates[100].svg.width && standaloneStates[100].svg.width < standaloneStates[120].svg.width, "O ícone autônomo não diferenciou as três escalas.");
 
+  const canonicalStyle = await page.evaluate(() => Array.from(document.styleSheets).some(sheet => {
+    let rules;
+    try { rules = sheet.cssRules; } catch { return false; }
+    return Array.from(rules || []).some(rule => rule.selectorText?.includes('.editor-component--footer-item') && rule.selectorText?.includes('.component-icon__svg'));
+  }));
+  assert(canonicalStyle, "A contenção do ícone do rodapé não foi encontrada no CSS carregado.");
+
   const publication = await page.evaluate(() => CatalogEditor.store.getPublicationReport("draft").summary);
   assert((publication.collisions || 0) === 0 && (publication.overflows || 0) === 0, "A escala de ícone introduziu colisão ou overflow externo.");
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
 
   await browser.close();
-  console.log("✓ DB-05.18.5 validou escala de ícones, contenção e impressão pela interface real.");
+  console.log("✓ DB-05.19.5 validou escala de ícones, CSS canônico, contenção e impressão.");
 })().catch(async error => {
   console.error(error);
   if (browser) await browser.close();
