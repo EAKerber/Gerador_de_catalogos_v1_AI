@@ -15,7 +15,13 @@ let browser;
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogIconScaleContract?.VERSION === "05.18.5");
+  await page.waitForFunction(() => {
+    const definition = window.CATALOG_COMPONENT_REGISTRY?.specification;
+    return Boolean(
+      window.CatalogEditor
+      && definition?.contentFields?.some(field => field.path === "iconScale")
+    );
+  });
 
   const ids = await page.evaluate(() => {
     CatalogEditor.store.reset();
