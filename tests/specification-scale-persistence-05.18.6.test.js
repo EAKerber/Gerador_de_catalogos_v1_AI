@@ -1,4 +1,4 @@
-/* DB-05.18.6 — escala interna da molécula specification sem alterar sua geometria. */
+/* DB-05.19.6 — escala interna da molécula specification sem shim de ícone. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -16,8 +16,7 @@ global.CatalogEditorIcon = name => `<span class="icon-shell"><svg data-icon="${n
   "app/document-store.js",
   "app/text-alignment-contract.js",
   "app/text-scale-contract.js",
-  "app/text-overflow-contract.js",
-  "app/icon-scale-contract.js"
+  "app/text-overflow-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -26,7 +25,6 @@ const clone = value => JSON.parse(JSON.stringify(value));
 CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
-CatalogIconScaleContract.install();
 
 const scaleField = CATALOG_COMPONENT_REGISTRY.specification.contentFields.find(field => field.path === "iconScale");
 assert(scaleField, "A escala interna não está publicada em specification.");
@@ -78,4 +76,4 @@ assert(imported.getState().schemaVersion === "1.16.0", "A escala de specificatio
 imported.updateComponent(standalone.id, { props: { iconScale: 95 } });
 assert(CATALOG_COMPONENT_REGISTRY.specification.render(imported.findComponent(standalone.id).component).includes("--icon-content-scale:1"), "Valor livre não retornou ao fallback de 100%.");
 
-console.log("✓ DB-05.18.6 preserva escala de specification, histórico, slots, apresentações e schema.");
+console.log("✓ DB-05.19.6 preserva escala de specification, histórico, slots, apresentações e schema sem shim.");
