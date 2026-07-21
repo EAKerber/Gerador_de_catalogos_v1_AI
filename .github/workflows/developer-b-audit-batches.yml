@@ -3,107 +3,65 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  commit-table-binding-shim-removal:
-    name: DB-05.19.2 - commit validated shim removal
+  consolidated-audit-05-19:
+    name: DB-05.19 - consolidated post-removal audit
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Remove shim and references
-        shell: bash
+      - name: Install Playwright and Chromium
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path, old, new):
-              file = Path(path)
-              source = file.read_text()
-              if new and new in source and old not in source:
-                  return
-              if source.count(old) != 1:
-                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
-              file.write_text(source.replace(old, new, 1))
-
-          replace_once('app/main.js', '    { file: "table-binding-overrides-contract.js", globalName: "CatalogTableBindingOverridesContract" },\n', '')
-          replace_once('app/main.js', '    window.CatalogTableBindingOverridesContract?.install();\n', '')
-          replace_once('tools/build-developer-b-authoring-kit.js', '  "table-binding-overrides-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', '  "table-binding-overrides-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogTableBindingOverridesContract.install();\n', '')
-
-          test_path = Path('tests/table-binding-overrides-05.18.test.js')
-          test = test_path.read_text()
-          test = test.replace('/* DB-05.19.1 — overrides de tabela em lote pertencem ao document-store canônico. */', '/* DB-05.19.2 — overrides de tabela em lote pertencem ao document-store sem shim. */', 1)
-          test = test.replace('  "app/reflow-history-stability-contract.js",\n  "app/table-binding-overrides-contract.js"', '  "app/reflow-history-stability-contract.js"', 1)
-          test = test.replace('const storeClassBeforeShim = CatalogDocumentStore;\nassert(CatalogTableBindingOverridesContract.install(), "O shim não encontrou o document-store.");\nassert(CatalogDocumentStore === storeClassBeforeShim, "O shim ainda substitui a classe canônica.");\n\n', '', 1)
-          test = test.replace('const appShim = fs.readFileSync(path.join(root, "app", "table-binding-overrides-contract.js"), "utf8");\nconst kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "table-binding-overrides-contract.js"), "utf8");\n', '', 1)
-          test = test.replace('assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");\nassert(CatalogTableBindingOverridesContract.VERSION === "05.19.1", "Versão inesperada do shim.");\n\n', '', 1)
-          test = test.replace('console.log("✓ Overrides de tabela pertencem ao store canônico; shim não substitui classe e sincronizações internas permanecem limpas.");', 'console.log("✓ Overrides de tabela pertencem ao store canônico sem shim; sincronizações internas permanecem limpas.");', 1)
-          if 'CatalogTableBindingOverridesContract' in test or 'table-binding-overrides-contract.js' in test:
-              raise SystemExit('A regressão ainda depende do shim.')
-          test_path.write_text(test)
-          PY
-          rm app/table-binding-overrides-contract.js
-          rm authoring-kit/runtime/table-binding-overrides-contract.js
-          node tools/build-developer-b-authoring-kit.js
-          if grep -R "table-binding-overrides-contract\|CatalogTableBindingOverridesContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/table-binding-overrides-05.18.test.js; then
-            echo "Shim reference remained in executable surfaces."
-            exit 1
-          fi
-          git diff --check
-      - name: Revalidate focused contracts
+          npm install --no-save playwright@latest
+          npx playwright install --with-deps chromium
+      - name: Start editor
         run: |
-          node tests/table-binding-overrides-05.18.test.js
-          node tests/reflow-history-stability-05.18.test.js
-          node tests/reflow-manual-baseline-05.18.test.js
-          node tests/stress-domain-history-05.18.test.js
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
-      - name: Commit tracked removal
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run full audit and stress
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-final/domain
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t actual < <(git diff --name-only --relative | sort)
-          allowed=(
-            app/authoring-kit-files.js
-            app/main.js
-            app/table-binding-overrides-contract.js
-            authoring-kit/capabilities.json
-            authoring-kit/compiler/compile-catalog.js
-            authoring-kit/feature-inventory.json
-            authoring-kit/runtime/table-binding-overrides-contract.js
-            docs/FEATURE-CATALOG.md
-            tests/table-binding-overrides-05.18.test.js
-            tools/build-developer-b-authoring-kit.js
-          )
-          unexpected=()
-          for file in "${actual[@]}"; do
-            found=false
-            for candidate in "${allowed[@]}"; do
-              if [ "$file" = "$candidate" ]; then found=true; break; fi
-            done
-            if [ "$found" = false ]; then unexpected+=("$file"); fi
-          done
-          if [ "${#unexpected[@]}" -gt 0 ]; then
-            echo "Unexpected tracked files:"
-            printf '%s\n' "${unexpected[@]}"
+          mkdir -p audit-output/db-05.19-final/consolidated audit-output/db-05.19-final/browser-stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-final/consolidated/audit.log
+          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-final/consolidated/domain-stress.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5192999 --timeout=300000 --output=audit-output/db-05.19-final/browser-stress 2>&1 | tee audit-output/db-05.19-final/consolidated/browser-stress.log
+      - name: Verify removal and idempotence
+        shell: bash
+        run: |
+          set -euo pipefail
+          if find app authoring-kit -name 'table-binding-overrides-contract.js' -print -quit | grep -q .; then
+            echo "Removed shim file returned."
             exit 1
           fi
-          printf 'Tracked files to commit:\n'
-          printf '%s\n' "${actual[@]}"
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add -A
-          git commit -m "05.19 — remove shim de overrides de tabela"
-          git push origin HEAD:agent/developer-b-05.18
-      - name: Prove idempotent build
-        run: |
-          node tools/build-developer-b-authoring-kit.js
-          git diff --exit-code
-          node tests/table-binding-overrides-05.18.test.js
+          if grep -R "table-binding-overrides-contract\|CatalogTableBindingOverridesContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/table-binding-overrides-05.18.test.js tests/stress-domain-history-05.18.test.js; then
+            echo "Executable shim reference returned."
+            exit 1
+          fi
+          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-final/consolidated/idempotence.log
+          if ! git diff --quiet; then
+            git status --short | tee audit-output/db-05.19-final/consolidated/unexpected-diff.txt
+            git diff --stat | tee -a audit-output/db-05.19-final/consolidated/unexpected-diff.txt
+            exit 1
+          fi
+          git status --short > audit-output/db-05.19-final/consolidated/final-status.txt
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-db-05.19-final-audit
+          path: audit-output/db-05.19-final
+          if-no-files-found: error
+          retention-days: 14
