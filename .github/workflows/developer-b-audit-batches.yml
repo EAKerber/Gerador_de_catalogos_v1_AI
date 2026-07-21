@@ -5,10 +5,10 @@ on:
 permissions:
   contents: write
 jobs:
-  commit-table-binding-consolidation:
-    name: DB-05.19.1 - commit validated consolidation
+  remove-table-binding-shim:
+    name: DB-05.19.2 - remove table binding shim
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,57 +17,133 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Patch and build
+      - name: Remove shim and references
         shell: bash
         run: |
           python - <<'PY'
-          import base64
           from pathlib import Path
 
-          def replace_once(path, old64, new64):
+          def replace_once(path, old, new):
               file = Path(path)
               source = file.read_text()
-              old = base64.b64decode(old64).decode('utf-8')
-              new = base64.b64decode(new64).decode('utf-8')
-              if new in source:
+              if new and new in source and old not in source:
                   return
               if source.count(old) != 1:
-                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)}')
+                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
               file.write_text(source.replace(old, new, 1))
 
-          replace_once(
-              'app/document-store.js',
-              'ICBjb25zdCBQUk9EVUNUX0ZJRUxEUyA9IFsidGl0bGUiLCAic3BlY09uZSIsICJzcGVjVHdvIiwgImNvZGUiLCAicGFja2FnZSIsICJwcmljZSIsICJhc3NldElkIl07Cg==',
-              'ICBjb25zdCBQUk9EVUNUX0ZJRUxEUyA9IFsidGl0bGUiLCAic3BlY09uZSIsICJzcGVjVHdvIiwgImNvZGUiLCAicGFja2FnZSIsICJwcmljZSIsICJhc3NldElkIl07CiAgY29uc3QgVEFCTEVfQklORElOR19GSUVMRFMgPSBPYmplY3QuZnJlZXplKFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0pOwo='
-          )
-          replace_once(
-              'app/document-store.js',
-              'ICAgIHJlcGxhY2VUYWJsZVJvd3NCdWxrKGNvbXBvbmVudElkLCBlbnRyaWVzID0gW10sIG9wdGlvbnMgPSB7fSkgewogICAgICBjb25zdCBtb2RlID0gb3B0aW9ucy5tb2RlID09PSAiYXBwZW5kIiA/ICJhcHBlbmQiIDogInJlcGxhY2UiOwogICAgICByZXR1cm4gdGhpcy5ydW5Db21wb3VuZENoYW5nZSh7IHR5cGU6ICJ0YWJsZS1yb3dzLXJlcGxhY2VkIiwgY29tcG9uZW50SWQsIG1vZGUsIGNvdW50OiBlbnRyaWVzLmxlbmd0aCB9LCAoKSA9PiB7CiAgICAgICAgY29uc3QgY29tcG9uZW50ID0gdGhpcy5maW5kQ29tcG9uZW50KGNvbXBvbmVudElkKT8uY29tcG9uZW50OwogICAgICAgIGlmICghY29tcG9uZW50IHx8IGNvbXBvbmVudC50eXBlICE9PSAiZGF0YS10YWJsZSIpIHRocm93IG5ldyBFcnJvcigiTyBjb21wb25lbnRlIHNlbGVjaW9uYWRvIG7Do28gw6kgdW1hIHRhYmVsYS4iKTsKICAgICAgICBjb25zdCBub3JtYWxpemVkRW50cmllcyA9IChBcnJheS5pc0FycmF5KGVudHJpZXMpID8gZW50cmllcyA6IFtdKS5maWx0ZXIoQm9vbGVhbik7CiAgICAgICAgY29uc3QgY3VycmVudElkcyA9IGNvbXBvbmVudC5wcm9wcz8ucm93SWRzPy5zbGljZSgpIHx8IFtdOwogICAgICAgIGNvbnN0IGF2YWlsYWJsZSA9IE1hdGgubWF4KDAsIDEyIC0gKG1vZGUgPT09ICJhcHBlbmQiID8gY3VycmVudElkcy5sZW5ndGggOiAwKSk7CiAgICAgICAgY29uc3QgbGltaXRlZCA9IG5vcm1hbGl6ZWRFbnRyaWVzLnNsaWNlKDAsIGF2YWlsYWJsZSk7CiAgICAgICAgaWYgKCFsaW1pdGVkLmxlbmd0aCkgdGhyb3cgbmV3IEVycm9yKCJOZW5odW1hIGxpbmhhIHbDoWxpZGEgZm9pIGZvcm5lY2lkYS4iKTsKICAgICAgICBjb25zdCBuZXh0SWRzID0gbW9kZSA9PT0gImFwcGVuZCIgPyBjdXJyZW50SWRzLnNsaWNlKCkgOiBbXTsKICAgICAgICBsaW1pdGVkLmZvckVhY2goKGVudHJ5LCBpbmRleCkgPT4gewogICAgICAgICAgY29uc3QgdmFsdWVzID0gZW50cnkudmFsdWVzIHx8IGVudHJ5OwogICAgICAgICAgY29uc3Qgcm93ID0gY3JlYXRlVGFibGVSb3codGhpcy5zdGF0ZSwgdmFsdWVzLCBgJHtjb21wb25lbnQubmFtZSB8fCAiVGFiZWxhIn0gwrcgbGluaGEgJHtuZXh0SWRzLmxlbmd0aCArIDF9YCwgewogICAgICAgICAgICBjb2x1bW5zOiBjb21wb25lbnQucHJvcHMuY29sdW1ucywKICAgICAgICAgICAgbGVnZW5kS2V5czogZW50cnkubGVnZW5kS2V5cyB8fCB7fSwKICAgICAgICAgICAgc291cmNlUm93SWQ6IGVudHJ5LmlkIHx8IGVudHJ5LnNvdXJjZVJvd0lkIHx8IG51bGwsCiAgICAgICAgICAgIHZhcmlhbnRJZDogZW50cnkudmFyaWFudElkIHx8IG51bGwKICAgICAgICAgIH0pOwogICAgICAgICAgbmV4dElkcy5wdXNoKHJvdy5pZCk7CiAgICAgICAgfSk7CiAgICAgICAgY29tcG9uZW50LnByb3BzLnJvd0lkcyA9IG5leHRJZHM7CiAgICAgICAgaWYgKG1vZGUgPT09ICJyZXBsYWNlIikgewogICAgICAgICAgY29uc3QgY29sbGVjdGlvbiA9IHRoaXMuZ2V0Q29sbGVjdGlvbihjb21wb25lbnQucHJvcHMuY29sbGVjdGlvbklkIHx8ICJ0YWJsZVJvd3MiKTsKICAgICAgICAgIGN1cnJlbnRJZHMuZm9yRWFjaChyb3dJZCA9PiB7CiAgICAgICAgICAgIGlmICh0aGlzLmdldFRhYmxlUm93VXNhZ2Uocm93SWQpLmxlbmd0aCkgcmV0dXJuOwogICAgICAgICAgICBjb25zdCBpbmRleCA9IGNvbGxlY3Rpb24/Lml0ZW1zLmZpbmRJbmRleChpdGVtID0+IGl0ZW0uaWQgPT09IHJvd0lkKSA/PyAtMTsKICAgICAgICAgICAgaWYgKGluZGV4ID49IDApIGNvbGxlY3Rpb24uaXRlbXMuc3BsaWNlKGluZGV4LCAxKTsKICAgICAgICAgIH0pOwogICAgICAgIH0KICAgICAgICB0aGlzLnJlZnJlc2hUYWJsZUxheW91dChjb21wb25lbnRJZCk7CiAgICAgICAgdGhpcy5zdGF0ZS5lZGl0b3Iuc2VsZWN0ZWRDb21wb25lbnRJZCA9IGNvbXBvbmVudC5pZDsKICAgICAgICByZXR1cm4gdGhpcy5nZXRUYWJsZVJvd3MoY29tcG9uZW50KTsKICAgICAgfSk7CiAgICB9',
-              'ICAgIHJlcGxhY2VUYWJsZVJvd3NCdWxrKGNvbXBvbmVudElkLCBlbnRyaWVzID0gW10sIG9wdGlvbnMgPSB7fSkgewogICAgICBjb25zdCBtb2RlID0gb3B0aW9ucy5tb2RlID09PSAiYXBwZW5kIiA/ICJhcHBlbmQiIDogInJlcGxhY2UiOwogICAgICByZXR1cm4gdGhpcy5ydW5Db21wb3VuZENoYW5nZSh7IHR5cGU6ICJ0YWJsZS1yb3dzLXJlcGxhY2VkIiwgY29tcG9uZW50SWQsIG1vZGUsIGNvdW50OiBlbnRyaWVzLmxlbmd0aCB9LCAoKSA9PiB7CiAgICAgICAgY29uc3QgcmVjb3JkID0gdGhpcy5maW5kQ29tcG9uZW50KGNvbXBvbmVudElkKTsKICAgICAgICBjb25zdCBjb21wb25lbnQgPSByZWNvcmQ/LmNvbXBvbmVudDsKICAgICAgICBpZiAoIWNvbXBvbmVudCB8fCBjb21wb25lbnQudHlwZSAhPT0gImRhdGEtdGFibGUiKSB0aHJvdyBuZXcgRXJyb3IoIk8gY29tcG9uZW50ZSBzZWxlY2lvbmFkbyBuw6NvIMOpIHVtYSB0YWJlbGEuIik7CiAgICAgICAgY29uc3Qgbm9ybWFsaXplZEVudHJpZXMgPSAoQXJyYXkuaXNBcnJheShlbnRyaWVzKSA/IGVudHJpZXMgOiBbXSkuZmlsdGVyKEJvb2xlYW4pOwogICAgICAgIGNvbnN0IGN1cnJlbnRJZHMgPSBjb21wb25lbnQucHJvcHM/LnJvd0lkcz8uc2xpY2UoKSB8fCBbXTsKICAgICAgICBjb25zdCBhdmFpbGFibGUgPSBNYXRoLm1heCgwLCAxMiAtIChtb2RlID09PSAiYXBwZW5kIiA/IGN1cnJlbnRJZHMubGVuZ3RoIDogMCkpOwogICAgICAgIGNvbnN0IGxpbWl0ZWQgPSBub3JtYWxpemVkRW50cmllcy5zbGljZSgwLCBhdmFpbGFibGUpOwogICAgICAgIGlmICghbGltaXRlZC5sZW5ndGgpIHRocm93IG5ldyBFcnJvcigiTmVuaHVtYSBsaW5oYSB2w6FsaWRhIGZvaSBmb3JuZWNpZGEuIik7CgogICAgICAgIGlmIChtb2RlID09PSAicmVwbGFjZSIgJiYgb3B0aW9ucy5iaW5kaW5nU3luYyAhPT0gdHJ1ZSAmJiAhdGhpcy5iaW5kaW5nU3luY0RlcHRoKSB7CiAgICAgICAgICBjb25zdCBjYXJkID0gcHJvZHVjdENhcmRGb3JSZWNvcmQocmVjb3JkKTsKICAgICAgICAgIGNvbnN0IHRhYmxlID0gY2FyZERhdGFUYWJsZShjYXJkKTsKICAgICAgICAgIGNvbnN0IHZhbHVlcyA9IGxpbWl0ZWRbMF0/LnZhbHVlcyB8fCBsaW1pdGVkWzBdIHx8IHt9OwogICAgICAgICAgaWYgKGNhcmQ/LmJpbmRpbmc/LnByb2R1Y3RJZCAmJiB0YWJsZT8uaWQgPT09IGNvbXBvbmVudC5pZCkgewogICAgICAgICAgICBjYXJkLmJpbmRpbmcgPSBub3JtYWxpemVQcm9kdWN0QmluZGluZyhjYXJkLmJpbmRpbmcpOwogICAgICAgICAgICBUQUJMRV9CSU5ESU5HX0ZJRUxEUy5mb3JFYWNoKGZpZWxkID0+IHsKICAgICAgICAgICAgICBpZiAoT2JqZWN0Lmhhc093bih2YWx1ZXMsIGZpZWxkKSkgY2FyZC5iaW5kaW5nLm92ZXJyaWRlc1tmaWVsZF0gPSB0cnVlOwogICAgICAgICAgICB9KTsKICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIGNvbnN0IG5leHRJZHMgPSBtb2RlID09PSAiYXBwZW5kIiA/IGN1cnJlbnRJZHMuc2xpY2UoKSA6IFtdOwogICAgICAgIGxpbWl0ZWQuZm9yRWFjaCgoZW50cnksIGluZGV4KSA9PiB7CiAgICAgICAgICBjb25zdCB2YWx1ZXMgPSBlbnRyeS52YWx1ZXMgfHwgZW50cnk7CiAgICAgICAgICBjb25zdCByb3cgPSBjcmVhdGVUYWJsZVJvdyh0aGlzLnN0YXRlLCB2YWx1ZXMsIGAke2NvbXBvbmVudC5uYW1lIHx8ICJUYWJlbGEifSDCtyBsaW5oYSAke25leHRJZHMubGVuZ3RoICsgMX1gLCB7CiAgICAgICAgICAgIGNvbHVtbnM6IGNvbXBvbmVudC5wcm9wcy5jb2x1bW5zLAogICAgICAgICAgICBsZWdlbmRLZXlzOiBlbnRyeS5sZWdlbmRLZXlzIHx8IHt9LAogICAgICAgICAgICBzb3VyY2VSb3dJZDogZW50cnkuaWQgfHwgZW50cnkuc291cmNlUm93SWQgfHwgbnVsbCwKICAgICAgICAgICAgdmFyaWFudElkOiBlbnRyeS52YXJpYW50SWQgfHwgbnVsbAogICAgICAgICAgfSk7CiAgICAgICAgICBuZXh0SWRzLnB1c2gocm93LmlkKTsKICAgICAgICB9KTsKICAgICAgICBjb21wb25lbnQucHJvcHMucm93SWRzID0gbmV4dElkczsKICAgICAgICBpZiAobW9kZSA9PT0gInJlcGxhY2UiKSB7CiAgICAgICAgICBjb25zdCBjb2xsZWN0aW9uID0gdGhpcy5nZXRDb2xsZWN0aW9uKGNvbXBvbmVudC5wcm9wcy5jb2xsZWN0aW9uSWQgfHwgInRhYmxlUm93cyIpOwogICAgICAgICAgY3VycmVudElkcy5mb3JFYWNoKHJvd0lkID0+IHsKICAgICAgICAgICAgaWYgKHRoaXMuZ2V0VGFibGVSb3dVc2FnZShyb3dJZCkubGVuZ3RoKSByZXR1cm47CiAgICAgICAgICAgIGNvbnN0IGluZGV4ID0gY29sbGVjdGlvbj8uaXRlbXMuZmluZEluZGV4KGl0ZW0gPT4gaXRlbS5pZCA9PT0gcm93SWQpID8/IC0xOwogICAgICAgICAgICBpZiAoaW5kZXggPj0gMCkgY29sbGVjdGlvbi5pdGVtcy5zcGxpY2UoaW5kZXgsIDEpOwogICAgICAgICAgfSk7CiAgICAgICAgfQogICAgICAgIHRoaXMucmVmcmVzaFRhYmxlTGF5b3V0KGNvbXBvbmVudElkKTsKICAgICAgICB0aGlzLnN0YXRlLmVkaXRvci5zZWxlY3RlZENvbXBvbmVudElkID0gY29tcG9uZW50LmlkOwogICAgICAgIHJldHVybiB0aGlzLmdldFRhYmxlUm93cyhjb21wb25lbnQpOwogICAgICB9KTsKICAgIH0='
-          )
+          replace_once('app/main.js', '    { file: "table-binding-overrides-contract.js", globalName: "CatalogTableBindingOverridesContract" },\n', '')
+          replace_once('app/main.js', '    window.CatalogTableBindingOverridesContract?.install();\n', '')
+          replace_once('tools/build-developer-b-authoring-kit.js', '  "table-binding-overrides-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', '  "table-binding-overrides-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogTableBindingOverridesContract.install();\n', '')
+
+          test_path = Path('tests/table-binding-overrides-05.18.test.js')
+          test = test_path.read_text()
+          test = test.replace('/* DB-05.19.1 — overrides de tabela em lote pertencem ao document-store canônico. */', '/* DB-05.19.2 — overrides de tabela em lote pertencem ao document-store sem shim. */', 1)
+          test = test.replace('  "app/reflow-history-stability-contract.js",\n  "app/table-binding-overrides-contract.js"', '  "app/reflow-history-stability-contract.js"', 1)
+          test = test.replace('const storeClassBeforeShim = CatalogDocumentStore;\nassert(CatalogTableBindingOverridesContract.install(), "O shim não encontrou o document-store.");\nassert(CatalogDocumentStore === storeClassBeforeShim, "O shim ainda substitui a classe canônica.");\n\n', '', 1)
+          test = test.replace('const appShim = fs.readFileSync(path.join(root, "app", "table-binding-overrides-contract.js"), "utf8");\nconst kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "table-binding-overrides-contract.js"), "utf8");\n', '', 1)
+          test = test.replace('assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");\nassert(CatalogTableBindingOverridesContract.VERSION === "05.19.1", "Versão inesperada do shim.");\n\n', '', 1)
+          test = test.replace('console.log("✓ Overrides de tabela pertencem ao store canônico; shim não substitui classe e sincronizações internas permanecem limpas.");', 'console.log("✓ Overrides de tabela pertencem ao store canônico sem shim; sincronizações internas permanecem limpas.");', 1)
+          if 'CatalogTableBindingOverridesContract' in test or 'table-binding-overrides-contract.js' in test:
+              raise SystemExit('A regressão ainda depende do shim.')
+          test_path.write_text(test)
+
+          cycle_path = Path('docs/DEVELOPER-B-CONSOLIDATION-05.19.md')
+          cycle = cycle_path.read_text()
+          status = '''
+
+## Estado de execução
+
+- **DB-05.19.1:** concluído; comportamento incorporado ao `document-store` e shim reduzido a no-op.
+- **DB-05.19.2:** concluído nesta etapa; carregamento, build, compilador e arquivos do shim removidos após auditoria completa.
+'''
+          if '## Estado de execução' not in cycle:
+              cycle_path.write_text(cycle.rstrip() + status + '\n')
+
+          evidence = Path('docs/evidence/05.19/developer-b/DB-05.19.2-TABLE-BINDING-SHIM-REMOVAL.md')
+          evidence.parent.mkdir(parents=True, exist_ok=True)
+          evidence.write_text('''# DB-05.19.2 — Remoção do shim de overrides de tabela
+
+## Mudança
+
+O comportamento validado no DB-05.19.1 permanece no `document-store`. Foram removidos:
+
+- o contrato `table-binding-overrides-contract.js` do editor;
+- sua cópia no runtime do AuthoringKit;
+- o carregamento dinâmico e a instalação no bootstrap;
+- o carregamento e a instalação no compilador autocontido;
+- a referência no build Developer B.
+
+## Contrato preservado
+
+A regressão executa somente o store canônico e continua cobrindo:
+
+- campos comerciais completos e parciais;
+- `bindingSync`;
+- criação interna de cards;
+- undo e redo;
+- paridade do `document-store` entre editor e AuthoringKit.
+
+## Validação exigida
+
+- auditoria completa de contratos Node;
+- build Developer B;
+- todos os testes Chromium 05.18;
+- uma semente visual de estresse;
+- segundo build sem diferenças;
+- ausência de referências executáveis ao shim.
+''')
           PY
+          rm app/table-binding-overrides-contract.js
+          rm authoring-kit/runtime/table-binding-overrides-contract.js
           node tools/build-developer-b-authoring-kit.js
+          if grep -R "table-binding-overrides-contract\|CatalogTableBindingOverridesContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/table-binding-overrides-05.18.test.js; then
+            echo "Shim reference remained in executable surfaces."
+            exit 1
+          fi
           git diff --check
-      - name: Focused validation
+      - name: Install Playwright and Chromium
         run: |
-          node tests/table-binding-overrides-05.18.test.js
-          node tests/reflow-history-stability-05.18.test.js
-          node tests/reflow-manual-baseline-05.18.test.js
-          node tests/stress-domain-history-05.18.test.js
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
-      - name: Commit allowed generated subset
+          npm install --no-save playwright@latest
+          npx playwright install --with-deps chromium
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run consolidated audit and stress
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit-output/db-05.19.2/consolidated audit-output/db-05.19.2/stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.2/consolidated/audit.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5192001 --timeout=300000 --output=audit-output/db-05.19.2/stress 2>&1 | tee audit-output/db-05.19.2/consolidated/stress.log
+      - name: Commit shim removal
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t actual < <(git status --short | sed -E 's/^.. //' | sort)
           allowed=(
             app/authoring-kit-files.js
-            app/document-store.js
+            app/main.js
+            app/table-binding-overrides-contract.js
             authoring-kit/capabilities.json
+            authoring-kit/compiler/compile-catalog.js
             authoring-kit/feature-inventory.json
-            authoring-kit/runtime/document-store.js
             authoring-kit/runtime/table-binding-overrides-contract.js
+            docs/DEVELOPER-B-CONSOLIDATION-05.19.md
             docs/FEATURE-CATALOG.md
+            docs/evidence/05.19/developer-b/DB-05.19.2-TABLE-BINDING-SHIM-REMOVAL.md
+            tests/table-binding-overrides-05.18.test.js
+            tools/build-developer-b-authoring-kit.js
           )
           unexpected=()
           for file in "${actual[@]}"; do
@@ -82,15 +158,23 @@ jobs:
             printf '%s\n' "${unexpected[@]}"
             exit 1
           fi
-          printf 'Generated files to commit:\n'
+          printf 'Files to commit:\n'
           printf '%s\n' "${actual[@]}"
           git config user.name "Developer B Audit"
           git config user.email "developer-b-audit@users.noreply.github.com"
-          git add "${actual[@]}"
-          git commit -m "05.19 — consolida overrides de tabela no document-store"
+          git add -A
+          git commit -m "05.19 — remove shim de overrides de tabela"
           git push origin HEAD:agent/developer-b-05.18
       - name: Prove idempotent build
         run: |
           node tools/build-developer-b-authoring-kit.js
           git diff --exit-code
           node tests/table-binding-overrides-05.18.test.js
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-db-05.19.2
+          path: audit-output/db-05.19.2
+          if-no-files-found: warn
+          retention-days: 14
