@@ -1,0 +1,55 @@
+name: Developer B Audit Batches
+
+on:
+  pull_request:
+    branches:
+      - development
+
+permissions:
+  contents: read
+
+jobs:
+  batch-0-static:
+    name: Batch 0 — sintaxe e executores
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validar sintaxe JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          find app authoring-kit tests tools -type f -name '*.js' -print0 \
+            | sort -z \
+            | xargs -0 -n1 node --check
+
+      - name: Validar executor de auditoria
+        run: node tests/developer-b-audit-runner-05.18.test.js
+
+      - name: Validar executor de estresse
+        run: node tests/developer-b-stress-runner-05.18.test.js
+
+      - name: Registrar inventários
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit-output
+          node tools/run-developer-b-audit.js --list | tee audit-output/audit-list.txt
+          node tools/run-developer-b-stress.js --list | tee audit-output/stress-list.txt
+          node --version | tee audit-output/node-version.txt
+
+      - name: Publicar evidências do lote 0
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-batch-0-static
+          path: audit-output
+          if-no-files-found: warn
+          retention-days: 14
