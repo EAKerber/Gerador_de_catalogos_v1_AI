@@ -2,81 +2,25 @@ name: Developer B Audit Batches
 on:
   pull_request:
     branches: [development]
+    paths:
+      - '.github/workflows/developer-b-audit-batches.yml'
+      - 'app/**'
+      - 'authoring-kit/**'
+      - 'styles/**'
+      - 'tests/**'
+      - 'tools/**'
 permissions:
-  contents: write
+  contents: read
 jobs:
-  remove-footer-containment-shim:
-    name: DB-05.19.4 - remove footer containment shim
+  consolidated-audit-05-19:
+    name: DB-05.19 - stable consolidated audit
     runs-on: ubuntu-latest
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Remove shim and residual dependencies
-        shell: bash
-        run: |
-          python - <<'PY'
-          import base64
-          from pathlib import Path
-
-          def replace_once(path, old, new):
-              file = Path(path)
-              source = file.read_text()
-              if new and new in source and old not in source:
-                  return
-              if source.count(old) != 1:
-                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
-              file.write_text(source.replace(old, new, 1))
-
-          replace_once('app/main.js', '    { file: "footer-item-containment-contract.js", globalName: "CatalogFooterItemContainmentContract" },\n', '')
-          replace_once('app/main.js', '    window.CatalogFooterItemContainmentContract?.install();\n', '')
-          replace_once('tools/build-developer-b-authoring-kit.js', '  "footer-item-containment-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', '  "footer-item-containment-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogFooterItemContainmentContract.install();\n', '')
-
-          node_test = Path('tests/footer-item-containment-05.18.12.2.test.js')
-          source = node_test.read_text()
-          source = source.replace('const titleFrameBeforeShim = titleSlot.getFrame;\nconst subtitleFrameBeforeShim = subtitleSlot.getFrame;\n\nvm.runInContext(fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8"), sandbox, { filename: "footer-item-containment-contract.js" });\nassert(sandbox.window.CatalogFooterItemContainmentContract.install(), "O shim não encontrou footer-item no registro.");\nassert(titleSlot.getFrame === titleFrameBeforeShim && subtitleSlot.getFrame === subtitleFrameBeforeShim, "O shim ainda substitui a geometria canônica.");\n\n', '', 1)
-          source = source.replace('const helperFrames = sandbox.window.CatalogFooterItemContainmentContract.textFrames(component(80, 64));\nassert(JSON.stringify(helperFrames) === JSON.stringify(minimum), "O helper de compatibilidade divergiu da geometria canônica.");\n\n', '', 1)
-          source = source.replace('const appShim = fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8");\nconst kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "footer-item-containment-contract.js"), "utf8");\n', '', 1)
-          source = source.replace('assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");\nassert(sandbox.window.CatalogFooterItemContainmentContract.VERSION === "05.19.3", "Versão inesperada do shim.");\n\n', '', 1)
-          source = source.replace('console.log("✓ Geometria e recorte do footer-item pertencem ao registro e CSS canônicos; shim não altera o runtime.");', 'console.log("✓ Geometria e recorte do footer-item pertencem ao registro e CSS canônicos sem shim de runtime.");', 1)
-          if 'CatalogFooterItemContainmentContract' in source or 'footer-item-containment-contract.js' in source:
-              raise SystemExit('A regressão geométrica ainda depende do shim.')
-          node_test.write_text(source)
-
-          browser = Path('tests/browser-footer-item-containment-05.18.12.2.test.js')
-          source = browser.read_text()
-          source = source.replace('await page.waitForFunction(() => window.CatalogEditor && window.CatalogFooterItemContainmentContract?.VERSION === "05.19.3");', 'await page.waitForFunction(() => window.CatalogEditor);', 1)
-          browser.write_text(source)
-
-          runtime_test = Path('tests/authoring-kit-runtime-contracts-05.18.test.js')
-          source = runtime_test.read_text()
-          source = source.replace('  "footer-item-containment-contract.js",\n', '', 1)
-          source = source.replace('  "CatalogFooterItemContainmentContract",\n', '', 1)
-          runtime_test.write_text(source)
-
-          stress = Path('tests/stress-domain-history-05.18.test.js')
-          source = stress.read_text()
-          source = source.replace('  "app/footer-item-containment-contract.js",\n', '', 1)
-          source = source.replace('  CatalogFooterItemContainmentContract,\n', '', 1)
-          stress.write_text(source)
-
-          Path('tests/footer-item-containment-build-05.18.12.2.test.js').write_text(base64.b64decode('LyogREItMDUuMTkuNCDigJQgY29udGVuw6fDo28gZG8gZm9vdGVyLWl0ZW0gaW50ZWdyYWRhIHNlbSBjb250cmF0byBkZSBydW50aW1lIHNlcGFyYWRvLiAqLwpjb25zdCBmcyA9IHJlcXVpcmUoImZzIik7CmNvbnN0IHBhdGggPSByZXF1aXJlKCJwYXRoIik7Cgpjb25zdCByb290ID0gcGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgIi4uIik7CmNvbnN0IGFzc2VydCA9IChjb25kaXRpb24sIG1lc3NhZ2UpID0+IHsgaWYgKCFjb25kaXRpb24pIHRocm93IG5ldyBFcnJvcihtZXNzYWdlKTsgfTsKY29uc3QgZmlsZU5hbWUgPSAiZm9vdGVyLWl0ZW0tY29udGFpbm1lbnQtY29udHJhY3QuanMiOwpjb25zdCBhcHBSZWdpc3RyeSA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsICJjb21wb25lbnQtcmVnaXN0cnkuanMiKSwgInV0ZjgiKTsKY29uc3Qga2l0UmVnaXN0cnkgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhdXRob3Jpbmcta2l0IiwgInJ1bnRpbWUiLCAiY29tcG9uZW50LXJlZ2lzdHJ5LmpzIiksICJ1dGY4Iik7CmNvbnN0IGJ1aWxkID0gZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCAidG9vbHMiLCAiYnVpbGQtZGV2ZWxvcGVyLWItYXV0aG9yaW5nLWtpdC5qcyIpLCAidXRmOCIpOwpjb25zdCBjb21waWxlciA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImF1dGhvcmluZy1raXQiLCAiY29tcGlsZXIiLCAiY29tcGlsZS1jYXRhbG9nLmpzIiksICJ1dGY4Iik7CmNvbnN0IG1haW4gPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAibWFpbi5qcyIpLCAidXRmOCIpOwpjb25zdCBidW5kbGUgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAiYXV0aG9yaW5nLWtpdC1maWxlcy5qcyIpLCAidXRmOCIpOwpjb25zdCBjc3MgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJzdHlsZXMiLCAiY29tcG9uZW50cy5jc3MiKSwgInV0ZjgiKTsKCmFzc2VydCghZnMuZXhpc3RzU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsIGZpbGVOYW1lKSksICJPIHNoaW0gYWluZGEgZXhpc3RlIG5vIGFwcC4iKTsKYXNzZXJ0KCFmcy5leGlzdHNTeW5jKHBhdGguam9pbihyb290LCAiYXV0aG9yaW5nLWtpdCIsICJydW50aW1lIiwgZmlsZU5hbWUpKSwgIk8gc2hpbSBhaW5kYSBleGlzdGUgbm8gcnVudGltZSBkbyBBdXRob3JpbmdLaXQuIik7CmFzc2VydChhcHBSZWdpc3RyeSA9PT0ga2l0UmVnaXN0cnksICJPIHJlZ2lzdHJvIGNhbsO0bmljbyBkaXZlcmdpdSBlbnRyZSBlZGl0b3IgZSBBdXRob3JpbmdLaXQuIik7CmFzc2VydCghYnVpbGQuaW5jbHVkZXMoYCIke2ZpbGVOYW1lfSJgKSwgIk8gYnVpbGQgRGV2ZWxvcGVyIEIgYWluZGEgc2luY3Jvbml6YSBvIHNoaW0uIik7CmFzc2VydCghY29tcGlsZXIuaW5jbHVkZXMoYCIke2ZpbGVOYW1lfSJgKSAmJiAhY29tcGlsZXIuaW5jbHVkZXMoIkNhdGFsb2dGb290ZXJJdGVtQ29udGFpbm1lbnRDb250cmFjdCIpLCAiTyBjb21waWxhZG9yIGFpbmRhIGNhcnJlZ2Egb3UgaW5zdGFsYSBvIHNoaW0uIik7CmFzc2VydCghbWFpbi5pbmNsdWRlcyhgZmlsZTogIiR7ZmlsZU5hbWV9ImApICYmICFtYWluLmluY2x1ZGVzKCJDYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QiKSwgIk8gZWRpdG9yIGFpbmRhIGNhcnJlZ2Egb3UgaW5zdGFsYSBvIHNoaW0uIik7CmFzc2VydCghYnVuZGxlLmluY2x1ZGVzKGZpbGVOYW1lKSwgIk8gYnVuZGxlIGVtYnV0aWRvIGFpbmRhIHRyYW5zcG9ydGEgbyBzaGltLiIpOwphc3NlcnQoY3NzLmluY2x1ZGVzKCcuZWRpdG9yLWNvbXBvbmVudC0tZm9vdGVyLWl0ZW06bm90KFtkYXRhLWFjdGl2ZS1jb250ZXh0PSJ0cnVlIl0pID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllcicpLCAiTyBDU1MgY2Fuw7RuaWNvIHBlcmRldSBvIHJlY29ydGUgZG8gZm9vdGVyLWl0ZW0uIik7CmFzc2VydChhcHBSZWdpc3RyeS5pbmNsdWRlcygiZnVuY3Rpb24gZm9vdGVySXRlbVRleHRGcmFtZSIpLCAiTyByZWdpc3RybyBjYW7DtG5pY28gcGVyZGV1IGEgZ2VvbWV0cmlhIGRvIGZvb3Rlci1pdGVtLiIpOwoKY29uc29sZS5sb2coIuKckyBEQi0wNS4xOS40IG1hbnTDqW0gYSBjb250ZW7Dp8OjbyBubyByZWdpc3RybyBlIENTUyBjYW7DtG5pY29zIHNlbSBjb250cmF0byBkZSBydW50aW1lIHNlcGFyYWRvLiIpOwo=').decode('utf-8'))
-          PY
-          rm app/footer-item-containment-contract.js
-          rm authoring-kit/runtime/footer-item-containment-contract.js
-          node tools/build-developer-b-authoring-kit.js
-          if grep -R "footer-item-containment-contract\|CatalogFooterItemContainmentContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js tests/footer-item-containment-05.18.12.2.test.js tests/browser-footer-item-containment-05.18.12.2.test.js; then
-            echo "Executable shim reference remained."
-            exit 1
-          fi
-          git diff --check
       - name: Install Playwright and Chromium
         run: |
           npm install --no-save playwright@latest
@@ -90,65 +34,43 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run complete audit and stress
+      - name: Run full audit and stress
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19.4/domain
-        run: |
-          mkdir -p audit-output/db-05.19.4/consolidated audit-output/db-05.19.4/browser-stress
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.4/consolidated/audit.log
-          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19.4/consolidated/domain-stress.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5194001 --timeout=300000 --output=audit-output/db-05.19.4/browser-stress 2>&1 | tee audit-output/db-05.19.4/consolidated/browser-stress.log
-      - name: Commit footer shim removal
+          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-stable/domain
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t actual < <(git diff --name-only --relative | sort)
-          allowed=(
-            app/authoring-kit-files.js
-            app/footer-item-containment-contract.js
-            app/main.js
-            authoring-kit/capabilities.json
-            authoring-kit/compiler/compile-catalog.js
-            authoring-kit/feature-inventory.json
-            authoring-kit/runtime/footer-item-containment-contract.js
-            docs/FEATURE-CATALOG.md
-            tests/authoring-kit-runtime-contracts-05.18.test.js
-            tests/browser-footer-item-containment-05.18.12.2.test.js
-            tests/footer-item-containment-05.18.12.2.test.js
-            tests/footer-item-containment-build-05.18.12.2.test.js
-            tests/stress-domain-history-05.18.test.js
-            tools/build-developer-b-authoring-kit.js
-          )
-          unexpected=()
-          for file in "${actual[@]}"; do
-            found=false
-            for candidate in "${allowed[@]}"; do
-              if [ "$file" = "$candidate" ]; then found=true; break; fi
-            done
-            if [ "$found" = false ]; then unexpected+=("$file"); fi
+          mkdir -p audit-output/db-05.19-stable/consolidated audit-output/db-05.19-stable/browser-stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-stable/consolidated/audit.log
+          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/domain-stress.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5194999 --timeout=300000 --output=audit-output/db-05.19-stable/browser-stress 2>&1 | tee audit-output/db-05.19-stable/consolidated/browser-stress.log
+      - name: Verify consolidation and idempotence
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in table-binding-overrides-contract.js footer-item-containment-contract.js; do
+            if find app authoring-kit -name "$file" -print -quit | grep -q .; then
+              echo "Removed shim returned: $file"
+              exit 1
+            fi
           done
-          if [ "${#unexpected[@]}" -gt 0 ]; then
-            echo "Unexpected tracked files:"
-            printf '%s\n' "${unexpected[@]}"
+          if grep -R "CatalogTableBindingOverridesContract\|CatalogFooterItemContainmentContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js; then
+            echo "Removed shim global returned."
             exit 1
           fi
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add -A
-          git commit -m "05.19 — remove shim de contenção do footer-item"
-          git push origin HEAD:agent/developer-b-05.18
-      - name: Prove idempotent build
-        run: |
-          node tools/build-developer-b-authoring-kit.js
-          git diff --exit-code
-          node tests/footer-item-containment-05.18.12.2.test.js
-          node tests/footer-item-containment-build-05.18.12.2.test.js
+          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/idempotence.log
+          if ! git diff --quiet; then
+            git status --short | tee audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
+            git diff --stat | tee -a audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
+            exit 1
+          fi
+          git status --short > audit-output/db-05.19-stable/consolidated/final-status.txt
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19.4
-          path: audit-output/db-05.19.4
-          if-no-files-found: warn
+          name: developer-b-db-05.19-stable-audit
+          path: audit-output/db-05.19-stable
+          if-no-files-found: error
           retention-days: 14
