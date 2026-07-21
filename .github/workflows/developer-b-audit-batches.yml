@@ -5,10 +5,10 @@ on:
 permissions:
   contents: write
 jobs:
-  consolidate-footer-containment:
-    name: DB-05.19.3 - consolidate footer containment
+  remove-footer-containment-shim:
+    name: DB-05.19.4 - remove footer containment shim
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,51 +17,66 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Move geometry and styles to canonical surfaces
+      - name: Remove shim and residual dependencies
         shell: bash
         run: |
           python - <<'PY'
           import base64
           from pathlib import Path
 
-          def decode(value):
-              return base64.b64decode(value).decode('utf-8')
-
-          def replace_b64(path, old64, new64):
+          def replace_once(path, old, new):
               file = Path(path)
               source = file.read_text()
-              old = decode(old64)
-              new = decode(new64)
-              if new in source:
+              if new and new in source and old not in source:
                   return
               if source.count(old) != 1:
-                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)}')
+                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
               file.write_text(source.replace(old, new, 1))
 
-          replace_b64(
-              'app/component-registry.js',
-              'ICBmdW5jdGlvbiBmb290ZXJJdGVtVGV4dEZyYW1lKGNvbXBvbmVudCwgc2xvdE5hbWUpIHsKICAgIGNvbnN0IGljb25QcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJpY29uIik7CiAgICBjb25zdCB0aXRsZVByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgInRpdGxlIik7CiAgICBjb25zdCBzdWJ0aXRsZVByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgInN1YnRpdGxlIik7CiAgICBjb25zdCB0b3AgPSBpY29uUHJlc2VudCA/IDMxIDogMzsKICAgIGNvbnN0IGF2YWlsYWJsZSA9IE1hdGgubWF4KDM0LCBjb21wb25lbnQuZnJhbWUuaGVpZ2h0IC0gdG9wIC0gMyk7CiAgICBjb25zdCBib3RoVGV4dHMgPSB0aXRsZVByZXNlbnQgJiYgc3VidGl0bGVQcmVzZW50OwogICAgY29uc3QgaGVpZ2h0ID0gYm90aFRleHRzID8gTWF0aC5tYXgoMzQsIE1hdGguZmxvb3IoYXZhaWxhYmxlIC8gMikpIDogYXZhaWxhYmxlOwogICAgY29uc3QgeSA9IHNsb3ROYW1lID09PSAic3VidGl0bGUiICYmIHRpdGxlUHJlc2VudCA/IHRvcCArIGhlaWdodCA6IHRvcDsKICAgIHJldHVybiB7IHg6IDQsIHksIHdpZHRoOiBNYXRoLm1heCg4MCwgY29tcG9uZW50LmZyYW1lLndpZHRoIC0gOCksIGhlaWdodCB9OwogIH0K',
-              'ICBmdW5jdGlvbiBmb290ZXJJdGVtVGV4dEZyYW1lKGNvbXBvbmVudCwgc2xvdE5hbWUpIHsKICAgIGNvbnN0IHdpZHRoID0gTWF0aC5tYXgoMSwgTnVtYmVyKGNvbXBvbmVudD8uZnJhbWU/LndpZHRoKSB8fCA4MCk7CiAgICBjb25zdCBoZWlnaHQgPSBNYXRoLm1heCgxLCBOdW1iZXIoY29tcG9uZW50Py5mcmFtZT8uaGVpZ2h0KSB8fCA2NCk7CiAgICBjb25zdCBpY29uUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAiaWNvbiIpOwogICAgY29uc3QgdGl0bGVQcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJ0aXRsZSIpOwogICAgY29uc3Qgc3VidGl0bGVQcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJzdWJ0aXRsZSIpOwogICAgY29uc3QgaW5zZXRYID0gTWF0aC5taW4oNCwgTWF0aC5mbG9vcih3aWR0aCAvIDIpKTsKICAgIGNvbnN0IHRvcCA9IE1hdGgubWluKGljb25QcmVzZW50ID8gMzEgOiAzLCBoZWlnaHQpOwogICAgY29uc3QgYm90dG9tSW5zZXQgPSBNYXRoLm1pbigzLCBNYXRoLm1heCgwLCBoZWlnaHQgLSB0b3ApKTsKICAgIGNvbnN0IGF2YWlsYWJsZSA9IE1hdGgubWF4KDAsIGhlaWdodCAtIHRvcCAtIGJvdHRvbUluc2V0KTsKICAgIGNvbnN0IGlubmVyV2lkdGggPSBNYXRoLm1heCgxLCB3aWR0aCAtIGluc2V0WCAqIDIpOwoKICAgIGlmICh0aXRsZVByZXNlbnQgJiYgc3VidGl0bGVQcmVzZW50KSB7CiAgICAgIGNvbnN0IGdhcCA9IGF2YWlsYWJsZSA+PSAzMCA/IDIgOiBhdmFpbGFibGUgPj0gMTIgPyAxIDogMDsKICAgICAgY29uc3QgdXNhYmxlID0gTWF0aC5tYXgoMCwgYXZhaWxhYmxlIC0gZ2FwKTsKICAgICAgY29uc3QgdGl0bGVIZWlnaHQgPSB1c2FibGUgPj0gMjgKICAgICAgICA/IE1hdGgubWF4KDE0LCBNYXRoLm1pbih1c2FibGUgLSAxNCwgTWF0aC5yb3VuZCh1c2FibGUgKiAuNTIpKSkKICAgICAgICA6IE1hdGguY2VpbCh1c2FibGUgLyAyKTsKICAgICAgY29uc3Qgc3VidGl0bGVIZWlnaHQgPSBNYXRoLm1heCgwLCB1c2FibGUgLSB0aXRsZUhlaWdodCk7CiAgICAgIHJldHVybiBzbG90TmFtZSA9PT0gInRpdGxlIgogICAgICAgID8geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogdGl0bGVIZWlnaHQgfQogICAgICAgIDogeyB4OiBpbnNldFgsIHk6IHRvcCArIHRpdGxlSGVpZ2h0ICsgZ2FwLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiBzdWJ0aXRsZUhlaWdodCB9OwogICAgfQoKICAgIGNvbnN0IHByZXNlbnQgPSBzbG90TmFtZSA9PT0gInRpdGxlIiA/IHRpdGxlUHJlc2VudCA6IHN1YnRpdGxlUHJlc2VudDsKICAgIHJldHVybiBwcmVzZW50CiAgICAgID8geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogYXZhaWxhYmxlIH0KICAgICAgOiB7IHg6IGluc2V0WCwgeTogdG9wLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiAwIH07CiAgfQo='
-          )
-          replace_b64(
-              'styles/components.css',
-              'LmNvbXBvbmVudC1mb290ZXItaXRlbSB7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IG1pbi13aWR0aDogMDsgYm9yZGVyLXJpZ2h0OiAxcHggc29saWQgdmFyKC0tY29tcG9uZW50LWJvcmRlciwgI2Q5ZGNkZik7IHRleHQtYWxpZ246IGNlbnRlcjsgfQo=',
-              'LmNvbXBvbmVudC1mb290ZXItaXRlbSB7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IG1pbi13aWR0aDogMDsgYm9yZGVyLXJpZ2h0OiAxcHggc29saWQgdmFyKC0tY29tcG9uZW50LWJvcmRlciwgI2Q5ZGNkZik7IHRleHQtYWxpZ246IGNlbnRlcjsgfQouZWRpdG9yLWNvbXBvbmVudC0tZm9vdGVyLWl0ZW06bm90KFtkYXRhLWFjdGl2ZS1jb250ZXh0PSJ0cnVlIl0pID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciB7IG92ZXJmbG93OiBoaWRkZW47IGJvcmRlci1yYWRpdXM6IGluaGVyaXQ7IH0KLmVkaXRvci1jb21wb25lbnQtLWZvb3Rlci1pdGVtID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciA+IC5lZGl0b3ItY29tcG9uZW50LS10ZXh0IHsgbWluLXdpZHRoOiAwOyBtaW4taGVpZ2h0OiAwOyB9CkBtZWRpYSBwcmludCB7CiAgLmVkaXRvci1jb21wb25lbnQtLWZvb3Rlci1pdGVtID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciB7IG92ZXJmbG93OiBoaWRkZW4gIWltcG9ydGFudDsgYm9yZGVyLXJhZGl1czogaW5oZXJpdDsgfQp9Cg=='
-          )
-          Path('app/footer-item-containment-contract.js').write_text(decode('KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTkuMyI7CiAgY29uc3QgaGFzU2xvdCA9IChjb21wb25lbnQsIHNsb3ROYW1lKSA9PiAoY29tcG9uZW50Py5jaGlsZHJlbiB8fCBbXSkuc29tZShjaGlsZCA9PiBjaGlsZC5zbG90Py5uYW1lID09PSBzbG90TmFtZSk7CiAgY29uc3QgZmluaXRlID0gKHZhbHVlLCBmYWxsYmFjaykgPT4gTnVtYmVyLmlzRmluaXRlKE51bWJlcih2YWx1ZSkpID8gTnVtYmVyKHZhbHVlKSA6IGZhbGxiYWNrOwoKICBmdW5jdGlvbiB0ZXh0RnJhbWVzKGNvbXBvbmVudCkgewogICAgY29uc3Qgd2lkdGggPSBNYXRoLm1heCgxLCBmaW5pdGUoY29tcG9uZW50Py5mcmFtZT8ud2lkdGgsIDgwKSk7CiAgICBjb25zdCBoZWlnaHQgPSBNYXRoLm1heCgxLCBmaW5pdGUoY29tcG9uZW50Py5mcmFtZT8uaGVpZ2h0LCA2NCkpOwogICAgY29uc3QgaWNvblByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgImljb24iKTsKICAgIGNvbnN0IHRpdGxlUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAidGl0bGUiKTsKICAgIGNvbnN0IHN1YnRpdGxlUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAic3VidGl0bGUiKTsKICAgIGNvbnN0IGluc2V0WCA9IE1hdGgubWluKDQsIE1hdGguZmxvb3Iod2lkdGggLyAyKSk7CiAgICBjb25zdCB0b3AgPSBNYXRoLm1pbihpY29uUHJlc2VudCA/IDMxIDogMywgaGVpZ2h0KTsKICAgIGNvbnN0IGJvdHRvbUluc2V0ID0gTWF0aC5taW4oMywgTWF0aC5tYXgoMCwgaGVpZ2h0IC0gdG9wKSk7CiAgICBjb25zdCBhdmFpbGFibGUgPSBNYXRoLm1heCgwLCBoZWlnaHQgLSB0b3AgLSBib3R0b21JbnNldCk7CiAgICBjb25zdCBpbm5lcldpZHRoID0gTWF0aC5tYXgoMSwgd2lkdGggLSBpbnNldFggKiAyKTsKCiAgICBpZiAodGl0bGVQcmVzZW50ICYmIHN1YnRpdGxlUHJlc2VudCkgewogICAgICBjb25zdCBnYXAgPSBhdmFpbGFibGUgPj0gMzAgPyAyIDogYXZhaWxhYmxlID49IDEyID8gMSA6IDA7CiAgICAgIGNvbnN0IHVzYWJsZSA9IE1hdGgubWF4KDAsIGF2YWlsYWJsZSAtIGdhcCk7CiAgICAgIGxldCB0aXRsZUhlaWdodDsKICAgICAgaWYgKHVzYWJsZSA+PSAyOCkgdGl0bGVIZWlnaHQgPSBNYXRoLm1heCgxNCwgTWF0aC5taW4odXNhYmxlIC0gMTQsIE1hdGgucm91bmQodXNhYmxlICogLjUyKSkpOwogICAgICBlbHNlIHRpdGxlSGVpZ2h0ID0gTWF0aC5jZWlsKHVzYWJsZSAvIDIpOwogICAgICBjb25zdCBzdWJ0aXRsZUhlaWdodCA9IE1hdGgubWF4KDAsIHVzYWJsZSAtIHRpdGxlSGVpZ2h0KTsKICAgICAgcmV0dXJuIHsKICAgICAgICB0aXRsZTogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogdGl0bGVIZWlnaHQgfSwKICAgICAgICBzdWJ0aXRsZTogeyB4OiBpbnNldFgsIHk6IHRvcCArIHRpdGxlSGVpZ2h0ICsgZ2FwLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiBzdWJ0aXRsZUhlaWdodCB9CiAgICAgIH07CiAgICB9CgogICAgY29uc3Qgc2luZ2xlID0geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogYXZhaWxhYmxlIH07CiAgICByZXR1cm4gewogICAgICB0aXRsZTogdGl0bGVQcmVzZW50ID8gc2luZ2xlIDogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogMCB9LAogICAgICBzdWJ0aXRsZTogc3VidGl0bGVQcmVzZW50ID8gc2luZ2xlIDogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogMCB9CiAgICB9OwogIH0KCiAgZnVuY3Rpb24gaW5zdGFsbCgpIHsKICAgIHJldHVybiBCb29sZWFuKHdpbmRvdy5DQVRBTE9HX0NPTVBPTkVOVF9SRUdJU1RSWT8uWyJmb290ZXItaXRlbSJdKTsKICB9CgogIHdpbmRvdy5DYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QgPSBPYmplY3QuZnJlZXplKHsKICAgIFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sCiAgICBpbnN0YWxsLAogICAgdGV4dEZyYW1lcwogIH0pOwoKICBpbnN0YWxsKCk7Cn0pKCk7Cg=='))
+          replace_once('app/main.js', '    { file: "footer-item-containment-contract.js", globalName: "CatalogFooterItemContainmentContract" },\n', '')
+          replace_once('app/main.js', '    window.CatalogFooterItemContainmentContract?.install();\n', '')
+          replace_once('tools/build-developer-b-authoring-kit.js', '  "footer-item-containment-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', '  "footer-item-containment-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogFooterItemContainmentContract.install();\n', '')
+
+          node_test = Path('tests/footer-item-containment-05.18.12.2.test.js')
+          source = node_test.read_text()
+          source = source.replace('const titleFrameBeforeShim = titleSlot.getFrame;\nconst subtitleFrameBeforeShim = subtitleSlot.getFrame;\n\nvm.runInContext(fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8"), sandbox, { filename: "footer-item-containment-contract.js" });\nassert(sandbox.window.CatalogFooterItemContainmentContract.install(), "O shim não encontrou footer-item no registro.");\nassert(titleSlot.getFrame === titleFrameBeforeShim && subtitleSlot.getFrame === subtitleFrameBeforeShim, "O shim ainda substitui a geometria canônica.");\n\n', '', 1)
+          source = source.replace('const helperFrames = sandbox.window.CatalogFooterItemContainmentContract.textFrames(component(80, 64));\nassert(JSON.stringify(helperFrames) === JSON.stringify(minimum), "O helper de compatibilidade divergiu da geometria canônica.");\n\n', '', 1)
+          source = source.replace('const appShim = fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8");\nconst kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "footer-item-containment-contract.js"), "utf8");\n', '', 1)
+          source = source.replace('assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");\nassert(sandbox.window.CatalogFooterItemContainmentContract.VERSION === "05.19.3", "Versão inesperada do shim.");\n\n', '', 1)
+          source = source.replace('console.log("✓ Geometria e recorte do footer-item pertencem ao registro e CSS canônicos; shim não altera o runtime.");', 'console.log("✓ Geometria e recorte do footer-item pertencem ao registro e CSS canônicos sem shim de runtime.");', 1)
+          if 'CatalogFooterItemContainmentContract' in source or 'footer-item-containment-contract.js' in source:
+              raise SystemExit('A regressão geométrica ainda depende do shim.')
+          node_test.write_text(source)
+
           browser = Path('tests/browser-footer-item-containment-05.18.12.2.test.js')
           source = browser.read_text()
-          source = source.replace('CatalogFooterItemContainmentContract?.VERSION === "05.18.12.2"', 'CatalogFooterItemContainmentContract?.VERSION === "05.19.3"', 1)
+          source = source.replace('await page.waitForFunction(() => window.CatalogEditor && window.CatalogFooterItemContainmentContract?.VERSION === "05.19.3");', 'await page.waitForFunction(() => window.CatalogEditor);', 1)
           browser.write_text(source)
+
+          runtime_test = Path('tests/authoring-kit-runtime-contracts-05.18.test.js')
+          source = runtime_test.read_text()
+          source = source.replace('  "footer-item-containment-contract.js",\n', '', 1)
+          source = source.replace('  "CatalogFooterItemContainmentContract",\n', '', 1)
+          runtime_test.write_text(source)
+
+          stress = Path('tests/stress-domain-history-05.18.test.js')
+          source = stress.read_text()
+          source = source.replace('  "app/footer-item-containment-contract.js",\n', '', 1)
+          source = source.replace('  CatalogFooterItemContainmentContract,\n', '', 1)
+          stress.write_text(source)
+
+          Path('tests/footer-item-containment-build-05.18.12.2.test.js').write_text(base64.b64decode('LyogREItMDUuMTkuNCDigJQgY29udGVuw6fDo28gZG8gZm9vdGVyLWl0ZW0gaW50ZWdyYWRhIHNlbSBjb250cmF0byBkZSBydW50aW1lIHNlcGFyYWRvLiAqLwpjb25zdCBmcyA9IHJlcXVpcmUoImZzIik7CmNvbnN0IHBhdGggPSByZXF1aXJlKCJwYXRoIik7Cgpjb25zdCByb290ID0gcGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgIi4uIik7CmNvbnN0IGFzc2VydCA9IChjb25kaXRpb24sIG1lc3NhZ2UpID0+IHsgaWYgKCFjb25kaXRpb24pIHRocm93IG5ldyBFcnJvcihtZXNzYWdlKTsgfTsKY29uc3QgZmlsZU5hbWUgPSAiZm9vdGVyLWl0ZW0tY29udGFpbm1lbnQtY29udHJhY3QuanMiOwpjb25zdCBhcHBSZWdpc3RyeSA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsICJjb21wb25lbnQtcmVnaXN0cnkuanMiKSwgInV0ZjgiKTsKY29uc3Qga2l0UmVnaXN0cnkgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhdXRob3Jpbmcta2l0IiwgInJ1bnRpbWUiLCAiY29tcG9uZW50LXJlZ2lzdHJ5LmpzIiksICJ1dGY4Iik7CmNvbnN0IGJ1aWxkID0gZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCAidG9vbHMiLCAiYnVpbGQtZGV2ZWxvcGVyLWItYXV0aG9yaW5nLWtpdC5qcyIpLCAidXRmOCIpOwpjb25zdCBjb21waWxlciA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImF1dGhvcmluZy1raXQiLCAiY29tcGlsZXIiLCAiY29tcGlsZS1jYXRhbG9nLmpzIiksICJ1dGY4Iik7CmNvbnN0IG1haW4gPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAibWFpbi5qcyIpLCAidXRmOCIpOwpjb25zdCBidW5kbGUgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAiYXV0aG9yaW5nLWtpdC1maWxlcy5qcyIpLCAidXRmOCIpOwpjb25zdCBjc3MgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJzdHlsZXMiLCAiY29tcG9uZW50cy5jc3MiKSwgInV0ZjgiKTsKCmFzc2VydCghZnMuZXhpc3RzU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsIGZpbGVOYW1lKSksICJPIHNoaW0gYWluZGEgZXhpc3RlIG5vIGFwcC4iKTsKYXNzZXJ0KCFmcy5leGlzdHNTeW5jKHBhdGguam9pbihyb290LCAiYXV0aG9yaW5nLWtpdCIsICJydW50aW1lIiwgZmlsZU5hbWUpKSwgIk8gc2hpbSBhaW5kYSBleGlzdGUgbm8gcnVudGltZSBkbyBBdXRob3JpbmdLaXQuIik7CmFzc2VydChhcHBSZWdpc3RyeSA9PT0ga2l0UmVnaXN0cnksICJPIHJlZ2lzdHJvIGNhbsO0bmljbyBkaXZlcmdpdSBlbnRyZSBlZGl0b3IgZSBBdXRob3JpbmdLaXQuIik7CmFzc2VydCghYnVpbGQuaW5jbHVkZXMoYCIke2ZpbGVOYW1lfSJgKSwgIk8gYnVpbGQgRGV2ZWxvcGVyIEIgYWluZGEgc2luY3Jvbml6YSBvIHNoaW0uIik7CmFzc2VydCghY29tcGlsZXIuaW5jbHVkZXMoYCIke2ZpbGVOYW1lfSJgKSAmJiAhY29tcGlsZXIuaW5jbHVkZXMoIkNhdGFsb2dGb290ZXJJdGVtQ29udGFpbm1lbnRDb250cmFjdCIpLCAiTyBjb21waWxhZG9yIGFpbmRhIGNhcnJlZ2Egb3UgaW5zdGFsYSBvIHNoaW0uIik7CmFzc2VydCghbWFpbi5pbmNsdWRlcyhgZmlsZTogIiR7ZmlsZU5hbWV9ImApICYmICFtYWluLmluY2x1ZGVzKCJDYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QiKSwgIk8gZWRpdG9yIGFpbmRhIGNhcnJlZ2Egb3UgaW5zdGFsYSBvIHNoaW0uIik7CmFzc2VydCghYnVuZGxlLmluY2x1ZGVzKGZpbGVOYW1lKSwgIk8gYnVuZGxlIGVtYnV0aWRvIGFpbmRhIHRyYW5zcG9ydGEgbyBzaGltLiIpOwphc3NlcnQoY3NzLmluY2x1ZGVzKCcuZWRpdG9yLWNvbXBvbmVudC0tZm9vdGVyLWl0ZW06bm90KFtkYXRhLWFjdGl2ZS1jb250ZXh0PSJ0cnVlIl0pID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllcicpLCAiTyBDU1MgY2Fuw7RuaWNvIHBlcmRldSBvIHJlY29ydGUgZG8gZm9vdGVyLWl0ZW0uIik7CmFzc2VydChhcHBSZWdpc3RyeS5pbmNsdWRlcygiZnVuY3Rpb24gZm9vdGVySXRlbVRleHRGcmFtZSIpLCAiTyByZWdpc3RybyBjYW7DtG5pY28gcGVyZGV1IGEgZ2VvbWV0cmlhIGRvIGZvb3Rlci1pdGVtLiIpOwoKY29uc29sZS5sb2coIuKckyBEQi0wNS4xOS40IG1hbnTDqW0gYSBjb250ZW7Dp8OjbyBubyByZWdpc3RybyBlIENTUyBjYW7DtG5pY29zIHNlbSBjb250cmF0byBkZSBydW50aW1lIHNlcGFyYWRvLiIpOwo=').decode('utf-8'))
           PY
+          rm app/footer-item-containment-contract.js
+          rm authoring-kit/runtime/footer-item-containment-contract.js
           node tools/build-developer-b-authoring-kit.js
+          if grep -R "footer-item-containment-contract\|CatalogFooterItemContainmentContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js tests/footer-item-containment-05.18.12.2.test.js tests/browser-footer-item-containment-05.18.12.2.test.js; then
+            echo "Executable shim reference remained."
+            exit 1
+          fi
           git diff --check
-      - name: Run focused Node tests
-        run: |
-          node tests/footer-item-containment-05.18.12.2.test.js
-          node tests/footer-item-containment-build-05.18.12.2.test.js
-          node tests/icon-scale-runtime-parity-05.18.5.test.js
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
       - name: Install Playwright and Chromium
         run: |
           npm install --no-save playwright@latest
@@ -75,29 +90,35 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run footer browser test and one stress seed
+      - name: Run complete audit and stress
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19.4/domain
         run: |
-          mkdir -p audit-output/db-05.19.3
-          timeout 180s node tests/browser-footer-item-containment-05.18.12.2.test.js 2>&1 | tee audit-output/db-05.19.3/footer-browser.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5193001 --timeout=300000 --output=audit-output/db-05.19.3/stress 2>&1 | tee audit-output/db-05.19.3/stress.log
-      - name: Commit canonical footer containment
+          mkdir -p audit-output/db-05.19.4/consolidated audit-output/db-05.19.4/browser-stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.4/consolidated/audit.log
+          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19.4/consolidated/domain-stress.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5194001 --timeout=300000 --output=audit-output/db-05.19.4/browser-stress 2>&1 | tee audit-output/db-05.19.4/consolidated/browser-stress.log
+      - name: Commit footer shim removal
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t actual < <(git diff --name-only --relative | sort)
           allowed=(
             app/authoring-kit-files.js
-            app/component-registry.js
             app/footer-item-containment-contract.js
+            app/main.js
             authoring-kit/capabilities.json
+            authoring-kit/compiler/compile-catalog.js
             authoring-kit/feature-inventory.json
-            authoring-kit/runtime/component-registry.js
             authoring-kit/runtime/footer-item-containment-contract.js
             docs/FEATURE-CATALOG.md
-            styles/components.css
+            tests/authoring-kit-runtime-contracts-05.18.test.js
             tests/browser-footer-item-containment-05.18.12.2.test.js
+            tests/footer-item-containment-05.18.12.2.test.js
+            tests/footer-item-containment-build-05.18.12.2.test.js
+            tests/stress-domain-history-05.18.test.js
+            tools/build-developer-b-authoring-kit.js
           )
           unexpected=()
           for file in "${actual[@]}"; do
@@ -115,18 +136,19 @@ jobs:
           git config user.name "Developer B Audit"
           git config user.email "developer-b-audit@users.noreply.github.com"
           git add -A
-          git commit -m "05.19 — consolida contenção do footer-item"
+          git commit -m "05.19 — remove shim de contenção do footer-item"
           git push origin HEAD:agent/developer-b-05.18
       - name: Prove idempotent build
         run: |
           node tools/build-developer-b-authoring-kit.js
           git diff --exit-code
           node tests/footer-item-containment-05.18.12.2.test.js
+          node tests/footer-item-containment-build-05.18.12.2.test.js
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19.3
-          path: audit-output/db-05.19.3
+          name: developer-b-db-05.19.4
+          path: audit-output/db-05.19.4
           if-no-files-found: warn
           retention-days: 14
