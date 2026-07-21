@@ -220,7 +220,7 @@
         const card = typeof cardOrId === "string" ? this.findComponent(cardOrId)?.component : cardOrId;
         if (!isVariants(card)) return false;
         this.ensureContainerMinimum(card, this.getParentId(card.id));
-        this.reflowComponentTree(card);
+        this.reflowComponentTree(card, { derived: true });
         return true;
       }
 
