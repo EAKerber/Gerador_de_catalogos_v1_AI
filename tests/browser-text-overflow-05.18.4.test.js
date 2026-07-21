@@ -92,13 +92,13 @@ let browser;
 
   await page.evaluate(titleId => CatalogEditor.store.selectComponentInContext(titleId), ids.titleId);
   const footerDefault = await readText(ids.titleId);
-  assert(footerDefault.props.overflow === "ellipsis" && footerDefault.props.overflowExplicit === false, "O rodapé não preservou reticências como default estrutural.");
-  assert(footerDefault.whiteSpace === "nowrap" && footerDefault.textOverflow === "ellipsis", "O default visual do rodapé deixou de usar reticências.");
+  assert(footerDefault.props.overflow === "ellipsis" && footerDefault.props.overflowExplicit === false, "O título do rodapé não preservou reticências como default estrutural.");
+  assert(footerDefault.whiteSpace === "nowrap" && footerDefault.textOverflow === "ellipsis", "O default visual do título do rodapé deixou de usar reticências.");
 
   await page.locator('[data-prop-path="overflow"]').selectOption("wrap");
   const footerWrap = await readText(ids.titleId);
   assert(footerWrap.props.overflow === "wrap" && footerWrap.props.overflowExplicit === true, "Wrap explícito não foi persistido no rodapé.");
-  assert(footerWrap.whiteSpace === "pre-wrap" && footerWrap.overflowWrap === "anywhere", "A regra estrutural do rodapé ainda mascarou wrap.");
+  assert(footerWrap.whiteSpace === "normal" && footerWrap.overflowWrap === "anywhere", "A regra estrutural do rodapé ainda mascarou wrap explícito.");
   assert(JSON.stringify(footerWrap.frame) === JSON.stringify(ids.titleFrame), "Wrap explícito alterou o frame do rodapé.");
 
   const publication = await page.evaluate(() => CatalogEditor.store.getPublicationReport("draft").summary);
@@ -107,7 +107,7 @@ let browser;
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
 
   await browser.close();
-  console.log("✓ DB-05.18.4 validou nove combinações de escala/overflow e o rodapé pela interface real.");
+  console.log("✓ DB-05.18.4 validou nove combinações de escala/overflow e a política específica do rodapé.");
 })().catch(async error => {
   console.error(error);
   if (browser) await browser.close();
