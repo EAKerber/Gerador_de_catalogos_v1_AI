@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.audit.1";
+  const CONTRACT_VERSION = "05.18.audit.2";
+  const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const clone = value => JSON.parse(JSON.stringify(value));
 
   function documentSnapshot(state) {
@@ -41,6 +42,12 @@
         this.lastHistorySignature = signature;
         this.savedSignature = signature;
         this.dirty = false;
+      }
+
+      emit(change, options = {}) {
+        const ephemeral = options.ephemeral === true || EPHEMERAL_CHANGE_TYPES.has(change?.type);
+        if (!ephemeral && !this.historySuspended) this.__lastReflowStability = stabilizeStore(this);
+        return super.emit(change, options);
       }
 
       restoreHistorySnapshot(snapshot) {
