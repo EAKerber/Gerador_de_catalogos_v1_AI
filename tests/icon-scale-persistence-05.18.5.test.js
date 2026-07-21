@@ -1,4 +1,4 @@
-/* DB-05.18.5 — escala interna de icon sem alterar o frame externo. */
+/* DB-05.19.5 — escala interna de icon sem alterar o frame externo. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -27,7 +27,8 @@ CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
 const installation = CatalogIconScaleContract.install();
-assert(installation.version === "05.18.5", "Versão inesperada do contrato de ícone.");
+assert(installation.version === "05.19.5", "Versão inesperada do shim de ícone.");
+assert(installation.stylesInstalled === false, "O shim ainda declarou injeção de estilos.");
 
 const scaleField = CATALOG_COMPONENT_REGISTRY.icon.contentFields.find(field => field.path === "iconScale");
 assert(scaleField, "O campo de escala do ícone não está publicado.");
@@ -64,4 +65,4 @@ for (const scale of [80, 100, 120]) {
   assert(imported.findComponent(footerIcon.id).component.props.iconScale === scale, `O rodapé não persistiu ${scale}%.`);
 }
 
-console.log("✓ DB-05.18.5 preserva escala de ícone, histórico, frame, importação e schema.");
+console.log("✓ DB-05.19.5 preserva escala de ícone, histórico, frame, importação e schema sem injeção dinâmica.");
