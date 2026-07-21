@@ -5,10 +5,10 @@ on:
 permissions:
   contents: read
 jobs:
-  browser-stress-after-table-fix:
-    name: Confirmação visual — overrides vinculados
+  browser-stress-three-seeds:
+    name: Confirmação visual — três sementes
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,22 +27,22 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Executar uma semente visual
+      - name: Executar três sementes visuais
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
         run: |
-          mkdir -p audit-output/browser-table-fix
+          mkdir -p audit-output/browser-three-seeds
           node tools/run-developer-b-stress.js \
             --browser \
-            --repeat=1 \
+            --repeat=3 \
             --seed=5182026 \
             --timeout=300000 \
-            --output=audit-output/browser-table-fix
+            --output=audit-output/browser-three-seeds
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-browser-table-fix
-          path: audit-output/browser-table-fix
+          name: developer-b-browser-three-seeds
+          path: audit-output/browser-three-seeds
           if-no-files-found: error
           retention-days: 14
