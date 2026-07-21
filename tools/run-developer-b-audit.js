@@ -20,6 +20,7 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 function discover() {
   const files = fs.readdirSync(testsRoot)
     .filter(file => file.endsWith(".test.js") && file.includes("05.18"))
+    .filter(file => !file.includes("stress-"))
     .sort((left, right) => left.localeCompare(right));
   return {
     node: files.filter(file => !file.startsWith("browser-")),
@@ -32,6 +33,7 @@ function printList(suites) {
   suites.node.forEach(file => console.log(`  tests/${file}`));
   console.log(`\nChromium (${suites.browser.length})`);
   suites.browser.forEach(file => console.log(`  tests/${file}`));
+  console.log("\nTestes de estresse são executados separadamente por tools/run-developer-b-stress.js.");
 }
 
 function runFiles(label, files) {
