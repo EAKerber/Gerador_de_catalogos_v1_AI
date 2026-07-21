@@ -9,10 +9,10 @@ permissions:
   contents: read
 
 jobs:
-  batch-0-static:
-    name: Batch 0.1 — diagnóstico de sintaxe do estresse
+  batch-1-infrastructure:
+    name: Batch 1 — infraestrutura e manifestos
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,35 +22,44 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Diagnosticar arquivos novos do batch
-        id: syntax
+      - name: Executar testes independentes
         shell: bash
         run: |
-          mkdir -p audit-output
+          mkdir -p audit-output/batch-1
           failures=0
-          : > audit-output/syntax-results.txt
-          for file in \
-            tests/stress-domain-history-05.18.test.js \
-            tests/browser-stress-interface-05.18.test.js \
-            tests/developer-b-stress-runner-05.18.test.js \
-            tools/run-developer-b-stress.js
-          do
-            echo "=== $file ===" | tee -a audit-output/syntax-results.txt
-            if node --check "$file" >> audit-output/syntax-results.txt 2>&1; then
-              echo "PASS" | tee -a audit-output/syntax-results.txt
+          : > audit-output/batch-1/summary.txt
+          tests=(
+            tests/developer-b-audit-runner-05.18.test.js
+            tests/developer-b-stress-runner-05.18.test.js
+            tests/authoring-kit-runtime-contracts-05.18.test.js
+            tests/component-intent-classification-05.18.11.test.js
+            tests/component-intent-runtime-parity-05.18.11.test.js
+            tests/component-placement-manifest-05.18.12.1.test.js
+            tests/component-palette-intent-plan-05.18.12.test.js
+            tests/section-recipes.test.js
+            tests/fact-manifest-05.18.17.test.js
+            tests/callout-manifest-05.18.19.test.js
+          )
+          for file in "${tests[@]}"; do
+            log="audit-output/batch-1/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-1/summary.txt
+            if node "$file" >"$log" 2>&1; then
+              echo "PASS" | tee -a audit-output/batch-1/summary.txt
             else
-              echo "FAIL" | tee -a audit-output/syntax-results.txt
+              status=$?
+              echo "FAIL status=$status" | tee -a audit-output/batch-1/summary.txt
+              cat "$log"
               failures=$((failures + 1))
             fi
           done
-          echo "failures=$failures" | tee -a audit-output/syntax-results.txt
+          echo "failures=$failures" | tee -a audit-output/batch-1/summary.txt
           exit "$failures"
 
-      - name: Publicar diagnóstico
+      - name: Publicar evidências do lote 1
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-0-1-syntax
-          path: audit-output
+          name: developer-b-batch-1-infrastructure
+          path: audit-output/batch-1
           if-no-files-found: error
           retention-days: 14
