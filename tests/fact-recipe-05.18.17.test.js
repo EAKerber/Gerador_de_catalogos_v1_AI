@@ -90,9 +90,11 @@ for (const scenario of scenarios) {
 let material = store.findComponent(facts[2].id).component;
 const materialIconId = role(material, "icon").id;
 const materialUnitId = role(material, "unit").id;
-assert(store.deleteComponent(materialIconId), "Não foi possível remover o ícone opcional do material.");
+store.deleteComponent(materialIconId);
+assert(!store.findComponent(materialIconId), "Não foi possível remover o ícone opcional do material.");
 const historyBeforeUnitDelete = store.getHistoryState().undoCount;
-assert(store.deleteComponent(materialUnitId), "Não foi possível remover a unidade opcional do material.");
+store.deleteComponent(materialUnitId);
+assert(!store.findComponent(materialUnitId), "Não foi possível remover a unidade opcional do material.");
 assert(store.getHistoryState().undoCount === historyBeforeUnitDelete + 1, "A remoção da unidade não foi uma ação única.");
 material = store.findComponent(facts[2].id).component;
 store.reflowComponentTree(material.id);
@@ -134,6 +136,6 @@ const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "fact-re
 assert(app === kit, "O contrato fact divergiu entre editor e AuthoringKit.");
 assert(fs.readFileSync(path.join(root, "app", "main.js"), "utf8").includes('file: "fact-recipe-contract.js"'), "O editor não carrega o contrato fact.");
 assert(fs.readFileSync(path.join(root, "tools", "build-developer-b-authoring-kit.js"), "utf8").includes('"fact-recipe-contract.js"'), "O build Developer B não copia o contrato fact.");
-assert(CATALOG_SCHEMA_VERSION === "1.16.0", "O experimento fact alterou o schema.");
+assert(store.getState().schemaVersion === "1.16.0", "O experimento fact alterou o schema.");
 
 console.log("✓ DB-05.18.17 validou dimensão, carga, material e compatibilidade com peças opcionais, uma ação e sem novo tipo.");
