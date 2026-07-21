@@ -46,10 +46,11 @@ assert(listed.stdout.includes("tests/browser-stress-interface-05.18.test.js"), "
 assert(!fs.existsSync(path.join(temporaryOutput, "stress-batch-summary.json")), "O modo --list executou a suíte ou escreveu resumo indevidamente.");
 
 const auditSource = fs.readFileSync(auditRunnerPath, "utf8");
-assert(auditSource.includes('!file.includes("stress-")'), "O executor de regressão comum não exclui o estresse.");
+assert(auditSource.includes('!file.startsWith("stress-")') && auditSource.includes('!file.startsWith("browser-stress-")'), "O executor de regressão comum não exclui precisamente as cargas pesadas.");
 const auditList = spawnSync(process.execPath, [auditRunnerPath, "--list"], { cwd: root, encoding: "utf8" });
 assert(auditList.status === 0, `A listagem da regressão falhou: ${auditList.stderr || auditList.stdout}`);
-assert(!auditList.stdout.includes("stress-domain-history") && !auditList.stdout.includes("browser-stress-interface"), "O batch pesado reapareceu na regressão comum.");
+assert(auditList.stdout.includes("tests/developer-b-stress-runner-05.18.test.js"), "A validação leve do batch não permaneceu na regressão comum.");
+assert(!auditList.stdout.includes("tests/stress-domain-history-05.18.test.js") && !auditList.stdout.includes("tests/browser-stress-interface-05.18.test.js"), "Uma carga pesada reapareceu na regressão comum.");
 
 fs.rmSync(temporaryOutput, { recursive: true, force: true });
-console.log("✓ Batch de estresse possui sintaxe válida, timeout, execução reproduzível, resumo próprio e isolamento da regressão comum.");
+console.log("✓ Batch de estresse possui sintaxe válida, timeout, execução reproduzível, resumo próprio e isolamento preciso da regressão comum.");
