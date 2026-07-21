@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  batch-1-infrastructure:
-    name: Batch 1 — infraestrutura e manifestos
+  batch-2-text-icons:
+    name: Batch 2 — texto, ícones e especificações
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -22,44 +22,46 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Executar testes independentes
+      - name: Executar contratos editoriais
         shell: bash
         run: |
-          mkdir -p audit-output/batch-1
+          mkdir -p audit-output/batch-2
           failures=0
-          : > audit-output/batch-1/summary.txt
+          : > audit-output/batch-2/summary.txt
           tests=(
-            tests/developer-b-audit-runner-05.18.test.js
-            tests/developer-b-stress-runner-05.18.test.js
-            tests/authoring-kit-runtime-contracts-05.18.test.js
             tests/component-intent-classification-05.18.11.test.js
-            tests/component-intent-runtime-parity-05.18.11.test.js
-            tests/component-placement-manifest-05.18.12.1.test.js
-            tests/component-palette-intent-plan-05.18.12.test.js
-            tests/section-recipes.test.js
-            tests/fact-manifest-05.18.17.test.js
-            tests/callout-manifest-05.18.19.test.js
+            tests/text-alignment-persistence-05.18.2.test.js
+            tests/text-alignment-runtime-parity-05.18.2.test.js
+            tests/text-scale-persistence-05.18.3.test.js
+            tests/text-scale-runtime-parity-05.18.3.test.js
+            tests/text-overflow-persistence-05.18.4.test.js
+            tests/text-overflow-runtime-parity-05.18.4.test.js
+            tests/icon-scale-persistence-05.18.5.test.js
+            tests/icon-scale-runtime-parity-05.18.5.test.js
+            tests/specification-scale-persistence-05.18.6.test.js
+            tests/technical-icons-05.18.13.test.js
+            tests/commercial-icons-05.18.14.test.js
           )
           for file in "${tests[@]}"; do
-            log="audit-output/batch-1/$(basename "$file" .test.js).log"
-            echo "=== $file ===" | tee -a audit-output/batch-1/summary.txt
+            log="audit-output/batch-2/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-2/summary.txt
             if node "$file" >"$log" 2>&1; then
-              echo "PASS" | tee -a audit-output/batch-1/summary.txt
+              echo "PASS" | tee -a audit-output/batch-2/summary.txt
             else
               status=$?
-              echo "FAIL status=$status" | tee -a audit-output/batch-1/summary.txt
+              echo "FAIL status=$status" | tee -a audit-output/batch-2/summary.txt
               cat "$log"
               failures=$((failures + 1))
             fi
           done
-          echo "failures=$failures" | tee -a audit-output/batch-1/summary.txt
+          echo "failures=$failures" | tee -a audit-output/batch-2/summary.txt
           exit "$failures"
 
-      - name: Publicar evidências do lote 1
+      - name: Publicar evidências do lote 2
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-1-infrastructure
-          path: audit-output/batch-1
+          name: developer-b-batch-2-text-icons
+          path: audit-output/batch-2
           if-no-files-found: error
           retention-days: 14
