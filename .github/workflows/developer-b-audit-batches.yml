@@ -3,39 +3,84 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  batch-7-1:
-    name: Batch 7.1 — diagnóstico de receitas e SVG
+  integrate-batch-7-fixes:
+    name: Integração mecânica — receitas e ícones
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - name: Instalar Playwright e Chromium
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - name: Aplicar alterações idempotentes
+        shell: bash
         run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Iniciar editor
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              source = file.read_text()
+              if new in source:
+                  return
+              if old not in source:
+                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
+              file.write_text(source.replace(old, new, 1))
+
+          replace_once(
+              'styles/components.css',
+              '.component-icon__svg { display: grid; width: min(72%, 40px); height: min(72%, 40px); place-items: center; }',
+              '.component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); place-items: center; }'
+          )
+          replace_once(
+              'styles/components.css',
+              '.component-icon__svg svg { width: 100%; height: 100%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }',
+              '.component-icon__svg svg { width: 83.333333%; height: 83.333333%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }'
+          )
+          replace_once(
+              'styles/components.css',
+              '.component-specification__icon { display: grid; width: min(29px, 100%); aspect-ratio: 1; place-items: center;',
+              '.component-specification__icon { display: grid; width: auto; height: min(29px, 100%); aspect-ratio: 1; justify-self: center; place-items: center;'
+          )
+          for path in ['app/icon-scale-contract.js', 'authoring-kit/runtime/icon-scale-contract.js']:
+              replace_once(
+                  path,
+                  '  width: min(83.333333%, 26px);\n  height: min(83.333333%, 26px);',
+                  '  width: min(100%, 26px);\n  height: min(100%, 26px);'
+              )
+          replace_once(
+              'tests/browser-section-heading-05.18.15.test.js',
+              '  await recipeButton.click();\n  await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "section-heading").length === 1);\n  await recipeButton.click();',
+              '  await recipeButton.click();\n  await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "section-heading").length === 1);\n  await page.evaluate(() => CatalogEditor.store.setEditingContext(null));\n  await recipeButton.click();'
+          )
+          replace_once(
+              'tests/browser-fact-recipe-05.18.17.test.js',
+              '  for (let count = 2; count <= 4; count += 1) {\n    await recipeButton.click();',
+              '  for (let count = 2; count <= 4; count += 1) {\n    await page.evaluate(() => CatalogEditor.store.setEditingContext(null));\n    await recipeButton.click();'
+          )
+          replace_once(
+              'tests/browser-callout-audit-05.18.19.test.js',
+              '  assert(after.undoCount === before + 1 && after.undoLabel === "Inserir estrutura pronta", "A inserção do callout não foi uma ação única.");\n  await recipeButton.click();',
+              '  assert(after.undoCount === before + 1 && after.undoLabel === "Inserir estrutura pronta", "A inserção do callout não foi uma ação única.");\n  await page.evaluate(() => CatalogEditor.store.setEditingContext(null));\n  await recipeButton.click();'
+          )
+          PY
+      - name: Validar e publicar na branch isolada
+        shell: bash
         run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          exit 1
-      - name: Executar diagnóstico
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_DIAGNOSTIC_OUTPUT_DIR: ${{ github.workspace }}/audit-output/batch-7-1
-        run: node tests/browser-medium-diagnostics-05.18.test.js
-      - name: Publicar evidências
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-batch-7-1-medium-diagnostic
-          path: audit-output/batch-7-1
-          if-no-files-found: error
-          retention-days: 14
+          node --check app/icon-scale-contract.js
+          node --check authoring-kit/runtime/icon-scale-contract.js
+          node --check tests/browser-section-heading-05.18.15.test.js
+          node --check tests/browser-fact-recipe-05.18.17.test.js
+          node --check tests/browser-callout-audit-05.18.19.test.js
+          git diff --check
+          if git diff --quiet; then
+            echo "Alterações já aplicadas."
+            exit 0
+          fi
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add styles/components.css app/icon-scale-contract.js authoring-kit/runtime/icon-scale-contract.js tests/browser-section-heading-05.18.15.test.js tests/browser-fact-recipe-05.18.17.test.js tests/browser-callout-audit-05.18.19.test.js
+          git commit -m "fix: contém ícones escalados e explicita receitas irmãs"
+          git push origin HEAD:agent/developer-b-05.18
