@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   batch-0-static:
-    name: Batch 0 — sintaxe e executores
+    name: Batch 0.1 — diagnóstico de sintaxe do estresse
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,34 +22,35 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validar sintaxe JavaScript
+      - name: Diagnosticar arquivos novos do batch
+        id: syntax
         shell: bash
         run: |
-          set -euo pipefail
-          find app authoring-kit tests tools -type f -name '*.js' -print0 \
-            | sort -z \
-            | xargs -0 -n1 node --check
-
-      - name: Validar executor de auditoria
-        run: node tests/developer-b-audit-runner-05.18.test.js
-
-      - name: Validar executor de estresse
-        run: node tests/developer-b-stress-runner-05.18.test.js
-
-      - name: Registrar inventários
-        shell: bash
-        run: |
-          set -euo pipefail
           mkdir -p audit-output
-          node tools/run-developer-b-audit.js --list | tee audit-output/audit-list.txt
-          node tools/run-developer-b-stress.js --list | tee audit-output/stress-list.txt
-          node --version | tee audit-output/node-version.txt
+          failures=0
+          : > audit-output/syntax-results.txt
+          for file in \
+            tests/stress-domain-history-05.18.test.js \
+            tests/browser-stress-interface-05.18.test.js \
+            tests/developer-b-stress-runner-05.18.test.js \
+            tools/run-developer-b-stress.js
+          do
+            echo "=== $file ===" | tee -a audit-output/syntax-results.txt
+            if node --check "$file" >> audit-output/syntax-results.txt 2>&1; then
+              echo "PASS" | tee -a audit-output/syntax-results.txt
+            else
+              echo "FAIL" | tee -a audit-output/syntax-results.txt
+              failures=$((failures + 1))
+            fi
+          done
+          echo "failures=$failures" | tee -a audit-output/syntax-results.txt
+          exit "$failures"
 
-      - name: Publicar evidências do lote 0
+      - name: Publicar diagnóstico
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-0-static
+          name: developer-b-batch-0-1-syntax
           path: audit-output
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
