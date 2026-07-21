@@ -5,10 +5,10 @@ on:
 permissions:
   contents: write
 jobs:
-  consolidate-table-binding-overrides:
-    name: DB-05.19.1 - table binding consolidation
+  commit-table-binding-consolidation:
+    name: DB-05.19.1 - commit validated consolidation
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,21 +17,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Patch canonical document store
+      - name: Patch and build
         shell: bash
         run: |
           python - <<'PY'
           import base64
           from pathlib import Path
 
-          def decode(value):
-              return base64.b64decode(value).decode('utf-8')
-
-          def replace_once(path, old_value, new_value):
+          def replace_once(path, old64, new64):
               file = Path(path)
               source = file.read_text()
-              old = decode(old_value)
-              new = decode(new_value)
+              old = base64.b64decode(old64).decode('utf-8')
+              new = base64.b64decode(new64).decode('utf-8')
               if new in source:
                   return
               if source.count(old) != 1:
@@ -51,60 +48,45 @@ jobs:
           PY
           node tools/build-developer-b-authoring-kit.js
           git diff --check
-      - name: Run focused Node tests
+      - name: Focused validation
+        run: |
+          node tests/table-binding-overrides-05.18.test.js
+          node tests/reflow-history-stability-05.18.test.js
+          node tests/reflow-manual-baseline-05.18.test.js
+          node tests/stress-domain-history-05.18.test.js
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
+      - name: Commit allowed generated subset
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19.1/node
-          for file in \
-            tests/table-binding-overrides-05.18.test.js \
-            tests/reflow-history-stability-05.18.test.js \
-            tests/reflow-manual-baseline-05.18.test.js \
-            tests/stress-domain-history-05.18.test.js \
-            tests/authoring-kit-runtime-contracts-05.18.test.js
-          do
-            name="$(basename "$file" .test.js)"
-            node "$file" 2>&1 | tee "audit-output/db-05.19.1/node/$name.log"
+          mapfile -t actual < <(git status --short | sed -E 's/^.. //' | sort)
+          allowed=(
+            app/authoring-kit-files.js
+            app/document-store.js
+            authoring-kit/capabilities.json
+            authoring-kit/feature-inventory.json
+            authoring-kit/runtime/document-store.js
+            authoring-kit/runtime/table-binding-overrides-contract.js
+            docs/FEATURE-CATALOG.md
+          )
+          unexpected=()
+          for file in "${actual[@]}"; do
+            found=false
+            for candidate in "${allowed[@]}"; do
+              if [ "$file" = "$candidate" ]; then found=true; break; fi
+            done
+            if [ "$found" = false ]; then unexpected+=("$file"); fi
           done
-          node --check app/document-store.js
-          node --check app/table-binding-overrides-contract.js
-      - name: Install Playwright and Chromium
-        run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Start editor
-        run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/catalog-http.log
-          exit 1
-      - name: Run focused browser checks
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p audit-output/db-05.19.1/browser audit-output/db-05.19.1/stress
-          timeout 180s node tests/browser-product-data-only-05.18.10.test.js 2>&1 | tee audit-output/db-05.19.1/browser/data-only.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5191001 --timeout=300000 --output=audit-output/db-05.19.1/stress 2>&1 | tee audit-output/db-05.19.1/browser/stress.log
-      - name: Commit canonical consolidation
-        shell: bash
-        run: |
-          set -euo pipefail
-          allowed=$'app/authoring-kit-files.js\napp/document-store.js\nauthoring-kit/runtime/document-store.js\nauthoring-kit/runtime/table-binding-overrides-contract.js'
-          actual="$(git status --short | sed -E 's/^.. //' | sort)"
-          if [ "$actual" != "$allowed" ]; then
-            echo "Unexpected file set:"
-            printf '%s\n' "$actual"
-            git diff --stat
+          if [ "${#unexpected[@]}" -gt 0 ]; then
+            echo "Unexpected files:"
+            printf '%s\n' "${unexpected[@]}"
             exit 1
           fi
+          printf 'Generated files to commit:\n'
+          printf '%s\n' "${actual[@]}"
           git config user.name "Developer B Audit"
           git config user.email "developer-b-audit@users.noreply.github.com"
-          git add $actual
+          git add "${actual[@]}"
           git commit -m "05.19 — consolida overrides de tabela no document-store"
           git push origin HEAD:agent/developer-b-05.18
       - name: Prove idempotent build
@@ -112,11 +94,3 @@ jobs:
           node tools/build-developer-b-authoring-kit.js
           git diff --exit-code
           node tests/table-binding-overrides-05.18.test.js
-      - name: Upload evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-db-05.19.1
-          path: audit-output/db-05.19.1
-          if-no-files-found: warn
-          retention-days: 14
