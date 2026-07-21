@@ -21,10 +21,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install Playwright and Chromium
+      - name: Install Playwright and select system Chrome
+        shell: bash
         run: |
+          set -euo pipefail
           npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_path" ]; then
+            echo "No system Chrome/Chromium executable found."
+            exit 1
+          fi
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
       - name: Start editor
         run: |
           python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
