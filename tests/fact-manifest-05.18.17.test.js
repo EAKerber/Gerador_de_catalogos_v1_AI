@@ -50,7 +50,7 @@ assert(mainSource.indexOf("CatalogFactRecipeContract?.install()") < mainSource.i
 
 const buildSource = fs.readFileSync(path.join(root, "tools", "build-developer-b-authoring-kit.js"), "utf8");
 assert(buildSource.includes('"fact-recipe-contract.js"'), "O build Developer B não copia o contrato fact.");
-assert(buildSource.includes("factManifestEntry") && buildSource.includes("capabilities.recipes"), "O build não projeta fact em capabilities.json.");
+assert(buildSource.includes('["fact", "section-tip-callout"]') && buildSource.includes("developerRecipes") && buildSource.includes("capabilities.recipes"), "O build não projeta fact entre as receitas Developer B.");
 assert(buildSource.includes("inventory.recipes = capabilities.recipes"), "O inventário não preserva a receita fact.");
 
 console.log("✓ DB-05.18.17 publicou fact como receita determinística, sem novo tipo ou schema.");
