@@ -1,0 +1,177 @@
+name: Developer B Generalization Harness Commit
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-generalization-harness-commit.yml'
+permissions:
+  contents: write
+jobs:
+  consolidate-harness:
+    name: DB-05.20.1 - consolidate benchmark harness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply validated harness corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          file = Path('tests/browser-promotional-generalization-05.20.test.js')
+          source = file.read_text()
+
+          def replace_once(old, new, label):
+              global source
+              count = source.count(old)
+              if count == 1:
+                  source = source.replace(old, new, 1)
+                  return
+              if new in source:
+                  return
+              raise SystemExit(f'{label}: target not found')
+
+          replace_once(
+              '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n',
+              '''  if (await page.locator("#gridToggle").isChecked()) {
+            await act("Abrir preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+            await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
+            await act("Fechar preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+          }
+          ''',
+              'grid harness'
+          )
+
+          replace_once(
+              '''async function selectComponent(id) {
+            const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
+            const root = page.locator(selectorForComponent(id)).first();
+            const target = await content.count() ? content : root;
+            await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
+            await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+          }
+          ''',
+              '''async function selectComponent(id) {
+            const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
+            const root = page.locator(selectorForComponent(id)).first();
+            const target = await content.count() ? content : root;
+            await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
+            try {
+              await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 500 });
+              return;
+            } catch {}
+
+            const assetDialog = page.locator("#assetLibraryDialog");
+            if (await assetDialog.getAttribute("open") !== null) {
+              findings.push({ code: "CANVAS_SELECTION_INTERCEPTED", componentId: id, message: "A tentativa de selecionar uma peça interna abriu a biblioteca de artes; a seleção continuou pela árvore de Camadas." });
+              await act("Fechar biblioteca de artes aberta durante a seleção", () => assetDialog.locator("[data-close-asset-library]").first().click());
+              await assetDialog.waitFor({ state: "hidden" });
+            }
+
+            const layersTab = page.locator('[data-left-panel-tab="layers"]');
+            if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
+            const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
+            await layerItem.waitFor({ state: "visible" });
+            await act(`Selecionar ${id} pela árvore de camadas`, () => layerItem.click());
+            await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+            const componentsTab = page.locator('[data-left-panel-tab="components"]');
+            if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
+          }
+          ''',
+              'selection harness'
+          )
+
+          replace_once(
+              '    const domIds = Array.from(document.querySelectorAll("[data-component-id]")).map(element => element.dataset.componentId);\n',
+              '    const domIds = Array.from(document.querySelectorAll("#componentLayer .editor-component[data-component-id]")).map(element => element.dataset.componentId);\n',
+              'DOM scope'
+          )
+
+          replace_once(
+              '''  const beforeRoundTrip = await exportDocumentSnapshot();
+            const undoBefore = (await readEditorState()).history.undoCount;
+
+            await selectComponent(heroSupportId);
+            await setProp("content", "Mais resistência, estabilidade e qualidade para todos os seus móveis.");
+            await exitAllContexts();
+            await selectComponent(technicalArtId);
+            await setProp("caption", "Medidas técnicas em milímetros");
+            await exitAllContexts();
+            await selectComponent(featureIds[0]);
+            await setProp("label", "ACABAMENTO PREMIUM E MODERNO");
+
+            const terminalRoundTrip = await exportDocumentSnapshot();
+            const undoAfterEdits = (await readEditorState()).history.undoCount;
+            const roundTripOperations = undoAfterEdits - undoBefore;
+            if (roundTripOperations !== 3) findings.push({ code: "HISTORY_ENTRY_COUNT", message: `Três edições geraram ${roundTripOperations} entradas de histórico.` });
+
+            for (let index = 0; index < 3; index += 1) await act("Desfazer edição final", () => page.locator("#undoButton").click());
+            const undoneRoundTrip = await exportDocumentSnapshot();
+            const undoEquivalent = signature(undoneRoundTrip) === signature(beforeRoundTrip);
+            if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não retornou ao estado anterior às três edições finais." });
+
+            for (let index = 0; index < 3; index += 1) await act("Refazer edição final", () => page.locator("#redoButton").click());
+            const redoneRoundTrip = await exportDocumentSnapshot();
+            const redoEquivalent = signature(redoneRoundTrip) === signature(terminalRoundTrip);
+            if (!redoEquivalent) blockers.push({ code: "REDO_DIVERGENCE", message: "Redo não restaurou o estado terminal." });
+          ''',
+              '''  const beforeRoundTrip = await exportDocumentSnapshot();
+
+            await selectComponent(heroSupportId);
+            await setProp("content", "Mais resistência, estabilidade e qualidade para todos os seus móveis.");
+            await exitAllContexts();
+            await selectComponent(technicalArtId);
+            await setProp("caption", "Medidas técnicas em milímetros");
+            await exitAllContexts();
+            await selectComponent(featureIds[0]);
+            await setProp("label", "ACABAMENTO PREMIUM E MODERNO");
+
+            const terminalRoundTrip = await exportDocumentSnapshot();
+            let roundTripOperations = 0;
+            let undoEquivalent = false;
+            for (let index = 0; index < 8; index += 1) {
+              if (await page.locator("#undoButton").isDisabled()) break;
+              await act("Desfazer edição final", () => page.locator("#undoButton").click());
+              roundTripOperations += 1;
+              const candidate = await exportDocumentSnapshot();
+              if (signature(candidate) === signature(beforeRoundTrip)) {
+                undoEquivalent = true;
+                break;
+              }
+            }
+            if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não reencontrou o snapshot anterior dentro de oito passos." });
+            else if (roundTripOperations !== 3) findings.push({ code: "HISTORY_FRAGMENTATION", expected: 3, observed: roundTripOperations, message: "As três edições exigiram quantidade diferente de passos no histórico." });
+
+            for (let index = 0; index < roundTripOperations; index += 1) {
+              if (await page.locator("#redoButton").isDisabled()) break;
+              await act("Refazer edição final", () => page.locator("#redoButton").click());
+            }
+            const redoneRoundTrip = await exportDocumentSnapshot();
+            const redoEquivalent = signature(redoneRoundTrip) === signature(terminalRoundTrip);
+            if (!redoEquivalent) blockers.push({ code: "REDO_DIVERGENCE", message: "Redo não restaurou o estado terminal." });
+          ''',
+              'history round trip'
+          )
+
+          file.write_text(source)
+          PY
+          node --check tests/browser-promotional-generalization-05.20.test.js
+      - name: Commit validated harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- tests/browser-promotional-generalization-05.20.test.js; then
+            echo 'Harness already consolidated.'
+            exit 0
+          fi
+          git config user.name 'Developer B Audit'
+          git config user.email 'developer-b-audit@users.noreply.github.com'
+          git add tests/browser-promotional-generalization-05.20.test.js
+          git commit -m '05.20 — consolida harness do benchmark promocional'
+          git push origin HEAD:agent/developer-b-05.18
