@@ -1,9 +1,10 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.4";
+  const CONTRACT_VERSION = "05.18.4.1";
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
   const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value || {}, key);
+  const footerDefaultOverflow = component => component?.slot?.name === "subtitle" ? "wrap" : "ellipsis";
 
   function normalizeLegacyFooterOverflow(source) {
     if (!source || typeof source !== "object" || Array.isArray(source)) return source;
@@ -13,9 +14,7 @@
       if (component.type === "text" && parent?.type === "footer-item") {
         component.props ||= {};
         const explicit = component.props.overflowExplicit === true;
-        if (!explicit && (!hasOwn(component.props, "overflow") || component.props.overflow === "wrap")) {
-          component.props.overflow = "ellipsis";
-        }
+        if (!explicit) component.props.overflow = footerDefaultOverflow(component);
         if (!hasOwn(component.props, "overflowExplicit")) component.props.overflowExplicit = false;
       }
       (component.children || []).forEach(child => visit(child, component));
@@ -40,7 +39,7 @@
         ...descriptor,
         props: {
           ...(descriptor.props || {}),
-          overflow: "ellipsis",
+          overflow: descriptor.slot === "subtitle" ? "wrap" : "ellipsis",
           overflowExplicit: false
         }
       } : descriptor);
@@ -93,7 +92,7 @@
 .component-text[data-text-overflow="wrap"] p { white-space: pre-wrap; overflow-wrap: anywhere; text-overflow: clip; }
 .component-text[data-text-overflow="ellipsis"] p { white-space: nowrap; overflow-wrap: normal; text-overflow: ellipsis; }
 .component-text[data-text-overflow="clip"] p { white-space: nowrap; overflow-wrap: normal; text-overflow: clip; }
-.editor-component--footer-item > .component-children-layer > .editor-component--text .component-text[data-text-overflow="wrap"] p { white-space: pre-wrap; overflow-wrap: anywhere; text-overflow: clip; }
+.editor-component--footer-item > .component-children-layer > .editor-component--text .component-text[data-text-overflow="wrap"] p { white-space: normal; overflow-wrap: anywhere; text-overflow: clip; }
 .editor-component--footer-item > .component-children-layer > .editor-component--text .component-text[data-text-overflow="ellipsis"] p { white-space: nowrap; overflow-wrap: normal; text-overflow: ellipsis; }
 .editor-component--footer-item > .component-children-layer > .editor-component--text .component-text[data-text-overflow="clip"] p { white-space: nowrap; overflow-wrap: normal; text-overflow: clip; }
 `;
