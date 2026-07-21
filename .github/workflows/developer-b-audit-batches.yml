@@ -5,8 +5,8 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-4:
-    name: Batch 4 — receitas, manifestos e build
+  batch-5:
+    name: Batch 5 — estresse de domínio e histórico
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -14,40 +14,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Executar testes de autoria
+      - name: Executar três sementes
         shell: bash
         run: |
-          mkdir -p audit-output/batch-4
-          failures=0
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            log="audit-output/batch-4/$(basename "$file" .test.js).log"
-            echo "=== $file ===" | tee -a audit-output/batch-4/summary.txt
-            if node "$file" >"$log" 2>&1; then
-              echo PASS | tee -a audit-output/batch-4/summary.txt
-            else
-              status=$?
-              echo "FAIL status=$status" | tee -a audit-output/batch-4/summary.txt
-              cat "$log"
-              failures=$((failures + 1))
-            fi
-          done < tests/batches/developer-b-batch-4.txt
-          echo "test_failures=$failures" | tee -a audit-output/batch-4/summary.txt
-          exit "$failures"
-      - name: Regenerar AuthoringKit
-        id: build
-        shell: bash
-        run: |
-          mkdir -p audit-output/batch-4
-          node tools/build-developer-b-authoring-kit.js | tee audit-output/batch-4/build.log
-          git status --short > audit-output/batch-4/build-status.txt
-          git diff --stat > audit-output/batch-4/build-diff-stat.txt
-          git diff > audit-output/batch-4/build.diff
+          mkdir -p audit-output/batch-5
+          node tools/run-developer-b-stress.js \
+            --node \
+            --repeat=3 \
+            --seed=5182026 \
+            --timeout=180000 \
+            --output=audit-output/batch-5
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-4-recipes-build
-          path: audit-output/batch-4
+          name: developer-b-batch-5-domain-stress
+          path: audit-output/batch-5
           if-no-files-found: error
           retention-days: 14
