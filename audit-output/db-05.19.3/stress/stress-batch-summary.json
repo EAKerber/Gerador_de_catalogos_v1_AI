@@ -1,0 +1,41 @@
+{
+  "suite": "Developer B 05.18 stress batch",
+  "generatedAt": "2026-07-21T15:54:05.379Z",
+  "baseURL": "http://127.0.0.1:8080",
+  "outputRoot": "/home/runner/work/Gerador_de_catalogos_v1_AI/Gerador_de_catalogos_v1_AI/audit-output/db-05.19.3/stress",
+  "baseSeed": 5193001,
+  "repeat": 1,
+  "timeoutMs": 300000,
+  "phases": {
+    "node": false,
+    "browser": true
+  },
+  "totals": {
+    "executions": 1,
+    "passed": 1,
+    "failed": 0,
+    "timedOut": 0,
+    "durationMs": 11768
+  },
+  "results": [
+    {
+      "phase": "browser",
+      "iteration": 1,
+      "output": "/home/runner/work/Gerador_de_catalogos_v1_AI/Gerador_de_catalogos_v1_AI/audit-output/db-05.19.3/stress/run-01-seed-5193001",
+      "file": "tests/browser-stress-interface-05.18.test.js",
+      "seed": 5193001,
+      "status": 0,
+      "signal": null,
+      "timedOut": false,
+      "error": null,
+      "durationMs": 11768,
+      "stdoutTail": [
+        "✓ Estresse visual concluído com 172 componentes e achados geométricos registrados. Evidências: /home/runner/work/Gerador_de_catalogos_v1_AI/Gerador_de_catalogos_v1_AI/audit-output/db-05.19.3/stress/run-01-seed-5193001/browser-5193001"
+      ],
+      "stderrTail": [
+        ""
+      ]
+    }
+  ],
+  "status": "passed"
+}

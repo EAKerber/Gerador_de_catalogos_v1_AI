@@ -1,8 +1,7 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.12.2";
-
+  const CONTRACT_VERSION = "05.19.3";
   const hasSlot = (component, slotName) => (component?.children || []).some(child => child.slot?.name === slotName);
   const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 
@@ -38,52 +37,8 @@
     };
   }
 
-  function installGeometry() {
-    const definition = window.CATALOG_COMPONENT_REGISTRY?.["footer-item"];
-    const slots = definition?.container?.slots;
-    if (!Array.isArray(slots)) return false;
-    if (definition.__containmentContractVersion === CONTRACT_VERSION) return true;
-
-    for (const slotName of ["title", "subtitle"]) {
-      const slot = slots.find(item => item.name === slotName);
-      if (!slot) return false;
-      slot.getFrame = component => ({ ...textFrames(component)[slotName] });
-    }
-
-    Object.defineProperty(definition, "__containmentContractVersion", { value: CONTRACT_VERSION });
-    return true;
-  }
-
-  function installStyles() {
-    if (typeof document === "undefined" || document.querySelector(`[data-footer-containment-contract="${CONTRACT_VERSION}"]`)) return false;
-    const style = document.createElement("style");
-    style.dataset.footerContainmentContract = CONTRACT_VERSION;
-    style.textContent = `
-.editor-component--footer-item:not([data-active-context="true"]) > .component-children-layer {
-  overflow: hidden;
-  border-radius: inherit;
-}
-.editor-component--footer-item > .component-children-layer > .editor-component--text {
-  min-width: 0;
-  min-height: 0;
-}
-@media print {
-  .editor-component--footer-item > .component-children-layer {
-    overflow: hidden !important;
-    border-radius: inherit;
-  }
-}
-`;
-    document.head.appendChild(style);
-    return true;
-  }
-
   function install() {
-    return {
-      version: CONTRACT_VERSION,
-      geometryInstalled: installGeometry(),
-      stylesInstalled: installStyles()
-    };
+    return Boolean(window.CATALOG_COMPONENT_REGISTRY?.["footer-item"]);
   }
 
   window.CatalogFooterItemContainmentContract = Object.freeze({
@@ -91,4 +46,6 @@
     install,
     textFrames
   });
+
+  install();
 })();

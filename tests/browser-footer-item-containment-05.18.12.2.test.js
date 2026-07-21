@@ -15,7 +15,7 @@ let browser;
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogFooterItemContainmentContract?.VERSION === "05.18.12.2");
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogFooterItemContainmentContract?.VERSION === "05.19.3");
 
   const footerId = await page.evaluate(() => {
     CatalogEditor.store.reset();
