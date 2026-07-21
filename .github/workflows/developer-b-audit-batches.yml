@@ -5,10 +5,10 @@ on:
 permissions:
   contents: write
 jobs:
-  consolidate-icon-scale-css:
-    name: DB-05.19.5 - consolidate icon scale CSS
+  remove-icon-scale-shim:
+    name: DB-05.19.6 - remove icon scale shim
     runs-on: ubuntu-latest
-    timeout-minutes: 65
+    timeout-minutes: 85
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,34 +17,48 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Move footer icon containment to canonical CSS
+      - name: Remove shim and residual executable dependencies
         shell: bash
         run: |
           python - <<'PY'
-          import base64
           from pathlib import Path
 
-          css_path = Path('styles/components.css')
-          css = css_path.read_text()
-          anchor = '.component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); place-items: center; }\n'
-          rule = '.editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg { width: min(100%, 26px); height: min(100%, 26px); max-width: 100%; max-height: 100%; }\n'
-          if rule not in css:
-              if css.count(anchor) != 1:
-                  raise SystemExit(f'Canonical icon wrapper anchor count: {css.count(anchor)}')
-              css_path.write_text(css.replace(anchor, anchor + rule, 1))
+          def replace_once(path, old, new):
+              file = Path(path)
+              source = file.read_text()
+              if new and new in source and old not in source:
+                  return
+              if source.count(old) != 1:
+                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
+              file.write_text(source.replace(old, new, 1))
 
-          Path('app/icon-scale-contract.js').write_text(base64.b64decode('KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTkuNSI7CgogIGZ1bmN0aW9uIGluc3RhbGwoKSB7CiAgICByZXR1cm4geyB2ZXJzaW9uOiBDT05UUkFDVF9WRVJTSU9OLCBzdHlsZXNJbnN0YWxsZWQ6IGZhbHNlIH07CiAgfQoKICB3aW5kb3cuQ2F0YWxvZ0ljb25TY2FsZUNvbnRyYWN0ID0gT2JqZWN0LmZyZWV6ZSh7IFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sIGluc3RhbGwgfSk7CgogIGluc3RhbGwoKTsKfSkoKTsK').decode('utf-8'))
+          replace_once('app/main.js', '    { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" },\n', '')
+          replace_once('app/main.js', '    window.CatalogIconScaleContract?.install();\n', '')
+          replace_once('tools/build-developer-b-authoring-kit.js', '  "icon-scale-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', '  "icon-scale-contract.js",\n', '')
+          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogIconScaleContract.install();\n', '')
+
+          for test in Path('tests').glob('*.test.js'):
+              source = test.read_text()
+              source = source.replace('  "app/icon-scale-contract.js",\n', '')
+              source = source.replace('CatalogIconScaleContract.install();\n', '')
+              source = source.replace('  CatalogIconScaleContract,\n', '')
+              if test.name == 'authoring-kit-runtime-contracts-05.18.test.js':
+                  source = source.replace('  "icon-scale-contract.js",\n', '')
+                  source = source.replace('  "CatalogIconScaleContract",\n', '')
+              test.write_text(source)
           PY
+          rm app/icon-scale-contract.js
+          rm authoring-kit/runtime/icon-scale-contract.js
           node tools/build-developer-b-authoring-kit.js
+          if grep -R "icon-scale-contract\|CatalogIconScaleContract" \
+            app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler \
+            tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js \
+            tests/reflow-history-stability-05.18.test.js tests/reflow-manual-baseline-05.18.test.js; then
+            echo "Executable icon shim reference remained."
+            exit 1
+          fi
           git diff --check
-      - name: Run focused Node tests
-        run: |
-          node tests/icon-scale-persistence-05.18.5.test.js
-          node tests/icon-scale-runtime-parity-05.18.5.test.js
-          node tests/footer-item-containment-05.18.12.2.test.js
-          node tests/footer-item-containment-build-05.18.12.2.test.js
-          node tests/library-depth-05.18.test.js
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
@@ -63,37 +77,28 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run icon browser test and one stress seed
+      - name: Run complete audit and stress
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19.6/domain
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19.5/browser audit-output/db-05.19.5/stress
-          timeout 180s node tests/browser-icon-scale-05.18.5.test.js 2>&1 | tee audit-output/db-05.19.5/browser/icon-scale.log
-          timeout 180s node tests/browser-footer-item-containment-05.18.12.2.test.js 2>&1 | tee audit-output/db-05.19.5/browser/footer.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5195001 --timeout=300000 --output=audit-output/db-05.19.5/stress 2>&1 | tee audit-output/db-05.19.5/browser/stress.log
-      - name: Commit canonical icon containment
+          mkdir -p audit-output/db-05.19.6/consolidated audit-output/db-05.19.6/browser-stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.6/consolidated/audit.log
+          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19.6/consolidated/domain-stress.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5196001 --timeout=300000 --output=audit-output/db-05.19.6/browser-stress 2>&1 | tee audit-output/db-05.19.6/consolidated/browser-stress.log
+      - name: Commit icon shim removal
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t actual < <(git diff --name-only --relative | sort)
-          allowed=(
-            app/authoring-kit-files.js
-            app/icon-scale-contract.js
-            authoring-kit/capabilities.json
-            authoring-kit/feature-inventory.json
-            authoring-kit/runtime/icon-scale-contract.js
-            docs/FEATURE-CATALOG.md
-            styles/components.css
-          )
           unexpected=()
           for file in "${actual[@]}"; do
-            found=false
-            for candidate in "${allowed[@]}"; do
-              if [ "$file" = "$candidate" ]; then found=true; break; fi
-            done
-            if [ "$found" = false ]; then unexpected+=("$file"); fi
+            case "$file" in
+              app/authoring-kit-files.js|app/icon-scale-contract.js|app/main.js|authoring-kit/capabilities.json|authoring-kit/compiler/compile-catalog.js|authoring-kit/feature-inventory.json|authoring-kit/runtime/icon-scale-contract.js|docs/FEATURE-CATALOG.md|tools/build-developer-b-authoring-kit.js|tests/*.test.js) ;;
+              *) unexpected+=("$file") ;;
+            esac
           done
           if [ "${#unexpected[@]}" -gt 0 ]; then
             echo "Unexpected tracked files:"
@@ -103,7 +108,7 @@ jobs:
           git config user.name "Developer B Audit"
           git config user.email "developer-b-audit@users.noreply.github.com"
           git add -A
-          git commit -m "05.19 — consolida contenção da escala de ícone"
+          git commit -m "05.19 — remove shim de escala de ícone"
           git push origin HEAD:agent/developer-b-05.18
       - name: Prove idempotent build
         run: |
@@ -115,7 +120,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19.5
-          path: audit-output/db-05.19.5
+          name: developer-b-db-05.19.6
+          path: audit-output/db-05.19.6
           if-no-files-found: warn
           retention-days: 14
