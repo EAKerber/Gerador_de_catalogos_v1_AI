@@ -6,6 +6,7 @@
   const HISTORY_LIMIT = 100;
   const HISTORY_COALESCE_MS = 700;
   const PRODUCT_FIELDS = ["title", "specOne", "specTwo", "code", "package", "price", "assetId"];
+  const TABLE_BINDING_FIELDS = Object.freeze(["code", "package", "price"]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
 
@@ -3164,13 +3165,27 @@
     replaceTableRowsBulk(componentId, entries = [], options = {}) {
       const mode = options.mode === "append" ? "append" : "replace";
       return this.runCompoundChange({ type: "table-rows-replaced", componentId, mode, count: entries.length }, () => {
-        const component = this.findComponent(componentId)?.component;
+        const record = this.findComponent(componentId);
+        const component = record?.component;
         if (!component || component.type !== "data-table") throw new Error("O componente selecionado não é uma tabela.");
         const normalizedEntries = (Array.isArray(entries) ? entries : []).filter(Boolean);
         const currentIds = component.props?.rowIds?.slice() || [];
         const available = Math.max(0, 12 - (mode === "append" ? currentIds.length : 0));
         const limited = normalizedEntries.slice(0, available);
         if (!limited.length) throw new Error("Nenhuma linha válida foi fornecida.");
+
+        if (mode === "replace" && options.bindingSync !== true && !this.bindingSyncDepth) {
+          const card = productCardForRecord(record);
+          const table = cardDataTable(card);
+          const values = limited[0]?.values || limited[0] || {};
+          if (card?.binding?.productId && table?.id === component.id) {
+            card.binding = normalizeProductBinding(card.binding);
+            TABLE_BINDING_FIELDS.forEach(field => {
+              if (Object.hasOwn(values, field)) card.binding.overrides[field] = true;
+            });
+          }
+        }
+
         const nextIds = mode === "append" ? currentIds.slice() : [];
         limited.forEach((entry, index) => {
           const values = entry.values || entry;
