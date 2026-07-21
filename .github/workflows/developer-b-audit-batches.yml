@@ -3,54 +3,63 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  integrate-visual-smoke-fixes:
-    name: Integração mecânica — smoke visual
+  batch-6-2:
+    name: Batch 6.2 — confirmação do smoke visual
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
-      - name: Aplicar alterações idempotentes
-        shell: bash
+          node-version: '22'
+      - name: Instalar Playwright e Chromium
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path, old, new):
-              file = Path(path)
-              source = file.read_text()
-              if new in source:
-                  return
-              if old not in source:
-                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
-              file.write_text(source.replace(old, new, 1))
-
-          replace_once(
-              'index.html',
-              '<head>\n',
-              '<head>\n  <link rel="icon" href="data:," />\n'
-          )
-          replace_once(
-              'tests/browser-text-overflow-05.18.4.test.js',
-              'window.CatalogTextOverflowContract?.VERSION === "05.18.4"',
-              'window.CatalogTextOverflowContract?.VERSION === "05.18.4.1"'
-          )
-          PY
-      - name: Validar e publicar na branch isolada
-        shell: bash
+          npm install --no-save playwright@latest
+          npx playwright install --with-deps chromium
+      - name: Iniciar editor
         run: |
-          node --check tests/browser-text-overflow-05.18.4.test.js
-          git diff --check
-          if git diff --quiet; then
-            echo "Alterações já aplicadas."
-            exit 0
-          fi
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add index.html tests/browser-text-overflow-05.18.4.test.js
-          git commit -m "fix: corrige ruído de favicon e versão do overflow"
-          git push origin HEAD:agent/developer-b-05.18
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: Executar testes visuais independentes
+        shell: bash
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+        run: |
+          mkdir -p audit-output/batch-6-2
+          failures=0
+          tests=(
+            tests/browser-text-alignment-05.18.2.test.js
+            tests/browser-text-scale-05.18.3.test.js
+            tests/browser-text-overflow-05.18.4.test.js
+            tests/browser-icon-scale-05.18.5.test.js
+            tests/browser-footer-item-containment-05.18.12.2.test.js
+            tests/browser-component-initial-placement-05.18.12.1.test.js
+          )
+          for file in "${tests[@]}"; do
+            log="audit-output/batch-6-2/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-6-2/summary.txt
+            if node "$file" >"$log" 2>&1; then
+              echo PASS | tee -a audit-output/batch-6-2/summary.txt
+            else
+              status=$?
+              echo "FAIL status=$status" | tee -a audit-output/batch-6-2/summary.txt
+              cat "$log"
+              failures=$((failures + 1))
+            fi
+          done
+          echo "failures=$failures" | tee -a audit-output/batch-6-2/summary.txt
+          exit "$failures"
+      - name: Publicar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-batch-6-2-visual-smoke
+          path: audit-output/batch-6-2
+          if-no-files-found: error
+          retention-days: 14
