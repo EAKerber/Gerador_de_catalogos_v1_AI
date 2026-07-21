@@ -154,7 +154,8 @@ Fazem o teste falhar:
 - canvas ausente;
 - divergência do documento após undo/redo;
 - filho de `footer-item` escapando da molécula em tela ou impressão;
-- overflow horizontal da aplicação no viewport suportado.
+- overflow horizontal da aplicação no viewport suportado;
+- teste que excede o timeout configurado.
 
 ### Achados esperados
 
@@ -243,6 +244,16 @@ node tools/run-developer-b-stress.js --all --repeat=10 --seed=5182026
 
 As execuções usarão as sementes `5182026` até `5182035`.
 
+### Limitar a duração
+
+O timeout padrão é de 180000 ms por arquivo de teste. Ele pode ser alterado entre 10000 e 900000 ms:
+
+```bash
+node tools/run-developer-b-stress.js --all --timeout=300000
+```
+
+Um processo encerrado por timeout é registrado como falha com `timedOut: true` no resumo consolidado.
+
 ### Definir diretório de saída
 
 ```bash
@@ -257,14 +268,17 @@ CATALOG_BASE_URL=http://127.0.0.1:9000 node tools/run-developer-b-stress.js --br
 
 ## Relação com a regressão comum
 
-`tools/run-developer-b-audit.js` exclui arquivos cujo nome contém `stress-`.
+`tools/run-developer-b-audit.js` exclui somente os arquivos pesados iniciados por:
+
+- `stress-`;
+- `browser-stress-`.
 
 Isso preserva dois fluxos distintos:
 
 - auditoria funcional comum, mais rápida;
 - batch de estresse, explicitamente solicitado e potencialmente lento.
 
-O teste leve `tests/developer-b-stress-runner-05.18.test.js` valida sintaxe, descoberta, flags e isolamento sem executar a carga pesada.
+O teste leve `tests/developer-b-stress-runner-05.18.test.js` permanece na regressão comum e valida sintaxe, descoberta, flags, timeout e isolamento sem executar a carga pesada.
 
 ## Limitações
 
