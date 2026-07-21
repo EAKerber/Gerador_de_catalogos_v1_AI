@@ -1,4 +1,4 @@
-/* DB-05.19.1 — overrides de tabela em lote pertencem ao document-store canônico. */
+/* DB-05.19.2 — overrides de tabela em lote pertencem ao document-store sem shim. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -15,15 +15,10 @@ global.CatalogEditorIcon = () => "";
   "app/component-registry.js",
   "app/collection-registry.js",
   "app/document-store.js",
-  "app/reflow-history-stability-contract.js",
-  "app/table-binding-overrides-contract.js"
+  "app/reflow-history-stability-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 CatalogReflowHistoryStabilityContract.install();
-const storeClassBeforeShim = CatalogDocumentStore;
-assert(CatalogTableBindingOverridesContract.install(), "O shim não encontrou o document-store.");
-assert(CatalogDocumentStore === storeClassBeforeShim, "O shim ainda substitui a classe canônica.");
-
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -116,10 +111,5 @@ assert(["code", "package", "price"].every(field => generatedCard.binding?.overri
 
 const appStore = fs.readFileSync(path.join(root, "app", "document-store.js"), "utf8");
 const kitStore = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "document-store.js"), "utf8");
-const appShim = fs.readFileSync(path.join(root, "app", "table-binding-overrides-contract.js"), "utf8");
-const kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "table-binding-overrides-contract.js"), "utf8");
 assert(appStore === kitStore, "O document-store divergiu entre editor e AuthoringKit.");
-assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");
-assert(CatalogTableBindingOverridesContract.VERSION === "05.19.1", "Versão inesperada do shim.");
-
-console.log("✓ Overrides de tabela pertencem ao store canônico; shim não substitui classe e sincronizações internas permanecem limpas.");
+console.log("✓ Overrides de tabela pertencem ao store canônico sem shim; sincronizações internas permanecem limpas.");
