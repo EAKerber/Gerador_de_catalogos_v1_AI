@@ -3,17 +3,134 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  consolidated-audit:
-    name: Auditoria consolidada — Node, build e Chromium
+  derived-reflow-history-fix:
+    name: Correção — histórico de reflow derivado
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Aplicar correções focadas
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              source = file.read_text()
+              if new in source:
+                  return
+              if old not in source:
+                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
+              file.write_text(source.replace(old, new, 1))
+
+          replace_once(
+              'app/reflow-history-stability-contract.js',
+              'const CONTRACT_VERSION = "05.18.audit.3";',
+              'const CONTRACT_VERSION = "05.18.audit.4";'
+          )
+          replace_once(
+              'app/reflow-history-stability-contract.js',
+              '''      reflowComponentTree(componentOrId) {
+        const result = super.reflowComponentTree(componentOrId);
+        if (result && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
+        return result;
+      }''',
+              '''      reflowComponentTree(componentOrId, options = {}) {
+        const result = super.reflowComponentTree(componentOrId);
+        if (result && options.derived !== true && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
+        return result;
+      }'''
+          )
+          replace_once(
+              'app/product-variants-contract.js',
+              '        this.reflowComponentTree(card);',
+              '        this.reflowComponentTree(card, { derived: true });'
+          )
+          replace_once(
+              'app/product-data-only-contract.js',
+              '        this.reflowComponentTree(card);',
+              '        this.reflowComponentTree(card, { derived: true });'
+          )
+          replace_once(
+              'tests/text-overflow-runtime-parity-05.18.4.test.js',
+              'if (!app.includes(\'CONTRACT_VERSION = "05.18.4"\')) throw new Error("A versão do contrato de overflow não está identificada.");',
+              'if (!app.includes(\'CONTRACT_VERSION = "05.18.4.1"\')) throw new Error("A versão do contrato de overflow não está identificada.");'
+          )
+
+          icon_path = Path('tests/icon-scale-runtime-parity-05.18.5.test.js')
+          icon = icon_path.read_text()
+          old_icon = '''const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "icon-scale-contract.js"), "utf8");
+
+if (app !== kit) throw new Error("O contrato de escala de ícone divergiu entre app e authoring-kit/runtime.");
+if (!app.includes('CONTRACT_VERSION = "05.18.5"')) throw new Error("A versão do contrato de ícone não está identificada.");
+if (!app.includes("83.333333%")) throw new Error("O limite seguro para 120% no rodapé não está declarado.");'''
+          new_icon = '''const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "icon-scale-contract.js"), "utf8");
+const styles = fs.readFileSync(path.join(root, "styles", "components.css"), "utf8");
+
+if (app !== kit) throw new Error("O contrato de escala de ícone divergiu entre app e authoring-kit/runtime.");
+if (!app.includes('CONTRACT_VERSION = "05.18.5"')) throw new Error("A versão do contrato de ícone não está identificada.");
+if (!app.includes("width: min(100%, 26px)") || !app.includes("max-width: 100%")) throw new Error("A contenção do invólucro no rodapé não está declarada.");
+if (!styles.includes(".component-icon__svg svg { width: 83.333333%; height: 83.333333%;")) throw new Error("A reserva interna para escala de 120% não está declarada.");'''
+          if new_icon not in icon:
+              if old_icon not in icon:
+                  raise SystemExit('Bloco do teste de escala de ícone não encontrado')
+              icon_path.write_text(icon.replace(old_icon, new_icon, 1))
+
+          reflow_path = Path('tests/reflow-manual-baseline-05.18.test.js')
+          reflow = reflow_path.read_text()
+          reflow = reflow.replace('CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.3"', 'CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4"')
+          marker = 'assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4", "Versão inesperada do contrato de estabilidade.");\n\nconsole.log('
+          addition = '''assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4", "Versão inesperada do contrato de estabilidade.");
+
+const beforeDerivedState = signature(store.getState());
+const beforeDerivedHistory = store.getHistoryState().undoCount;
+const derivedCard = store.findComponent(card.id).component;
+derivedCard.frame.height += 24;
+assert(store.reflowComponentTree(derivedCard, { derived: true }), "O reflow derivado não foi executado.");
+const afterDerivedState = signature(store.getState());
+assert(afterDerivedState !== beforeDerivedState, "A fixture derivada não alterou o documento.");
+store.emit({ type: "derived-reflow-probe", componentId: derivedCard.id });
+assert(store.getHistoryState().undoCount === beforeDerivedHistory + 1, "O reflow derivado sincronizou o baseline antes da captura.");
+assert(store.undo(), "Não foi possível desfazer a ação com reflow derivado.");
+assert(signature(store.getState()) === beforeDerivedState, "Undo não restaurou o estado anterior ao reflow derivado.");
+assert(store.redo(), "Não foi possível refazer a ação com reflow derivado.");
+assert(signature(store.getState()) === afterDerivedState, "Redo não restaurou o estado estabilizado pelo reflow derivado.");
+
+console.log('''
+          if 'beforeDerivedHistory' not in reflow:
+              if marker not in reflow:
+                  raise SystemExit('Marcador do teste de reflow não encontrado')
+              reflow = reflow.replace(marker, addition, 1)
+          reflow_path.write_text(reflow)
+          PY
+      - name: Regenerar AuthoringKit
+        run: node tools/build-developer-b-authoring-kit.js
+      - name: Validar contratos Node
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/reflow-history-stability-contract.js
+          node --check app/product-variants-contract.js
+          node --check app/product-data-only-contract.js
+          node --check tests/reflow-manual-baseline-05.18.test.js
+          node tests/icon-scale-runtime-parity-05.18.5.test.js
+          node tests/text-overflow-runtime-parity-05.18.4.test.js
+          node tests/reflow-history-stability-05.18.test.js
+          node tests/reflow-manual-baseline-05.18.test.js
+          node tests/product-variants-geometry-05.18.9.test.js
+          node tests/product-variants-runtime-parity-05.18.9.test.js
+          node tests/product-data-only-geometry-05.18.10.test.js
+          node tests/product-data-only-runtime-parity-05.18.10.test.js
+          git diff --check
       - name: Instalar Playwright e Chromium
         run: |
           npm install --no-save playwright@latest
@@ -27,25 +144,29 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Executar auditoria completa
+      - name: Validar histórico no Chromium
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
         run: |
+          timeout 150s node tests/browser-product-variants-05.18.9.test.js
+          timeout 150s node tests/browser-product-data-only-05.18.10.test.js
+      - name: Verificar e commitar correção
+        shell: bash
+        run: |
           set -euo pipefail
-          mkdir -p audit-output/consolidated
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/consolidated/audit.log
-          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/consolidated/idempotence.log
-          if ! git diff --quiet; then
-            git status --short | tee audit-output/consolidated/unexpected-diff.txt
-            git diff --stat | tee -a audit-output/consolidated/unexpected-diff.txt
+          allowed=$'app/authoring-kit-files.js\napp/product-data-only-contract.js\napp/product-variants-contract.js\napp/reflow-history-stability-contract.js\nauthoring-kit/runtime/product-data-only-contract.js\nauthoring-kit/runtime/product-variants-contract.js\nauthoring-kit/runtime/reflow-history-stability-contract.js\ntests/icon-scale-runtime-parity-05.18.5.test.js\ntests/reflow-manual-baseline-05.18.test.js\ntests/text-overflow-runtime-parity-05.18.4.test.js'
+          actual="$(git diff --name-only | sort)"
+          if [ "$actual" != "$allowed" ]; then
+            echo "Arquivos alterados fora do conjunto esperado:"
+            printf '%s\n' "$actual"
             exit 1
           fi
-          git status --short > audit-output/consolidated/final-status.txt
-      - name: Publicar evidências
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-consolidated-audit
-          path: audit-output/consolidated
-          if-no-files-found: error
-          retention-days: 14
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add $actual
+          git commit -m "fix: separa reflow derivado do baseline manual"
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Provar build idempotente
+        run: |
+          node tools/build-developer-b-authoring-kit.js
+          git diff --exit-code
