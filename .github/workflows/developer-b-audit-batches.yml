@@ -3,90 +3,33 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  integrate-reflow-stability:
-    name: Integração mecânica — estabilidade de reflow
+  batch-5-5:
+    name: Batch 5.5 — confirmação de reflow e estresse de domínio
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Aplicar alterações idempotentes
-        shell: bash
+      - name: Regressão mínima
+        run: node tests/reflow-history-stability-05.18.test.js
+      - name: Estresse em três sementes
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path, old, new):
-              file = Path(path)
-              source = file.read_text()
-              if new in source:
-                  return False
-              if old not in source:
-                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
-              file.write_text(source.replace(old, new, 1))
-              return True
-
-          replace_once(
-              'tests/stress-domain-history-05.18.test.js',
-              '  "app/product-data-only-contract.js"\n]',
-              '  "app/product-data-only-contract.js",\n  "app/reflow-history-stability-contract.js"\n]'
-          )
-          replace_once(
-              'tests/stress-domain-history-05.18.test.js',
-              'const signature = state => JSON.stringify(stableSnapshot(state));',
-              '''const canonicalize = value => {
-            if (Array.isArray(value)) return value.map(canonicalize);
-            if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
-            return value;
-          };
-          const signature = state => JSON.stringify(canonicalize(stableSnapshot(state)));'''
-          )
-          replace_once(
-              'index.html',
-              '  <script defer src="app/document-store.js"></script>\n',
-              '  <script defer src="app/document-store.js"></script>\n  <script defer src="app/reflow-history-stability-contract.js"></script>\n'
-          )
-          replace_once(
-              'authoring-kit/compiler/compile-catalog.js',
-              '  "product-data-only-contract.js",\n',
-              '  "product-data-only-contract.js",\n  "reflow-history-stability-contract.js",\n'
-          )
-          replace_once(
-              'authoring-kit/compiler/compile-catalog.js',
-              'CatalogProductDataOnlyContract.install();\n',
-              'CatalogProductDataOnlyContract.install();\nCatalogReflowHistoryStabilityContract.install();\n'
-          )
-          replace_once(
-              'tools/build-developer-b-authoring-kit.js',
-              '  "product-data-only-contract.js",\n',
-              '  "product-data-only-contract.js",\n  "reflow-history-stability-contract.js",\n'
-          )
-          PY
-      - name: Validar arquivos alterados
-        shell: bash
-        run: |
-          node --check tests/stress-domain-history-05.18.test.js
-          node --check app/reflow-history-stability-contract.js
-          node --check authoring-kit/runtime/reflow-history-stability-contract.js
-          node --check authoring-kit/compiler/compile-catalog.js
-          node --check tools/build-developer-b-authoring-kit.js
-          git diff --check
-      - name: Commit na branch isolada
-        shell: bash
-        run: |
-          if git diff --quiet; then
-            echo "Integração já aplicada."
-            exit 0
-          fi
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add index.html tests/stress-domain-history-05.18.test.js authoring-kit/compiler/compile-catalog.js tools/build-developer-b-authoring-kit.js
-          git commit -m "fix: integra estabilidade de reflow ao editor e auditoria"
-          git push origin HEAD:agent/developer-b-05.18
+          mkdir -p audit-output/batch-5-5
+          node tools/run-developer-b-stress.js \
+            --node \
+            --repeat=3 \
+            --seed=5182026 \
+            --timeout=180000 \
+            --output=audit-output/batch-5-5
+      - name: Publicar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-batch-5-5-domain-confirmation
+          path: audit-output/batch-5-5
+          if-no-files-found: warn
+          retention-days: 14
