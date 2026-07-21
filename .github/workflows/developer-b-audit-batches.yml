@@ -49,52 +49,6 @@ jobs:
           if 'CatalogTableBindingOverridesContract' in test or 'table-binding-overrides-contract.js' in test:
               raise SystemExit('A regressão ainda depende do shim.')
           test_path.write_text(test)
-
-          cycle_path = Path('docs/DEVELOPER-B-CONSOLIDATION-05.19.md')
-          cycle = cycle_path.read_text()
-          status = '''
-
-## Estado de execução
-
-- **DB-05.19.1:** concluído; comportamento incorporado ao `document-store` e shim reduzido a no-op.
-- **DB-05.19.2:** concluído nesta etapa; carregamento, build, compilador e arquivos do shim removidos após auditoria completa.
-'''
-          if '## Estado de execução' not in cycle:
-              cycle_path.write_text(cycle.rstrip() + status + '\n')
-
-          evidence = Path('docs/evidence/05.19/developer-b/DB-05.19.2-TABLE-BINDING-SHIM-REMOVAL.md')
-          evidence.parent.mkdir(parents=True, exist_ok=True)
-          evidence.write_text('''# DB-05.19.2 — Remoção do shim de overrides de tabela
-
-## Mudança
-
-O comportamento validado no DB-05.19.1 permanece no `document-store`. Foram removidos:
-
-- o contrato `table-binding-overrides-contract.js` do editor;
-- sua cópia no runtime do AuthoringKit;
-- o carregamento dinâmico e a instalação no bootstrap;
-- o carregamento e a instalação no compilador autocontido;
-- a referência no build Developer B.
-
-## Contrato preservado
-
-A regressão executa somente o store canônico e continua cobrindo:
-
-- campos comerciais completos e parciais;
-- `bindingSync`;
-- criação interna de cards;
-- undo e redo;
-- paridade do `document-store` entre editor e AuthoringKit.
-
-## Validação exigida
-
-- auditoria completa de contratos Node;
-- build Developer B;
-- todos os testes Chromium 05.18;
-- uma semente visual de estresse;
-- segundo build sem diferenças;
-- ausência de referências executáveis ao shim.
-''')
           PY
           rm app/table-binding-overrides-contract.js
           rm authoring-kit/runtime/table-binding-overrides-contract.js
@@ -139,9 +93,7 @@ A regressão executa somente o store canônico e continua cobrindo:
             authoring-kit/compiler/compile-catalog.js
             authoring-kit/feature-inventory.json
             authoring-kit/runtime/table-binding-overrides-contract.js
-            docs/DEVELOPER-B-CONSOLIDATION-05.19.md
             docs/FEATURE-CATALOG.md
-            docs/evidence/05.19/developer-b/DB-05.19.2-TABLE-BINDING-SHIM-REMOVAL.md
             tests/table-binding-overrides-05.18.test.js
             tools/build-developer-b-authoring-kit.js
           )
