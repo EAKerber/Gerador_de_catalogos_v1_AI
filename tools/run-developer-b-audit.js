@@ -20,7 +20,7 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 function discover() {
   const files = fs.readdirSync(testsRoot)
     .filter(file => file.endsWith(".test.js") && file.includes("05.18"))
-    .filter(file => !file.includes("stress-"))
+    .filter(file => !file.startsWith("stress-") && !file.startsWith("browser-stress-"))
     .sort((left, right) => left.localeCompare(right));
   return {
     node: files.filter(file => !file.startsWith("browser-")),
