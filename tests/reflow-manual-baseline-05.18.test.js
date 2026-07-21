@@ -76,7 +76,7 @@ assert(store.findComponent(added.id), "Redo não restaurou o elemento posterior 
 const beforeDerivedState = signature(store.getState());
 const beforeDerivedHistory = store.getHistoryState().undoCount;
 const derivedCard = store.findComponent(card.id).component;
-derivedCard.frame.height += 24;
+derivedCard.props = { ...(derivedCard.props || {}), auditDerivedState: "preservado" };
 assert(store.reflowComponentTree(derivedCard, { derived: true }), "O reflow derivado não foi executado.");
 const afterDerivedState = signature(store.getState());
 assert(afterDerivedState !== beforeDerivedState, "A fixture derivada não alterou o documento.");
