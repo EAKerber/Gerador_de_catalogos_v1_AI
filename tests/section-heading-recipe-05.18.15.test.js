@@ -101,7 +101,8 @@ assert(noSiblingOverlap(firstCurrent) && noSiblingOverlap(secondCurrent), "A com
 
 const secondKickerId = role(secondCurrent, "kicker").id;
 const historyBeforeDelete = store.getHistoryState().undoCount;
-assert(store.deleteComponent(secondKickerId), "Não foi possível remover o sobretítulo opcional.");
+store.deleteComponent(secondKickerId);
+assert(!store.findComponent(secondKickerId), "Não foi possível remover o sobretítulo opcional.");
 assert(store.getHistoryState().undoCount === historyBeforeDelete + 1, "A remoção opcional não gerou uma única entrada de histórico.");
 secondCurrent = store.findComponent(second.id).component;
 store.reflowComponentTree(secondCurrent.id);
@@ -121,12 +122,13 @@ const report = store.getPublicationReport("draft");
 assert(report.summary.collisions === 0, `O experimento gerou colisões: ${report.summary.collisions}.`);
 assert(report.summary.overflows === 0, `O experimento gerou overflows: ${report.summary.overflows}.`);
 assert(store.getPage().children.length === 2, "A receita materializou componentes externos inesperados.");
+firstCurrent = store.findComponent(first.id).component;
 assert(treeCount(firstCurrent) === 5 && treeCount(secondCurrent) === 4, "A contagem de peças não acompanha a opcionalidade do kicker.");
 assert(1 < treeCount(recipe.component), "A receita não reduz ações em relação à montagem manual.");
 
 const appSource = fs.readFileSync(path.join(root, "app", "section-recipes.js"), "utf8");
 const kitSource = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "section-recipes.js"), "utf8");
 assert(appSource === kitSource, "As receitas divergiram entre editor e AuthoringKit.");
-assert(CATALOG_SCHEMA_VERSION === "1.16.0", "O experimento alterou o schema do documento.");
+assert(store.getState().schemaVersion === "1.16.0", "O experimento alterou o schema do documento.");
 
 console.log("✓ DB-05.18.15 validou dois títulos de seção, uma ação de inserção, opcionalidade, responsividade, histórico e paridade do kit.");
