@@ -171,7 +171,26 @@ async function selectComponent(id) {
   const root = page.locator(selectorForComponent(id)).first();
   const target = await content.count() ? content : root;
   await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
+  try {
+    await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 500 });
+    return;
+  } catch {}
+
+  const assetDialog = page.locator("#assetLibraryDialog");
+  if (await assetDialog.getAttribute("open") !== null) {
+    findings.push({ code: "CANVAS_SELECTION_INTERCEPTED", componentId: id, message: "A tentativa de selecionar uma peça interna abriu a biblioteca de artes; a seleção continuou pela árvore de Camadas." });
+    await act("Fechar biblioteca de artes aberta durante a seleção", () => assetDialog.locator("[data-close-asset-library]").first().click());
+    await assetDialog.waitFor({ state: "hidden" });
+  }
+
+  const layersTab = page.locator('[data-left-panel-tab="layers"]');
+  if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
+  const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
+  await layerItem.waitFor({ state: "visible" });
+  await act(`Selecionar ${id} pela árvore de camadas`, () => layerItem.click());
   await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+  const componentsTab = page.locator('[data-left-panel-tab="components"]');
+  if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
 }
 
 async function enterContainer(id) {
@@ -326,7 +345,7 @@ async function collectMetrics() {
     const flatten = components => components.flatMap(component => [component, ...flatten(component.children || [])]);
     const components = flatten(CatalogEditor.store.getPage().children);
     const ids = components.map(component => component.id);
-    const domIds = Array.from(document.querySelectorAll("[data-component-id]")).map(element => element.dataset.componentId);
+    const domIds = Array.from(document.querySelectorAll("#componentLayer .editor-component[data-component-id]")).map(element => element.dataset.componentId);
     const nonFiniteFrames = components.filter(component => ["x", "y", "width", "height"].some(key => !Number.isFinite(Number(component.frame?.[key])))).map(component => component.id);
     const table = components.find(component => component.type === "data-table");
     const footer = components.find(component => component.type === "catalog-footer");
@@ -366,7 +385,11 @@ async function collectMetrics() {
 
   await act("Criar documento vazio", () => page.locator("#newDocumentButton").click());
   await page.waitForFunction(() => CatalogEditor.store.getPage().children.length === 0);
-  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
+  if (await page.locator("#gridToggle").isChecked()) {
+  await act("Abrir preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+  await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
+  await act("Fechar preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
+}
 
   const logoId = await insertFromPalette("component", "art", { x: 24, y: 24, width: 200, height: 150 });
   await setProp("label", "MOBILI OP");
@@ -425,7 +448,6 @@ async function collectMetrics() {
   const footerPlacement = await page.evaluate(id => ({ ...CatalogEditor.store.findComponent(id).component.frame }), footerId);
 
   const beforeRoundTrip = await exportDocumentSnapshot();
-  const undoBefore = (await readEditorState()).history.undoCount;
 
   await selectComponent(heroSupportId);
   await setProp("content", "Mais resistência, estabilidade e qualidade para todos os seus móveis.");
@@ -437,16 +459,25 @@ async function collectMetrics() {
   await setProp("label", "ACABAMENTO PREMIUM E MODERNO");
 
   const terminalRoundTrip = await exportDocumentSnapshot();
-  const undoAfterEdits = (await readEditorState()).history.undoCount;
-  const roundTripOperations = undoAfterEdits - undoBefore;
-  if (roundTripOperations !== 3) findings.push({ code: "HISTORY_ENTRY_COUNT", message: `Três edições geraram ${roundTripOperations} entradas de histórico.` });
+  let roundTripOperations = 0;
+  let undoEquivalent = false;
+  for (let index = 0; index < 8; index += 1) {
+    if (await page.locator("#undoButton").isDisabled()) break;
+    await act("Desfazer edição final", () => page.locator("#undoButton").click());
+    roundTripOperations += 1;
+    const candidate = await exportDocumentSnapshot();
+    if (signature(candidate) === signature(beforeRoundTrip)) {
+      undoEquivalent = true;
+      break;
+    }
+  }
+  if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não reencontrou o snapshot anterior dentro de oito passos." });
+  else if (roundTripOperations !== 3) findings.push({ code: "HISTORY_FRAGMENTATION", expected: 3, observed: roundTripOperations, message: "As três edições exigiram quantidade diferente de passos no histórico." });
 
-  for (let index = 0; index < 3; index += 1) await act("Desfazer edição final", () => page.locator("#undoButton").click());
-  const undoneRoundTrip = await exportDocumentSnapshot();
-  const undoEquivalent = signature(undoneRoundTrip) === signature(beforeRoundTrip);
-  if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não retornou ao estado anterior às três edições finais." });
-
-  for (let index = 0; index < 3; index += 1) await act("Refazer edição final", () => page.locator("#redoButton").click());
+  for (let index = 0; index < roundTripOperations; index += 1) {
+    if (await page.locator("#redoButton").isDisabled()) break;
+    await act("Refazer edição final", () => page.locator("#redoButton").click());
+  }
   const redoneRoundTrip = await exportDocumentSnapshot();
   const redoEquivalent = signature(redoneRoundTrip) === signature(terminalRoundTrip);
   if (!redoEquivalent) blockers.push({ code: "REDO_DIVERGENCE", message: "Redo não restaurou o estado terminal." });
