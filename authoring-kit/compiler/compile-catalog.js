@@ -50,6 +50,7 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
   "product-variants-contract.js",
   "product-data-only-contract.js",
   "reflow-history-stability-contract.js",
+  "table-binding-overrides-contract.js",
   "catalog-validator.js",
   "catalog-compiler.js"
 ].forEach(fileName => vm.runInThisContext(fs.readFileSync(path.join(runtimeRoot, fileName), "utf8"), { filename: fileName }));
@@ -64,6 +65,7 @@ CatalogProductTechnicalContract.install();
 CatalogProductVariantsContract.install();
 CatalogProductDataOnlyContract.install();
 CatalogReflowHistoryStabilityContract.install();
+CatalogTableBindingOverridesContract.install();
 
 const source = readJSON(args.source);
 const plan = args.plan ? readJSON(args.plan) : null;

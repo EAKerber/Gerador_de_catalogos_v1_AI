@@ -53,7 +53,8 @@ global.CatalogEditorIcon = () => "";
   "app/product-technical-contract.js",
   "app/product-variants-contract.js",
   "app/product-data-only-contract.js",
-  "app/reflow-history-stability-contract.js"
+  "app/reflow-history-stability-contract.js",
+  "app/table-binding-overrides-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 [
@@ -68,7 +69,8 @@ global.CatalogEditorIcon = () => "";
   CatalogProductHeroContract,
   CatalogProductTechnicalContract,
   CatalogProductVariantsContract,
-  CatalogProductDataOnlyContract
+  CatalogProductDataOnlyContract,
+  CatalogTableBindingOverridesContract
 ].forEach(contract => {
   if (contract?.install && contract.install() === false) throw new Error(`Contrato não instalado: ${contract.VERSION || "sem versão"}.`);
 });
