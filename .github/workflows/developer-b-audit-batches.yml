@@ -21,26 +21,11 @@ jobs:
           from pathlib import Path
           path = Path('tests/browser-stress-interface-05.18.test.js')
           source = path.read_text()
-          old = '''  const modelSignature = () => page.evaluate(() => {
-    const snapshot = JSON.parse(JSON.stringify(CatalogEditor.store.getState()));
-    delete snapshot.editor;
-    delete snapshot.updatedAt;
-    return JSON.stringify(snapshot);
-  });'''
-          new = '''  const modelSignature = () => page.evaluate(() => {
-    const snapshot = JSON.parse(JSON.stringify(CatalogEditor.store.getState()));
-    delete snapshot.editor;
-    delete snapshot.updatedAt;
-    const canonicalize = value => {
-      if (Array.isArray(value)) return value.map(canonicalize);
-      if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
-      return value;
-    };
-    return JSON.stringify(canonicalize(snapshot));
-  });'''
+          old = '    return JSON.stringify(snapshot);'
+          new = '    const canonicalize = value => {\n      if (Array.isArray(value)) return value.map(canonicalize);\n      if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));\n      return value;\n    };\n    return JSON.stringify(canonicalize(snapshot));'
           if new not in source:
               if old not in source:
-                  raise SystemExit('Função modelSignature não encontrada')
+                  raise SystemExit('Retorno de modelSignature não encontrado')
               path.write_text(source.replace(old, new, 1))
           PY
           node --check tests/browser-stress-interface-05.18.test.js
