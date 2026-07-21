@@ -39,7 +39,7 @@ const installation = CatalogProductHeroContract.install();
 assert(installation.geometryInstalled, "O contrato geométrico do hero não foi instalado.");
 
 const store = new CatalogDocumentStore(createBlankCatalogDocument());
-const card = store.addComponent("product-card", { x: 20, y: 20, width: 420, height: 320 });
+const card = store.addComponent("product-card", { x: 20, y: 20, width: 420, height: 320 }, { parentId: null });
 const initialIds = card.children.map(component => component.id);
 const initialContent = clone(card.children.map(component => ({ id: component.id, type: component.type, props: component.props })));
 
@@ -93,10 +93,12 @@ assert(fourSpecs.specifications.height >= 63, "Hero compacto não preservou duas
 assert(fourSpecs.art.y + fourSpecs.art.height < fourSpecs.specifications.y, "Quatro especificações causaram sobreposição com a arte.");
 assert(fourSpecs.specifications.y + fourSpecs.specifications.height <= fourSpecs.table.y, "Quatro especificações invadiram a tabela.");
 
+const currentCardBeforeExport = store.findComponent(card.id).component;
 const imported = new CatalogDocumentStore(store.getExportDocument());
 const importedCard = imported.findComponent(card.id).component;
 assert(importedCard.presentation.mode === "hero" && importedCard.presentation.responsiveState === "compact", "Exportação/importação não preservou hero compacto.");
-assert(importedCard.children.length === card.children.length, "Importação alterou a subárvore do card.");
+assert(importedCard.children.length === currentCardBeforeExport.children.length, "Importação alterou a subárvore do card.");
+assert(importedCard.children.map(component => component.id).join(",") === currentCardBeforeExport.children.map(component => component.id).join(","), "Importação alterou os IDs da subárvore do card.");
 assert(imported.getState().schemaVersion === "1.16.0", "Hero exigiu mudança de schema.");
 
 console.log("✓ DB-05.18.7 diferencia hero amplo/compacto, preserva mínimos, conteúdo e reversibilidade.");
