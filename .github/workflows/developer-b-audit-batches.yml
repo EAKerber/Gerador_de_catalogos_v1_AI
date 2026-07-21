@@ -5,8 +5,8 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-8-3:
-    name: Batch 8.3 — estresse visual após baseline de reflow
+  batch-8-4:
+    name: Batch 8.4 — diagnóstico do baseline de undo visual
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -18,6 +18,26 @@ jobs:
         run: |
           npm install --no-save playwright@latest
           npx playwright install --with-deps chromium
+      - name: Instrumentar divergência
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tests/browser-stress-interface-05.18.test.js')
+          source = path.read_text()
+          old = '  assert(await modelSignature() === beforeButtonHistory, "Os botões de undo não restauraram o estado anterior às oito inserções.");'
+          new = '''  const currentAfterButtonUndo = await modelSignature();
+  if (currentAfterButtonUndo !== beforeButtonHistory) {
+    fs.writeFileSync(path.join(outputDir, "button-undo-expected.json"), `${JSON.stringify(JSON.parse(beforeButtonHistory), null, 2)}\\n`);
+    fs.writeFileSync(path.join(outputDir, "button-undo-current.json"), `${JSON.stringify(JSON.parse(currentAfterButtonUndo), null, 2)}\\n`);
+    fs.writeFileSync(path.join(outputDir, "button-undo-history.json"), `${JSON.stringify(await page.evaluate(() => CatalogEditor.store.getHistoryState()), null, 2)}\\n`);
+    throw new Error("Os botões de undo não restauraram o estado anterior às oito inserções.");
+  }'''
+          if old not in source:
+              raise SystemExit('Assert de undo não encontrado')
+          path.write_text(source.replace(old, new, 1))
+          PY
+          node --check tests/browser-stress-interface-05.18.test.js
       - name: Iniciar editor
         run: |
           python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
@@ -26,22 +46,62 @@ jobs:
             sleep 1
           done
           exit 1
-      - name: Executar estresse visual
+      - name: Executar cenário instrumentado
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
         run: |
-          mkdir -p audit-output/batch-8-3
+          mkdir -p audit-output/batch-8-4
           node tools/run-developer-b-stress.js \
             --browser \
             --repeat=1 \
             --seed=5182026 \
             --timeout=300000 \
-            --output=audit-output/batch-8-3
+            --output=audit-output/batch-8-4
+      - name: Comparar estados
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          roots = list(Path('audit-output/batch-8-4').glob('run-*/browser-*'))
+          if not roots:
+              raise SystemExit(0)
+          root = roots[0]
+          expected = root / 'button-undo-expected.json'
+          current = root / 'button-undo-current.json'
+          output = root / 'button-undo-diff.txt'
+          if not expected.exists() or not current.exists():
+              output.write_text('Nenhuma divergência de botão foi capturada.\n')
+              raise SystemExit(0)
+          left = json.loads(expected.read_text())
+          right = json.loads(current.read_text())
+          diffs = []
+          def walk(a, b, path='$'):
+              if len(diffs) >= 250:
+                  return
+              if type(a) is not type(b):
+                  diffs.append(f'{path}: type {type(a).__name__} != {type(b).__name__}')
+                  return
+              if isinstance(a, dict):
+                  for key in sorted(set(a) | set(b)):
+                      if key not in a: diffs.append(f'{path}.{key}: missing expected')
+                      elif key not in b: diffs.append(f'{path}.{key}: missing current')
+                      else: walk(a[key], b[key], f'{path}.{key}')
+              elif isinstance(a, list):
+                  if len(a) != len(b): diffs.append(f'{path}: len {len(a)} != {len(b)}')
+                  for index, (x, y) in enumerate(zip(a, b)): walk(x, y, f'{path}[{index}]')
+              elif a != b:
+                  diffs.append(f'{path}: {a!r} != {b!r}')
+          walk(left, right)
+          output.write_text('\n'.join(diffs) + '\n')
+          print(output.read_text())
+          PY
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-8-3-browser-stress
-          path: audit-output/batch-8-3
+          name: developer-b-batch-8-4-undo-diagnostic
+          path: audit-output/batch-8-4
           if-no-files-found: error
           retention-days: 14
