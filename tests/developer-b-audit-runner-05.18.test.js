@@ -14,7 +14,7 @@ for (const flag of ["--list", "--node", "--browser", "--build", "--all"]) {
   assert(source.includes(`\"${flag}\"`), `O executor não reconhece ${flag}.`);
 }
 assert(source.includes('file.includes("05.18")'), "A descoberta não está limitada à fila 05.18.");
-assert(source.includes('!file.includes("stress-")'), "A regressão comum não exclui explicitamente o batch de estresse.");
+assert(source.includes('!file.startsWith("stress-")') && source.includes('!file.startsWith("browser-stress-")'), "A regressão comum não exclui explicitamente as duas cargas pesadas.");
 assert(source.includes('file.startsWith("browser-")'), "A separação entre Node e Chromium não está declarada.");
 assert(source.includes('build-developer-b-authoring-kit.js'), "O executor não referencia o build específico da branch.");
 assert(source.includes('run-developer-b-stress.js'), "O executor comum não orienta para o batch de estresse separado.");
@@ -30,6 +30,7 @@ assert(execution.status === 0, `O modo --list falhou: ${execution.stderr || exec
 assert(execution.stdout.includes("Node (") && execution.stdout.includes("Chromium ("), "O modo --list não separou as suítes.");
 for (const expected of [
   "tests/developer-b-audit-runner-05.18.test.js",
+  "tests/developer-b-stress-runner-05.18.test.js",
   "tests/fact-recipe-05.18.17.test.js",
   "tests/callout-recipe-audit-05.18.19.test.js",
   "tests/browser-fact-recipe-05.18.17.test.js",
@@ -42,6 +43,6 @@ assert(!execution.stdout.includes("tests/browser-stress-interface-05.18.test.js"
 
 const listed = execution.stdout.split("\n").filter(line => line.trim().startsWith("tests/")).map(line => line.trim());
 assert(listed.length === new Set(listed).size, "O inventário contém testes duplicados.");
-assert(listed.every(file => file.includes("05.18") && file.endsWith(".test.js") && !file.includes("stress-")), "O inventário incluiu arquivo fora da regressão 05.18 comum.");
+assert(listed.every(file => file.includes("05.18") && file.endsWith(".test.js") && !path.basename(file).startsWith("stress-") && !path.basename(file).startsWith("browser-stress-")), "O inventário incluiu arquivo fora da regressão 05.18 comum.");
 
-console.log(`✓ Executor Developer B descobriu ${listed.length} testes de regressão 05.18 e manteve o batch de estresse separado.`);
+console.log(`✓ Executor Developer B descobriu ${listed.length} testes de regressão 05.18, preservou a validação leve e separou as cargas pesadas.`);
