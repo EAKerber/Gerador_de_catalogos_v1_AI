@@ -187,7 +187,12 @@ fs.mkdirSync(outputDir, { recursive: true });
     const snapshot = JSON.parse(JSON.stringify(CatalogEditor.store.getState()));
     delete snapshot.editor;
     delete snapshot.updatedAt;
-    return JSON.stringify(snapshot);
+    const canonicalize = value => {
+      if (Array.isArray(value)) return value.map(canonicalize);
+      if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
+      return value;
+    };
+    return JSON.stringify(canonicalize(snapshot));
   });
 
   const beforeButtonHistory = await modelSignature();
