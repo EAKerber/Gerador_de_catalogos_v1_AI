@@ -3,99 +3,141 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  batch-8-4:
-    name: Batch 8.4 — diagnóstico do baseline de undo visual
+  fix-table-binding-overrides:
+    name: Correção focada — overrides de tabela vinculada
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar Playwright e Chromium
-        run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Instrumentar divergência
+      - name: Integrar correção e regressão
         shell: bash
         run: |
           python - <<'PY'
+          import base64
           from pathlib import Path
-          path = Path('tests/browser-stress-interface-05.18.test.js')
-          source = path.read_text()
-          old = '  assert(await modelSignature() === beforeButtonHistory, "Os botões de undo não restauraram o estado anterior às oito inserções.");'
-          new = '  const currentAfterButtonUndo = await modelSignature();\n  if (currentAfterButtonUndo !== beforeButtonHistory) {\n    fs.writeFileSync(path.join(outputDir, "button-undo-expected.json"), `${JSON.stringify(JSON.parse(beforeButtonHistory), null, 2)}\\n`);\n    fs.writeFileSync(path.join(outputDir, "button-undo-current.json"), `${JSON.stringify(JSON.parse(currentAfterButtonUndo), null, 2)}\\n`);\n    fs.writeFileSync(path.join(outputDir, "button-undo-history.json"), `${JSON.stringify(await page.evaluate(() => CatalogEditor.store.getHistoryState()), null, 2)}\\n`);\n    throw new Error("Os botões de undo não restauraram o estado anterior às oito inserções.");\n  }'
-          if old not in source:
-              raise SystemExit('Assert de undo não encontrado')
-          path.write_text(source.replace(old, new, 1))
+
+          def write_b64(path, payload):
+              Path(path).parent.mkdir(parents=True, exist_ok=True)
+              Path(path).write_bytes(base64.b64decode(payload))
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              source = file.read_text()
+              if new in source:
+                  return
+              if old not in source:
+                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
+              file.write_text(source.replace(old, new, 1))
+
+          write_b64('app/table-binding-overrides-contract.js', 'KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTguYXVkaXQuMiI7CiAgY29uc3QgQ09NTUVSQ0lBTF9GSUVMRFMgPSBPYmplY3QuZnJlZXplKFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0pOwogIGNvbnN0IGNsb25lID0gdmFsdWUgPT4gSlNPTi5wYXJzZShKU09OLnN0cmluZ2lmeSh2YWx1ZSkpOwogIGNvbnN0IGhhc093biA9ICh2YWx1ZSwga2V5KSA9PiBPYmplY3QucHJvdG90eXBlLmhhc093blByb3BlcnR5LmNhbGwodmFsdWUgfHwge30sIGtleSk7CgogIGZ1bmN0aW9uIG92ZXJyaWRkZW5GaWVsZHMoZW50cmllcywgb3B0aW9ucyA9IHt9KSB7CiAgICBpZiAob3B0aW9ucy5tb2RlID09PSAiYXBwZW5kIiB8fCBvcHRpb25zLmJpbmRpbmdTeW5jID09PSB0cnVlKSByZXR1cm4gW107CiAgICBjb25zdCBmaXJzdCA9IEFycmF5LmlzQXJyYXkoZW50cmllcykgPyBlbnRyaWVzLmZpbmQoQm9vbGVhbikgOiBudWxsOwogICAgY29uc3QgdmFsdWVzID0gZmlyc3Q/LnZhbHVlcyB8fCBmaXJzdCB8fCB7fTsKICAgIHJldHVybiBDT01NRVJDSUFMX0ZJRUxEUy5maWx0ZXIoZmllbGQgPT4gaGFzT3duKHZhbHVlcywgZmllbGQpKTsKICB9CgogIGZ1bmN0aW9uIGluc3RhbGwoKSB7CiAgICBjb25zdCBCYXNlU3RvcmUgPSB3aW5kb3cuQ2F0YWxvZ0RvY3VtZW50U3RvcmU7CiAgICBpZiAoIUJhc2VTdG9yZSkgcmV0dXJuIGZhbHNlOwogICAgaWYgKEJhc2VTdG9yZS5fX3RhYmxlQmluZGluZ092ZXJyaWRlc0NvbnRyYWN0VmVyc2lvbiA9PT0gQ09OVFJBQ1RfVkVSU0lPTikgcmV0dXJuIHRydWU7CgogICAgY2xhc3MgVGFibGVCaW5kaW5nT3ZlcnJpZGVzU3RvcmUgZXh0ZW5kcyBCYXNlU3RvcmUgewogICAgICByZXBsYWNlVGFibGVSb3dzQnVsayhjb21wb25lbnRJZCwgZW50cmllcyA9IFtdLCBvcHRpb25zID0ge30pIHsKICAgICAgICBjb25zdCB0YWJsZSA9IHRoaXMuZmluZENvbXBvbmVudChjb21wb25lbnRJZCk/LmNvbXBvbmVudDsKICAgICAgICBjb25zdCBjYXJkID0gdGFibGU/LnR5cGUgPT09ICJkYXRhLXRhYmxlIiA/IHRoaXMuZ2V0UHJvZHVjdENhcmQ/Lih0YWJsZS5pZCkgOiBudWxsOwogICAgICAgIGNvbnN0IHN5bmNocm9uaXplZCA9IG9wdGlvbnMuYmluZGluZ1N5bmMgPT09IHRydWUgfHwgTnVtYmVyKHRoaXMuYmluZGluZ1N5bmNEZXB0aCkgPiAwOwogICAgICAgIGNvbnN0IGZpZWxkcyA9IGNhcmQ/LmJpbmRpbmc/LnByb2R1Y3RJZCAmJiAhc3luY2hyb25pemVkID8gb3ZlcnJpZGRlbkZpZWxkcyhlbnRyaWVzLCBvcHRpb25zKSA6IFtdOwogICAgICAgIGlmICghZmllbGRzLmxlbmd0aCkgcmV0dXJuIHN1cGVyLnJlcGxhY2VUYWJsZVJvd3NCdWxrKGNvbXBvbmVudElkLCBlbnRyaWVzLCBvcHRpb25zKTsKCiAgICAgICAgY2FyZC5iaW5kaW5nIHx8PSB7IHByb2R1Y3RJZDogbnVsbCwgdGVtcGxhdGVJZDogbnVsbCwgb3ZlcnJpZGVzOiB7fSB9OwogICAgICAgIGNhcmQuYmluZGluZy5vdmVycmlkZXMgfHw9IHt9OwogICAgICAgIGNvbnN0IHByZXZpb3VzID0gY2xvbmUoY2FyZC5iaW5kaW5nLm92ZXJyaWRlcyk7CiAgICAgICAgZmllbGRzLmZvckVhY2goZmllbGQgPT4geyBjYXJkLmJpbmRpbmcub3ZlcnJpZGVzW2ZpZWxkXSA9IHRydWU7IH0pOwogICAgICAgIHRyeSB7CiAgICAgICAgICByZXR1cm4gc3VwZXIucmVwbGFjZVRhYmxlUm93c0J1bGsoY29tcG9uZW50SWQsIGVudHJpZXMsIG9wdGlvbnMpOwogICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7CiAgICAgICAgICBjb25zdCByZXN0b3JlZFRhYmxlID0gdGhpcy5maW5kQ29tcG9uZW50KGNvbXBvbmVudElkKT8uY29tcG9uZW50OwogICAgICAgICAgY29uc3QgcmVzdG9yZWRDYXJkID0gcmVzdG9yZWRUYWJsZT8udHlwZSA9PT0gImRhdGEtdGFibGUiID8gdGhpcy5nZXRQcm9kdWN0Q2FyZD8uKHJlc3RvcmVkVGFibGUuaWQpIDogbnVsbDsKICAgICAgICAgIGlmIChyZXN0b3JlZENhcmQ/LmJpbmRpbmcpIHJlc3RvcmVkQ2FyZC5iaW5kaW5nLm92ZXJyaWRlcyA9IHByZXZpb3VzOwogICAgICAgICAgdGhyb3cgZXJyb3I7CiAgICAgICAgfQogICAgICB9CiAgICB9CgogICAgT2JqZWN0LmRlZmluZVByb3BlcnR5KFRhYmxlQmluZGluZ092ZXJyaWRlc1N0b3JlLCAiX190YWJsZUJpbmRpbmdPdmVycmlkZXNDb250cmFjdFZlcnNpb24iLCB7IHZhbHVlOiBDT05UUkFDVF9WRVJTSU9OIH0pOwogICAgd2luZG93LkNhdGFsb2dEb2N1bWVudFN0b3JlID0gVGFibGVCaW5kaW5nT3ZlcnJpZGVzU3RvcmU7CiAgICByZXR1cm4gdHJ1ZTsKICB9CgogIHdpbmRvdy5DYXRhbG9nVGFibGVCaW5kaW5nT3ZlcnJpZGVzQ29udHJhY3QgPSBPYmplY3QuZnJlZXplKHsKICAgIFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sCiAgICBDT01NRVJDSUFMX0ZJRUxEUywKICAgIG92ZXJyaWRkZW5GaWVsZHMsCiAgICBpbnN0YWxsCiAgfSk7CgogIGluc3RhbGwoKTsKfSkoKTsK')
+          write_b64('authoring-kit/runtime/table-binding-overrides-contract.js', 'KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTguYXVkaXQuMiI7CiAgY29uc3QgQ09NTUVSQ0lBTF9GSUVMRFMgPSBPYmplY3QuZnJlZXplKFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0pOwogIGNvbnN0IGNsb25lID0gdmFsdWUgPT4gSlNPTi5wYXJzZShKU09OLnN0cmluZ2lmeSh2YWx1ZSkpOwogIGNvbnN0IGhhc093biA9ICh2YWx1ZSwga2V5KSA9PiBPYmplY3QucHJvdG90eXBlLmhhc093blByb3BlcnR5LmNhbGwodmFsdWUgfHwge30sIGtleSk7CgogIGZ1bmN0aW9uIG92ZXJyaWRkZW5GaWVsZHMoZW50cmllcywgb3B0aW9ucyA9IHt9KSB7CiAgICBpZiAob3B0aW9ucy5tb2RlID09PSAiYXBwZW5kIiB8fCBvcHRpb25zLmJpbmRpbmdTeW5jID09PSB0cnVlKSByZXR1cm4gW107CiAgICBjb25zdCBmaXJzdCA9IEFycmF5LmlzQXJyYXkoZW50cmllcykgPyBlbnRyaWVzLmZpbmQoQm9vbGVhbikgOiBudWxsOwogICAgY29uc3QgdmFsdWVzID0gZmlyc3Q/LnZhbHVlcyB8fCBmaXJzdCB8fCB7fTsKICAgIHJldHVybiBDT01NRVJDSUFMX0ZJRUxEUy5maWx0ZXIoZmllbGQgPT4gaGFzT3duKHZhbHVlcywgZmllbGQpKTsKICB9CgogIGZ1bmN0aW9uIGluc3RhbGwoKSB7CiAgICBjb25zdCBCYXNlU3RvcmUgPSB3aW5kb3cuQ2F0YWxvZ0RvY3VtZW50U3RvcmU7CiAgICBpZiAoIUJhc2VTdG9yZSkgcmV0dXJuIGZhbHNlOwogICAgaWYgKEJhc2VTdG9yZS5fX3RhYmxlQmluZGluZ092ZXJyaWRlc0NvbnRyYWN0VmVyc2lvbiA9PT0gQ09OVFJBQ1RfVkVSU0lPTikgcmV0dXJuIHRydWU7CgogICAgY2xhc3MgVGFibGVCaW5kaW5nT3ZlcnJpZGVzU3RvcmUgZXh0ZW5kcyBCYXNlU3RvcmUgewogICAgICByZXBsYWNlVGFibGVSb3dzQnVsayhjb21wb25lbnRJZCwgZW50cmllcyA9IFtdLCBvcHRpb25zID0ge30pIHsKICAgICAgICBjb25zdCB0YWJsZSA9IHRoaXMuZmluZENvbXBvbmVudChjb21wb25lbnRJZCk/LmNvbXBvbmVudDsKICAgICAgICBjb25zdCBjYXJkID0gdGFibGU/LnR5cGUgPT09ICJkYXRhLXRhYmxlIiA/IHRoaXMuZ2V0UHJvZHVjdENhcmQ/Lih0YWJsZS5pZCkgOiBudWxsOwogICAgICAgIGNvbnN0IHN5bmNocm9uaXplZCA9IG9wdGlvbnMuYmluZGluZ1N5bmMgPT09IHRydWUgfHwgTnVtYmVyKHRoaXMuYmluZGluZ1N5bmNEZXB0aCkgPiAwOwogICAgICAgIGNvbnN0IGZpZWxkcyA9IGNhcmQ/LmJpbmRpbmc/LnByb2R1Y3RJZCAmJiAhc3luY2hyb25pemVkID8gb3ZlcnJpZGRlbkZpZWxkcyhlbnRyaWVzLCBvcHRpb25zKSA6IFtdOwogICAgICAgIGlmICghZmllbGRzLmxlbmd0aCkgcmV0dXJuIHN1cGVyLnJlcGxhY2VUYWJsZVJvd3NCdWxrKGNvbXBvbmVudElkLCBlbnRyaWVzLCBvcHRpb25zKTsKCiAgICAgICAgY2FyZC5iaW5kaW5nIHx8PSB7IHByb2R1Y3RJZDogbnVsbCwgdGVtcGxhdGVJZDogbnVsbCwgb3ZlcnJpZGVzOiB7fSB9OwogICAgICAgIGNhcmQuYmluZGluZy5vdmVycmlkZXMgfHw9IHt9OwogICAgICAgIGNvbnN0IHByZXZpb3VzID0gY2xvbmUoY2FyZC5iaW5kaW5nLm92ZXJyaWRlcyk7CiAgICAgICAgZmllbGRzLmZvckVhY2goZmllbGQgPT4geyBjYXJkLmJpbmRpbmcub3ZlcnJpZGVzW2ZpZWxkXSA9IHRydWU7IH0pOwogICAgICAgIHRyeSB7CiAgICAgICAgICByZXR1cm4gc3VwZXIucmVwbGFjZVRhYmxlUm93c0J1bGsoY29tcG9uZW50SWQsIGVudHJpZXMsIG9wdGlvbnMpOwogICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7CiAgICAgICAgICBjb25zdCByZXN0b3JlZFRhYmxlID0gdGhpcy5maW5kQ29tcG9uZW50KGNvbXBvbmVudElkKT8uY29tcG9uZW50OwogICAgICAgICAgY29uc3QgcmVzdG9yZWRDYXJkID0gcmVzdG9yZWRUYWJsZT8udHlwZSA9PT0gImRhdGEtdGFibGUiID8gdGhpcy5nZXRQcm9kdWN0Q2FyZD8uKHJlc3RvcmVkVGFibGUuaWQpIDogbnVsbDsKICAgICAgICAgIGlmIChyZXN0b3JlZENhcmQ/LmJpbmRpbmcpIHJlc3RvcmVkQ2FyZC5iaW5kaW5nLm92ZXJyaWRlcyA9IHByZXZpb3VzOwogICAgICAgICAgdGhyb3cgZXJyb3I7CiAgICAgICAgfQogICAgICB9CiAgICB9CgogICAgT2JqZWN0LmRlZmluZVByb3BlcnR5KFRhYmxlQmluZGluZ092ZXJyaWRlc1N0b3JlLCAiX190YWJsZUJpbmRpbmdPdmVycmlkZXNDb250cmFjdFZlcnNpb24iLCB7IHZhbHVlOiBDT05UUkFDVF9WRVJTSU9OIH0pOwogICAgd2luZG93LkNhdGFsb2dEb2N1bWVudFN0b3JlID0gVGFibGVCaW5kaW5nT3ZlcnJpZGVzU3RvcmU7CiAgICByZXR1cm4gdHJ1ZTsKICB9CgogIHdpbmRvdy5DYXRhbG9nVGFibGVCaW5kaW5nT3ZlcnJpZGVzQ29udHJhY3QgPSBPYmplY3QuZnJlZXplKHsKICAgIFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sCiAgICBDT01NRVJDSUFMX0ZJRUxEUywKICAgIG92ZXJyaWRkZW5GaWVsZHMsCiAgICBpbnN0YWxsCiAgfSk7CgogIGluc3RhbGwoKTsKfSkoKTsK')
+          write_b64('tests/table-binding-overrides-05.18.test.js', 'LyogQXVkaXRvcmlhIDA1LjE4IOKAlCBlZGnDp8OjbyB0YWJ1bGFyIGVtIGxvdGUgZGV2ZSBwcmVzZXJ2YXIgb3ZlcnJpZGVzIGRlIGNhcmRzIHZpbmN1bGFkb3MuICovCmNvbnN0IGZzID0gcmVxdWlyZSgiZnMiKTsKY29uc3QgcGF0aCA9IHJlcXVpcmUoInBhdGgiKTsKY29uc3Qgdm0gPSByZXF1aXJlKCJ2bSIpOwoKY29uc3Qgcm9vdCA9IHBhdGgucmVzb2x2ZShfX2Rpcm5hbWUsICIuLiIpOwpnbG9iYWwud2luZG93ID0gZ2xvYmFsOwpnbG9iYWwubG9jYWxTdG9yYWdlID0geyBnZXRJdGVtKCkgeyByZXR1cm4gbnVsbDsgfSwgc2V0SXRlbSgpIHt9LCByZW1vdmVJdGVtKCkge30sIGNsZWFyKCkge30gfTsKZ2xvYmFsLkNhdGFsb2dFZGl0b3JJY29uID0gKCkgPT4gIiI7CgpbCiAgImFwcC9jYXRhbG9nLXNvdXJjZS5qcyIsCiAgImFwcC9wcmVzZW50YXRpb24tcmVnaXN0cnkuanMiLAogICJhcHAvbGF5b3V0LWVuZ2luZS5qcyIsCiAgImFwcC9jb21wb25lbnQtcmVnaXN0cnkuanMiLAogICJhcHAvY29sbGVjdGlvbi1yZWdpc3RyeS5qcyIsCiAgImFwcC9kb2N1bWVudC1zdG9yZS5qcyIsCiAgImFwcC9yZWZsb3ctaGlzdG9yeS1zdGFiaWxpdHktY29udHJhY3QuanMiLAogICJhcHAvdGFibGUtYmluZGluZy1vdmVycmlkZXMtY29udHJhY3QuanMiCl0uZm9yRWFjaChmaWxlID0+IHZtLnJ1bkluVGhpc0NvbnRleHQoZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCBmaWxlKSwgInV0ZjgiKSwgeyBmaWxlbmFtZTogZmlsZSB9KSk7CgpDYXRhbG9nUmVmbG93SGlzdG9yeVN0YWJpbGl0eUNvbnRyYWN0Lmluc3RhbGwoKTsKQ2F0YWxvZ1RhYmxlQmluZGluZ092ZXJyaWRlc0NvbnRyYWN0Lmluc3RhbGwoKTsKCmNvbnN0IGFzc2VydCA9IChjb25kaXRpb24sIG1lc3NhZ2UpID0+IHsgaWYgKCFjb25kaXRpb24pIHRocm93IG5ldyBFcnJvcihtZXNzYWdlKTsgfTsKY29uc3QgY2xvbmUgPSB2YWx1ZSA9PiBKU09OLnBhcnNlKEpTT04uc3RyaW5naWZ5KHZhbHVlKSk7CmNvbnN0IGZpbmRUeXBlID0gKGNvbXBvbmVudCwgdHlwZSkgPT4gewogIGlmIChjb21wb25lbnQ/LnR5cGUgPT09IHR5cGUpIHJldHVybiBjb21wb25lbnQ7CiAgZm9yIChjb25zdCBjaGlsZCBvZiBjb21wb25lbnQ/LmNoaWxkcmVuIHx8IFtdKSB7CiAgICBjb25zdCBmb3VuZCA9IGZpbmRUeXBlKGNoaWxkLCB0eXBlKTsKICAgIGlmIChmb3VuZCkgcmV0dXJuIGZvdW5kOwogIH0KICByZXR1cm4gbnVsbDsKfTsKY29uc3QgY29tbWVyY2lhbCA9IHN0b3JlID0+IHsKICBjb25zdCBjYXJkID0gc3RvcmUuZ2V0UHJvZHVjdENhcmQoY2FyZElkKTsKICBjb25zdCB0YWJsZSA9IGZpbmRUeXBlKGNhcmQsICJkYXRhLXRhYmxlIik7CiAgY29uc3Qgcm93ID0gc3RvcmUuZ2V0VGFibGVSb3dzKHRhYmxlKVswXTsKICByZXR1cm4gewogICAgY2FyZCwKICAgIHRhYmxlLAogICAgdmFsdWVzOiBjbG9uZShyb3c/Lm1ldGFkYXRhPy52YWx1ZXMgfHwge30pLAogICAgb3ZlcnJpZGVzOiBjbG9uZShjYXJkPy5iaW5kaW5nPy5vdmVycmlkZXMgfHwge30pCiAgfTsKfTsKCmNvbnN0IHNlZWQgPSBuZXcgQ2F0YWxvZ0RvY3VtZW50U3RvcmUoY3JlYXRlQmxhbmtDYXRhbG9nRG9jdW1lbnQoKSk7CmNvbnN0IHByb2R1Y3QgPSBzZWVkLmNyZWF0ZVByb2R1Y3Qoe wogIHRpdGxlOiAiUHJvZHV0byB2aW5jdWxhZG8iLAogIGNvZGU6ICJTVC0wMDAxIiwKICBwYWNrYWdlOiAiQ0FJWEEgMTAwIiwKICBwcmljZTogIlIkIDExMSw5OSIKfSk7CmNvbnN0IGNyZWF0ZWRDYXJkID0gc2VlZC5hZGRDb21wb25lbnQoInByb2R1Y3QtY2FyZCIsIHsgeDogMjQsIHk6IDI0LCB3aWR0aDogMzYwLCBoZWlnaHQ6IDMwMCB9LCB7IHBhcmVudElkOiBudWxsIH0pOwpzZWVkLmJpbmRQcm9kdWN0KGNyZWF0ZWRDYXJkLmlkLCBwcm9kdWN0LmlkKTsKY29uc3QgY2FyZElkID0gY3JlYXRlZENhcmQuaWQ7CmNvbnN0IHN0b3JlID0gbmV3IENhdGFsb2dEb2N1bWVudFN0b3JlKHNlZWQuZ2V0RXhwb3J0RG9jdW1lbnQoKSk7CgpsZXQgc3RhdGUgPSBjb21tZXJjaWFsKHN0b3JlKTsKYXNzZXJ0KHN0YXRlLnZhbHVlcy5jb2RlID09PSAiU1QtMDAwMSIgJiYgc3RhdGUudmFsdWVzLnBhY2thZ2UgPT09ICJDQUlYQSAxMDAiICYmIHN0YXRlLnZhbHVlcy5wcmljZSA9PT0gIlIkIDExMSw5OSIsIGBBIGZpeHR1cmUgdmluY3VsYWRhIG7Do28gcmVjZWJldSBvcyBkYWRvcyBkbyBwcm9kdXRvOiAke0pTT04uc3RyaW5naWZ5KHN0YXRlLnZhbHVlcyl9LmApOwphc3NlcnQoWyJjb2RlIiwgInBhY2thZ2UiLCAicHJpY2UiXS5ldmVyeShmaWVsZCA9PiBzdGF0ZS5vdmVycmlkZXNbZmllbGRdICE9PSB0cnVlKSwgYEEgZml4dHVyZSBjb21lw6dvdSBjb20gb3ZlcnJpZGVzIGluZGV2aWRvczogJHtKU09OLnN0cmluZ2lmeShzdGF0ZS5vdmVycmlkZXMpfS5gKTsKCnN0b3JlLnJlcGxhY2VUYWJsZVJvd3NCdWxrKHN0YXRlLnRhYmxlLmlkLCBbewogIHZhbHVlczogeyBjb2RlOiAiVkFSLTAwMSIsIHBhY2thZ2U6ICJQQUNPVEUgMSIsIHByaWNlOiAiUiQgMTcsMDAiIH0KfV0sIHsgbW9kZTogInJlcGxhY2UiIH0pOwoKc3RhdGUgPSBjb21tZXJjaWFsKHN0b3JlKTsKYXNzZXJ0KHN0YXRlLnZhbHVlcy5jb2RlID09PSAiVkFSLTAwMSIgJiYgc3RhdGUudmFsdWVzLnBhY2thZ2UgPT09ICJQQUNPVEUgMSIgJiYgc3RhdGUudmFsdWVzLnByaWNlID09PSAiUiQgMTcsMDAiLCBgQSBzdWJzdGl0dWnDp8OjbyBlbSBsb3RlIG7Do28gcGVyc2lzdGl1OiAke0pTT04uc3RyaW5naWZ5KHN0YXRlLnZhbHVlcyl9LmApOwphc3NlcnQoWyJjb2RlIiwgInBhY2thZ2UiLCAicHJpY2UiXS5ldmVyeShmaWVsZCA9PiBzdGF0ZS5vdmVycmlkZXNbZmllbGRdID09PSB0cnVlKSwgYEEgc3Vic3RpdHVpw6fDo28gZW0gbG90ZSBuw6NvIG1hcmNvdSBvcyBvdmVycmlkZXM6ICR7SlNPTi5zdHJpbmdpZnkoc3RhdGUub3ZlcnJpZGVzKX0uYCk7CmFzc2VydChzdG9yZS5nZXRIaXN0b3J5U3RhdGUoKS51bmRvQ291bnQgPT09IDEsIGBBIHN1YnN0aXR1acOnw6NvIGVtIGxvdGUgZGV2ZXJpYSBjcmlhciB1bWEgw7puaWNhIGHDp8Ojby:ICR7SlNPTi5zdHJpbmdpZnkoc3RvcmUuZ2V0SGlzdG9yeVN0YXRlKCkpfS5gKTsKCmNvbnN0IGltcG9ydGVkID0gbmV3IENhdGFsb2dEb2N1bWVudFN0b3JlKHN0b3JlLmdldEV4cG9ydERvY3VtZW50KCkpOwpsZXQgaW1wb3J0ZWRTdGF0ZSA9ICgoKSA9PiB7CiAgY29uc3QgY2FyZCA9IGltcG9ydGVkLmdldFByb2R1Y3RDYXJkKGNhcmRJZCk7CiAgY29uc3QgdGFibGUgPSBmaW5kVHlwZShjYXJkLCAiZGF0YS10YWJsZSIpOwogIGNvbnN0IHJvdyA9IGltcG9ydGVkLmdldFRhYmxlUm93cyh0YWJsZSlbMF07CiAgcmV0dXJuIHsgdmFsdWVzOiBjbG9uZShyb3c/Lm1ldGFkYXRhPy52YWx1ZXMgfHwge30pLCBvdmVycmlkZXM6IGNsb25lKGNhcmQ/LmJpbmRpbmc/Lm92ZXJyaWRlcyB8fCB7fSkgfTsKfSkoKTsKYXNzZXJ0KGltcG9ydGVkU3RhdGUudmFsdWVzLmNvZGUgPT09ICJWQVItMDAxIiAmJiBpbXBvcnRlZFN0YXRlLnZhbHVlcy5wYWNrYWdlID09PSAiUEFDT1RFIDEiICYmIGltcG9ydGVkU3RhdGUudmFsdWVzLnByaWNlID09PSAiUiQgMTcsMDAiLCBgQSBpbXBvcnRhw6fDo28gcGVyZGV1IGEgZWRpw6fDo28gdGFidWxhcjogJHtKU09OLnN0cmluZ2lmeShpbXBvcnRlZFN0YXRlLnZhbHVlcyl9LmApOwphc3NlcnQoWyJjb2RlIiwgInBhY2thZ2UiLCAicHJpY2UiXS5ldmVyeShmaWVsZCA9PiBpbXBvcnRlZFN0YXRlLm92ZXJyaWRlc1tmaWVsZF0gPT09IHRydWUpLCBgQSBpbXBvcnRhw6fDo28gcGVyZGV1IG9zIG92ZXJyaWRlczogJHtKU09OLnN0cmluZ2lmeShpbXBvcnRlZFN0YXRlLm92ZXJyaWRlcyl9LmApOwoKc3RvcmUuYWRkQ29tcG9uZW50KCJ0ZXh0IiwgeyB4OiA0MjAsIHk6IDI0LCB3aWR0aDogMTIwLCBoZWlnaHQ6IDQwIH0sIHsgcGFyZW50SWQ6IG51bGwsIHByb3BzOiB7IGNvbnRlbnQ6ICJBw6fDo28gcG9zdGVyaW9yIiB9IH0pOwphc3NlcnQoc3RvcmUudW5kbygpLCAiTsOjbyBmb2kgcG9zc8OtdmVsIGRlc2ZhemVyIGEgYcOnw6NvIHBvc3Rlcmlvci4iKTsKc3RhdGUgPSBjb21tZXJjaWFsKHN0b3JlKTsKYXNzZXJ0KHN0YXRlLnZhbHVlcy5jb2RlID09PSAiVkFSLTAwMSIgJiYgc3RhdGUudmFsdWVzLnBhY2thZ2UgPT09ICJQQUNPVEUgMSIgJiYgc3RhdGUudmFsdWVzLnByaWNlID09PSAiUiQgMTcsMDAiLCBgVW5kbyBwb3N0ZXJpb3IgcmVzdGF1cm91IGRhZG9zIGRvIHByb2R1dG8gc29icmUgbyBvdmVycmlkZTogJHtKU09OLnN0cmluZ2lmeShzdGF0ZS52YWx1ZXMpfS5gKTsKYXNzZXJ0KFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0uZXZlcnkoZmllbGQgPT4gc3RhdGUub3ZlcnJpZGVzW2ZpZWxkXSA9PT0gdHJ1ZSksICJVbmRvIHBvc3RlcmlvciByZW1vdmV1IG9zIG92ZXJyaWRlcy4iKTsKCmFzc2VydChzdG9yZS51bmRvKCksICJOw6NvIGZvaSBwb3Nzw612ZWwgZGVzZmF6ZXIgYSBzdWJzdGl0dWnDp8OjbyBlbSBsb3RlLiIpOwpzdGF0ZSA9IGNvbW1lcmNpYWwoc3RvcmUpOwphc3NlcnQoc3RhdGUudmFsdWVzLmNvZGUgPT09ICJTVC0wMDAxIiAmJiBzdGF0ZS52YWx1ZXMucGFja2FnZSA9PT0gIkNBSVhBIDEwMCIgJiYgc3RhdGUudmFsdWVzLnByaWNlID09PSAiUiQgMTExLDk5IiwgYFVuZG8gZGEgc3Vic3RpdHVpw6fDo28gbsOjbyByZXN0YXVy=IG91IG8gcHJvZHV0bzogJHtKU09OLnN0cmluZ2lmeShzdGF0ZS52YWx1ZXMpfS5gKTsKYXNzZXJ0KFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0uZXZlcnkoZmllbGQgPT4gc3RhdGUub3ZlcnJpZGVzW2ZpZWxkXSAhPT0gdHJ1ZSksIGBVbmRvIGRhIHN1YnN0aXR1acOnw6NvIG1hbnRldmUgb3ZlcnJpZGVzOiAke0pTT04uc3RyaW5naWZ5KHN0YXRlLm92ZXJyaWRlcyl9LmApOwoKYXNzZXJ0KHN0b3JlLnJlZG8oKSwgIk7Do28gZm9pIHBvc3PDrXZlbCByZWZhemVyIGEgc3Vic3RpdHVpw6fDo28gZW0gbG90ZS4iKTsKc3RhdGUgPSBjb21tZXJjaWFsKHN0b3JlKTsKYXNzZXJ0KHN0YXRlLnZhbHVlcy5jb2RlID09PSAiVkFSLTAwMSIgJiYgc3RhdGUudmFsdWVzLnBhY2thZ2UgPT09ICJQQUNPVEUgMSIgJiYgc3RhdGUudmFsdWVzLnByaWNlID09PSAiUiQgMTcsMDAiLCBgUmVkbyBkYSBzdWJzdGl0dWnDp8OjbyBwZXJkZXUgYSBlZGnDp8OjbyOiAke0pTT04uc3RyaW5naWZ5KHN0YXRlLnZhbHVlcyl9LmApOwphc3NlcnQoWyJjb2RlIiwgInBhY2thZ2UiLCAicHJpY2UiXS5ldmVyeShmaWVsZCA9PiBzdGF0ZS5vdmVycmlkZXNbZmllbGRdID09PSB0cnVlKSwgIlJlZG8gZGEgc3Vic3RpdHVpw6fDo28gbsOjbyByZXN0YXVy=IG91IG9zIG92ZXJyaWRlcy4iKTsKCmNvbnN0IGdlbmVyYXRlZCA9IG5ldyBDYXRhbG9nRG9jdW1lbnRTdG9yZShjcmVhdGVCbGFua0NhdGFsb2dEb2N1bWVudCgpKTsKY29uc3QgZ2VuZXJhdGVkUHJvZHVjdCA9IGdlbmVyYXRlZC5jcmVhdGVQcm9kdWN0KHsKICB0aXRsZTogIlByb2R1dG8gZ2VyYWRvIiwKICBjb2RlOiAiR0VOLTAwMSIsCiAgcGFja2FnZTogIkNBSVhBIDUwIiwKICBwcmljZTogIlIkIDUwLDAwIgp9KTsKY29uc3QgY29tcG9zaXRpb24gPSBnZW5lcmF0ZWQuY3JlYXRlQ2FyZHNGb3JQcm9kdWN0cyhbZ2VuZXJhdGVkUHJvZHVjdC5pZF0sIHsgY29sdW1uczogMSwgZGVuc2l0eTogImNvbXBhY3QiLCBwYXJlbnRJZDogbnVsbCB9KTsKY29uc3QgZ2VuZXJhdGVkQ2FyZCA9IGNvbXBvc2l0aW9uLmNhcmRzWzBdOwpjb25zdCBnZW5lcmF0ZWRUYWJsZSA9IGZpbmRUeXBlKGdlbmVyYXRlZENhcmQsICJkYXRhLXRhYmxlIik7CmNvbnN0IGdlbmVyYXRlZFJvdyA9IGdlbmVyYXRlZC5nZXRUYWJsZVJvd3MoZ2VuZXJhdGVkVGFibGUpWzBdOwphc3NlcnQoZ2VuZXJhdGVkUm93Py5tZXRhZGF0YT8udmFsdWVzPy5jb2RlID09PSAiR0VOLTAwMSIsIGBBIGdlcmHDp8OjbyBpbnRlcm5hIG7Do28gbWF0ZXJpYWxpem91IG8gcHJvZHV0bzogJHtKU09OLnN0cmluZ2lmeShnZW5lcmF0ZWRSb3c/Lm1ldGFkYXRhPy52YWx1ZXMpfS5gKTsKYXNzZXJ0KFsiY29kZSIsICJwYWNrYWdlIiwgInByaWNlIl0uZXZlcnkoZmllbGQgPT4gZ2VuZXJhdGVkQ2FyZC5iaW5kaW5nPy5vdmVycmlkZXM/LltmaWVsZF0gIT09IHRydWUpLCBgQSBnZXJhw6fDo28gaW50ZXJuYSBmb2kgY29uZnVuZGlkYSBjb20gb3ZlcnJpZGUgbG9jYWw6ICR7SlNPTi5zdHJpbmdpZnk oZ2VuZXJhdGVkQ2FyZC5iaW5kaW5nPy5vdmVycmlkZXMpfS5gKTsKCmNvbnN0IGFwcCA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsICJ0YWJsZS1iaW5kaW5nLW92ZXJyaWRlcy1jb250cmFjdC5qcyIpLCAidXRmOCIpOwpjb25zdCBraXQgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhdXRob3Jpbmcta2l0IiwgInJ1bnRpbWUiLCAidGFibGUtYmluZGluZy1vdmVycmlkZXMtY29udHJhY3QuanMiKSwgInV0ZjgiKTsKYXNzZXJ0KGFwcCA9PT0ga2l0LCAiTyBjb250cmF0byBkZSBvdmVycmlkZXMgZGl2ZXJnaXUgZW50cmUgZWRpdG9yIGUgQXV0aG9yaW5nS2l0LiIpOwphc3NlcnQoQ2F0YWxvZ1RhYmxlQmluZGluZ092ZXJyaWRlc0NvbnRyYWN0LlZFUlNJT04gPT09ICIwNS4xOC5hdWRpdC4yIiwgIlZlcnPDp28gaW5lc3BlcmFkYSBkbyBjb250cmF0by4iKTsKCmNvbnNvbGUubG9nKCLinJMgT3ZlcnJpZGVzIGRlIHRhYmVsYSBlbSBsb3RlIHNvYnJldml2ZW0gYSBpbXBvcnRhw6fDo28sIHVuZG8vcmVkbyBlIG7Do28gY29udGFtaW5hbSBzaW5jcm9uaXphw6fDo28gaW50ZXJuYS4iKTsK')
+
+          store_path = Path('app/document-store.js')
+          store = store_path.read_text()
+          old_call = 'this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });'
+          new_call = 'this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });'
+          if old_call in store:
+              count = store.count(old_call)
+              if count != 2:
+                  raise SystemExit(f'Esperadas 2 materializações internas; encontradas {count}.')
+              store_path.write_text(store.replace(old_call, new_call))
+          elif store.count(new_call) != 2:
+              raise SystemExit('As duas materializações internas não estão marcadas como bindingSync.')
+
+          replace_once(
+              'app/main.js',
+              '    { file: "callout-recipe-contract.js", globalName: "CatalogCalloutRecipeContract" },\n    { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },',
+              '    { file: "callout-recipe-contract.js", globalName: "CatalogCalloutRecipeContract" },\n    { file: "table-binding-overrides-contract.js", globalName: "CatalogTableBindingOverridesContract" },\n    { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },'
+          )
+          replace_once(
+              'app/main.js',
+              '    window.CatalogCalloutRecipeContract?.install();\n    window.CatalogTextAlignmentContract?.install();',
+              '    window.CatalogCalloutRecipeContract?.install();\n    window.CatalogTableBindingOverridesContract?.install();\n    window.CatalogTextAlignmentContract?.install();'
+          )
+          replace_once(
+              'authoring-kit/compiler/compile-catalog.js',
+              '  "reflow-history-stability-contract.js",\n  "catalog-validator.js",',
+              '  "reflow-history-stability-contract.js",\n  "table-binding-overrides-contract.js",\n  "catalog-validator.js",'
+          )
+          replace_once(
+              'authoring-kit/compiler/compile-catalog.js',
+              'CatalogReflowHistoryStabilityContract.install();',
+              'CatalogReflowHistoryStabilityContract.install();\nCatalogTableBindingOverridesContract.install();'
+          )
+          replace_once(
+              'tools/build-developer-b-authoring-kit.js',
+              '  "reflow-history-stability-contract.js",\n  "component-intent-registry.js",',
+              '  "reflow-history-stability-contract.js",\n  "table-binding-overrides-contract.js",\n  "component-intent-registry.js",'
+          )
+          replace_once(
+              'tests/stress-domain-history-05.18.test.js',
+              '  "app/product-data-only-contract.js",\n  "app/reflow-history-stability-contract.js"\n]',
+              '  "app/product-data-only-contract.js",\n  "app/reflow-history-stability-contract.js",\n  "app/table-binding-overrides-contract.js"\n]'
+          )
+          replace_once(
+              'tests/stress-domain-history-05.18.test.js',
+              '  CatalogProductVariantsContract,\n  CatalogProductDataOnlyContract\n]',
+              '  CatalogProductVariantsContract,\n  CatalogProductDataOnlyContract,\n  CatalogTableBindingOverridesContract\n]'
+          )
           PY
-          node --check tests/browser-stress-interface-05.18.test.js
-      - name: Iniciar editor
+      - name: Validar correção focada
+        shell: bash
         run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          exit 1
-      - name: Executar cenário instrumentado
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
-        run: |
-          mkdir -p audit-output/batch-8-4
+          set -euo pipefail
+          node --check app/table-binding-overrides-contract.js
+          node --check authoring-kit/runtime/table-binding-overrides-contract.js
+          node --check tests/table-binding-overrides-05.18.test.js
+          node --check app/main.js
+          node --check authoring-kit/compiler/compile-catalog.js
+          node --check tools/build-developer-b-authoring-kit.js
+          node --check tests/stress-domain-history-05.18.test.js
+          cmp app/table-binding-overrides-contract.js authoring-kit/runtime/table-binding-overrides-contract.js
+          test "$(grep -F 'bindingSync: true' app/document-store.js | wc -l)" -eq 2
+          node tests/table-binding-overrides-05.18.test.js
+          node tests/reflow-history-stability-05.18.test.js
+          node tests/reflow-manual-baseline-05.18.test.js
+          mkdir -p audit-output/table-binding
           node tools/run-developer-b-stress.js \
-            --browser \
+            --node \
             --repeat=1 \
             --seed=5182026 \
-            --timeout=300000 \
-            --output=audit-output/batch-8-4
-      - name: Comparar estados
-        if: always()
+            --timeout=180000 \
+            --output=audit-output/table-binding
+          git diff --check
+      - name: Commit na branch isolada
         shell: bash
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          roots = list(Path('audit-output/batch-8-4').glob('run-*/browser-*'))
-          if not roots:
-              raise SystemExit(0)
-          root = roots[0]
-          expected = root / 'button-undo-expected.json'
-          current = root / 'button-undo-current.json'
-          output = root / 'button-undo-diff.txt'
-          if not expected.exists() or not current.exists():
-              output.write_text('Nenhuma divergência de botão foi capturada.\n')
-              raise SystemExit(0)
-          left = json.loads(expected.read_text())
-          right = json.loads(current.read_text())
-          diffs = []
-          def walk(a, b, path='$'):
-              if len(diffs) >= 250:
-                  return
-              if type(a) is not type(b):
-                  diffs.append(f'{path}: type {type(a).__name__} != {type(b).__name__}')
-                  return
-              if isinstance(a, dict):
-                  for key in sorted(set(a) | set(b)):
-                      if key not in a: diffs.append(f'{path}.{key}: missing expected')
-                      elif key not in b: diffs.append(f'{path}.{key}: missing current')
-                      else: walk(a[key], b[key], f'{path}.{key}')
-              elif isinstance(a, list):
-                  if len(a) != len(b): diffs.append(f'{path}: len {len(a)} != {len(b)}')
-                  for index, (x, y) in enumerate(zip(a, b)): walk(x, y, f'{path}[{index}]')
-              elif a != b:
-                  diffs.append(f'{path}: {a!r} != {b!r}')
-          walk(left, right)
-          output.write_text('\n'.join(diffs) + '\n')
-          print(output.read_text())
-          PY
+          if git diff --quiet; then
+            echo "Correção já integrada."
+            exit 0
+          fi
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add \
+            app/document-store.js \
+            app/main.js \
+            app/table-binding-overrides-contract.js \
+            authoring-kit/compiler/compile-catalog.js \
+            authoring-kit/runtime/table-binding-overrides-contract.js \
+            tools/build-developer-b-authoring-kit.js \
+            tests/stress-domain-history-05.18.test.js \
+            tests/table-binding-overrides-05.18.test.js
+          git commit -m "fix: preserva overrides de tabelas vinculadas"
+          git push origin HEAD:agent/developer-b-05.18
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-8-4-undo-diagnostic
-          path: audit-output/batch-8-4
-          if-no-files-found: error
+          name: developer-b-table-binding-fix
+          path: audit-output/table-binding
+          if-no-files-found: warn
           retention-days: 14
