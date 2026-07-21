@@ -61,7 +61,7 @@ const card = store.addComponent("product-card", { x: 0, y: 0, width: 280, height
 const historyBeforeManual = store.getHistoryState().undoCount;
 store.findComponent(card.id).component.frame.width = 66;
 assert(store.reflowComponentTree(area.id), "O reflow manual não foi executado.");
-assert(store.getHistoryState().undoCount === historyBeforeManual, "O reflow derivado criou uma entrada de histórico.");
+assert(store.getHistoryState().undoCount === historyBeforeManual, "O reflow manual criou uma entrada de histórico.");
 assert(store.findComponent(card.id).component.frame.width >= 220, "O reflow manual não restaurou o mínimo do card.");
 const postReflowSignature = signature(store.getState());
 
@@ -72,7 +72,22 @@ assert(signature(store.getState()) === postReflowSignature, "Undo voltou ao snap
 assert(!store.findComponent(added.id), "Undo preservou o elemento criado depois do reflow.");
 assert(store.redo(), "Não foi possível refazer a ação posterior ao reflow.");
 assert(store.findComponent(added.id), "Redo não restaurou o elemento posterior ao reflow.");
-assert(store.getState().schemaVersion === "1.16.0", "A sincronização alterou o schema.");
-assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.3", "Versão inesperada do contrato de estabilidade.");
 
-console.log("✓ Reflow manual sincroniza o baseline sem criar histórico e preserva a próxima ação em undo/redo.");
+const beforeDerivedState = signature(store.getState());
+const beforeDerivedHistory = store.getHistoryState().undoCount;
+const derivedCard = store.findComponent(card.id).component;
+derivedCard.frame.height += 24;
+assert(store.reflowComponentTree(derivedCard, { derived: true }), "O reflow derivado não foi executado.");
+const afterDerivedState = signature(store.getState());
+assert(afterDerivedState !== beforeDerivedState, "A fixture derivada não alterou o documento.");
+store.emit({ type: "derived-reflow-probe", componentId: derivedCard.id });
+assert(store.getHistoryState().undoCount === beforeDerivedHistory + 1, "O reflow derivado sincronizou o baseline antes da captura.");
+assert(store.undo(), "Não foi possível desfazer a ação com reflow derivado.");
+assert(signature(store.getState()) === beforeDerivedState, "Undo não restaurou o estado anterior ao reflow derivado.");
+assert(store.redo(), "Não foi possível refazer a ação com reflow derivado.");
+assert(signature(store.getState()) === afterDerivedState, "Redo não restaurou o estado estabilizado pelo reflow derivado.");
+
+assert(store.getState().schemaVersion === "1.16.0", "A sincronização alterou o schema.");
+assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4", "Versão inesperada do contrato de estabilidade.");
+
+console.log("✓ Reflow manual sincroniza baseline; reflow derivado permanece dentro da próxima ação de histórico.");
