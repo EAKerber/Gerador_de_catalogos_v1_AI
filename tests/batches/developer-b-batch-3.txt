@@ -1,0 +1,12 @@
+tests/text-overflow-persistence-05.18.4.test.js
+tests/footer-item-containment-05.18.12.2.test.js
+tests/footer-item-containment-build-05.18.12.2.test.js
+tests/component-initial-placement-05.18.12.1.test.js
+tests/product-hero-geometry-05.18.7.test.js
+tests/product-hero-runtime-parity-05.18.7.test.js
+tests/product-technical-geometry-05.18.8.test.js
+tests/product-technical-runtime-parity-05.18.8.test.js
+tests/product-variants-geometry-05.18.9.test.js
+tests/product-variants-runtime-parity-05.18.9.test.js
+tests/product-data-only-geometry-05.18.10.test.js
+tests/product-data-only-runtime-parity-05.18.10.test.js
