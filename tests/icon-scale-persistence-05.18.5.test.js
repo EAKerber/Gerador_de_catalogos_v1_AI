@@ -1,4 +1,4 @@
-/* DB-05.19.5 — escala interna de icon sem alterar o frame externo. */
+/* DB-05.19.6 — escala interna de icon pertence ao registro, render e CSS canônicos. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -16,8 +16,7 @@ global.CatalogEditorIcon = name => `<span class="icon-shell"><svg data-icon="${n
   "app/document-store.js",
   "app/text-alignment-contract.js",
   "app/text-scale-contract.js",
-  "app/text-overflow-contract.js",
-  "app/icon-scale-contract.js"
+  "app/text-overflow-contract.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -26,9 +25,6 @@ const clone = value => JSON.parse(JSON.stringify(value));
 CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 CatalogTextOverflowContract.install();
-const installation = CatalogIconScaleContract.install();
-assert(installation.version === "05.19.5", "Versão inesperada do shim de ícone.");
-assert(installation.stylesInstalled === false, "O shim ainda declarou injeção de estilos.");
 
 const scaleField = CATALOG_COMPONENT_REGISTRY.icon.contentFields.find(field => field.path === "iconScale");
 assert(scaleField, "O campo de escala do ícone não está publicado.");
@@ -65,4 +61,7 @@ for (const scale of [80, 100, 120]) {
   assert(imported.findComponent(footerIcon.id).component.props.iconScale === scale, `O rodapé não persistiu ${scale}%.`);
 }
 
-console.log("✓ DB-05.19.5 preserva escala de ícone, histórico, frame, importação e schema sem injeção dinâmica.");
+assert(!fs.existsSync(path.join(root, "app", "icon-scale-contract.js")), "O shim de escala ainda existe no app.");
+assert(!fs.existsSync(path.join(root, "authoring-kit", "runtime", "icon-scale-contract.js")), "O shim de escala ainda existe no AuthoringKit.");
+
+console.log("✓ DB-05.19.6 preserva escala de ícone, histórico, frame, importação e schema sem shim.");
