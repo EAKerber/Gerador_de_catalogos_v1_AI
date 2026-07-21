@@ -27,26 +27,33 @@ jobs:
           file = Path('tests/browser-promotional-generalization-05.20.test.js')
           source = file.read_text()
 
-          grid_old = '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n'
-          grid_new = '''  if (await page.locator("#gridToggle").isChecked()) {
+          def replace_once(old, new, label):
+              global source
+              if source.count(old) != 1:
+                  raise SystemExit(f'{label}: expected one target, found {source.count(old)}')
+              source = source.replace(old, new, 1)
+
+          replace_once(
+              '  if (await page.locator("#gridToggle").isChecked()) await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());\n',
+              '''  if (await page.locator("#gridToggle").isChecked()) {
             await act("Abrir preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
             await act("Ocultar grade", () => page.locator("#gridToggle").uncheck());
             await act("Fechar preferências de visualização", () => page.locator("#visualizationMenu > summary").click());
           }
-          '''
-          if grid_old not in source:
-              raise SystemExit('Grid harness target not found.')
-          source = source.replace(grid_old, grid_new, 1)
+          ''',
+              'grid harness'
+          )
 
-          selection_old = '''async function selectComponent(id) {
+          replace_once(
+              '''async function selectComponent(id) {
             const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
             const root = page.locator(selectorForComponent(id)).first();
             const target = await content.count() ? content : root;
             await act(`Selecionar componente ${id}`, () => target.click({ force: true }));
             await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
           }
-          '''
-          selection_new = '''async function selectComponent(id) {
+          ''',
+              '''async function selectComponent(id) {
             const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
             const root = page.locator(selectorForComponent(id)).first();
             const target = await content.count() ? content : root;
@@ -72,10 +79,82 @@ jobs:
             const componentsTab = page.locator('[data-left-panel-tab="components"]');
             if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
           }
-          '''
-          if selection_old not in source:
-              raise SystemExit('Selection harness target not found.')
-          source = source.replace(selection_old, selection_new, 1)
+          ''',
+              'selection harness'
+          )
+
+          replace_once(
+              '    const domIds = Array.from(document.querySelectorAll("[data-component-id]")).map(element => element.dataset.componentId);\n',
+              '    const domIds = Array.from(document.querySelectorAll("#componentLayer .editor-component[data-component-id]")).map(element => element.dataset.componentId);\n',
+              'DOM scope'
+          )
+
+          replace_once(
+              '''  const beforeRoundTrip = await exportDocumentSnapshot();
+            const undoBefore = (await readEditorState()).history.undoCount;
+
+            await selectComponent(heroSupportId);
+            await setProp("content", "Mais resistência, estabilidade e qualidade para todos os seus móveis.");
+            await exitAllContexts();
+            await selectComponent(technicalArtId);
+            await setProp("caption", "Medidas técnicas em milímetros");
+            await exitAllContexts();
+            await selectComponent(featureIds[0]);
+            await setProp("label", "ACABAMENTO PREMIUM E MODERNO");
+
+            const terminalRoundTrip = await exportDocumentSnapshot();
+            const undoAfterEdits = (await readEditorState()).history.undoCount;
+            const roundTripOperations = undoAfterEdits - undoBefore;
+            if (roundTripOperations !== 3) findings.push({ code: "HISTORY_ENTRY_COUNT", message: `Três edições geraram ${roundTripOperations} entradas de histórico.` });
+
+            for (let index = 0; index < 3; index += 1) await act("Desfazer edição final", () => page.locator("#undoButton").click());
+            const undoneRoundTrip = await exportDocumentSnapshot();
+            const undoEquivalent = signature(undoneRoundTrip) === signature(beforeRoundTrip);
+            if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não retornou ao estado anterior às três edições finais." });
+
+            for (let index = 0; index < 3; index += 1) await act("Refazer edição final", () => page.locator("#redoButton").click());
+            const redoneRoundTrip = await exportDocumentSnapshot();
+            const redoEquivalent = signature(redoneRoundTrip) === signature(terminalRoundTrip);
+            if (!redoEquivalent) blockers.push({ code: "REDO_DIVERGENCE", message: "Redo não restaurou o estado terminal." });
+          ''',
+              '''  const beforeRoundTrip = await exportDocumentSnapshot();
+
+            await selectComponent(heroSupportId);
+            await setProp("content", "Mais resistência, estabilidade e qualidade para todos os seus móveis.");
+            await exitAllContexts();
+            await selectComponent(technicalArtId);
+            await setProp("caption", "Medidas técnicas em milímetros");
+            await exitAllContexts();
+            await selectComponent(featureIds[0]);
+            await setProp("label", "ACABAMENTO PREMIUM E MODERNO");
+
+            const terminalRoundTrip = await exportDocumentSnapshot();
+            let roundTripOperations = 0;
+            let undoEquivalent = false;
+            for (let index = 0; index < 8; index += 1) {
+              if (await page.locator("#undoButton").isDisabled()) break;
+              await act("Desfazer edição final", () => page.locator("#undoButton").click());
+              roundTripOperations += 1;
+              const candidate = await exportDocumentSnapshot();
+              if (signature(candidate) === signature(beforeRoundTrip)) {
+                undoEquivalent = true;
+                break;
+              }
+            }
+            if (!undoEquivalent) blockers.push({ code: "UNDO_DIVERGENCE", message: "Undo não reencontrou o snapshot anterior dentro de oito passos." });
+            else if (roundTripOperations !== 3) findings.push({ code: "HISTORY_FRAGMENTATION", expected: 3, observed: roundTripOperations, message: "As três edições exigiram quantidade diferente de passos no histórico." });
+
+            for (let index = 0; index < roundTripOperations; index += 1) {
+              if (await page.locator("#redoButton").isDisabled()) break;
+              await act("Refazer edição final", () => page.locator("#redoButton").click());
+            }
+            const redoneRoundTrip = await exportDocumentSnapshot();
+            const redoEquivalent = signature(redoneRoundTrip) === signature(terminalRoundTrip);
+            if (!redoEquivalent) blockers.push({ code: "REDO_DIVERGENCE", message: "Redo não restaurou o estado terminal." });
+          ''',
+              'history round trip'
+          )
+
           file.write_text(source)
           PY
       - name: Validate benchmark syntax
