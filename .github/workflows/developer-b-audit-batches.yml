@@ -5,44 +5,44 @@ on:
 permissions:
   contents: read
 jobs:
-  browser-stress-three-seeds:
-    name: Confirmação visual — três sementes
+  authoring-kit-build-diagnostic:
+    name: Diagnóstico — sincronização do AuthoringKit
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar Playwright e Chromium
+      - name: Regenerar AuthoringKit
+        shell: bash
         run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Iniciar editor
+          mkdir -p audit-output/authoring-kit-build
+          node tools/build-developer-b-authoring-kit.js | tee audit-output/authoring-kit-build/build.log
+          git status --short > audit-output/authoring-kit-build/status.txt
+          git diff --name-status > audit-output/authoring-kit-build/name-status.txt
+          git diff --stat > audit-output/authoring-kit-build/stat.txt
+          git diff --numstat > audit-output/authoring-kit-build/numstat.txt
+          git diff --binary > audit-output/authoring-kit-build/generated.patch
+      - name: Validar artefatos regenerados
+        shell: bash
         run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/catalog-http.log
-          exit 1
-      - name: Executar três sementes visuais
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
-        run: |
-          mkdir -p audit-output/browser-three-seeds
-          node tools/run-developer-b-stress.js \
-            --browser \
-            --repeat=3 \
-            --seed=5182026 \
-            --timeout=300000 \
-            --output=audit-output/browser-three-seeds
-      - name: Publicar evidências
+          set -euo pipefail
+          node --check app/authoring-kit-files.js
+          node --check authoring-kit/compiler/compile-catalog.js
+          node --check authoring-kit/runtime/table-binding-overrides-contract.js
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
+          node tests/table-binding-overrides-05.18.test.js
+          node tests/section-recipes.test.js
+          node tests/callout-manifest-05.18.19.test.js
+          node tests/fact-manifest-05.18.17.test.js
+          node -e 'JSON.parse(require("fs").readFileSync("authoring-kit/capabilities.json", "utf8")); JSON.parse(require("fs").readFileSync("authoring-kit/feature-inventory.json", "utf8"));'
+          git diff --check
+      - name: Publicar diagnóstico
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-browser-three-seeds
-          path: audit-output/browser-three-seeds
+          name: developer-b-authoring-kit-build-diagnostic
+          path: audit-output/authoring-kit-build
           if-no-files-found: error
           retention-days: 14
