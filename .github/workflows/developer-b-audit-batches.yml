@@ -18,10 +18,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p audit-output/batch-5-1
-          cp tests/stress-domain-history-05.18.test.js /tmp/stress-domain-diagnostic.js
+          cp tests/stress-domain-history-05.18.test.js tests/stress-domain-diagnostic.tmp.js
           python - <<'PY'
           from pathlib import Path
-          path = Path('/tmp/stress-domain-diagnostic.js')
+          path = Path('tests/stress-domain-diagnostic.tmp.js')
           source = path.read_text()
           needle = 'assert(signature(store.getState()) === finalSignature, `Redo completo não restaurou o estado final após ${redoCount} passos.`);'
           replacement = '''if (signature(store.getState()) !== finalSignature) {
@@ -38,7 +38,7 @@ jobs:
         env:
           CATALOG_STRESS_SEED: '5182026'
           CATALOG_STRESS_OUTPUT_DIR: ${{ github.workspace }}/audit-output/batch-5-1
-        run: node /tmp/stress-domain-diagnostic.js
+        run: node tests/stress-domain-diagnostic.tmp.js
       - name: Comparar estados
         if: always()
         shell: bash
@@ -47,6 +47,7 @@ jobs:
           import json
           from pathlib import Path
           root = Path('audit-output/batch-5-1/domain')
+          root.mkdir(parents=True, exist_ok=True)
           expected_path = root / 'redo-expected.json'
           current_path = root / 'redo-current.json'
           output = root / 'redo-diff.txt'
