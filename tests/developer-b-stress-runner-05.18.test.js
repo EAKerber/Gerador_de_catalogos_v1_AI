@@ -22,22 +22,25 @@ for (const file of [runnerPath, ...stressFiles]) {
 }
 
 const source = fs.readFileSync(runnerPath, "utf8");
-for (const flag of ["--list", "--node", "--browser", "--all", "--repeat", "--seed", "--output"]) {
+for (const flag of ["--list", "--node", "--browser", "--all", "--repeat", "--seed", "--output", "--timeout"]) {
   assert(source.includes(flag), `O executor de estresse não declara ${flag}.`);
 }
 assert(source.includes("CATALOG_STRESS_SEED"), "A semente não é propagada aos testes.");
 assert(source.includes("CATALOG_STRESS_OUTPUT_DIR"), "O diretório de evidências não é propagado.");
+assert(source.includes("CATALOG_STRESS_TIMEOUT_MS"), "O timeout não é propagado nem configurável.");
+assert(source.includes("ETIMEDOUT") && source.includes("killSignal"), "O executor não classifica ou encerra testes travados.");
 assert(source.includes("stress-batch-summary.json"), "O batch não produz resumo consolidado.");
 assert(source.includes("python -m http.server 8080"), "A recuperação para servidor ausente não foi documentada no executor.");
 assert(!/execSync|shell\s*:\s*true|npm\s+(?:run|test)|npx\s+/.test(source), "O executor introduziu dependência de shell ou npm.");
 
 const temporaryOutput = fs.mkdtempSync(path.join(os.tmpdir(), "catalog-stress-runner-test-"));
-const listed = spawnSync(process.execPath, [runnerPath, "--list", "--repeat=3", "--seed=42", `--output=${temporaryOutput}`], {
+const listed = spawnSync(process.execPath, [runnerPath, "--list", "--repeat=3", "--seed=42", "--timeout=45000", `--output=${temporaryOutput}`], {
   cwd: root,
   encoding: "utf8"
 });
 assert(listed.status === 0, `O modo --list do estresse falhou: ${listed.stderr || listed.stdout}`);
 assert(listed.stdout.includes("repetições: 3") && listed.stdout.includes("semente inicial: 42"), "O plano não refletiu repetição e semente.");
+assert(listed.stdout.includes("timeout por teste: 45000 ms"), "O plano não refletiu o timeout configurado.");
 assert(listed.stdout.includes("tests/stress-domain-history-05.18.test.js"), "O teste de domínio não aparece no plano.");
 assert(listed.stdout.includes("tests/browser-stress-interface-05.18.test.js"), "O teste de Chromium não aparece no plano.");
 assert(!fs.existsSync(path.join(temporaryOutput, "stress-batch-summary.json")), "O modo --list executou a suíte ou escreveu resumo indevidamente.");
@@ -49,4 +52,4 @@ assert(auditList.status === 0, `A listagem da regressão falhou: ${auditList.std
 assert(!auditList.stdout.includes("stress-domain-history") && !auditList.stdout.includes("browser-stress-interface"), "O batch pesado reapareceu na regressão comum.");
 
 fs.rmSync(temporaryOutput, { recursive: true, force: true });
-console.log("✓ Batch de estresse possui sintaxe válida, execução reproduzível, resumo próprio e isolamento da regressão comum.");
+console.log("✓ Batch de estresse possui sintaxe válida, timeout, execução reproduzível, resumo próprio e isolamento da regressão comum.");
