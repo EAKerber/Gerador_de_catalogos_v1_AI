@@ -5,43 +5,53 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-8-1:
-    name: Batch 8.1 — estresse visual após canonização
+  batch-8-2:
+    name: Batch 8.2 — baseline de histórico após reflow
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar Playwright e Chromium
+      - name: Executar regressões focadas
+        shell: bash
         run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Iniciar editor
-        run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
+          mkdir -p audit-output/batch-8-2
+          failures=0
+          tests=(
+            tests/reflow-history-stability-05.18.test.js
+            tests/reflow-manual-baseline-05.18.test.js
+          )
+          for file in "${tests[@]}"; do
+            log="audit-output/batch-8-2/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-8-2/summary.txt
+            if node "$file" >"$log" 2>&1; then
+              echo PASS | tee -a audit-output/batch-8-2/summary.txt
+            else
+              status=$?
+              echo "FAIL status=$status" | tee -a audit-output/batch-8-2/summary.txt
+              cat "$log"
+              failures=$((failures + 1))
+            fi
           done
-          exit 1
-      - name: Executar estresse visual
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
+          echo "failures=$failures" | tee -a audit-output/batch-8-2/summary.txt
+          exit "$failures"
+      - name: Executar uma semente de domínio
+        if: success()
         run: |
-          mkdir -p audit-output/batch-8-1
+          mkdir -p audit-output/batch-8-2/domain-run
           node tools/run-developer-b-stress.js \
-            --browser \
+            --node \
             --repeat=1 \
             --seed=5182026 \
-            --timeout=300000 \
-            --output=audit-output/batch-8-1
+            --timeout=180000 \
+            --output=audit-output/batch-8-2/domain-run
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-8-1-browser-stress
-          path: audit-output/batch-8-1
+          name: developer-b-batch-8-2-reflow-baseline
+          path: audit-output/batch-8-2
           if-no-files-found: error
           retention-days: 14
