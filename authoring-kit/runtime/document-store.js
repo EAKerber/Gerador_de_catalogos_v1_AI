@@ -1982,7 +1982,7 @@
           if (table) {
             this.updateComponent(table.id, { props: { density } });
             this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
-            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
           }
           return card;
         });
@@ -2021,7 +2021,7 @@
           if (table) {
             this.updateComponent(table.id, { props: { density: presentation.density } });
             this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
-            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
           }
           return card;
         };

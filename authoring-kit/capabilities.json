@@ -56,6 +56,98 @@
     "semanticTables": true,
     "undoRedo": true
   },
+  "componentIntents": {
+    "groups": [
+      {
+        "componentTypes": [
+          "catalog-footer",
+          "catalog-header"
+        ],
+        "description": "Estruturas que identificam, abrem ou encerram a página editorial.",
+        "id": "page",
+        "label": "Página",
+        "order": 10,
+        "tier": "primary"
+      },
+      {
+        "componentTypes": [
+          "art",
+          "art-gallery",
+          "product-card",
+          "specification",
+          "title-symbol"
+        ],
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary"
+      },
+      {
+        "componentTypes": [
+          "data-table",
+          "legend-group",
+          "legend-item",
+          "legend-panel"
+        ],
+        "description": "Tabelas, legendas e estruturas para valores ou classificações semânticas.",
+        "id": "data",
+        "label": "Dados",
+        "order": 30,
+        "tier": "primary"
+      },
+      {
+        "componentTypes": [
+          "footer-item",
+          "icon",
+          "separator",
+          "text"
+        ],
+        "description": "Texto, símbolos e peças de apoio para orientar a leitura e o contato.",
+        "id": "communication",
+        "label": "Comunicação",
+        "order": 40,
+        "tier": "primary"
+      },
+      {
+        "componentTypes": [
+          "layout-container"
+        ],
+        "description": "Infraestrutura composicional e controles internos para edição detalhada.",
+        "id": "advanced",
+        "label": "Estrutura avançada",
+        "order": 90,
+        "tier": "advanced"
+      }
+    ],
+    "manifestVersion": "05.18.11"
+  },
+  "componentPlacements": {
+    "hints": [
+      {
+        "blockAnchor": "top",
+        "collisionPolicy": "move-inward",
+        "componentType": "catalog-header",
+        "fallback": "generic",
+        "inlineSizing": "safe-area",
+        "reason": "Cabeçalhos normalmente iniciam a hierarquia editorial no topo da página.",
+        "scope": "page",
+        "strength": "probable"
+      },
+      {
+        "blockAnchor": "bottom",
+        "collisionPolicy": "move-inward",
+        "componentType": "catalog-footer",
+        "fallback": "generic",
+        "inlineSizing": "safe-area",
+        "reason": "Rodapés normalmente encerram a hierarquia editorial na base da página.",
+        "scope": "page",
+        "strength": "probable"
+      }
+    ],
+    "manifestVersion": "05.18.12.1",
+    "strength": "probable"
+  },
   "components": [
     {
       "capabilities": {
@@ -176,6 +268,15 @@
       "description": "Imagem, SVG, render ou logotipo reutilizável da biblioteca.",
       "gridUnit": 2,
       "icon": "art",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary",
+        "type": "art"
+      },
       "label": "Arte / logo",
       "minimum": {
         "height": 60,
@@ -227,6 +328,15 @@
       "description": "Composição ordenável com uma legenda vinculada a cada imagem.",
       "gridUnit": 2,
       "icon": "art",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary",
+        "type": "art-gallery"
+      },
       "label": "Galeria de imagens",
       "minimum": {
         "height": 96,
@@ -284,6 +394,24 @@
       "description": "Contatos, benefícios e identificação da página.",
       "gridUnit": 4,
       "icon": "footer",
+      "initialPlacement": {
+        "blockAnchor": "bottom",
+        "collisionPolicy": "move-inward",
+        "componentType": "catalog-footer",
+        "fallback": "generic",
+        "inlineSizing": "safe-area",
+        "reason": "Rodapés normalmente encerram a hierarquia editorial na base da página.",
+        "scope": "page",
+        "strength": "probable"
+      },
+      "intent": {
+        "description": "Estruturas que identificam, abrem ou encerram a página editorial.",
+        "id": "page",
+        "label": "Página",
+        "order": 10,
+        "tier": "primary",
+        "type": "catalog-footer"
+      },
       "label": "Rodapé",
       "minimum": {
         "height": 80,
@@ -380,6 +508,24 @@
       "description": "Logo, sobretítulo, título e linha editorial.",
       "gridUnit": 4,
       "icon": "header",
+      "initialPlacement": {
+        "blockAnchor": "top",
+        "collisionPolicy": "move-inward",
+        "componentType": "catalog-header",
+        "fallback": "generic",
+        "inlineSizing": "safe-area",
+        "reason": "Cabeçalhos normalmente iniciam a hierarquia editorial no topo da página.",
+        "scope": "page",
+        "strength": "probable"
+      },
+      "intent": {
+        "description": "Estruturas que identificam, abrem ou encerram a página editorial.",
+        "id": "page",
+        "label": "Página",
+        "order": 10,
+        "tier": "primary",
+        "type": "catalog-header"
+      },
       "label": "Cabeçalho",
       "minimum": {
         "height": 110,
@@ -418,6 +564,15 @@
       "description": "Colunas semânticas, valores e legendas por célula.",
       "gridUnit": 2,
       "icon": "card",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Tabelas, legendas e estruturas para valores ou classificações semânticas.",
+        "id": "data",
+        "label": "Dados",
+        "order": 30,
+        "tier": "primary",
+        "type": "data-table"
+      },
       "label": "Tabela de dados",
       "minimum": {
         "height": 32,
@@ -491,6 +646,15 @@
       "description": "Molécula composta por átomos editáveis de ícone e texto.",
       "gridUnit": 1,
       "icon": "footer",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Texto, símbolos e peças de apoio para orientar a leitura e o contato.",
+        "id": "communication",
+        "label": "Comunicação",
+        "order": 40,
+        "tier": "primary",
+        "type": "footer-item"
+      },
       "label": "Item do rodapé",
       "minimum": {
         "height": 64,
@@ -558,6 +722,15 @@
       "description": "Átomo SVG com grid mínimo de 1 px.",
       "gridUnit": 1,
       "icon": "shield-star",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Texto, símbolos e peças de apoio para orientar a leitura e o contato.",
+        "id": "communication",
+        "label": "Comunicação",
+        "order": 40,
+        "tier": "primary",
+        "type": "icon"
+      },
       "label": "Ícone",
       "minimum": {
         "height": 24,
@@ -622,6 +795,15 @@
       "description": "Canvas interno com layout livre, linha, coluna ou grade.",
       "gridUnit": 4,
       "icon": "page",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Infraestrutura composicional e controles internos para edição detalhada.",
+        "id": "advanced",
+        "label": "Estrutura avançada",
+        "order": 90,
+        "tier": "advanced",
+        "type": "layout-container"
+      },
       "label": "Área de composição",
       "minimum": {
         "height": 120,
@@ -684,6 +866,15 @@
       "description": "Subgrupo ordenável e destacável de itens de legenda.",
       "gridUnit": 2,
       "icon": "layers",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Tabelas, legendas e estruturas para valores ou classificações semânticas.",
+        "id": "data",
+        "label": "Dados",
+        "order": 30,
+        "tier": "primary",
+        "type": "legend-group"
+      },
       "label": "Grupo de legenda",
       "minimum": {
         "height": 38,
@@ -735,6 +926,15 @@
       "description": "Representação visual vinculada a uma definição por legendKey.",
       "gridUnit": 2,
       "icon": "layers",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Tabelas, legendas e estruturas para valores ou classificações semânticas.",
+        "id": "data",
+        "label": "Dados",
+        "order": 30,
+        "tier": "primary",
+        "type": "legend-item"
+      },
       "label": "Item de legenda",
       "minimum": {
         "height": 24,
@@ -786,6 +986,15 @@
       "description": "Contêiner visual de grupos e itens vinculados a definições semânticas.",
       "gridUnit": 2,
       "icon": "layers",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Tabelas, legendas e estruturas para valores ou classificações semânticas.",
+        "id": "data",
+        "label": "Dados",
+        "order": 30,
+        "tier": "primary",
+        "type": "legend-panel"
+      },
       "label": "Painel de legenda",
       "minimum": {
         "height": 54,
@@ -878,6 +1087,15 @@
       "description": "Contêiner com slots internos editáveis.",
       "gridUnit": 4,
       "icon": "card",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary",
+        "type": "product-card"
+      },
       "label": "Card de produto",
       "minimum": {
         "height": 190,
@@ -1000,6 +1218,15 @@
       "description": "Átomo de linha horizontal ou vertical com terminação editorial.",
       "gridUnit": 4,
       "icon": "minus",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Texto, símbolos e peças de apoio para orientar a leitura e o contato.",
+        "id": "communication",
+        "label": "Comunicação",
+        "order": 40,
+        "tier": "primary",
+        "type": "separator"
+      },
       "label": "Linha separadora",
       "minimum": {
         "height": 8,
@@ -1065,6 +1292,15 @@
       "description": "Ícone e informação técnica curta.",
       "gridUnit": 1,
       "icon": "shield-star",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary",
+        "type": "specification"
+      },
       "label": "Especificação",
       "minimum": {
         "height": 28,
@@ -1187,6 +1423,15 @@
       "description": "Bloco de texto com estilo tipográfico da biblioteca.",
       "gridUnit": 2,
       "icon": "text",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Texto, símbolos e peças de apoio para orientar a leitura e o contato.",
+        "id": "communication",
+        "label": "Comunicação",
+        "order": 40,
+        "tier": "primary",
+        "type": "text"
+      },
       "label": "Texto",
       "minimum": {
         "height": 34,
@@ -1236,6 +1481,15 @@
       "description": "Número ou símbolo seguido de título editorial.",
       "gridUnit": 2,
       "icon": "text",
+      "initialPlacement": null,
+      "intent": {
+        "description": "Representações visuais e informações diretamente ligadas ao produto.",
+        "id": "product",
+        "label": "Produto",
+        "order": 20,
+        "tier": "primary",
+        "type": "title-symbol"
+      },
       "label": "Título com símbolo",
       "minimum": {
         "height": 32,
@@ -1270,6 +1524,39 @@
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
+  "iconBatches": [
+    {
+      "iconIds": [
+        "email",
+        "payment",
+        "phone",
+        "warranty"
+      ],
+      "id": "commercial-contact-trust",
+      "label": "Comercial, contato e confiança",
+      "requiredContexts": [
+        "footer-item",
+        "icon",
+        "specification"
+      ],
+      "version": "05.18.14"
+    },
+    {
+      "iconIds": [
+        "corrosion-resistant",
+        "diameter",
+        "load-capacity",
+        "torque"
+      ],
+      "id": "technical-performance",
+      "label": "Técnica e desempenho",
+      "requiredContexts": [
+        "icon",
+        "specification"
+      ],
+      "version": "05.18.13"
+    }
+  ],
   "icons": [
     {
       "category": "Aplicações",
@@ -1314,6 +1601,72 @@
       "svgBody": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m8 12 2.5 2.5L16.5 9\"/>"
     },
     {
+      "batch": "technical-performance",
+      "category": "Desempenho",
+      "contexts": [
+        "specification",
+        "icon"
+      ],
+      "examples": [
+        "Especificação de acabamento anticorrosivo",
+        "Chamada visual sobre uso em ambiente úmido"
+      ],
+      "id": "corrosion-resistant",
+      "keywords": [
+        "corrosão",
+        "umidade",
+        "proteção",
+        "oxidação",
+        "revestimento"
+      ],
+      "label": "Resistência à corrosão",
+      "svgBody": "<path d=\"M12 2.5 20 5.6v5.7c0 4.8-3.4 8-8 10.7-4.6-2.7-8-5.9-8-10.7V5.6L12 2.5Z\"/><path d=\"M12 7c2 2.4 3 4 3 5.4a3 3 0 0 1-6 0C9 11 10 9.4 12 7Z\"/>"
+    },
+    {
+      "batch": "technical-performance",
+      "category": "Técnica",
+      "contexts": [
+        "specification",
+        "icon"
+      ],
+      "examples": [
+        "Diâmetro de parafuso ou furo",
+        "Legenda técnica para espessura ou bitola"
+      ],
+      "id": "diameter",
+      "keywords": [
+        "diâmetro",
+        "espessura",
+        "bitola",
+        "medida circular",
+        "dimensão"
+      ],
+      "label": "Diâmetro / espessura",
+      "svgBody": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"m7 17 10-10M7 13v4h4M17 11V7h-4\"/>"
+    },
+    {
+      "batch": "commercial-contact-trust",
+      "category": "Contato",
+      "contexts": [
+        "footer-item",
+        "icon"
+      ],
+      "examples": [
+        "Endereço de e-mail no rodapé",
+        "Canal para solicitar orçamento ou ficha técnica"
+      ],
+      "id": "email",
+      "keywords": [
+        "email",
+        "e-mail",
+        "mensagem",
+        "contato",
+        "orçamento"
+      ],
+      "label": "E-mail",
+      "svgBody": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"m4 7 8 6 8-6\"/>"
+    },
+    {
       "category": "Aplicações",
       "id": "hanger",
       "label": "Closets",
@@ -1336,6 +1689,28 @@
       "id": "layers",
       "label": "Camadas / chapas",
       "svgBody": "<path d=\"m12 3 9 5-9 5-9-5 9-5Z\"/><path d=\"m3 12 9 5 9-5\"/><path d=\"m3 16 9 5 9-5\"/>"
+    },
+    {
+      "batch": "technical-performance",
+      "category": "Desempenho",
+      "contexts": [
+        "specification",
+        "icon"
+      ],
+      "examples": [
+        "Capacidade de carga de uma ferragem",
+        "Destaque autônomo de desempenho em uma seção"
+      ],
+      "id": "load-capacity",
+      "keywords": [
+        "carga",
+        "peso",
+        "capacidade",
+        "suporte",
+        "resistência"
+      ],
+      "label": "Capacidade de carga",
+      "svgBody": "<path d=\"M9 7a3 3 0 1 1 6 0\"/><path d=\"M6 7h12l2 14H4L6 7Z\"/><path d=\"M12 7V4\"/>"
     },
     {
       "category": "Rodapé",
@@ -1362,10 +1737,54 @@
       "svgBody": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"1.5\"/><path d=\"M7 4v16M12 4v16M17 4v16\"/>"
     },
     {
+      "batch": "commercial-contact-trust",
+      "category": "Comercial",
+      "contexts": [
+        "footer-item",
+        "icon"
+      ],
+      "examples": [
+        "Condições comerciais no rodapé",
+        "Destaque de formas ou prazo de pagamento"
+      ],
+      "id": "payment",
+      "keywords": [
+        "pagamento",
+        "condições",
+        "parcelamento",
+        "comercial",
+        "cartão"
+      ],
+      "label": "Pagamento / condições",
+      "svgBody": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 9h18M7 15h4\"/>"
+    },
+    {
       "category": "Especificações",
       "id": "phillips",
       "label": "Encaixe Philips",
       "svgBody": "<path d=\"M9.4 3.5h5.2v5.9h5.9v5.2h-5.9v5.9H9.4v-5.9H3.5V9.4h5.9V3.5Z\"/>"
+    },
+    {
+      "batch": "commercial-contact-trust",
+      "category": "Contato",
+      "contexts": [
+        "footer-item",
+        "icon"
+      ],
+      "examples": [
+        "Número de atendimento no rodapé",
+        "Chamada comercial para contato por telefone"
+      ],
+      "id": "phone",
+      "keywords": [
+        "telefone",
+        "ligação",
+        "contato",
+        "vendas",
+        "suporte"
+      ],
+      "label": "Telefone",
+      "svgBody": "<path d=\"M6.5 3h3l1.5 4-2 1.5a15 15 0 0 0 6.5 6.5l1.5-2 4 1.5v3A3.5 3.5 0 0 1 17.5 21C9.5 20 4 14.5 3 6.5A3.5 3.5 0 0 1 6.5 3Z\"/>"
     },
     {
       "category": "Catálogo",
@@ -1416,10 +1835,55 @@
       "svgBody": "<path d=\"M7 10v10H4V10h3Zm0 9h9.2a2 2 0 0 0 1.9-1.4l1.8-5.5A2 2 0 0 0 18 9h-4l.6-3A2.5 2.5 0 0 0 12.2 3L7 10\"/>"
     },
     {
+      "batch": "technical-performance",
+      "category": "Técnica",
+      "contexts": [
+        "specification",
+        "icon"
+      ],
+      "examples": [
+        "Valor de torque recomendado na ficha técnica",
+        "Orientação de montagem em um bloco de comunicação"
+      ],
+      "id": "torque",
+      "keywords": [
+        "torque",
+        "aperto",
+        "instalação",
+        "ferramenta",
+        "montagem"
+      ],
+      "label": "Torque / aperto",
+      "svgBody": "<path d=\"M14.5 6.5a4 4 0 0 0-5-3.6l2.3 2.3-2.6 2.6-2.3-2.3A4 4 0 0 0 9.5 12L4 17.5a2 2 0 1 0 2.8 2.8l5.5-5.5a4 4 0 0 0 5.7-5.7l-2.3 2.3-2.6-2.6 2.3-2.3a4 4 0 0 0-.9 0Z\"/>"
+    },
+    {
       "category": "Rodapé",
       "id": "truck",
       "label": "Entrega rápida",
       "svgBody": "<path d=\"M3 6h11v10H3zM14 9h4l3 3v4h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/><path d=\"M3 10H1M5 13H2\"/>"
+    },
+    {
+      "batch": "commercial-contact-trust",
+      "category": "Confiança",
+      "contexts": [
+        "specification",
+        "footer-item",
+        "icon"
+      ],
+      "examples": [
+        "Prazo ou condição de garantia do produto",
+        "Sinal de procedência ou confiança institucional"
+      ],
+      "id": "warranty",
+      "keywords": [
+        "garantia",
+        "certificação",
+        "confiança",
+        "procedência",
+        "cobertura"
+      ],
+      "label": "Garantia",
+      "svgBody": "<path d=\"M8 3h8l3 3v8l-3 3H8l-3-3V6l3-3Z\"/><path d=\"m9 17-1 4 4-2 4 2-1-4\"/><path d=\"m9 10 2 2 4-4\"/>"
     },
     {
       "category": "Rodapé",
@@ -1569,6 +2033,19 @@
   },
   "recipes": [
     {
+      "id": "fact",
+      "version": "1.4.0",
+      "label": "Dado destacado",
+      "description": "Ícone opcional, rótulo, valor e unidade em um bloco vertical editável.",
+      "icon": "ruler",
+      "rootType": "layout-container",
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "focusRole": null
+    },
+    {
       "contexts": [
         "page"
       ],
@@ -1577,7 +2054,7 @@
       "id": "page-catalog-base",
       "label": "Página de catálogo",
       "rootType": "layout-container",
-      "version": "1.2.0"
+      "version": "1.3.0"
     },
     {
       "contexts": [
@@ -1589,31 +2066,19 @@
       "id": "section-applications",
       "label": "Faixa de aplicações",
       "rootType": "layout-container",
-      "version": "1.2.0"
+      "version": "1.3.0"
     },
     {
       "contexts": [
         "page",
         "layout-container"
       ],
-      "description": "Faixa cromática pronta para adaptar às embalagens do projeto.",
+      "description": "Sobretítulo opcional, título, complemento e divisor em uma composição editável.",
       "focusRole": null,
-      "id": "section-packaging-legend",
-      "label": "Legenda de embalagens",
+      "id": "section-heading",
+      "label": "Título de seção",
       "rootType": "layout-container",
-      "version": "1.2.0"
-    },
-    {
-      "contexts": [
-        "page",
-        "layout-container"
-      ],
-      "description": "Ícone, título e texto em uma composição editável.",
-      "focusRole": null,
-      "id": "section-tip-callout",
-      "label": "Chamada de dica",
-      "rootType": "layout-container",
-      "version": "1.2.0"
+      "version": "1.3.0"
     },
     {
       "contexts": [
@@ -1625,7 +2090,32 @@
       "id": "section-hero-grid-strip",
       "label": "Hero + grade + faixa",
       "rootType": "layout-container",
-      "version": "1.2.0"
+      "version": "1.3.0"
+    },
+    {
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "description": "Faixa cromática pronta para adaptar às embalagens do projeto.",
+      "focusRole": null,
+      "id": "section-packaging-legend",
+      "label": "Legenda de embalagens",
+      "rootType": "layout-container",
+      "version": "1.3.0"
+    },
+    {
+      "id": "section-tip-callout",
+      "version": "1.4.1",
+      "label": "Chamada de dica",
+      "description": "Ícone, título e texto em uma composição responsiva e editável.",
+      "icon": "bulb",
+      "rootType": "layout-container",
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "focusRole": null
     }
   ],
   "separatorPresets": [
