@@ -29,6 +29,7 @@ let browser;
 
   await recipeButton.click();
   await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "section-heading").length === 1);
+  await page.evaluate(() => CatalogEditor.store.setEditingContext(null));
   await recipeButton.click();
   await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "section-heading").length === 2);
 

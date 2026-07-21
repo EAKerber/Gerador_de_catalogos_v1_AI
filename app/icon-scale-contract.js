@@ -9,8 +9,8 @@
     style.dataset.iconScaleContract = CONTRACT_VERSION;
     style.textContent = `
 .editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg {
-  width: min(83.333333%, 26px);
-  height: min(83.333333%, 26px);
+  width: min(100%, 26px);
+  height: min(100%, 26px);
   max-width: 100%;
   max-height: 100%;
 }

@@ -34,6 +34,7 @@ let browser;
   assert(historyAfter.undoCount === historyBefore + 1 && historyAfter.undoLabel === "Inserir estrutura pronta", "A inserção visual não foi uma transação única.");
 
   for (let count = 2; count <= 4; count += 1) {
+    await page.evaluate(() => CatalogEditor.store.setEditingContext(null));
     await recipeButton.click();
     await page.waitForFunction(expected => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "fact").length === expected, count);
   }

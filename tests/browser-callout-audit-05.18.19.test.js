@@ -32,6 +32,7 @@ let browser;
   await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "callout").length === 1);
   const after = await page.evaluate(() => CatalogEditor.store.getHistoryState());
   assert(after.undoCount === before + 1 && after.undoLabel === "Inserir estrutura pronta", "A inserção do callout não foi uma ação única.");
+  await page.evaluate(() => CatalogEditor.store.setEditingContext(null));
   await recipeButton.click();
   await page.waitForFunction(() => CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "callout").length === 2);
 
