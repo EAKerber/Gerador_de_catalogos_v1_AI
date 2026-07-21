@@ -3,67 +3,49 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: write
+  contents: read
 jobs:
-  authoring-kit-build-sync:
-    name: Correção — sincronização idempotente do AuthoringKit
+  consolidated-audit:
+    name: Auditoria consolidada — Node, build e Chromium
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regenerar e validar
-        shell: bash
+      - name: Instalar Playwright e Chromium
+        run: |
+          npm install --no-save playwright@latest
+          npx playwright install --with-deps chromium
+      - name: Iniciar editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Executar auditoria completa
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
         run: |
           set -euo pipefail
-          node tools/build-developer-b-authoring-kit.js
-          expected=$'app/authoring-kit-files.js\nauthoring-kit/capabilities.json\nauthoring-kit/feature-inventory.json\nauthoring-kit/runtime/document-store.js\ndocs/FEATURE-CATALOG.md'
-          actual="$(git diff --name-only | sort)"
-          if [ "$actual" != "$expected" ]; then
-            echo "Diff gerado fora do conjunto esperado:"
-            printf '%s\n' "$actual"
-            exit 1
-          fi
-          node --check app/authoring-kit-files.js
-          node --check authoring-kit/compiler/compile-catalog.js
-          node --check authoring-kit/runtime/document-store.js
-          node --check authoring-kit/runtime/table-binding-overrides-contract.js
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
-          node tests/table-binding-overrides-05.18.test.js
-          node tests/section-recipes.test.js
-          node tests/callout-manifest-05.18.19.test.js
-          node tests/fact-manifest-05.18.17.test.js
-          node -e 'JSON.parse(require("fs").readFileSync("authoring-kit/capabilities.json", "utf8")); JSON.parse(require("fs").readFileSync("authoring-kit/feature-inventory.json", "utf8"));'
-          git diff --check
-      - name: Commitar somente artefatos gerados
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add \
-            app/authoring-kit-files.js \
-            authoring-kit/capabilities.json \
-            authoring-kit/feature-inventory.json \
-            authoring-kit/runtime/document-store.js \
-            docs/FEATURE-CATALOG.md
-          git commit -m "build: sincroniza artefatos do AuthoringKit"
-          git push origin HEAD:agent/developer-b-05.18
-      - name: Provar idempotência após commit
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/build-developer-b-authoring-kit.js
+          mkdir -p audit-output/consolidated
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/consolidated/audit.log
+          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/consolidated/idempotence.log
           if ! git diff --quiet; then
-            echo "O segundo build produziu diferenças:"
-            git status --short
-            git diff --stat
+            git status --short | tee audit-output/consolidated/unexpected-diff.txt
+            git diff --stat | tee -a audit-output/consolidated/unexpected-diff.txt
             exit 1
           fi
-          node tests/authoring-kit-runtime-contracts-05.18.test.js
-          node tests/table-binding-overrides-05.18.test.js
+          git status --short > audit-output/consolidated/final-status.txt
+      - name: Publicar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-consolidated-audit
+          path: audit-output/consolidated
+          if-no-files-found: error
+          retention-days: 14
