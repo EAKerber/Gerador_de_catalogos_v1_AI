@@ -59,7 +59,7 @@ const variantsWide = { presetId: "product-variants", mode: "variants", density: 
 const variantsCompact = { presetId: "product-variants", mode: "variants", density: "compact", responsiveState: "compact" };
 const standardWide = { presetId: "product-standard", mode: "standard", density: "standard", responsiveState: "wide" };
 
-const card = store.addComponent("product-card", { x: 20, y: 20, width: 420, height: 260 });
+const card = store.addComponent("product-card", { x: 20, y: 20, width: 420, height: 260 }, { parentId: null });
 store.addComponent("specification", { x: 0, y: 0, width: 130, height: 38 }, { parentId: card.id, slotName: "specifications", props: { icon: "truck", label: "Entrega rápida" } });
 store.addComponent("specification", { x: 0, y: 0, width: 130, height: 38 }, { parentId: card.id, slotName: "specifications", props: { icon: "layers", label: "Quatro opções" } });
 const simpleArt = card.children.find(component => component.type === "art" && component.slot?.name === "art");
@@ -119,7 +119,7 @@ assert(compactFrames.art.height >= compactInspection.artMinimum, "Variants compa
 assert(compactFrames.specifications.height >= compactInspection.specificationsMinimum, "Variants compacto reduziu a grade de especificações abaixo do mínimo.");
 assert(compactCard.frame.width === 280, "O contrato alterou a largura solicitada do card compacto.");
 
-const simpleCard = store.addComponent("product-card", { x: 320, y: 20, width: 280, height: 260 });
+const simpleCard = store.addComponent("product-card", { x: 320, y: 20, width: 280, height: 260 }, { parentId: null });
 store.setComponentPresentation(simpleCard.id, variantsCompact);
 const simpleCurrent = store.findComponent(simpleCard.id).component;
 assert(simpleCurrent.children.some(component => component.type === "art" && component.slot?.name === "art"), "Variants converteu arte simples em galeria sem solicitação.");
@@ -135,7 +135,7 @@ assert(store.getHistoryState().undoCount === historyBeforeDelete + 1, "Remover a
 assert(!withoutArt.children.some(component => component.slot?.name === "art"), "Arte removida reapareceu ficticiamente.");
 assert(withoutArtFrames.specifications.height > 0, "Informações comerciais não ocuparam a região disponível sem arte.");
 
-const artOnlyCard = store.addComponent("product-card", { x: 20, y: 620, width: 280, height: 260 });
+const artOnlyCard = store.addComponent("product-card", { x: 20, y: 620, width: 280, height: 260 }, { parentId: null });
 artOnlyCard.children.filter(component => component.slot?.name === "specifications").forEach(component => store.deleteComponent(component.id));
 store.setComponentPresentation(artOnlyCard.id, variantsCompact);
 const artOnlyCurrent = store.findComponent(artOnlyCard.id).component;
