@@ -56,6 +56,13 @@ jobs:
               return;
             } catch {}
 
+            const assetDialog = page.locator("#assetLibraryDialog");
+            if (await assetDialog.getAttribute("open") !== null) {
+              findings.push({ code: "CANVAS_SELECTION_INTERCEPTED", componentId: id, message: "A tentativa de selecionar uma peça interna abriu a biblioteca de artes; a seleção continuou pela árvore de Camadas." });
+              await act("Fechar biblioteca de artes aberta durante a seleção", () => assetDialog.locator("[data-close-asset-library]").first().click());
+              await assetDialog.waitFor({ state: "hidden" });
+            }
+
             const layersTab = page.locator('[data-left-panel-tab="layers"]');
             if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
             const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
