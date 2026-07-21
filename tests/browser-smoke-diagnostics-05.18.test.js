@@ -1,4 +1,4 @@
-/* Auditoria 05.18 — diagnóstico não bloqueante de recursos e cascata do rodapé. */
+/* Auditoria 05.19 — diagnóstico não bloqueante de recursos e cascata do rodapé sem shim. */
 const fs = require("fs");
 const path = require("path");
 const playwrightRoot = process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES;
@@ -28,7 +28,7 @@ fs.mkdirSync(outputDir, { recursive: true });
   await page.goto(baseURL, { waitUntil: "networkidle" });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogFooterItemContainmentContract && window.CatalogComponentInitialPlacementContract);
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogComponentInitialPlacementContract && window.CATALOG_COMPONENT_REGISTRY?.["footer-item"]);
 
   const fixture = await page.evaluate(() => {
     const store = CatalogEditor.store;
