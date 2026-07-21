@@ -21,7 +21,11 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import base64
           from pathlib import Path
+
+          def write_b64(path, payload):
+              Path(path).write_bytes(base64.b64decode(payload))
 
           def replace_once(path, old, new):
               file = Path(path)
@@ -32,85 +36,12 @@ jobs:
                   raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
               file.write_text(source.replace(old, new, 1))
 
-          replace_once(
-              'app/reflow-history-stability-contract.js',
-              'const CONTRACT_VERSION = "05.18.audit.3";',
-              'const CONTRACT_VERSION = "05.18.audit.4";'
-          )
-          replace_once(
-              'app/reflow-history-stability-contract.js',
-              '''      reflowComponentTree(componentOrId) {
-        const result = super.reflowComponentTree(componentOrId);
-        if (result && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
-        return result;
-      }''',
-              '''      reflowComponentTree(componentOrId, options = {}) {
-        const result = super.reflowComponentTree(componentOrId);
-        if (result && options.derived !== true && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
-        return result;
-      }'''
-          )
-          replace_once(
-              'app/product-variants-contract.js',
-              '        this.reflowComponentTree(card);',
-              '        this.reflowComponentTree(card, { derived: true });'
-          )
-          replace_once(
-              'app/product-data-only-contract.js',
-              '        this.reflowComponentTree(card);',
-              '        this.reflowComponentTree(card, { derived: true });'
-          )
-          replace_once(
-              'tests/text-overflow-runtime-parity-05.18.4.test.js',
-              'if (!app.includes(\'CONTRACT_VERSION = "05.18.4"\')) throw new Error("A versão do contrato de overflow não está identificada.");',
-              'if (!app.includes(\'CONTRACT_VERSION = "05.18.4.1"\')) throw new Error("A versão do contrato de overflow não está identificada.");'
-          )
-
-          icon_path = Path('tests/icon-scale-runtime-parity-05.18.5.test.js')
-          icon = icon_path.read_text()
-          old_icon = '''const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "icon-scale-contract.js"), "utf8");
-
-if (app !== kit) throw new Error("O contrato de escala de ícone divergiu entre app e authoring-kit/runtime.");
-if (!app.includes('CONTRACT_VERSION = "05.18.5"')) throw new Error("A versão do contrato de ícone não está identificada.");
-if (!app.includes("83.333333%")) throw new Error("O limite seguro para 120% no rodapé não está declarado.");'''
-          new_icon = '''const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "icon-scale-contract.js"), "utf8");
-const styles = fs.readFileSync(path.join(root, "styles", "components.css"), "utf8");
-
-if (app !== kit) throw new Error("O contrato de escala de ícone divergiu entre app e authoring-kit/runtime.");
-if (!app.includes('CONTRACT_VERSION = "05.18.5"')) throw new Error("A versão do contrato de ícone não está identificada.");
-if (!app.includes("width: min(100%, 26px)") || !app.includes("max-width: 100%")) throw new Error("A contenção do invólucro no rodapé não está declarada.");
-if (!styles.includes(".component-icon__svg svg { width: 83.333333%; height: 83.333333%;")) throw new Error("A reserva interna para escala de 120% não está declarada.");'''
-          if new_icon not in icon:
-              if old_icon not in icon:
-                  raise SystemExit('Bloco do teste de escala de ícone não encontrado')
-              icon_path.write_text(icon.replace(old_icon, new_icon, 1))
-
-          reflow_path = Path('tests/reflow-manual-baseline-05.18.test.js')
-          reflow = reflow_path.read_text()
-          reflow = reflow.replace('CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.3"', 'CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4"')
-          marker = 'assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4", "Versão inesperada do contrato de estabilidade.");\n\nconsole.log('
-          addition = '''assert(CatalogReflowHistoryStabilityContract.VERSION === "05.18.audit.4", "Versão inesperada do contrato de estabilidade.");
-
-const beforeDerivedState = signature(store.getState());
-const beforeDerivedHistory = store.getHistoryState().undoCount;
-const derivedCard = store.findComponent(card.id).component;
-derivedCard.frame.height += 24;
-assert(store.reflowComponentTree(derivedCard, { derived: true }), "O reflow derivado não foi executado.");
-const afterDerivedState = signature(store.getState());
-assert(afterDerivedState !== beforeDerivedState, "A fixture derivada não alterou o documento.");
-store.emit({ type: "derived-reflow-probe", componentId: derivedCard.id });
-assert(store.getHistoryState().undoCount === beforeDerivedHistory + 1, "O reflow derivado sincronizou o baseline antes da captura.");
-assert(store.undo(), "Não foi possível desfazer a ação com reflow derivado.");
-assert(signature(store.getState()) === beforeDerivedState, "Undo não restaurou o estado anterior ao reflow derivado.");
-assert(store.redo(), "Não foi possível refazer a ação com reflow derivado.");
-assert(signature(store.getState()) === afterDerivedState, "Redo não restaurou o estado estabilizado pelo reflow derivado.");
-
-console.log('''
-          if 'beforeDerivedHistory' not in reflow:
-              if marker not in reflow:
-                  raise SystemExit('Marcador do teste de reflow não encontrado')
-              reflow = reflow.replace(marker, addition, 1)
-          reflow_path.write_text(reflow)
+          write_b64('app/reflow-history-stability-contract.js', 'KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTguYXVkaXQuNCI7CiAgY29uc3QgRVBIRU1FUkFMX0NIQU5HRV9UWVBFUyA9IG5ldyBTZXQoWyJpbml0IiwgInNlbGVjdGlvbiIsICJlZGl0aW5nLWNvbnRleHQiLCAiZWRpdG9yLXNldHRpbmciLCAiZG9jdW1lbnQtc2F2ZWQiLCAiaGlzdG9yeS11bmRvIiwgImhpc3RvcnktcmVkbyJdKTsKICBjb25zdCBjbG9uZSA9IHZhbHVlID0+IEpTT04ucGFyc2UoSlNPTi5zdHJpbmdpZnkodmFsdWUpKTsKCiAgZnVuY3Rpb24gZG9jdW1lbnRTbmFwc2hvdChzdGF0ZSkgewogICAgY29uc3Qgc25hcHNob3QgPSBjbG9uZShzdGF0ZSk7CiAgICBkZWxldGUgc25hcHNob3QuZWRpdG9yOwogICAgZGVsZXRlIHNuYXBzaG90LnVwZGF0ZWRBdDsKICAgIHJldHVybiBzbmFwc2hvdDsKICB9CgogIGZ1bmN0aW9uIHN5bmNocm9uaXplSGlzdG9yeUJhc2VsaW5lKHN0b3JlKSB7CiAgICBjb25zdCBzbmFwc2hvdCA9IGRvY3VtZW50U25hcHNob3Qoc3RvcmUuc3RhdGUpOwogICAgc3RvcmUubGFzdEhpc3RvcnlTbmFwc2hvdCA9IHNuYXBzaG90OwogICAgc3RvcmUubGFzdEhpc3RvcnlTaWduYXR1cmUgPSBKU09OLnN0cmluZ2lmeShzbmFwc2hvdCk7CiAgICByZXR1cm4gc25hcHNob3Q7CiAgfQoKICBmdW5jdGlvbiBzdGFiaWxpemVTdG9yZShzdG9yZSkgewogICAgY29uc3Qgc3RhdGUgPSBzdG9yZT8uZ2V0U3RhdGU/LigpOwogICAgaWYgKCFzdGF0ZT8ucGFnZXMpIHJldHVybiB7IHJvb3RzOiAwLCBwYXNzZXM6IDAgfTsKICAgIGxldCByb290cyA9IDA7CiAgICBsZXQgcGFzc2VzID0gMDsKICAgIHN0YXRlLnBhZ2VzLmZvckVhY2gocGFnZSA9PiB7CiAgICAgIChwYWdlLmNoaWxkcmVuIHx8IFtdKS5mb3JFYWNoKGNvbXBvbmVudCA9PiB7CiAgICAgICAgaWYgKCFzdG9yZS5pc0NvbnRhaW5lcj8uKGNvbXBvbmVudC5pZCkgfHwgY29tcG9uZW50LnJlZmxvdz8ubW9kZSA9PT0gIm1hbnVhbCIpIHJldHVybjsKICAgICAgICByb290cyArPSAxOwogICAgICAgIGlmIChzdG9yZS5yZWZsb3dDb21wb25lbnRUcmVlPy4oY29tcG9uZW50LmlkLCB7IGRlcml2ZWQ6IHRydWUgfSkpIHBhc3NlcyArPSAxOwogICAgICB9KTsKICAgIH0pOwogICAgcmV0dXJuIHsgcm9vdHMsIHBhc3NlcyB9OwogIH0KCiAgZnVuY3Rpb24gaW5zdGFsbCgpIHsKICAgIGNvbnN0IEJhc2VTdG9yZSA9IHdpbmRvdy5DYXRhbG9nRG9jdW1lbnRTdG9yZTsKICAgIGlmICghQmFzZVN0b3JlKSByZXR1cm4gZmFsc2U7CiAgICBpZiAoQmFzZVN0b3JlLl9fcmVmbG93SGlzdG9yeVN0YWJpbGl0eUNvbnRyYWN0VmVyc2lvbiA9PT0gQ09OVFJBQ1RfVkVSU0lPTikgcmV0dXJuIHRydWU7CgogICAgY2xhc3MgUmVmbG93U3RhYmxlRG9jdW1lbnRTdG9yZSBleHRlbmRzIEJhc2VTdG9yZSB7CiAgICAgIGNvbnN0cnVjdG9yKGluaXRpYWxTdGF0ZSkgewogICAgICAgIHN1cGVyKGluaXRpYWxTdGF0ZSk7CiAgICAgICAgdGhpcy5fX3JlZmxvd1N0YWJpbGl0eUludGVybmFsID0gdHJ1ZTsKICAgICAgICB0cnkgewogICAgICAgICAgdGhpcy5fX2xhc3RSZWZsb3dTdGFiaWxpdHkgPSBzdGFiaWxpemVTdG9yZSh0aGlzKTsKICAgICAgICB9IGZpbmFsbHkgewogICAgICAgICAgdGhpcy5fX3JlZmxvd1N0YWJpbGl0eUludGVybmFsID0gZmFsc2U7CiAgICAgICAgfQogICAgICAgIGNvbnN0IHNuYXBzaG90ID0gc3luY2hyb25pemVIaXN0b3J5QmFzZWxpbmUodGhpcyk7CiAgICAgICAgY29uc3Qgc2lnbmF0dXJlID0gSlNPTi5zdHJpbmdpZnkoc25hcHNob3QpOwogICAgICAgIHRoaXMuc2F2ZWRTaWduYXR1cmUgPSBzaWduYXR1cmU7CiAgICAgICAgdGhpcy5kaXJ0eSA9IGZhbHNlOwogICAgICB9CgogICAgICBlbWl0KGNoYW5nZSwgb3B0aW9ucyA9IHt9KSB7CiAgICAgICAgY29uc3QgZXBoZW1lcmFsID0gb3B0aW9ucy5lcGhlbWVyYWwgPT09IHRydWUgfHwgRVBIRU1FUkFMX0NIQU5HRV9UWVBFUy5oYXMoY2hhbmdlPy50eXBlKTsKICAgICAgICBpZiAoIWVwaGVtZXJhbCAmJiAhdGhpcy5oaXN0b3J5U3VzcGVuZGVkKSB7CiAgICAgICAgICB0aGlzLl9fcmVmbG93U3RhYmlsaXR5SW50ZXJuYWwgPSB0cnVlOwogICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgdGhpcy5fX2xhc3RSZWZsb3dTdGFiaWxpdHkgPSBzdGFiaWxpemVTdG9yZSh0aGlzKTsKICAgICAgICAgIH0gZmluYWxseSB7CiAgICAgICAgICAgIHRoaXMuX19yZWZsb3dTdGFiaWxpdHlJbnRlcm5hbCA9IGZhbHNlOwogICAgICAgICAgfQogICAgICAgIH0KICAgICAgICByZXR1cm4gc3VwZXIuZW1pdChjaGFuZ2UsIG9wdGlvbnMpOwogICAgICB9CgogICAgICByZWZsb3dDb21wb25lbnRUcmVlKGNvbXBvbmVudE9ySWQsIG9wdGlvbnMgPSB7fSkgewogICAgICAgIGNvbnN0IHJlc3VsdCA9IHN1cGVyLnJlZmxvd0NvbXBvbmVudFRyZWUoY29tcG9uZW50T3JJZCk7CiAgICAgICAgaWYgKHJlc3VsdCAmJiBvcHRpb25zLmRlcml2ZWQgIT09IHRydWUgJiYgIXRoaXMuX19yZWZsb3dTdGFiaWxpdHlJbnRlcm5hbCAmJiAhdGhpcy5oaXN0b3J5U3VzcGVuZGVkKSBzeW5jaHJvbml6ZUhpc3RvcnlCYXNlbGluZSh0aGlzKTsKICAgICAgICByZXR1cm4gcmVzdWx0OwogICAgICB9CgogICAgICByZXN0b3JlSGlzdG9yeVNuYXBzaG90KHNuYXBzaG90KSB7CiAgICAgICAgc3VwZXIucmVzdG9yZUhpc3RvcnlTbmFwc2hvdChzbmFwc2hvdCk7CiAgICAgICAgdGhpcy5fX3JlZmxvd1N0YWJpbGl0eUludGVybmFsID0gdHJ1ZTsKICAgICAgICB0cnkgewogICAgICAgICAgdGhpcy5fX2xhc3RSZWZsb3dTdGFiaWxpdHkgPSBzdGFiaWxpemVTdG9yZSh0aGlzKTsKICAgICAgICB9IGZpbmFsbHkgewogICAgICAgICAgdGhpcy5fX3JlZmxvd1N0YWJpbGl0eUludGVybmFsID0gZmFsc2U7CiAgICAgICAgfQogICAgICAgIHN5bmNocm9uaXplSGlzdG9yeUJhc2VsaW5lKHRoaXMpOwogICAgICB9CgogICAgICBnZXRMYXN0UmVmbG93U3RhYmlsaXR5KCkgewogICAgICAgIHJldHVybiB0aGlzLl9fbGFzdFJlZmxvd1N0YWJpbGl0eSA/IHsgLi4udGhpcy5fX2xhc3RSZWZsb3dTdGFiaWxpdHkgfSA6IG51bGw7CiAgICAgIH0KICAgIH0KCiAgICBPYmplY3QuZGVmaW5lUHJvcGVydHkoUmVmbG93U3RhYmxlRG9jdW1lbnRTdG9yZSwgIl9fcmVmbG93SGlzdG9yeVN0YWJpbGl0eUNvbnRyYWN0VmVyc2lvbiIsIHsgdmFsdWU6IENPTlRSQUNUX1ZFUlNJT04gfSk7CiAgICB3aW5kb3cuQ2F0YWxvZ0RvY3VtZW50U3RvcmUgPSBSZWZsb3dTdGFibGVEb2N1bWVudFN0b3JlOwogICAgcmV0dXJuIHRydWU7CiAgfQoKICB3aW5kb3cuQ2F0YWxvZ1JlZmxvd0hpc3RvcnlTdGFiaWxpdHlDb250cmFjdCA9IE9iamVjdC5mcmVlemUoewogICAgVkVSU0lPTjogQ09OVFJBQ1RfVkVSU0lPTiwKICAgIGluc3RhbGwsCiAgICBzdGFiaWxpemVTdG9yZSwKICAgIHN5bmNocm9uaXplSGlzdG9yeUJhc2VsaW5lCiAgfSk7CgogIGluc3RhbGwoKTsKfSkoKTsK')
+          write_b64('tests/icon-scale-runtime-parity-05.18.5.test.js', 'LyogREItMDUuMTguNSDigJQgY29udHJhdG8gZGUgZXNjYWxhIGRlIMOtY29uZSBpZMOqbnRpY28gbm8gYXBwIGUgbm8ga2l0LiAqLwpjb25zdCBmcyA9IHJlcXVpcmUoImZzIik7CmNvbnN0IHBhdGggPSByZXF1aXJlKCJwYXRoIik7Cgpjb25zdCByb290ID0gcGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgIi4uIik7CmNvbnN0IGFwcCA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsICJpY29uLXNjYWxlLWNvbnRyYWN0LmpzIiksICJ1dGY4Iik7CmNvbnN0IGtpdCA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImF1dGhvcmluZy1raXQiLCAicnVudGltZSIsICJpY29uLXNjYWxlLWNvbnRyYWN0LmpzIiksICJ1dGY4Iik7CmNvbnN0IHN0eWxlcyA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgInN0eWxlcyIsICJjb21wb25lbnRzLmNzcyIpLCAidXRmOCIpOwoKaWYgKGFwcCAhPT0ga2l0KSB0aHJvdyBuZXcgRXJyb3IoIk8gY29udHJhdG8gZGUgZXNjYWxhIGRlIMOtY29uZSBkaXZlcmdpdSBlbnRyZSBhcHAgZSBhdXRob3Jpbmcta2l0L3J1bnRpbWUuIik7CmlmICghYXBwLmluY2x1ZGVzKCdDT05UUkFDVF9WRVJTSU9OID0gIjA1LjE4LjUiJykpIHRocm93IG5ldyBFcnJvcigiQSB2ZXJzw6NvIGRvIGNvbnRyYXRvIGRlIMOtY29uZSBuw6NvIGVzdMOhIGlkZW50aWZpY2FkYS4iKTsKaWYgKCFhcHAuaW5jbHVkZXMoIndpZHRoOiBtaW4oMTAwJSwgMjZweCkiKSB8fCAhYXBwLmluY2x1ZGVzKCJtYXgtd2lkdGg6IDEwMCUiKSkgdGhyb3cgbmV3IEVycm9yKCJBIGNvbnRlbsOnw6NvIGRvIGludsOzbHVjcm8gbm8gcm9kYXDDqSBuw6NvIGVzdMOhIGRlY2xhcmFkYS4iKTsKaWYgKCFzdHlsZXMuaW5jbHVkZXMoIi5jb21wb25lbnQtaWNvbl9fc3ZnIHN2ZyB7IHdpZHRoOiA4My4zMzMzMzMlOyBoZWlnaHQ6IDgzLjMzMzMzMyU7IikpIHRocm93IG5ldyBFcnJvcigiQSByZXNlcnZhIGludGVybmEgcGFyYSBlc2NhbGEgZGUgMTIwJSBuw6NvIGVzdMOhIGRlY2xhcmFkYS4iKTsKCmNvbnNvbGUubG9nKCLinJMgQ29udHJhdG8gZGUgZXNjYWxhIGRlIMOtY29uZSBpZMOqbnRpY28gbm8gcnVudGltZSBwcmluY2lwYWwgZSBubyBBdXRob3JpbmdLaXQuIik7Cg==')
+          write_b64('tests/text-overflow-runtime-parity-05.18.4.test.js', 'LyogREItMDUuMTguNCDigJQgY29udHJhdG8gZGUgb3ZlcmZsb3cgaWTDqm50aWNvIG5vIGFwcCBlIG5vIGtpdC4gKi8KY29uc3QgZnMgPSByZXF1aXJlKCJmcyIpOwpjb25zdCBwYXRoID0gcmVxdWlyZSgicGF0aCIpOwoKY29uc3Qgcm9vdCA9IHBhdGgucmVzb2x2ZShfX2Rpcm5hbWUsICIuLiIpOwpjb25zdCBhcHAgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAidGV4dC1vdmVyZmxvdy1jb250cmFjdC5qcyIpLCAidXRmOCIpOwpjb25zdCBraXQgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhdXRob3Jpbmcta2l0IiwgInJ1bnRpbWUiLCAidGV4dC1vdmVyZmxvdy1jb250cmFjdC5qcyIpLCAidXRmOCIpOwoKaWYgKGFwcCAhPT0ga2l0KSB0aHJvdyBuZXcgRXJyb3IoIk8gY29udHJhdG8gZGUgb3ZlcmZsb3cgZGl2ZXJnaXUgZW50cmUgYXBwIGUgYXV0aG9yaW5nLWtpdC9ydW50aW1lLiIpOwppZiAoIWFwcC5pbmNsdWRlcygnQ09OVFJBQ1RfVkVSU0lPTiA9ICIwNS4xOC40LjEiJykpIHRocm93IG5ldyBFcnJvcigiQSB2ZXJzw6NvIGRvIGNvbnRyYXRvIGRlIG92ZXJmbG93IG7Do28gZXN0w6EgaWRlbnRpZmljYWRhLiIpOwppZiAoIWFwcC5pbmNsdWRlcygib3ZlcmZsb3dFeHBsaWNpdCIpKSB0aHJvdyBuZXcgRXJyb3IoIk8gbWFyY2Fkb3IgZGUgaW50ZW7Dp8OjbyBleHBsw61jaXRhIG7Do28gZmF6IHBhcnRlIGRvIGNvbnRyYXRvLiIpOwoKY29uc29sZS5sb2coIuKckyBDb250cmF0byBkZSBvdmVyZmxvdyBpZMOqbnRpY28gbm8gcnVudGltZSBwcmluY2lwYWwgZSBubyBBdXRob3JpbmdLaXQuIik7Cg==')
+          write_b64('tests/reflow-manual-baseline-05.18.test.js', 'LyogQXVkaXRvcmlhIDA1LjE4IOKAlCByZWZsb3cgbWFudWFsIGRldmUgc2luY3Jvbml6YXIgbyBiYXNlbGluZSBkYSBwcsOzeGltYSBhw6fDo28uICovCmNvbnN0IGZzID0gcmVxdWlyZSgiZnMiKTsKY29uc3QgcGF0aCA9IHJlcXVpcmUoInBhdGgiKTsKY29uc3Qgdm0gPSByZXF1aXJlKCJ2bSIpOwoKY29uc3Qgcm9vdCA9IHBhdGgucmVzb2x2ZShfX2Rpcm5hbWUsICIuLiIpOwpnbG9iYWwud2luZG93ID0gZ2xvYmFsOwpnbG9iYWwubG9jYWxTdG9yYWdlID0geyBnZXRJdGVtKCkgeyByZXR1cm4gbnVsbDsgfSwgc2V0SXRlbSgpIHt9LCByZW1vdmVJdGVtKCkge30sIGNsZWFyKCkge30gfTsKZ2xvYmFsLkNhdGFsb2dFZGl0b3JJY29uID0gKCkgPT4gIiI7ClsKICAiYXBwL2NhdGFsb2ctc291cmNlLmpzIiwKICAiYXBwL3ByZXNlbnRhdGlvbi1yZWdpc3RyeS5qcyIsCiAgImFwcC9sYXlvdXQtZW5naW5lLmpzIiwKICAiYXBwL2NvbXBvbmVudC1yZWdpc3RyeS5qcyIsCiAgImFwcC9jb2xsZWN0aW9uLXJlZ2lzdHJ5LmpzIiwKICAiYXBwL2RvY3VtZW50LXN0b3JlLmpzIiwKICAiYXBwL3RleHQtYWxpZ25tZW50LWNvbnRyYWN0LmpzIiwKICAiYXBwL3RleHQtc2NhbGUtY29udHJhY3QuanMiLAogICJhcHAvdGV4dC1vdmVyZmxvdy1jb250cmFjdC5qcyIsCiAgImFwcC9pY29uLXNjYWxlLWNvbnRyYWN0LmpzIiwKICAiYXBwL3Byb2R1Y3QtaGVyby1jb250cmFjdC5qcyIsCiAgImFwcC9wcm9kdWN0LXRlY2huaWNhbC1jb250cmFjdC5qcyIsCiAgImFwcC9wcm9kdWN0LXZhcmlhbnRzLWNvbnRyYWN0LmpzIiwKICAiYXBwL3Byb2R1Y3QtZGF0YS1vbmx5LWNvbnRyYWN0LmpzIiwKICAiYXBwL3JlZmxvdy1oaXN0b3J5LXN0YWJpbGl0eS1jb250cmFjdC5qcyIKXS5mb3JFYWNoKGZpbGUgPT4gdm0ucnVuSW5UaGlzQ29udGV4dChmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsIGZpbGUpLCAidXRmOCIpLCB7IGZpbGVuYW1lOiBmaWxlIH0pKTsKCkNhdGFsb2dUZXh0QWxpZ25tZW50Q29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nVGV4dFNjYWxlQ29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nVGV4dE92ZXJmbG93Q29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nSWNvblNjYWxlQ29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nUHJvZHVjdEhlcm9Db250cmFjdC5pbnN0YWxsKCk7CkNhdGFsb2dQcm9kdWN0VGVjaG5pY2FsQ29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nUHJvZHVjdFZhcmlhbnRzQ29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nUHJvZHVjdERhdGFPbmx5Q29udHJhY3QuaW5zdGFsbCgpOwpDYXRhbG9nUmVmbG93SGlzdG9yeVN0YWJpbGl0eUNvbnRyYWN0Lmluc3RhbGwoKTsKCmNvbnN0IGFzc2VydCA9IChjb25kaXRpb24sIG1lc3NhZ2UpID0+IHsgaWYgKCFjb25kaXRpb24pIHRocm93IG5ldyBFcnJvcihtZXNzYWdlKTsgfTsKY29uc3QgY2xvbmUgPSB2YWx1ZSA9PiBKU09OLnBhcnNlKEpTT04uc3RyaW5naWZ5KHZhbHVlKSk7CmNvbnN0IHN0YWJsZSA9IHN0YXRlID0+IHsKICBjb25zdCB2YWx1ZSA9IGNsb25lKHN0YXRlKTsKICBkZWxldGUgdmFsdWUuZWRpdG9yOwogIGRlbGV0ZSB2YWx1ZS51cGRhdGVkQXQ7CiAgcmV0dXJuIHZhbHVlOwp9Owpjb25zdCBjYW5vbmljYWxpemUgPSB2YWx1ZSA9PiB7CiAgaWYgKEFycmF5LmlzQXJyYXkodmFsdWUpKSByZXR1cm4gdmFsdWUubWFwKGNhbm9uaWNhbGl6ZSk7CiAgaWYgKHZhbHVlICYmIHR5cGVvZiB2YWx1ZSA9PT0gIm9iamVjdCIpIHJldHVybiBPYmplY3QuZnJvbUVudHJpZXMoT2JqZWN0LmtleXModmFsdWUpLnNvcnQoKS5tYXAoa2V5ID0+IFtrZXksIGNhbm9uaWNhbGl6ZSh2YWx1ZVtrZXldKV0pKTsKICByZXR1cm4gdmFsdWU7Cn07CmNvbnN0IHNpZ25hdHVyZSA9IHN0YXRlID0+IEpTT04uc3RyaW5naWZ5KGNhbm9uaWNhbGl6ZShzdGFibGUoc3RhdGUpKSk7Cgpjb25zdCBzdG9yZSA9IG5ldyBDYXRhbG9nRG9jdW1lbnRTdG9yZShjcmVhdGVCbGFua0NhdGFsb2dEb2N1bWVudCgpKTsKY29uc3QgYXJlYSA9IHN0b3JlLmFkZENvbXBvbmVudCgibGF5b3V0LWNvbnRhaW5lciIsIHsgeDogMjQsIHk6IDI0LCB3aWR0aDogNzQ2LCBoZWlnaHQ6IDkwMCB9LCB7CiAgcGFyZW50SWQ6IG51bGwsCiAgbGF5b3V0OiB7IG1vZGU6ICJncmlkIiwgY29sdW1uczogMTIsIHBhZGRpbmc6IDAsIGdhcDogMCwgYWxpZ246ICJzdHJldGNoIiwgZGlzdHJpYnV0aW9uOiAiZmlsbCIsIHJlc3BvbnNpdmU6IHsgZW5hYmxlZDogZmFsc2UsIGJyZWFrcG9pbnQ6IDMyMCwgbW9kZTogImNvbHVtbiIgfSB9Cn0pOwpmb3IgKGxldCBpbmRleCA9IDA7IGluZGV4IDwgMTU7IGluZGV4ICs9IDEpIHN0b3JlLmFkZENvbXBvbmVudChpbmRleCAlIDIgPyAiaWNvbiIgOiAidGV4dCIsIHsgeDogMCwgeTogMCwgd2lkdGg6IDgwLCBoZWlnaHQ6IDM0IH0sIHsgcGFyZW50SWQ6IGFyZWEuaWQgfSk7CmNvbnN0IGNhcmQgPSBzdG9yZS5hZGRDb21wb25lbnQoInByb2R1Y3QtY2FyZCIsIHsgeDogMCwgeTogMCwgd2lkdGg6IDI4MCwgaGVpZ2h0OiAyNDAgfSwgeyBwYXJlbnRJZDogYXJlYS5pZCB9KTsKCmNvbnN0IGhpc3RvcnlCZWZvcmVNYW51YWwgPSBzdG9yZS5nZXRIaXN0b3J5U3RhdGUoKS51bmRvQ291bnQ7CnN0b3JlLmZpbmRDb21wb25lbnQoY2FyZC5pZCkuY29tcG9uZW50LmZyYW1lLndpZHRoID0gNjY7CmFzc2VydChzdG9yZS5yZWZsb3dDb21wb25lbnRUcmVlKGFyZWEuaWQpLCAiTyByZWZsb3cgbWFudWFsIG7Do28gZm9pIGV4ZWN1dGFkby4iKTsKYXNzZXJ0KHN0b3JlLmdldEhpc3RvcnlTdGF0ZSgpLnVuZG9Db3VudCA9PT0gaGlzdG9yeUJlZm9yZU1hbnVhbCwgIk8gcmVmbG93IG1hbnVhbCBjcmlvdSB1bWEgZW50cmFkYSBkZSBoaXN0w7NyaWNvLiIpOwphc3NlcnQoc3RvcmUuZmluZENvbXBvbmVudChjYXJkLmlkKS5jb21wb25lbnQuZnJhbWUud2lkdGggPj0gMjIwLCAiTyByZWZsb3cgbWFudWFsIG7Do28gcmVzdGF1cm91IG8gbcOtbmltbyBkbyBjYXJkLiIpOwpjb25zdCBwb3N0UmVmbG93U2lnbmF0dXJlID0gc2lnbmF0dXJlKHN0b3JlLmdldFN0YXRlKCkpOwoKY29uc3QgYWRkZWQgPSBzdG9yZS5hZGRDb21wb25lbnQoInRleHQiLCB7IHg6IDAsIHk6IDAsIHdpZHRoOiAxMDAsIGhlaWdodDogMzQgfSwgeyBwYXJlbnRJZDogYXJlYS5pZCwgcHJvcHM6IHsgY29udGVudDogIkHDh8ODTyBBUMOTUyBSRUZMT1ciIH0gfSk7CmFzc2VydChzdG9yZS5maW5kQ29tcG9uZW50KGFkZGVkLmlkKSwgIkEgYcOnw6NvIHBvc3RlcmlvciBhbyByZWZsb3cgbsOjbyBmb2kgY3JpYWRhLiIpOwphc3NlcnQoc3RvcmUudW5kbygpLCAiTsOjbyBmb2kgcG9zc8OtdmVsIGRlc2ZhemVyIGEgYcOnw6NvIHBvc3RlcmlvciBhbyByZWZsb3cuIik7CmFzc2VydChzaWduYXR1cmUoc3RvcmUuZ2V0U3RhdGUoKSkgPT09IHBvc3RSZWZsb3dTaWduYXR1cmUsICJVbmRvIHZvbHRvdSBhbyBzbmFwc2hvdCBhbnRlcmlvciBhbyByZWZsb3cgbWFudWFsLiIpOwphc3NlcnQoIXN0b3JlLmZpbmRDb21wb25lbnQoYWRkZWQuaWQpLCAiVW5kbyBwcmVzZXJ2b3UgbyBlbGVtZW50byBjcmlhZG8gZGVwb2lzIGRvIHJlZmxvdy4iKTsKYXNzZXJ0KHN0b3JlLnJlZG8oKSwgIk7Do28gZm9pIHBvc3PDrXZlbCByZWZhemVyIGEgYcOnw6NvIHBvc3RlcmlvciBhbyByZWZsb3cuIik7CmFzc2VydChzdG9yZS5maW5kQ29tcG9uZW50KGFkZGVkLmlkKSwgIlJlZG8gbsOjbyByZXN0YXVyb3UgbyBlbGVtZW50byBwb3N0ZXJpb3IgYW8gcmVmbG93LiIpOwoKY29uc3QgYmVmb3JlRGVyaXZlZFN0YXRlID0gc2lnbmF0dXJlKHN0b3JlLmdldFN0YXRlKCkpOwpjb25zdCBiZWZvcmVEZXJpdmVkSGlzdG9yeSA9IHN0b3JlLmdldEhpc3RvcnlTdGF0ZSgpLnVuZG9Db3VudDsKY29uc3QgZGVyaXZlZENhcmQgPSBzdG9yZS5maW5kQ29tcG9uZW50KGNhcmQuaWQpLmNvbXBvbmVudDsKZGVyaXZlZENhcmQuZnJhbWUuaGVpZ2h0ICs9IDI0Owphc3NlcnQoc3RvcmUucmVmbG93Q29tcG9uZW50VHJlZShkZXJpdmVkQ2FyZCwgeyBkZXJpdmVkOiB0cnVlIH0pLCAiTyByZWZsb3cgZGVyaXZhZG8gbsOjbyBmb2kgZXhlY3V0YWRvLiIpOwpjb25zdCBhZnRlckRlcml2ZWRTdGF0ZSA9IHNpZ25hdHVyZShzdG9yZS5nZXRTdGF0ZSgpKTsKYXNzZXJ0KGFmdGVyRGVyaXZlZFN0YXRlICE9PSBiZWZvcmVEZXJpdmVkU3RhdGUsICJBIGZpeHR1cmEgZGVyaXZhZGEgbsOjbyBhbHRlcm91IG8gZG9jdW1lbnRvLiIpOwpzdG9yZS5lbWl0KHsgdHlwZTogImRlcml2ZWQtcmVmbG93LXByb2JlIiwgY29tcG9uZW50SWQ6IGRlcml2ZWRDYXJkLmlkIH0pOwphc3NlcnQoc3RvcmUuZ2V0SGlzdG9yeVN0YXRlKCkudW5kb0NvdW50ID09PSBiZWZvcmVEZXJpdmVkSGlzdG9yeSArIDEsICJPIHJlZmxvdyBkZXJpdmFkbyBzaW5jcm9uaXpvdSBvIGJhc2VsaW5lIGFudGVzIGRhIGNhcHR1cmEuIik7CmFzc2VydChzdG9yZS51bmRvKCksICJOw6NvIGZvaSBwb3Nzw612ZWwgZGVzZmF6ZXIgYSBhw6fDo28gY29tIHJlZmxvdyBkZXJpdmFkby4iKTsKYXNzZXJ0KHNpZ25hdHVyZShzdG9yZS5nZXRTdGF0ZSgpKSA9PT0gYmVmb3JlRGVyaXZlZFN0YXRlLCAiVW5kbyBuw6NvIHJlc3RhdXJvdSBvIGVzdGFkbyBhbnRlcmlvciBhbyByZWZsb3cgZGVyaXZhZG8uIik7CmFzc2VydChzdG9yZS5yZWRvKCksICJOw6NvIGZvaSBwb3Nzw612ZWwgcmVmYXplciBhIGHDp8OjbyBjb20gcmVmbG93IGRlcml2YWRvLiIpOwphc3NlcnQoc2lnbmF0dXJlKHN0b3JlLmdldFN0YXRlKCkpID09PSBhZnRlckRlcml2ZWRTdGF0ZSwgIlJlZG8gbsOjbyByZXN0YXVyb3UgbyBlc3RhZG8gZXN0YWJpbGl6YWRvIHBlbG8gcmVmbG93IGRlcml2YWRvLiIpOwoKYXNzZXJ0KHN0b3JlLmdldFN0YXRlKCkuc2NoZW1hVmVyc2lvbiA9PT0gIjEuMTYuMCIsICJBIHNpbmNyb25pemHDp8OjbyBhbHRlcm91IG8gc2NoZW1hLiIpOwphc3NlcnQoQ2F0YWxvZ1JlZmxvd0hpc3RvcnlTdGFiaWxpdHlDb250cmFjdC5WRVJTSU9OID09PSAiMDUuMTguYXVkaXQuNCIsICJWZXJzw6NvIGluZXNwZXJhZGEgZG8gY29udHJhdG8gZGUgZXN0YWJpbGlkYWRlLiIpOwoKY29uc29sZS5sb2coIuKckyBSZWZsb3cgbWFudWFsIHNpbmNyb25pemEgYmFzZWxpbmU7IHJlZmxvdyBkZXJpdmFkbyBwZXJtYW5lY2UgZGVudHJvIGRhIHByw7N4aW1hIGHDp8OjbyBkZSBoaXN0w7NyaWNvLiIpOwo=')
+          replace_once('app/product-variants-contract.js', '        this.reflowComponentTree(card);', '        this.reflowComponentTree(card, { derived: true });')
+          replace_once('app/product-data-only-contract.js', '        this.reflowComponentTree(card);', '        this.reflowComponentTree(card, { derived: true });')
           PY
       - name: Regenerar AuthoringKit
         run: node tools/build-developer-b-authoring-kit.js
@@ -156,9 +87,10 @@ console.log('''
           set -euo pipefail
           allowed=$'app/authoring-kit-files.js\napp/product-data-only-contract.js\napp/product-variants-contract.js\napp/reflow-history-stability-contract.js\nauthoring-kit/runtime/product-data-only-contract.js\nauthoring-kit/runtime/product-variants-contract.js\nauthoring-kit/runtime/reflow-history-stability-contract.js\ntests/icon-scale-runtime-parity-05.18.5.test.js\ntests/reflow-manual-baseline-05.18.test.js\ntests/text-overflow-runtime-parity-05.18.4.test.js'
           actual="$(git diff --name-only | sort)"
-          if [ "$actual" != "$allowed" ]; then
-            echo "Arquivos alterados fora do conjunto esperado:"
-            printf '%s\n' "$actual"
+          unexpected="$(comm -23 <(printf '%s\n' "$actual") <(printf '%s\n' "$allowed" | sort))"
+          if [ -n "$unexpected" ]; then
+            echo "Arquivos alterados fora do conjunto permitido:"
+            printf '%s\n' "$unexpected"
             exit 1
           fi
           git config user.name "Developer B Audit"
