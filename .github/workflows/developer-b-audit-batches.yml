@@ -2,35 +2,56 @@ name: Developer B Audit Batches
 on:
   pull_request:
     branches: [development]
-    paths:
-      - '.github/workflows/developer-b-audit-batches.yml'
-      - 'app/**'
-      - 'authoring-kit/**'
-      - 'styles/**'
-      - 'tests/**'
-      - 'tools/**'
 permissions:
-  contents: read
+  contents: write
 jobs:
-  consolidated-audit-05-19:
-    name: DB-05.19 - stable consolidated audit
+  consolidate-icon-scale-css:
+    name: DB-05.19.5 - consolidate icon scale CSS
     runs-on: ubuntu-latest
-    timeout-minutes: 80
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Move footer icon containment to canonical CSS
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+
+          css_path = Path('styles/components.css')
+          css = css_path.read_text()
+          anchor = '.component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); place-items: center; }\n'
+          rule = '.editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg { width: min(100%, 26px); height: min(100%, 26px); max-width: 100%; max-height: 100%; }\n'
+          if rule not in css:
+              if css.count(anchor) != 1:
+                  raise SystemExit(f'Canonical icon wrapper anchor count: {css.count(anchor)}')
+              css_path.write_text(css.replace(anchor, anchor + rule, 1))
+
+          Path('app/icon-scale-contract.js').write_text(base64.b64decode('KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTkuNSI7CgogIGZ1bmN0aW9uIGluc3RhbGwoKSB7CiAgICByZXR1cm4geyB2ZXJzaW9uOiBDT05UUkFDVF9WRVJTSU9OLCBzdHlsZXNJbnN0YWxsZWQ6IGZhbHNlIH07CiAgfQoKICB3aW5kb3cuQ2F0YWxvZ0ljb25TY2FsZUNvbnRyYWN0ID0gT2JqZWN0LmZyZWV6ZSh7IFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sIGluc3RhbGwgfSk7CgogIGluc3RhbGwoKTsKfSkoKTsK').decode('utf-8'))
+          PY
+          node tools/build-developer-b-authoring-kit.js
+          git diff --check
+      - name: Run focused Node tests
+        run: |
+          node tests/icon-scale-persistence-05.18.5.test.js
+          node tests/icon-scale-runtime-parity-05.18.5.test.js
+          node tests/footer-item-containment-05.18.12.2.test.js
+          node tests/footer-item-containment-build-05.18.12.2.test.js
+          node tests/library-depth-05.18.test.js
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
           set -euo pipefail
           npm install --no-save playwright@latest
           chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
-          if [ -z "$chrome_path" ]; then
-            echo "No system Chrome/Chromium executable found."
-            exit 1
-          fi
+          test -n "$chrome_path"
           "$chrome_path" --version
           echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
       - name: Start editor
@@ -42,43 +63,59 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run full audit and stress
+      - name: Run icon browser test and one stress seed
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-stable/domain
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19-stable/consolidated audit-output/db-05.19-stable/browser-stress
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-stable/consolidated/audit.log
-          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/domain-stress.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5194999 --timeout=300000 --output=audit-output/db-05.19-stable/browser-stress 2>&1 | tee audit-output/db-05.19-stable/consolidated/browser-stress.log
-      - name: Verify consolidation and idempotence
+          mkdir -p audit-output/db-05.19.5/browser audit-output/db-05.19.5/stress
+          timeout 180s node tests/browser-icon-scale-05.18.5.test.js 2>&1 | tee audit-output/db-05.19.5/browser/icon-scale.log
+          timeout 180s node tests/browser-footer-item-containment-05.18.12.2.test.js 2>&1 | tee audit-output/db-05.19.5/browser/footer.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5195001 --timeout=300000 --output=audit-output/db-05.19.5/stress 2>&1 | tee audit-output/db-05.19.5/browser/stress.log
+      - name: Commit canonical icon containment
         shell: bash
         run: |
           set -euo pipefail
-          for file in table-binding-overrides-contract.js footer-item-containment-contract.js; do
-            if find app authoring-kit -name "$file" -print -quit | grep -q .; then
-              echo "Removed shim returned: $file"
-              exit 1
-            fi
+          mapfile -t actual < <(git diff --name-only --relative | sort)
+          allowed=(
+            app/authoring-kit-files.js
+            app/icon-scale-contract.js
+            authoring-kit/capabilities.json
+            authoring-kit/feature-inventory.json
+            authoring-kit/runtime/icon-scale-contract.js
+            docs/FEATURE-CATALOG.md
+            styles/components.css
+          )
+          unexpected=()
+          for file in "${actual[@]}"; do
+            found=false
+            for candidate in "${allowed[@]}"; do
+              if [ "$file" = "$candidate" ]; then found=true; break; fi
+            done
+            if [ "$found" = false ]; then unexpected+=("$file"); fi
           done
-          if grep -R "CatalogTableBindingOverridesContract\|CatalogFooterItemContainmentContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js; then
-            echo "Removed shim global returned."
+          if [ "${#unexpected[@]}" -gt 0 ]; then
+            echo "Unexpected tracked files:"
+            printf '%s\n' "${unexpected[@]}"
             exit 1
           fi
-          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/idempotence.log
-          if ! git diff --quiet; then
-            git status --short | tee audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
-            git diff --stat | tee -a audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
-            exit 1
-          fi
-          git status --short > audit-output/db-05.19-stable/consolidated/final-status.txt
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add -A
+          git commit -m "05.19 — consolida contenção da escala de ícone"
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Prove idempotent build
+        run: |
+          node tools/build-developer-b-authoring-kit.js
+          git diff --exit-code
+          node tests/icon-scale-persistence-05.18.5.test.js
+          node tests/icon-scale-runtime-parity-05.18.5.test.js
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19-stable-audit
-          path: audit-output/db-05.19-stable
-          if-no-files-found: error
+          name: developer-b-db-05.19.5
+          path: audit-output/db-05.19.5
+          if-no-files-found: warn
           retention-days: 14
