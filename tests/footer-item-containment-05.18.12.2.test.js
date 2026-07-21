@@ -1,4 +1,4 @@
-/* DB-05.18.12.2 — geometria mínima contida do footer-item. */
+/* DB-05.19.3 — geometria e recorte do footer-item pertencem às superfícies canônicas. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -6,31 +6,30 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
-const definition = {
-  minSize: { width: 80, height: 64 },
-  container: {
-    slots: [
-      { name: "icon", getFrame: () => ({ x: 27, y: 4, width: 26, height: 26 }) },
-      { name: "title", getFrame: () => ({ x: 4, y: 31, width: 80, height: 34 }) },
-      { name: "subtitle", getFrame: () => ({ x: 4, y: 65, width: 80, height: 34 }) }
-    ]
-  }
-};
 const sandbox = {
-  window: { CATALOG_COMPONENT_REGISTRY: { "footer-item": definition } },
+  window: {},
   document: undefined,
   console,
   Object,
   Number,
-  Math
+  Math,
+  Array,
+  String
 };
 sandbox.window.window = sandbox.window;
+sandbox.window.CatalogEditorIcon = () => "";
 vm.createContext(sandbox);
-vm.runInContext(fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8"), sandbox, { filename: "footer-item-containment-contract.js" });
+vm.runInContext(fs.readFileSync(path.join(root, "app", "component-registry.js"), "utf8"), sandbox, { filename: "component-registry.js" });
 
-const installed = sandbox.window.CatalogFooterItemContainmentContract.install();
-assert(installed.geometryInstalled === true, "O contrato não substituiu a geometria do footer-item.");
-assert(installed.stylesInstalled === false, "O teste sem DOM não deveria instalar estilos.");
+const definition = sandbox.window.CATALOG_COMPONENT_REGISTRY["footer-item"];
+const titleSlot = definition.container.slots.find(slot => slot.name === "title");
+const subtitleSlot = definition.container.slots.find(slot => slot.name === "subtitle");
+const titleFrameBeforeShim = titleSlot.getFrame;
+const subtitleFrameBeforeShim = subtitleSlot.getFrame;
+
+vm.runInContext(fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8"), sandbox, { filename: "footer-item-containment-contract.js" });
+assert(sandbox.window.CatalogFooterItemContainmentContract.install(), "O shim não encontrou footer-item no registro.");
+assert(titleSlot.getFrame === titleFrameBeforeShim && subtitleSlot.getFrame === subtitleFrameBeforeShim, "O shim ainda substitui a geometria canônica.");
 
 function component(width, height, slots = ["icon", "title", "subtitle"]) {
   return {
@@ -41,9 +40,10 @@ function component(width, height, slots = ["icon", "title", "subtitle"]) {
 }
 
 function framesFor(source) {
-  return Object.fromEntries(definition.container.slots
-    .filter(slot => slot.name === "title" || slot.name === "subtitle")
-    .map(slot => [slot.name, slot.getFrame(source)]));
+  return {
+    title: titleSlot.getFrame(source),
+    subtitle: subtitleSlot.getFrame(source)
+  };
 }
 
 function assertContained(source) {
@@ -59,10 +59,8 @@ function assertContained(source) {
 
 for (const [width, height] of [[80, 64], [80, 77], [112, 96]]) {
   const frames = assertContained(component(width, height));
-  if (height >= 64) {
-    assert(frames.title.height >= 14, `Título ficou abaixo do mínimo legível em ${width}×${height}.`);
-    assert(frames.subtitle.height >= 14, `Subtítulo ficou abaixo do mínimo legível em ${width}×${height}.`);
-  }
+  assert(frames.title.height >= 14, `Título ficou abaixo do mínimo legível em ${width}×${height}.`);
+  assert(frames.subtitle.height >= 14, `Subtítulo ficou abaixo do mínimo legível em ${width}×${height}.`);
 }
 
 const minimum = framesFor(component(80, 64));
@@ -73,12 +71,20 @@ const subtitleOnly = framesFor(component(80, 40, ["subtitle"]));
 assert(subtitleOnly.subtitle.x === 4 && subtitleOnly.subtitle.width === 72, `A largura do subtítulo isolado não está contida: ${JSON.stringify(subtitleOnly.subtitle)}.`);
 assert(subtitleOnly.subtitle.y + subtitleOnly.subtitle.height === 37, "O subtítulo isolado não preservou o inset inferior.");
 
-const appSource = fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8");
-const kitSource = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "footer-item-containment-contract.js"), "utf8");
-assert(appSource === kitSource, "O contrato divergiu entre editor e AuthoringKit.");
-assert(fs.readFileSync(path.join(root, "app", "main.js"), "utf8").includes('file: "footer-item-containment-contract.js"'), "O editor não carrega o contrato.");
-const compilerSource = fs.readFileSync(path.join(root, "authoring-kit", "compiler", "compile-catalog.js"), "utf8");
-assert(compilerSource.includes('"footer-item-containment-contract.js"'), "O compilador não carrega o contrato.");
-assert(compilerSource.includes("CatalogFooterItemContainmentContract.install()"), "O compilador não instala o contrato.");
+const helperFrames = sandbox.window.CatalogFooterItemContainmentContract.textFrames(component(80, 64));
+assert(JSON.stringify(helperFrames) === JSON.stringify(minimum), "O helper de compatibilidade divergiu da geometria canônica.");
 
-console.log("✓ DB-05.18.12.2 contém título e subtítulo no mínimo técnico sem alterar o schema.");
+const css = fs.readFileSync(path.join(root, "styles", "components.css"), "utf8");
+assert(css.includes('.editor-component--footer-item:not([data-active-context="true"]) > .component-children-layer'), "O recorte de preview não está no CSS canônico.");
+assert(css.includes(".editor-component--footer-item > .component-children-layer > .editor-component--text {"), "Os mínimos defensivos dos textos não estão no CSS canônico.");
+assert(css.includes("overflow: hidden !important"), "O recorte de impressão não está no CSS canônico.");
+
+const appRegistry = fs.readFileSync(path.join(root, "app", "component-registry.js"), "utf8");
+const kitRegistry = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "component-registry.js"), "utf8");
+const appShim = fs.readFileSync(path.join(root, "app", "footer-item-containment-contract.js"), "utf8");
+const kitShim = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "footer-item-containment-contract.js"), "utf8");
+assert(appRegistry === kitRegistry, "O registro canônico divergiu entre editor e AuthoringKit.");
+assert(appShim === kitShim, "O shim divergiu entre editor e AuthoringKit.");
+assert(sandbox.window.CatalogFooterItemContainmentContract.VERSION === "05.19.3", "Versão inesperada do shim.");
+
+console.log("✓ Geometria e recorte do footer-item pertencem ao registro e CSS canônicos; shim não altera o runtime.");
