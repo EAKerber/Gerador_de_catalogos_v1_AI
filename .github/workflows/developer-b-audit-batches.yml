@@ -5,31 +5,64 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-5-5:
-    name: Batch 5.5 — confirmação de reflow e estresse de domínio
+  batch-6:
+    name: Batch 6 — smoke visual isolado
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regressão mínima
-        run: node tests/reflow-history-stability-05.18.test.js
-      - name: Estresse em três sementes
+      - name: Instalar Playwright e Chromium
         run: |
-          mkdir -p audit-output/batch-5-5
-          node tools/run-developer-b-stress.js \
-            --node \
-            --repeat=3 \
-            --seed=5182026 \
-            --timeout=180000 \
-            --output=audit-output/batch-5-5
+          npm install --no-save playwright@latest
+          npx playwright install --with-deps chromium
+      - name: Iniciar editor
+        shell: bash
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          echo $! > /tmp/catalog-http.pid
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Executar testes visuais independentes
+        shell: bash
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+        run: |
+          mkdir -p audit-output/batch-6
+          failures=0
+          tests=(
+            tests/browser-text-alignment-05.18.2.test.js
+            tests/browser-text-scale-05.18.3.test.js
+            tests/browser-text-overflow-05.18.4.test.js
+            tests/browser-icon-scale-05.18.5.test.js
+            tests/browser-footer-item-containment-05.18.12.2.test.js
+            tests/browser-component-initial-placement-05.18.12.1.test.js
+          )
+          for file in "${tests[@]}"; do
+            log="audit-output/batch-6/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-6/summary.txt
+            if node "$file" >"$log" 2>&1; then
+              echo PASS | tee -a audit-output/batch-6/summary.txt
+            else
+              status=$?
+              echo "FAIL status=$status" | tee -a audit-output/batch-6/summary.txt
+              cat "$log"
+              failures=$((failures + 1))
+            fi
+          done
+          echo "failures=$failures" | tee -a audit-output/batch-6/summary.txt
+          exit "$failures"
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-5-5-domain-confirmation
-          path: audit-output/batch-5-5
-          if-no-files-found: warn
+          name: developer-b-batch-6-visual-smoke
+          path: audit-output/batch-6
+          if-no-files-found: error
           retention-days: 14
