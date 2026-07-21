@@ -2,65 +2,25 @@ name: Developer B Audit Batches
 on:
   pull_request:
     branches: [development]
+    paths:
+      - '.github/workflows/developer-b-audit-batches.yml'
+      - 'app/**'
+      - 'authoring-kit/**'
+      - 'styles/**'
+      - 'tests/**'
+      - 'tools/**'
 permissions:
-  contents: write
+  contents: read
 jobs:
-  remove-icon-scale-shim:
-    name: DB-05.19.6 - remove icon scale shim
+  consolidated-audit-05-19:
+    name: DB-05.19 - stable consolidated audit
     runs-on: ubuntu-latest
-    timeout-minutes: 85
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Remove shim and residual executable dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p audit-output/db-05.19.6/consolidated audit-output/db-05.19.6/browser-stress
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path, old, new):
-              file = Path(path)
-              source = file.read_text()
-              if new and new in source and old not in source:
-                  return
-              if source.count(old) != 1:
-                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)} for {old!r}')
-              file.write_text(source.replace(old, new, 1))
-
-          replace_once('app/main.js', '    { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" },\n', '')
-          replace_once('app/main.js', '    window.CatalogIconScaleContract?.install();\n', '')
-          replace_once('tools/build-authoring-kit.js', '  "icon-scale-contract.js",\n', '')
-          replace_once('tools/build-developer-b-authoring-kit.js', '  "icon-scale-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', '  "icon-scale-contract.js",\n', '')
-          replace_once('authoring-kit/compiler/compile-catalog.js', 'CatalogIconScaleContract.install();\n', '')
-
-          for test in Path('tests').glob('*.test.js'):
-              source = test.read_text()
-              source = source.replace('  "app/icon-scale-contract.js",\n', '')
-              source = source.replace('CatalogIconScaleContract.install();\n', '')
-              source = source.replace('  CatalogIconScaleContract,\n', '')
-              if test.name == 'authoring-kit-runtime-contracts-05.18.test.js':
-                  source = source.replace('  "icon-scale-contract.js",\n', '')
-                  source = source.replace('  "CatalogIconScaleContract",\n', '')
-              test.write_text(source)
-          PY
-          rm app/icon-scale-contract.js authoring-kit/runtime/icon-scale-contract.js
-          node tools/build-developer-b-authoring-kit.js
-          if grep -R "icon-scale-contract\|CatalogIconScaleContract" \
-            app/main.js app/authoring-kit-files.js tools/build-authoring-kit.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler \
-            tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js \
-            tests/reflow-history-stability-05.18.test.js tests/reflow-manual-baseline-05.18.test.js; then
-            echo "Executable icon shim reference remained."
-            exit 1
-          fi
-          git diff --check
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
@@ -79,49 +39,45 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run complete audit and stress
+      - name: Run full audit and stress
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19.6/domain
+          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-stable/domain
         shell: bash
         run: |
           set -euo pipefail
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.6/consolidated/audit.log
-          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19.6/consolidated/domain-stress.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5196001 --timeout=300000 --output=audit-output/db-05.19.6/browser-stress 2>&1 | tee audit-output/db-05.19.6/consolidated/browser-stress.log
-      - name: Commit icon shim removal
+          mkdir -p audit-output/db-05.19-stable/consolidated audit-output/db-05.19-stable/browser-stress
+          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-stable/consolidated/audit.log
+          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/domain-stress.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5196999 --timeout=300000 --output=audit-output/db-05.19-stable/browser-stress 2>&1 | tee audit-output/db-05.19-stable/consolidated/browser-stress.log
+      - name: Verify consolidation and idempotence
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t actual < <(git diff --name-only --relative | sort)
-          unexpected=()
-          for file in "${actual[@]}"; do
-            case "$file" in
-              app/authoring-kit-files.js|app/icon-scale-contract.js|app/main.js|authoring-kit/capabilities.json|authoring-kit/compiler/compile-catalog.js|authoring-kit/feature-inventory.json|authoring-kit/runtime/icon-scale-contract.js|docs/FEATURE-CATALOG.md|tools/build-authoring-kit.js|tools/build-developer-b-authoring-kit.js|tests/*.test.js) ;;
-              *) unexpected+=("$file") ;;
-            esac
+          for file in table-binding-overrides-contract.js footer-item-containment-contract.js icon-scale-contract.js; do
+            if find app authoring-kit -name "$file" -print -quit | grep -q .; then
+              echo "Removed shim returned: $file"
+              exit 1
+            fi
           done
-          if [ "${#unexpected[@]}" -gt 0 ]; then
-            echo "Unexpected tracked files:"
-            printf '%s\n' "${unexpected[@]}"
+          if grep -R "CatalogTableBindingOverridesContract\|CatalogFooterItemContainmentContract\|CatalogIconScaleContract" \
+            app/main.js app/authoring-kit-files.js tools/build-authoring-kit.js tools/build-developer-b-authoring-kit.js \
+            authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js; then
+            echo "Removed shim global returned."
             exit 1
           fi
-          git config user.name "Developer B Audit"
-          git config user.email "developer-b-audit@users.noreply.github.com"
-          git add -A
-          git commit -m "05.19 — remove shim de escala de ícone"
-          git push origin HEAD:agent/developer-b-05.18
-      - name: Prove idempotent build
-        run: |
-          node tools/build-developer-b-authoring-kit.js
-          git diff --exit-code
-          node tests/icon-scale-persistence-05.18.5.test.js
-          node tests/icon-scale-runtime-parity-05.18.5.test.js
+          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/idempotence.log
+          if ! git diff --quiet; then
+            git status --short | tee audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
+            git diff --stat | tee -a audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
+            exit 1
+          fi
+          git status --short > audit-output/db-05.19-stable/consolidated/final-status.txt
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19.6
-          path: audit-output/db-05.19.6
-          if-no-files-found: warn
+          name: developer-b-db-05.19-stable-audit
+          path: audit-output/db-05.19-stable
+          if-no-files-found: error
           retention-days: 14
