@@ -30,6 +30,8 @@ Não adiciona capacidade de produto. Seu objetivo é reduzir sobreposições inc
 - converter `table-binding-overrides-contract.js` em shim sem subclassificação;
 - manter paridade com o AuthoringKit.
 
+**Estado:** concluído no commit `7acc1b9295acd00fb771f51aa76646c2b2bb9c44`.
+
 ### DB-05.19.2 — Remoção do shim de overrides
 
 Condicionado à aprovação do 05.19.1:
@@ -39,4 +41,17 @@ Condicionado à aprovação do 05.19.1:
 - manter a regressão comportamental apontando apenas para o store;
 - executar auditoria consolidada.
 
-Outras consolidações serão adicionadas somente após concluir e medir estes dois incrementos.
+**Estado:** implementação e push concluídos no commit `f0532b7ef4f8e2abfb95a39946ba90334ced1a42`; auditoria consolidada final em execução após o registro documental.
+
+## Resultado estrutural
+
+Após os dois incrementos:
+
+- `replaceTableRowsBulk` é a única implementação dos overrides tabulares;
+- editor e compilador não carregam contrato adicional para esse comportamento;
+- o build Developer B não copia o shim;
+- o runtime do AuthoringKit usa o mesmo `document-store` canônico;
+- a regressão de domínio não depende de global ou arquivo de compatibilidade;
+- schema, tipos, receitas e capacidades permanecem inalterados.
+
+Outras consolidações só serão adicionadas depois da auditoria final deste par e de uma nova inspeção de redundância.
