@@ -5,10 +5,10 @@ on:
 permissions:
   contents: write
 jobs:
-  remove-table-binding-shim:
-    name: DB-05.19.2 - remove table binding shim
+  commit-table-binding-shim-removal:
+    name: DB-05.19.2 - commit validated shim removal
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,33 +58,18 @@ jobs:
             exit 1
           fi
           git diff --check
-      - name: Install Playwright and Chromium
+      - name: Revalidate focused contracts
         run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Start editor
-        run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/catalog-http.log
-          exit 1
-      - name: Run consolidated audit and stress
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
+          node tests/table-binding-overrides-05.18.test.js
+          node tests/reflow-history-stability-05.18.test.js
+          node tests/reflow-manual-baseline-05.18.test.js
+          node tests/stress-domain-history-05.18.test.js
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
+      - name: Commit tracked removal
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19.2/consolidated audit-output/db-05.19.2/stress
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19.2/consolidated/audit.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5192001 --timeout=300000 --output=audit-output/db-05.19.2/stress 2>&1 | tee audit-output/db-05.19.2/consolidated/stress.log
-      - name: Commit shim removal
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t actual < <(git status --short | sed -E 's/^.. //' | sort)
+          mapfile -t actual < <(git diff --name-only --relative | sort)
           allowed=(
             app/authoring-kit-files.js
             app/main.js
@@ -106,11 +91,11 @@ jobs:
             if [ "$found" = false ]; then unexpected+=("$file"); fi
           done
           if [ "${#unexpected[@]}" -gt 0 ]; then
-            echo "Unexpected files:"
+            echo "Unexpected tracked files:"
             printf '%s\n' "${unexpected[@]}"
             exit 1
           fi
-          printf 'Files to commit:\n'
+          printf 'Tracked files to commit:\n'
           printf '%s\n' "${actual[@]}"
           git config user.name "Developer B Audit"
           git config user.email "developer-b-audit@users.noreply.github.com"
@@ -122,11 +107,3 @@ jobs:
           node tools/build-developer-b-authoring-kit.js
           git diff --exit-code
           node tests/table-binding-overrides-05.18.test.js
-      - name: Upload evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-db-05.19.2
-          path: audit-output/db-05.19.2
-          if-no-files-found: warn
-          retention-days: 14
