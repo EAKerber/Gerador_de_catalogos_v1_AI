@@ -3,33 +3,35 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  authoring-kit-build-diagnostic:
-    name: Diagnóstico — sincronização do AuthoringKit
+  authoring-kit-build-sync:
+    name: Correção — sincronização idempotente do AuthoringKit
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regenerar AuthoringKit
-        shell: bash
-        run: |
-          mkdir -p audit-output/authoring-kit-build
-          node tools/build-developer-b-authoring-kit.js | tee audit-output/authoring-kit-build/build.log
-          git status --short > audit-output/authoring-kit-build/status.txt
-          git diff --name-status > audit-output/authoring-kit-build/name-status.txt
-          git diff --stat > audit-output/authoring-kit-build/stat.txt
-          git diff --numstat > audit-output/authoring-kit-build/numstat.txt
-          git diff --binary > audit-output/authoring-kit-build/generated.patch
-      - name: Validar artefatos regenerados
+      - name: Regenerar e validar
         shell: bash
         run: |
           set -euo pipefail
+          node tools/build-developer-b-authoring-kit.js
+          expected=$'app/authoring-kit-files.js\nauthoring-kit/capabilities.json\nauthoring-kit/feature-inventory.json\nauthoring-kit/runtime/document-store.js\ndocs/FEATURE-CATALOG.md'
+          actual="$(git diff --name-only | sort)"
+          if [ "$actual" != "$expected" ]; then
+            echo "Diff gerado fora do conjunto esperado:"
+            printf '%s\n' "$actual"
+            exit 1
+          fi
           node --check app/authoring-kit-files.js
           node --check authoring-kit/compiler/compile-catalog.js
+          node --check authoring-kit/runtime/document-store.js
           node --check authoring-kit/runtime/table-binding-overrides-contract.js
           node tests/authoring-kit-runtime-contracts-05.18.test.js
           node tests/table-binding-overrides-05.18.test.js
@@ -38,11 +40,30 @@ jobs:
           node tests/fact-manifest-05.18.17.test.js
           node -e 'JSON.parse(require("fs").readFileSync("authoring-kit/capabilities.json", "utf8")); JSON.parse(require("fs").readFileSync("authoring-kit/feature-inventory.json", "utf8"));'
           git diff --check
-      - name: Publicar diagnóstico
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-authoring-kit-build-diagnostic
-          path: audit-output/authoring-kit-build
-          if-no-files-found: error
-          retention-days: 14
+      - name: Commitar somente artefatos gerados
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add \
+            app/authoring-kit-files.js \
+            authoring-kit/capabilities.json \
+            authoring-kit/feature-inventory.json \
+            authoring-kit/runtime/document-store.js \
+            docs/FEATURE-CATALOG.md
+          git commit -m "build: sincroniza artefatos do AuthoringKit"
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Provar idempotência após commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/build-developer-b-authoring-kit.js
+          if ! git diff --quiet; then
+            echo "O segundo build produziu diferenças:"
+            git status --short
+            git diff --stat
+            exit 1
+          fi
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
+          node tests/table-binding-overrides-05.18.test.js
