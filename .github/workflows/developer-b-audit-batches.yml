@@ -3,39 +3,54 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  batch-6-1:
-    name: Batch 6.1 — diagnóstico visual de recursos e cascata
+  integrate-visual-smoke-fixes:
+    name: Integração mecânica — smoke visual
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      - name: Instalar Playwright e Chromium
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - name: Aplicar alterações idempotentes
+        shell: bash
         run: |
-          npm install --no-save playwright@latest
-          npx playwright install --with-deps chromium
-      - name: Iniciar editor
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              source = file.read_text()
+              if new in source:
+                  return
+              if old not in source:
+                  raise SystemExit(f'Padrão não encontrado em {path}: {old!r}')
+              file.write_text(source.replace(old, new, 1))
+
+          replace_once(
+              'index.html',
+              '<head>\n',
+              '<head>\n  <link rel="icon" href="data:," />\n'
+          )
+          replace_once(
+              'tests/browser-text-overflow-05.18.4.test.js',
+              'window.CatalogTextOverflowContract?.VERSION === "05.18.4"',
+              'window.CatalogTextOverflowContract?.VERSION === "05.18.4.1"'
+          )
+          PY
+      - name: Validar e publicar na branch isolada
+        shell: bash
         run: |
-          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
-          for attempt in {1..30}; do
-            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
-            sleep 1
-          done
-          exit 1
-      - name: Executar diagnóstico
-        env:
-          CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_DIAGNOSTIC_OUTPUT_DIR: ${{ github.workspace }}/audit-output/batch-6-1
-        run: node tests/browser-smoke-diagnostics-05.18.test.js
-      - name: Publicar evidências
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-batch-6-1-visual-diagnostic
-          path: audit-output/batch-6-1
-          if-no-files-found: error
-          retention-days: 14
+          node --check tests/browser-text-overflow-05.18.4.test.js
+          git diff --check
+          if git diff --quiet; then
+            echo "Alterações já aplicadas."
+            exit 0
+          fi
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add index.html tests/browser-text-overflow-05.18.4.test.js
+          git commit -m "fix: corrige ruído de favicon e versão do overflow"
+          git push origin HEAD:agent/developer-b-05.18
