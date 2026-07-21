@@ -66,6 +66,6 @@ assert(manifest.components.find(component => component.type === "product-card")?
 
 const rebuilt = CatalogProjectManifests.buildCapabilitiesManifest();
 assert(JSON.stringify(rebuilt.componentIntents) === JSON.stringify(manifest.componentIntents), "A projeção da taxonomia não é determinística.");
-assert(CATALOG_SCHEMA_VERSION === "1.16.0", "A classificação alterou o schema do documento.");
+assert(manifest.editor?.schemaVersion === "1.16.0", "A classificação alterou o schema do documento.");
 
 console.log("✓ DB-05.18.11 classifica 16 tipos em cinco intenções sem duplicar registros ou alterar categorias legadas.");
