@@ -5,10 +5,10 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-6-2:
-    name: Batch 6.2 — confirmação do smoke visual
+  batch-7:
+    name: Batch 7 — modos, receitas e biblioteca visual
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,35 +31,41 @@ jobs:
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
         run: |
-          mkdir -p audit-output/batch-6-2
+          mkdir -p audit-output/batch-7
           failures=0
           tests=(
-            tests/browser-text-alignment-05.18.2.test.js
-            tests/browser-text-scale-05.18.3.test.js
-            tests/browser-text-overflow-05.18.4.test.js
-            tests/browser-icon-scale-05.18.5.test.js
-            tests/browser-footer-item-containment-05.18.12.2.test.js
-            tests/browser-component-initial-placement-05.18.12.1.test.js
+            tests/browser-component-intents-05.18.11.test.js
+            tests/browser-component-palette-intents-05.18.12.test.js
+            tests/browser-specification-scale-05.18.6.test.js
+            tests/browser-product-hero-05.18.7.test.js
+            tests/browser-product-technical-05.18.8.test.js
+            tests/browser-product-variants-05.18.9.test.js
+            tests/browser-product-data-only-05.18.10.test.js
+            tests/browser-section-heading-05.18.15.test.js
+            tests/browser-fact-recipe-05.18.17.test.js
+            tests/browser-callout-audit-05.18.19.test.js
+            tests/browser-technical-icons-05.18.13.test.js
+            tests/browser-commercial-icons-05.18.14.test.js
           )
           for file in "${tests[@]}"; do
-            log="audit-output/batch-6-2/$(basename "$file" .test.js).log"
-            echo "=== $file ===" | tee -a audit-output/batch-6-2/summary.txt
+            log="audit-output/batch-7/$(basename "$file" .test.js).log"
+            echo "=== $file ===" | tee -a audit-output/batch-7/summary.txt
             if node "$file" >"$log" 2>&1; then
-              echo PASS | tee -a audit-output/batch-6-2/summary.txt
+              echo PASS | tee -a audit-output/batch-7/summary.txt
             else
               status=$?
-              echo "FAIL status=$status" | tee -a audit-output/batch-6-2/summary.txt
+              echo "FAIL status=$status" | tee -a audit-output/batch-7/summary.txt
               cat "$log"
               failures=$((failures + 1))
             fi
           done
-          echo "failures=$failures" | tee -a audit-output/batch-6-2/summary.txt
+          echo "failures=$failures" | tee -a audit-output/batch-7/summary.txt
           exit "$failures"
       - name: Publicar evidências
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-batch-6-2-visual-smoke
-          path: audit-output/batch-6-2
+          name: developer-b-batch-7-visual-medium
+          path: audit-output/batch-7
           if-no-files-found: error
           retention-days: 14
