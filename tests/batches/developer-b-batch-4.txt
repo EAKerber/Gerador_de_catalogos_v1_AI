@@ -1,0 +1,9 @@
+tests/section-heading-recipe-05.18.15.test.js
+tests/section-heading-manifest-05.18.15.test.js
+tests/fact-recipe-05.18.17.test.js
+tests/fact-manifest-05.18.17.test.js
+tests/callout-recipe-audit-05.18.19.test.js
+tests/callout-manifest-05.18.19.test.js
+tests/technical-icons-manifest-05.18.13.test.js
+tests/commercial-icons-manifest-05.18.14.test.js
+tests/authoring-kit-runtime-contracts-05.18.test.js
