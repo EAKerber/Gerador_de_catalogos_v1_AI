@@ -5,10 +5,10 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-7-5:
-    name: Batch 7.5 — confirmação final de specification
+  batch-8:
+    name: Batch 8 — estresse visual semente única
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,7 +26,22 @@ jobs:
             sleep 1
           done
           exit 1
-      - name: Executar teste focado
+      - name: Executar estresse visual
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-        run: timeout 120s node tests/browser-specification-scale-05.18.6.test.js
+        run: |
+          mkdir -p audit-output/batch-8
+          node tools/run-developer-b-stress.js \
+            --browser \
+            --repeat=1 \
+            --seed=5182026 \
+            --timeout=300000 \
+            --output=audit-output/batch-8
+      - name: Publicar evidências
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-batch-8-browser-stress
+          path: audit-output/batch-8
+          if-no-files-found: error
+          retention-days: 14
