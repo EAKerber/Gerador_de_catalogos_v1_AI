@@ -5,88 +5,14 @@ on:
 permissions:
   contents: read
 jobs:
-  batch-5-1:
-    name: Batch 5.1 — diagnóstico estrutural de redo
+  batch-5-2:
+    name: Batch 5.2 — regressão mínima de reflow e histórico
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Criar cópia instrumentada
-        shell: bash
-        run: |
-          mkdir -p audit-output/batch-5-1
-          cp tests/stress-domain-history-05.18.test.js tests/stress-domain-diagnostic.tmp.js
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('tests/stress-domain-diagnostic.tmp.js')
-          source = path.read_text()
-          needle = 'assert(signature(store.getState()) === finalSignature, `Redo completo não restaurou o estado final após ${redoCount} passos.`);'
-          replacement = '''if (signature(store.getState()) !== finalSignature) {
-            fs.writeFileSync(path.join(outputDir, "redo-expected.json"), `${JSON.stringify(JSON.parse(finalSignature), null, 2)}\\n`);
-            fs.writeFileSync(path.join(outputDir, "redo-current.json"), `${JSON.stringify(stableSnapshot(store.getState()), null, 2)}\\n`);
-            fs.writeFileSync(path.join(outputDir, "redo-history.json"), `${JSON.stringify(store.getHistoryState(), null, 2)}\\n`);
-            console.error(`DIAGNOSTIC_REDO_MISMATCH after ${redoCount} passos`);
-          }'''
-          if needle not in source:
-              raise SystemExit('assert alvo não encontrado')
-          path.write_text(source.replace(needle, replacement))
-          PY
-      - name: Executar diagnóstico
-        env:
-          CATALOG_STRESS_SEED: '5182026'
-          CATALOG_STRESS_OUTPUT_DIR: ${{ github.workspace }}/audit-output/batch-5-1
-        run: node tests/stress-domain-diagnostic.tmp.js
-      - name: Comparar estados
-        if: always()
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root = Path('audit-output/batch-5-1/domain')
-          root.mkdir(parents=True, exist_ok=True)
-          expected_path = root / 'redo-expected.json'
-          current_path = root / 'redo-current.json'
-          output = root / 'redo-diff.txt'
-          if not expected_path.exists() or not current_path.exists():
-              output.write_text('Nenhuma divergência instrumentada foi produzida.\n')
-              raise SystemExit(0)
-          expected = json.loads(expected_path.read_text())
-          current = json.loads(current_path.read_text())
-          diffs = []
-          def walk(left, right, path='$'):
-              if len(diffs) >= 300:
-                  return
-              if type(left) is not type(right):
-                  diffs.append(f'{path}: type {type(left).__name__} != {type(right).__name__}')
-                  return
-              if isinstance(left, dict):
-                  for key in sorted(set(left) | set(right)):
-                      if key not in left:
-                          diffs.append(f'{path}.{key}: missing expected')
-                      elif key not in right:
-                          diffs.append(f'{path}.{key}: missing current')
-                      else:
-                          walk(left[key], right[key], f'{path}.{key}')
-              elif isinstance(left, list):
-                  if len(left) != len(right):
-                      diffs.append(f'{path}: len {len(left)} != {len(right)}')
-                  for index, (a, b) in enumerate(zip(left, right)):
-                      walk(a, b, f'{path}[{index}]')
-              elif left != right:
-                  diffs.append(f'{path}: {left!r} != {right!r}')
-          walk(expected, current)
-          output.write_text('\n'.join(diffs) + '\n')
-          print(output.read_text())
-          PY
-      - name: Publicar evidências
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: developer-b-batch-5-1-redo-diagnostic
-          path: audit-output/batch-5-1
-          if-no-files-found: error
-          retention-days: 14
+      - name: Executar regressão mínima
+        run: node tests/reflow-history-stability-05.18.test.js
