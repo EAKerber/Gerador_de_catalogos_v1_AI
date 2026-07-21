@@ -12,7 +12,6 @@ const contractFiles = [
   "text-alignment-contract.js",
   "text-scale-contract.js",
   "text-overflow-contract.js",
-  "footer-item-containment-contract.js",
   "icon-scale-contract.js",
   "product-hero-contract.js",
   "product-technical-contract.js",

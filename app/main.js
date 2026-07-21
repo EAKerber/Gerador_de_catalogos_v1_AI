@@ -14,7 +14,6 @@
     { file: "text-alignment-contract.js", globalName: "CatalogTextAlignmentContract" },
     { file: "text-scale-contract.js", globalName: "CatalogTextScaleContract" },
     { file: "text-overflow-contract.js", globalName: "CatalogTextOverflowContract" },
-    { file: "footer-item-containment-contract.js", globalName: "CatalogFooterItemContainmentContract" },
     { file: "icon-scale-contract.js", globalName: "CatalogIconScaleContract" },
     { file: "product-hero-contract.js", globalName: "CatalogProductHeroContract" },
     { file: "product-technical-contract.js", globalName: "CatalogProductTechnicalContract" },
@@ -48,7 +47,6 @@
     window.CatalogTextAlignmentContract?.install();
     window.CatalogTextScaleContract?.install();
     window.CatalogTextOverflowContract?.install();
-    window.CatalogFooterItemContainmentContract?.install();
     window.CatalogIconScaleContract?.install();
     window.CatalogProductHeroContract?.install();
     window.CatalogProductTechnicalContract?.install();

@@ -1,0 +1,131 @@
+{
+  "seed": 5182026,
+  "products": 10,
+  "components": 69,
+  "tableRows": 21,
+  "history": {
+    "canUndo": true,
+    "canRedo": false,
+    "undoLabel": "Aplicar geometria da seleção",
+    "redoLabel": null,
+    "undoCount": 8,
+    "redoCount": 0,
+    "dirty": true
+  },
+  "events": 110,
+  "report": {
+    "ok": false,
+    "issues": [
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "CHILD_OVERFLOW",
+        "severity": "error",
+        "componentId": "product-card-mruu9w4f-6d9x9"
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      },
+      {
+        "code": "COMPONENT_COLLISION",
+        "severity": "error",
+        "componentId": null
+      }
+    ]
+  }
+}
