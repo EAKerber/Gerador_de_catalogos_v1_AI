@@ -14,8 +14,10 @@ for (const flag of ["--list", "--node", "--browser", "--build", "--all"]) {
   assert(source.includes(`\"${flag}\"`), `O executor não reconhece ${flag}.`);
 }
 assert(source.includes('file.includes("05.18")'), "A descoberta não está limitada à fila 05.18.");
+assert(source.includes('!file.includes("stress-")'), "A regressão comum não exclui explicitamente o batch de estresse.");
 assert(source.includes('file.startsWith("browser-")'), "A separação entre Node e Chromium não está declarada.");
 assert(source.includes('build-developer-b-authoring-kit.js'), "O executor não referencia o build específico da branch.");
+assert(source.includes('run-developer-b-stress.js'), "O executor comum não orienta para o batch de estresse separado.");
 assert(source.includes('process.env.CATALOG_BASE_URL'), "O endereço do servidor de navegador não é configurável.");
 assert(source.includes('python -m http.server 8080'), "A mensagem de recuperação para servidor ausente não está presente.");
 assert(!/execSync|shell\s*:\s*true|npm\s+(?:run|test)|npx\s+/.test(source), "O executor introduziu dependência de shell ou npm não existente no projeto.");
@@ -35,9 +37,11 @@ for (const expected of [
 ]) {
   assert(execution.stdout.includes(expected), `O inventário não inclui ${expected}.`);
 }
+assert(!execution.stdout.includes("tests/stress-domain-history-05.18.test.js"), "O teste de domínio pesado entrou na regressão comum.");
+assert(!execution.stdout.includes("tests/browser-stress-interface-05.18.test.js"), "O teste visual pesado entrou na regressão comum.");
 
 const listed = execution.stdout.split("\n").filter(line => line.trim().startsWith("tests/")).map(line => line.trim());
 assert(listed.length === new Set(listed).size, "O inventário contém testes duplicados.");
-assert(listed.every(file => file.includes("05.18") && file.endsWith(".test.js")), "O inventário incluiu arquivo fora do escopo 05.18.");
+assert(listed.every(file => file.includes("05.18") && file.endsWith(".test.js") && !file.includes("stress-")), "O inventário incluiu arquivo fora da regressão 05.18 comum.");
 
-console.log(`✓ Executor Developer B descobriu ${listed.length} testes 05.18, separou Node/Chromium e permaneceu independente de npm.`);
+console.log(`✓ Executor Developer B descobriu ${listed.length} testes de regressão 05.18 e manteve o batch de estresse separado.`);
