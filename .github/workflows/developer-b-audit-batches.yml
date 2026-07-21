@@ -26,13 +26,7 @@ jobs:
           path = Path('tests/browser-stress-interface-05.18.test.js')
           source = path.read_text()
           old = '  assert(await modelSignature() === beforeButtonHistory, "Os botões de undo não restauraram o estado anterior às oito inserções.");'
-          new = '''  const currentAfterButtonUndo = await modelSignature();
-  if (currentAfterButtonUndo !== beforeButtonHistory) {
-    fs.writeFileSync(path.join(outputDir, "button-undo-expected.json"), `${JSON.stringify(JSON.parse(beforeButtonHistory), null, 2)}\\n`);
-    fs.writeFileSync(path.join(outputDir, "button-undo-current.json"), `${JSON.stringify(JSON.parse(currentAfterButtonUndo), null, 2)}\\n`);
-    fs.writeFileSync(path.join(outputDir, "button-undo-history.json"), `${JSON.stringify(await page.evaluate(() => CatalogEditor.store.getHistoryState()), null, 2)}\\n`);
-    throw new Error("Os botões de undo não restauraram o estado anterior às oito inserções.");
-  }'''
+          new = '  const currentAfterButtonUndo = await modelSignature();\n  if (currentAfterButtonUndo !== beforeButtonHistory) {\n    fs.writeFileSync(path.join(outputDir, "button-undo-expected.json"), `${JSON.stringify(JSON.parse(beforeButtonHistory), null, 2)}\\n`);\n    fs.writeFileSync(path.join(outputDir, "button-undo-current.json"), `${JSON.stringify(JSON.parse(currentAfterButtonUndo), null, 2)}\\n`);\n    fs.writeFileSync(path.join(outputDir, "button-undo-history.json"), `${JSON.stringify(await page.evaluate(() => CatalogEditor.store.getHistoryState()), null, 2)}\\n`);\n    throw new Error("Os botões de undo não restauraram o estado anterior às oito inserções.");\n  }'
           if old not in source:
               raise SystemExit('Assert de undo não encontrado')
           path.write_text(source.replace(old, new, 1))
