@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.audit.3";
+  const CONTRACT_VERSION = "05.18.audit.4";
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -28,7 +28,7 @@
       (page.children || []).forEach(component => {
         if (!store.isContainer?.(component.id) || component.reflow?.mode === "manual") return;
         roots += 1;
-        if (store.reflowComponentTree?.(component.id)) passes += 1;
+        if (store.reflowComponentTree?.(component.id, { derived: true })) passes += 1;
       });
     });
     return { roots, passes };
@@ -67,9 +67,9 @@
         return super.emit(change, options);
       }
 
-      reflowComponentTree(componentOrId) {
+      reflowComponentTree(componentOrId, options = {}) {
         const result = super.reflowComponentTree(componentOrId);
-        if (result && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
+        if (result && options.derived !== true && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
         return result;
       }
 
