@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const CONTRACT_VERSION = "05.18.audit.2";
+  const CONTRACT_VERSION = "05.18.audit.3";
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -9,6 +9,13 @@
     const snapshot = clone(state);
     delete snapshot.editor;
     delete snapshot.updatedAt;
+    return snapshot;
+  }
+
+  function synchronizeHistoryBaseline(store) {
+    const snapshot = documentSnapshot(store.state);
+    store.lastHistorySnapshot = snapshot;
+    store.lastHistorySignature = JSON.stringify(snapshot);
     return snapshot;
   }
 
@@ -35,24 +42,46 @@
     class ReflowStableDocumentStore extends BaseStore {
       constructor(initialState) {
         super(initialState);
-        this.__lastReflowStability = stabilizeStore(this);
-        const snapshot = documentSnapshot(this.state);
+        this.__reflowStabilityInternal = true;
+        try {
+          this.__lastReflowStability = stabilizeStore(this);
+        } finally {
+          this.__reflowStabilityInternal = false;
+        }
+        const snapshot = synchronizeHistoryBaseline(this);
         const signature = JSON.stringify(snapshot);
-        this.lastHistorySnapshot = snapshot;
-        this.lastHistorySignature = signature;
         this.savedSignature = signature;
         this.dirty = false;
       }
 
       emit(change, options = {}) {
         const ephemeral = options.ephemeral === true || EPHEMERAL_CHANGE_TYPES.has(change?.type);
-        if (!ephemeral && !this.historySuspended) this.__lastReflowStability = stabilizeStore(this);
+        if (!ephemeral && !this.historySuspended) {
+          this.__reflowStabilityInternal = true;
+          try {
+            this.__lastReflowStability = stabilizeStore(this);
+          } finally {
+            this.__reflowStabilityInternal = false;
+          }
+        }
         return super.emit(change, options);
+      }
+
+      reflowComponentTree(componentOrId) {
+        const result = super.reflowComponentTree(componentOrId);
+        if (result && !this.__reflowStabilityInternal && !this.historySuspended) synchronizeHistoryBaseline(this);
+        return result;
       }
 
       restoreHistorySnapshot(snapshot) {
         super.restoreHistorySnapshot(snapshot);
-        this.__lastReflowStability = stabilizeStore(this);
+        this.__reflowStabilityInternal = true;
+        try {
+          this.__lastReflowStability = stabilizeStore(this);
+        } finally {
+          this.__reflowStabilityInternal = false;
+        }
+        synchronizeHistoryBaseline(this);
       }
 
       getLastReflowStability() {
@@ -68,7 +97,8 @@
   window.CatalogReflowHistoryStabilityContract = Object.freeze({
     VERSION: CONTRACT_VERSION,
     install,
-    stabilizeStore
+    stabilizeStore,
+    synchronizeHistoryBaseline
   });
 
   install();
