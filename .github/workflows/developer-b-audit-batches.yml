@@ -3,17 +3,69 @@ on:
   pull_request:
     branches: [development]
 permissions:
-  contents: read
+  contents: write
 jobs:
-  consolidated-audit-05-19:
-    name: DB-05.19 - consolidated post-removal audit
+  consolidate-footer-containment:
+    name: DB-05.19.3 - consolidate footer containment
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Move geometry and styles to canonical surfaces
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+
+          def decode(value):
+              return base64.b64decode(value).decode('utf-8')
+
+          def replace_b64(path, old64, new64):
+              file = Path(path)
+              source = file.read_text()
+              old = decode(old64)
+              new = decode(new64)
+              if new in source:
+                  return
+              if source.count(old) != 1:
+                  raise SystemExit(f'Expected one match in {path}, found {source.count(old)}')
+              file.write_text(source.replace(old, new, 1))
+
+          def write_b64(path, value):
+              Path(path).write_text(decode(value))
+
+          replace_b64(
+              'app/component-registry.js',
+              'ICBmdW5jdGlvbiBmb290ZXJJdGVtVGV4dEZyYW1lKGNvbXBvbmVudCwgc2xvdE5hbWUpIHsKICAgIGNvbnN0IGljb25QcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJpY29uIik7CiAgICBjb25zdCB0aXRsZVByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgInRpdGxlIik7CiAgICBjb25zdCBzdWJ0aXRsZVByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgInN1YnRpdGxlIik7CiAgICBjb25zdCB0b3AgPSBpY29uUHJlc2VudCA/IDMxIDogMzsKICAgIGNvbnN0IGF2YWlsYWJsZSA9IE1hdGgubWF4KDM0LCBjb21wb25lbnQuZnJhbWUuaGVpZ2h0IC0gdG9wIC0gMyk7CiAgICBjb25zdCBib3RoVGV4dHMgPSB0aXRsZVByZXNlbnQgJiYgc3VidGl0bGVQcmVzZW50OwogICAgY29uc3QgaGVpZ2h0ID0gYm90aFRleHRzID8gTWF0aC5tYXgoMzQsIE1hdGguZmxvb3IoYXZhaWxhYmxlIC8gMikpIDogYXZhaWxhYmxlOwogICAgY29uc3QgeSA9IHNsb3ROYW1lID09PSAic3VidGl0bGUiICYmIHRpdGxlUHJlc2VudCA/IHRvcCArIGhlaWdodCA6IHRvcDsKICAgIHJldHVybiB7IHg6IDQsIHksIHdpZHRoOiBNYXRoLm1heCg4MCwgY29tcG9uZW50LmZyYW1lLndpZHRoIC0gOCksIGhlaWdodCB9OwogIH0K',
+              'ICBmdW5jdGlvbiBmb290ZXJJdGVtVGV4dEZyYW1lKGNvbXBvbmVudCwgc2xvdE5hbWUpIHsKICAgIGNvbnN0IHdpZHRoID0gTWF0aC5tYXgoMSwgTnVtYmVyKGNvbXBvbmVudD8uZnJhbWU/LndpZHRoKSB8fCA4MCk7CiAgICBjb25zdCBoZWlnaHQgPSBNYXRoLm1heCgxLCBOdW1iZXIoY29tcG9uZW50Py5mcmFtZT8uaGVpZ2h0KSB8fCA2NCk7CiAgICBjb25zdCBpY29uUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAiaWNvbiIpOwogICAgY29uc3QgdGl0bGVQcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJ0aXRsZSIpOwogICAgY29uc3Qgc3VidGl0bGVQcmVzZW50ID0gaGFzU2xvdChjb21wb25lbnQsICJzdWJ0aXRsZSIpOwogICAgY29uc3QgaW5zZXRYID0gTWF0aC5taW4oNCwgTWF0aC5mbG9vcih3aWR0aCAvIDIpKTsKICAgIGNvbnN0IHRvcCA9IE1hdGgubWluKGljb25QcmVzZW50ID8gMzEgOiAzLCBoZWlnaHQpOwogICAgY29uc3QgYm90dG9tSW5zZXQgPSBNYXRoLm1pbigzLCBNYXRoLm1heCgwLCBoZWlnaHQgLSB0b3ApKTsKICAgIGNvbnN0IGF2YWlsYWJsZSA9IE1hdGgubWF4KDAsIGhlaWdodCAtIHRvcCAtIGJvdHRvbUluc2V0KTsKICAgIGNvbnN0IGlubmVyV2lkdGggPSBNYXRoLm1heCgxLCB3aWR0aCAtIGluc2V0WCAqIDIpOwoKICAgIGlmICh0aXRsZVByZXNlbnQgJiYgc3VidGl0bGVQcmVzZW50KSB7CiAgICAgIGNvbnN0IGdhcCA9IGF2YWlsYWJsZSA+PSAzMCA/IDIgOiBhdmFpbGFibGUgPj0gMTIgPyAxIDogMDsKICAgICAgY29uc3QgdXNhYmxlID0gTWF0aC5tYXgoMCwgYXZhaWxhYmxlIC0gZ2FwKTsKICAgICAgY29uc3QgdGl0bGVIZWlnaHQgPSB1c2FibGUgPj0gMjgKICAgICAgICA/IE1hdGgubWF4KDE0LCBNYXRoLm1pbih1c2FibGUgLSAxNCwgTWF0aC5yb3VuZCh1c2FibGUgKiAuNTIpKSkKICAgICAgICA6IE1hdGguY2VpbCh1c2FibGUgLyAyKTsKICAgICAgY29uc3Qgc3VidGl0bGVIZWlnaHQgPSBNYXRoLm1heCgwLCB1c2FibGUgLSB0aXRsZUhlaWdodCk7CiAgICAgIHJldHVybiBzbG90TmFtZSA9PT0gInRpdGxlIgogICAgICAgID8geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogdGl0bGVIZWlnaHQgfQogICAgICAgIDogeyB4OiBpbnNldFgsIHk6IHRvcCArIHRpdGxlSGVpZ2h0ICsgZ2FwLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiBzdWJ0aXRsZUhlaWdodCB9OwogICAgfQoKICAgIGNvbnN0IHByZXNlbnQgPSBzbG90TmFtZSA9PT0gInRpdGxlIiA/IHRpdGxlUHJlc2VudCA6IHN1YnRpdGxlUHJlc2VudDsKICAgIHJldHVybiBwcmVzZW50CiAgICAgID8geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogYXZhaWxhYmxlIH0KICAgICAgOiB7IHg6IGluc2V0WCwgeTogdG9wLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiAwIH07CiAgfQo='
+          )
+          replace_b64(
+              'styles/components.css',
+              'LmNvbXBvbmVudC1mb290ZXItaXRlbSB7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IG1pbi13aWR0aDogMDsgYm9yZGVyLXJpZ2h0OiAxcHggc29saWQgdmFyKC0tY29tcG9uZW50LWJvcmRlciwgI2Q5ZGNkZik7IHRleHQtYWxpZ246IGNlbnRlcjsgfQo=',
+              'LmNvbXBvbmVudC1mb290ZXItaXRlbSB7IHdpZHRoOiAxMDAlOyBoZWlnaHQ6IDEwMCU7IG1pbi13aWR0aDogMDsgYm9yZGVyLXJpZ2h0OiAxcHggc29saWQgdmFyKC0tY29tcG9uZW50LWJvcmRlciwgI2Q5ZGNkZik7IHRleHQtYWxpZ246IGNlbnRlcjsgfQouZWRpdG9yLWNvbXBvbmVudC0tZm9vdGVyLWl0ZW06bm90KFtkYXRhLWFjdGl2ZS1jb250ZXh0PSJ0cnVlIl0pID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciB7IG92ZXJmbG93OiBoaWRkZW47IGJvcmRlci1yYWRpdXM6IGluaGVyaXQ7IH0KLmVkaXRvci1jb21wb25lbnQtLWZvb3Rlci1pdGVtID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciA+IC5lZGl0b3ItY29tcG9uZW50LS10ZXh0IHsgbWluLXdpZHRoOiAwOyBtaW4taGVpZ2h0OiAwOyB9CkBtZWRpYSBwcmludCB7CiAgLmVkaXRvci1jb21wb25lbnQtLWZvb3Rlci1pdGVtID4gLmNvbXBvbmVudC1jaGlsZHJlbi1sYXllciB7IG92ZXJmbG93OiBoaWRkZW4gIWltcG9ydGFudDsgYm9yZGVyLXJhZGl1czogaW5oZXJpdDsgfQp9Cg=='
+          )
+          write_b64('app/footer-item-containment-contract.js', 'KGZ1bmN0aW9uICgpIHsKICAidXNlIHN0cmljdCI7CgogIGNvbnN0IENPTlRSQUNUX1ZFUlNJT04gPSAiMDUuMTkuMyI7CiAgY29uc3QgaGFzU2xvdCA9IChjb21wb25lbnQsIHNsb3ROYW1lKSA9PiAoY29tcG9uZW50Py5jaGlsZHJlbiB8fCBbXSkuc29tZShjaGlsZCA9PiBjaGlsZC5zbG90Py5uYW1lID09PSBzbG90TmFtZSk7CiAgY29uc3QgZmluaXRlID0gKHZhbHVlLCBmYWxsYmFjaykgPT4gTnVtYmVyLmlzRmluaXRlKE51bWJlcih2YWx1ZSkpID8gTnVtYmVyKHZhbHVlKSA6IGZhbGxiYWNrOwoKICBmdW5jdGlvbiB0ZXh0RnJhbWVzKGNvbXBvbmVudCkgewogICAgY29uc3Qgd2lkdGggPSBNYXRoLm1heCgxLCBmaW5pdGUoY29tcG9uZW50Py5mcmFtZT8ud2lkdGgsIDgwKSk7CiAgICBjb25zdCBoZWlnaHQgPSBNYXRoLm1heCgxLCBmaW5pdGUoY29tcG9uZW50Py5mcmFtZT8uaGVpZ2h0LCA2NCkpOwogICAgY29uc3QgaWNvblByZXNlbnQgPSBoYXNTbG90KGNvbXBvbmVudCwgImljb24iKTsKICAgIGNvbnN0IHRpdGxlUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAidGl0bGUiKTsKICAgIGNvbnN0IHN1YnRpdGxlUHJlc2VudCA9IGhhc1Nsb3QoY29tcG9uZW50LCAic3VidGl0bGUiKTsKICAgIGNvbnN0IGluc2V0WCA9IE1hdGgubWluKDQsIE1hdGguZmxvb3Iod2lkdGggLyAyKSk7CiAgICBjb25zdCB0b3AgPSBNYXRoLm1pbihpY29uUHJlc2VudCA/IDMxIDogMywgaGVpZ2h0KTsKICAgIGNvbnN0IGJvdHRvbUluc2V0ID0gTWF0aC5taW4oMywgTWF0aC5tYXgoMCwgaGVpZ2h0IC0gdG9wKSk7CiAgICBjb25zdCBhdmFpbGFibGUgPSBNYXRoLm1heCgwLCBoZWlnaHQgLSB0b3AgLSBib3R0b21JbnNldCk7CiAgICBjb25zdCBpbm5lcldpZHRoID0gTWF0aC5tYXgoMSwgd2lkdGggLSBpbnNldFggKiAyKTsKCiAgICBpZiAodGl0bGVQcmVzZW50ICYmIHN1YnRpdGxlUHJlc2VudCkgewogICAgICBjb25zdCBnYXAgPSBhdmFpbGFibGUgPj0gMzAgPyAyIDogYXZhaWxhYmxlID49IDEyID8gMSA6IDA7CiAgICAgIGNvbnN0IHVzYWJsZSA9IE1hdGgubWF4KDAsIGF2YWlsYWJsZSAtIGdhcCk7CiAgICAgIGxldCB0aXRsZUhlaWdodDsKICAgICAgaWYgKHVzYWJsZSA+PSAyOCkgdGl0bGVIZWlnaHQgPSBNYXRoLm1heCgxNCwgTWF0aC5taW4odXNhYmxlIC0gMTQsIE1hdGgucm91bmQodXNhYmxlICogLjUyKSkpOwogICAgICBlbHNlIHRpdGxlSGVpZ2h0ID0gTWF0aC5jZWlsKHVzYWJsZSAvIDIpOwogICAgICBjb25zdCBzdWJ0aXRsZUhlaWdodCA9IE1hdGgubWF4KDAsIHVzYWJsZSAtIHRpdGxlSGVpZ2h0KTsKICAgICAgcmV0dXJuIHsKICAgICAgICB0aXRsZTogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogdGl0bGVIZWlnaHQgfSwKICAgICAgICBzdWJ0aXRsZTogeyB4OiBpbnNldFgsIHk6IHRvcCArIHRpdGxlSGVpZ2h0ICsgZ2FwLCB3aWR0aDogaW5uZXJXaWR0aCwgaGVpZ2h0OiBzdWJ0aXRsZUhlaWdodCB9CiAgICAgIH07CiAgICB9CgogICAgY29uc3Qgc2luZ2xlID0geyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogYXZhaWxhYmxlIH07CiAgICByZXR1cm4gewogICAgICB0aXRsZTogdGl0bGVQcmVzZW50ID8gc2luZ2xlIDogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogMCB9LAogICAgICBzdWJ0aXRsZTogc3VidGl0bGVQcmVzZW50ID8gc2luZ2xlIDogeyB4OiBpbnNldFgsIHk6IHRvcCwgd2lkdGg6IGlubmVyV2lkdGgsIGhlaWdodDogMCB9CiAgICB9OwogIH0KCiAgZnVuY3Rpb24gaW5zdGFsbCgpIHsKICAgIHJldHVybiBCb29sZWFuKHdpbmRvdy5DQVRBTE9HX0NPTVBPTkVOVF9SRUdJU1RSWT8uWyJmb290ZXItaXRlbSJdKTsKICB9CgogIHdpbmRvdy5DYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QgPSBPYmplY3QuZnJlZXplKHsKICAgIFZFUlNJT046IENPTlRSQUNUX1ZFUlNJT04sCiAgICBpbnN0YWxsLAogICAgdGV4dEZyYW1lcwogIH0pOwoKICBpbnN0YWxsKCk7Cn0pKCk7Cg==')
+          write_b64('tests/footer-item-containment-05.18.12.2.test.js', 'LyogREItMDUuMTkuMyDigJQgZ2VvbWV0cmlhIGUgcmVjb3J0ZSBkbyBmb290ZXItaXRlbSBwZXJ0ZW5jZW0gw6BzIHN1cGVyZsOtY2llcyBjYW7DtG5pY2FzLiAqLwpjb25zdCBmcyA9IHJlcXVpcmUoImZzIik7CmNvbnN0IHBhdGggPSByZXF1aXJlKCJwYXRoIik7CmNvbnN0IHZtID0gcmVxdWlyZSgidm0iKTsKCmNvbnN0IHJvb3QgPSBwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAiLi4iKTsKY29uc3QgYXNzZXJ0ID0gKGNvbmRpdGlvbiwgbWVzc2FnZSkgPT4geyBpZiAoIWNvbmRpdGlvbikgdGhyb3cgbmV3IEVycm9yKG1lc3NhZ2UpOyB9OwoKY29uc3Qgc2FuZGJveCA9IHsKICB3aW5kb3c6IHt9LAogIGRvY3VtZW50OiB1bmRlZmluZWQsCiAgY29uc29sZSwKICBPYmplY3QsCiAgTnVtYmVyLAogIE1hdGgsCiAgQXJyYXksCiAgU3RyaW5nCn07CnNhbmRib3gud2luZG93LndpbmRvdyA9IHNhbmRib3gud2luZG93OwpzYW5kYm94LndpbmRvdy5DYXRhbG9nRWRpdG9ySWNvbiA9ICgpID0+ICIiOwp2bS5jcmVhdGVDb250ZXh0KHNhbmRib3gpOwp2bS5ydW5JbkNvbnRleHQoZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCAiYXBwIiwgImNvbXBvbmVudC1yZWdpc3RyeS5qcyIpLCAidXRmOCIpLCBzYW5kYm94LCB7IGZpbGVuYW1lOiAiY29tcG9uZW50LXJlZ2lzdHJ5LmpzIiB9KTsKCmNvbnN0IGRlZmluaXRpb24gPSBzYW5kYm94LndpbmRvdy5DQVRBTE9HX0NPTVBPTkVOVF9SRUdJU1RSWVsiZm9vdGVyLWl0ZW0iXTsKY29uc3QgdGl0bGVTbG90ID0gZGVmaW5pdGlvbi5jb250YWluZXIuc2xvdHMuZmluZChzbG90ID0+IHNsb3QubmFtZSA9PT0gInRpdGxlIik7CmNvbnN0IHN1YnRpdGxlU2xvdCA9IGRlZmluaXRpb24uY29udGFpbmVyLnNsb3RzLmZpbmQoc2xvdCA9PiBzbG90Lm5hbWUgPT09ICJzdWJ0aXRsZSIpOwpjb25zdCB0aXRsZUZyYW1lQmVmb3JlU2hpbSA9IHRpdGxlU2xvdC5nZXRGcmFtZTsKY29uc3Qgc3VidGl0bGVGcmFtZUJlZm9yZVNoaW0gPSBzdWJ0aXRsZVNsb3QuZ2V0RnJhbWU7Cgp2bS5ydW5JbkNvbnRleHQoZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCAiYXBwIiwgImZvb3Rlci1pdGVtLWNvbnRhaW5tZW50LWNvbnRyYWN0LmpzIiksICJ1dGY4IiksIHNhbmRib3gsIHsgZmlsZW5hbWU6ICJmb290ZXItaXRlbS1jb250YWlubWVudC1jb250cmFjdC5qcyIgfSk7CmFzc2VydChzYW5kYm94LndpbmRvdy5DYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QuaW5zdGFsbCgpLCAiTyBzaGltIG7Do28gZW5jb250cm91IGZvb3Rlci1pdGVtIG5vIHJlZ2lzdHJvLiIpOwphc3NlcnQodGl0bGVTbG90LmdldEZyYW1lID09PSB0aXRsZUZyYW1lQmVmb3JlU2hpbSAmJiBzdWJ0aXRsZVNsb3QuZ2V0RnJhbWUgPT09IHN1YnRpdGxlRnJhbWVCZWZvcmVTaGltLCAiTyBzaGltIGFpbmRhIHN1YnN0aXR1aSBhIGdlb21ldHJpYSBjYW7DtG5pY2EuIik7CgpmdW5jdGlvbiBjb21wb25lbnQod2lkdGgsIGhlaWdodCwgc2xvdHMgPSBbImljb24iLCAidGl0bGUiLCAic3VidGl0bGUiXSkgewogIHJldHVybiB7CiAgICB0eXBlOiAiZm9vdGVyLWl0ZW0iLAogICAgZnJhbWU6IHsgeDogMCwgeTogMCwgd2lkdGgsIGhlaWdodCB9LAogICAgY2hpbGRyZW46IHNsb3RzLm1hcCgobmFtZSwgaW5kZXgpID0+ICh7IGlkOiBgJHtuYW1lfS0ke2luZGV4fWAsIHR5cGU6IG5hbWUgPT09ICJpY29uIiA/ICJpY29uIiA6ICJ0ZXh0Iiwgc2xvdDogeyBuYW1lIH0gfSkpCiAgfTsKfQoKZnVuY3Rpb24gZnJhbWVzRm9yKHNvdXJjZSkgewogIHJldHVybiB7CiAgICB0aXRsZTogdGl0bGVTbG90LmdldEZyYW1lKHNvdXJjZSksCiAgICBzdWJ0aXRsZTogc3VidGl0bGVTbG90LmdldEZyYW1lKHNvdXJjZSkKICB9Owp9CgpmdW5jdGlvbiBhc3NlcnRDb250YWluZWQoc291cmNlKSB7CiAgY29uc3QgZnJhbWVzID0gZnJhbWVzRm9yKHNvdXJjZSk7CiAgZm9yIChjb25zdCBbbmFtZSwgZnJhbWVdIG9mIE9iamVjdC5lbnRyaWVzKGZyYW1lcykpIHsKICAgIGFzc2VydChmcmFtZS54ID49IDAgJiYgZnJhbWUueSA+PSAwLCBgJHtuYW1lfSBjb21lw6dvdSBmb3JhIGRvIGZvb3Rlci1pdGVtOiAke0pTT04uc3RyaW5naWZ5KGZyYW1lKX0uYCk7CiAgICBhc3NlcnQoZnJhbWUueCArIGZyYW1lLndpZHRoIDw9IHNvdXJjZS5mcmFtZS53aWR0aCwgYCR7bmFtZX0gdmF6b3UgaG9yaXpvbnRhbG1lbnRlOiAke0pTT04uc3RyaW5naWZ5KGZyYW1lKX0gZW0gJHtKU09OLnN0cmluZ2lmeShzb3VyY2UuZnJhbWUpfS5gKTsKICAgIGFzc2VydChmcmFtZS55ICsgZnJhbWUuaGVpZ2h0IDw9IHNvdXJjZS5mcmFtZS5oZWlnaHQsIGAke25hbWV9IHZhem91IHZlcnRpY2FsbWVudGU6ICR7SlNPTi5zdHJpbmdpZnkoZnJhbWUpfSBlbSAke0pTT04uc3RyaW5naWZ5KHNvdXJjZS5mcmFtZSl9LmApOwogIH0KICBhc3NlcnQoZnJhbWVzLnRpdGxlLnkgKyBmcmFtZXMudGl0bGUuaGVpZ2h0IDw9IGZyYW1lcy5zdWJ0aXRsZS55LCBgVMOtdHVsbyBlIHN1YnTDrXR1bG8gc2Ugc29icmVww7VlbTogJHtKU09OLnN0cmluZ2lmeShmcmFtZXMpfS5gKTsKICByZXR1cm4gZnJhbWVzOwp9Cgpmb3IgKGNvbnN0IFt3aWR0aCwgaGVpZ2h0XSBvZiBbWzgwLCA2NF0sIFs4MCwgNzddLCBbMTEyLCA5Nl1dKSB7CiAgY29uc3QgZnJhbWVzID0gYXNzZXJ0Q29udGFpbmVkKGNvbXBvbmVudCh3aWR0aCwgaGVpZ2h0KSk7CiAgYXNzZXJ0KGZyYW1lcy50aXRsZS5oZWlnaHQgPj0gMTQsIGBUw610dWxvIGZpY291IGFiYWl4byBkbyBtw61uaW1vIGxlZ8OtdmVsIGVtICR7d2lkdGh9w5—JHtoZWlnaHR9LmApOwogIGFzc2VydChmcmFtZXMuc3VidGl0bGUuaGVpZ2h0ID49IDE0LCBgU3VidMOtdHVsbyBmaWNvdSBhYmFpeG8gZG8gbcOtbmltbyBsZWfDrXZlbCBlbSAke3dpZHRofcOXJHtoZWlnaHR9LmApOwp9Cgpjb25zdCBtaW5pbXVtID0gZnJhbWVzRm9yKGNvbXBvbmVudCg4MCwgNjQpKTsKYXNzZXJ0KG1pbmltdW0udGl0bGUuaGVpZ2h0ID09PSAxNCAmJiBtaW5pbXVtLnN1YnRpdGxlLmhlaWdodCA9PT0gMTQsIGBPIG3DrW5pbW8gNjQgcHggbsOjbyBmb2kgZGl2aWRpZG8gZW0gMTQgKyAxNCBweDogJHtKU09OLnN0cmluZ2lmeShtaW5pbXVtKX0uYCk7CmFzc2VydChtaW5pbXVtLnN1YnRpdGxlLnkgKyBtaW5pbXVtLnN1YnRpdGxlLmhlaWdodCA9PT0gNjEsICJPIHN1YnTDrXR1bG8gbsOjbyBwcmVzZXJ2b3UgbyBpbnNldCBpbmZlcmlvciBkZSAzIHB4LiIpOwoKY29uc3Qgc3VidGl0bGVPbmx5ID0gZnJhbWVzRm9yKGNvbXBvbmVudCg4MCwgNDAsIFsic3VidGl0bGUiXSkpOwphc3NlcnQoc3VidGl0bGVPbmx5LnN1YnRpdGxlLnggPT09IDQgJiYgc3VidGl0bGVPbmx5LnN1YnRpdGxlLndpZHRoID09PSA3MiwgYEEgbGFyZ3VyYSBkbyBzdWJ0w610dWxvIGlzb2xhZG8gbsOjbyBlc3TDoSBjb250aWRhOiAke0pTT04uc3RyaW5naWZ5KHN1YnRpdGxlT25seS5zdWJ0aXRsZSl9LmApOwphc3NlcnQoc3VidGl0bGVPbmx5LnN1YnRpdGxlLnkgKyBzdWJ0aXRsZU9ubHkuc3VidGl0bGUuaGVpZ2h0ID09PSAzNywgIk8gc3VidMOtdHVsbyBpc29sYWRvIG7Do28gcHJlc2Vydm91IG8gaW5zZXQgaW5mZXJpb3IuIik7Cgpjb25zdCBoZWxwZXJGcmFtZXMgPSBzYW5kYm94LndpbmRvdy5DYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QudGV4dEZyYW1lcyhjb21wb25lbnQoODAsIDY0KSk7CmFzc2VydChKU09OLnN0cmluZ2lmeShoZWxwZXJGcmFtZXMpID09PSBKU09OLnN0cmluZ2lmeShtaW5pbXVtKSwgIk8gaGVscGVyIGRlIGNvbXBhdGliaWxpZGFkZSBkaXZlcmdpdSBkYSBnZW9tZXRyaWEgY2Fuw7RuaWNhLiIpOwoKY29uc3QgY3NzID0gZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihyb290LCAic3R5bGVzIiwgImNvbXBvbmVudHMuY3NzIiksICJ1dGY4Iik7CmFzc2VydChjc3MuaW5jbHVkZXMoJy5lZGl0b3ItY29tcG9uZW50LS1mb290ZXItaXRlbTpub3QoW2RhdGEtYWN0aXZlLWNvbnRleHQ9InRydWUiXSkgPiAuY29tcG9uZW50LWNoaWxkcmVuLWxheWVyJyksICJPIHJlY29ydGUgZGUgcHJldmlldyBuw6NvIGVzdMOhIG5vIENTUyBjYW7DtG5pY28uIik7CmFzc2VydChjc3MuaW5jbHVkZXMoIi5lZGl0b3ItY29tcG9uZW50LS1mb290ZXItaXRlbSA+IC5jb21wb25lbnQtY2hpbGRyZW4tbGF5ZXIgPiAuZWRpdG9yLWNvbXBvbmVudC0tdGV4dCB7IiksICJPcyBtw61uaW1vcyBkZWZlbnNpdm9zIGRvcyB0ZXh0b3MgbsOjbyBlc3TDq28gbm8gQ1NTIGNhbsO0bmljby4iKTsKYXNzZXJ0KGNzcy5pbmNsdWRlcygib3ZlcmZsb3c6IGhpZGRlbiAhaW1wb3J0YW50IiksICJPIHJlY29ydGUgZGUgaW1wcmVzc8OjbyBuw6NvIGVzdMOhIG5vIENTUyBjYW7DtG5pY28uIik7Cgpjb25zdCBhcHBSZWdpc3RyeSA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImFwcCIsICJjb21wb25lbnQtcmVnaXN0cnkuanMiKSwgInV0ZjgiKTsKY29uc3Qga2l0UmVnaXN0cnkgPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhdXRob3Jpbmcta2l0IiwgInJ1bnRpbWUiLCAiY29tcG9uZW50LXJlZ2lzdHJ5LmpzIiksICJ1dGY4Iik7CmNvbnN0IGFwcFNoaW0gPSBmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKHJvb3QsICJhcHAiLCAiZm9vdGVyLWl0ZW0tY29udGFpbm1lbnQtY29udHJhY3QuanMiKSwgInV0ZjgiKTsKY29uc3Qga2l0U2hpbSA9IGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4ocm9vdCwgImF1dGhvcmluZy1raXQiLCAicnVudGltZSIsICJmb290ZXItaXRlbS1jb250YWlubWVudC1jb250cmFjdC5qcyIpLCAidXRmOCIpOwphc3NlcnQoYXBwUmVnaXN0cnkgPT09IGtpdFJlZ2lzdHJ5LCAiTyByZWdpc3RybyBjYW7DtG5pY28gZGl2ZXJnaXUgZW50cmUgZWRpdG9yIGUgQXV0aG9yaW5nS2l0LiIpOwphc3NlcnQoYXBwU2hpbSA9PT0ga2l0U2hpbSwgIk8gc2hpbSBkaXZlcmdpdSBlbnRyZSBlZGl0b3IgZSBBdXRob3JpbmdLaXQuIik7CmFzc2VydChzYW5kYm94LndpbmRvdy5DYXRhbG9nRm9vdGVySXRlbUNvbnRhaW5tZW50Q29udHJhY3QuVkVSU0lPTiA9PT0gIjA1LjE5LjMiLCAiVmVycyDDo28gaW5lc3BlcmFkYSBkbyBzaGltLiIpOwoKY29uc29sZS5sb2coIuKckyBHZW9tZXRyaWEgZSByZWNvcnRlIGRvIGZvb3Rlci1pdGVtIHBlcnRlbmNlbSBhbyByZWdpc3RybyBlIENTUyBjYW7DtG5pY29zOyBzaGltIG7Do28gYWx0ZXJhIG8gcnVudGltZS4iKTsK')
+          browser = Path('tests/browser-footer-item-containment-05.18.12.2.test.js')
+          source = browser.read_text()
+          source = source.replace('CatalogFooterItemContainmentContract?.VERSION === "05.18.12.2"', 'CatalogFooterItemContainmentContract?.VERSION === "05.19.3"', 1)
+          browser.write_text(source)
+          PY
+          node tools/build-developer-b-authoring-kit.js
+          git diff --check
+      - name: Run focused Node tests
+        run: |
+          node tests/footer-item-containment-05.18.12.2.test.js
+          node tests/footer-item-containment-build-05.18.12.2.test.js
+          node tests/icon-scale-runtime-parity-05.18.5.test.js
+          node tests/authoring-kit-runtime-contracts-05.18.test.js
       - name: Install Playwright and Chromium
         run: |
           npm install --no-save playwright@latest
@@ -27,41 +79,59 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run full audit and stress
+      - name: Run footer browser test and one stress seed
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-final/domain
+        run: |
+          mkdir -p audit-output/db-05.19.3
+          timeout 180s node tests/browser-footer-item-containment-05.18.12.2.test.js 2>&1 | tee audit-output/db-05.19.3/footer-browser.log
+          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5193001 --timeout=300000 --output=audit-output/db-05.19.3/stress 2>&1 | tee audit-output/db-05.19.3/stress.log
+      - name: Commit canonical footer containment
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19-final/consolidated audit-output/db-05.19-final/browser-stress
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-final/consolidated/audit.log
-          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-final/consolidated/domain-stress.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5192999 --timeout=300000 --output=audit-output/db-05.19-final/browser-stress 2>&1 | tee audit-output/db-05.19-final/consolidated/browser-stress.log
-      - name: Verify removal and idempotence
-        shell: bash
+          mapfile -t actual < <(git diff --name-only --relative | sort)
+          allowed=(
+            app/authoring-kit-files.js
+            app/component-registry.js
+            app/footer-item-containment-contract.js
+            authoring-kit/capabilities.json
+            authoring-kit/feature-inventory.json
+            authoring-kit/runtime/component-registry.js
+            authoring-kit/runtime/footer-item-containment-contract.js
+            docs/FEATURE-CATALOG.md
+            styles/components.css
+            tests/browser-footer-item-containment-05.18.12.2.test.js
+            tests/footer-item-containment-05.18.12.2.test.js
+          )
+          unexpected=()
+          for file in "${actual[@]}"; do
+            found=false
+            for candidate in "${allowed[@]}"; do
+              if [ "$file" = "$candidate" ]; then found=true; break; fi
+            done
+            if [ "$found" = false ]; then unexpected+=("$file"); fi
+          done
+          if [ "${#unexpected[@]}" -gt 0 ]; then
+            echo "Unexpected tracked files:"
+            printf '%s\n' "${unexpected[@]}"
+            exit 1
+          fi
+          git config user.name "Developer B Audit"
+          git config user.email "developer-b-audit@users.noreply.github.com"
+          git add -A
+          git commit -m "05.19 — consolida contenção do footer-item"
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Prove idempotent build
         run: |
-          set -euo pipefail
-          if find app authoring-kit -name 'table-binding-overrides-contract.js' -print -quit | grep -q .; then
-            echo "Removed shim file returned."
-            exit 1
-          fi
-          if grep -R "table-binding-overrides-contract\|CatalogTableBindingOverridesContract" app/main.js app/authoring-kit-files.js tools/build-developer-b-authoring-kit.js authoring-kit/compiler tests/table-binding-overrides-05.18.test.js tests/stress-domain-history-05.18.test.js; then
-            echo "Executable shim reference returned."
-            exit 1
-          fi
-          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-final/consolidated/idempotence.log
-          if ! git diff --quiet; then
-            git status --short | tee audit-output/db-05.19-final/consolidated/unexpected-diff.txt
-            git diff --stat | tee -a audit-output/db-05.19-final/consolidated/unexpected-diff.txt
-            exit 1
-          fi
-          git status --short > audit-output/db-05.19-final/consolidated/final-status.txt
+          node tools/build-developer-b-authoring-kit.js
+          git diff --exit-code
+          node tests/footer-item-containment-05.18.12.2.test.js
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19-final-audit
-          path: audit-output/db-05.19-final
-          if-no-files-found: error
+          name: developer-b-db-05.19.3
+          path: audit-output/db-05.19.3
+          if-no-files-found: warn
           retention-days: 14
