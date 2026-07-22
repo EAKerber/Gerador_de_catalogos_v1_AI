@@ -2126,6 +2126,19 @@
   },
   "recipes": [
     {
+      "id": "commerce-offer-unit",
+      "version": "1.0.0",
+      "label": "Unidade de oferta comercial",
+      "description": "Mídia, código, medida e bloco de preço em uma oferta independente, duplicável e reordenável.",
+      "icon": "payment",
+      "rootType": "layout-container",
+      "contexts": [
+        "page",
+        "layout-container"
+      ],
+      "focusRole": null
+    },
+    {
       "id": "commerce-price-block",
       "version": "1.0.0",
       "label": "Bloco de preço promocional",
@@ -2281,7 +2294,7 @@
     },
     "icons": 35,
     "presentations": 4,
-    "recipes": 8,
+    "recipes": 9,
     "separatorPresets": 5,
     "iconBatches": 2
   },
