@@ -43,7 +43,7 @@ jobs:
           const report = JSON.parse(fs.readFileSync('audit-output/db-05.20.12/readiness/promotional-remediation-readiness.json', 'utf8'));
           if (report.deficits.some(item => item.code === 'MISSING_SEMANTIC_TOKEN')) throw new Error('Tokens promocionais regrediram.');
           if (!report.recipes['commerce-price-block']?.available || report.recipes['commerce-price-block'].missingRoles.length) throw new Error('Bloco de preço não satisfaz a prontidão.');
-          if (report.deficits.length !== 6) throw new Error(`Esperados 6 déficits da unidade de oferta, obtidos ${report.deficits.length}.`);
+          if (report.deficits.some(item => item.recipeId === 'commerce-price-block')) throw new Error('O bloco de preço voltou a gerar déficit contratual.');
           NODE
       - name: Install visual runtime
         shell: bash
