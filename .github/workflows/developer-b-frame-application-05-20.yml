@@ -9,6 +9,7 @@ on:
       - 'app/document-store.js'
       - 'authoring-kit/runtime/document-store.js'
       - 'app/inspector.js'
+      - 'app/main.js'
 permissions:
   contents: read
 jobs:
@@ -26,10 +27,12 @@ jobs:
           node --check app/document-store.js
           node --check authoring-kit/runtime/document-store.js
           node --check app/inspector.js
+          node --check app/main.js
           node --check tests/browser-frame-application-05.20.5.test.js
           cmp app/document-store.js authoring-kit/runtime/document-store.js
           grep -q 'getBatchSelection(valid.map(entry => entry.id), 1)' app/document-store.js
           grep -q 'data-frame-apply-all' app/inspector.js
+          grep -q 'data-frame-command-layout' app/main.js
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
