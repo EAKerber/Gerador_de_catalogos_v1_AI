@@ -36,6 +36,18 @@
     for (const contract of runtimeContracts) await loadRuntimeContract(contract);
   }
 
+  function installFrameCommandLayout() {
+    if (document.querySelector('style[data-frame-command-layout="true"]')) return;
+    const style = document.createElement("style");
+    style.dataset.frameCommandLayout = "true";
+    style.textContent = [
+      '.inspector-root[data-has-selection="true"]:not([data-multi-selection="true"]) {',
+      '  grid-template-rows: auto auto auto minmax(0, 1fr) auto;',
+      '}'
+    ].join("\n");
+    document.head.appendChild(style);
+  }
+
   function bootstrap() {
     window.CatalogComponentIntentManifestContract?.install();
     window.CatalogComponentPlacementManifestContract?.install();
@@ -50,6 +62,7 @@
     window.CatalogProductTechnicalContract?.install();
     window.CatalogProductVariantsContract?.install();
     window.CatalogProductDataOnlyContract?.install();
+    installFrameCommandLayout();
 
     function toast(message) {
       const template = document.getElementById("toastTemplate");
