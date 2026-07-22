@@ -2,204 +2,305 @@
 
 ## Origem
 
-Este backlog deriva exclusivamente do benchmark DB-05.20.1, executado contra uma peça promocional diferente da referência original.
+Este backlog deriva do benchmark promocional DB-05.20.1 e da auditoria de categoria DB-05.20.9.
 
-Não autoriza merge nem altera as decisões base do projeto. O objetivo do ciclo é reduzir esforço, melhorar confiança de edição e esclarecer limites de representação antes de adicionar novos tipos.
+Não autoriza merge nem altera decisões base do projeto. O ciclo deve reduzir esforço e, após a nova auditoria, impedir que uma intenção promocional de varejo seja traduzida para uma gramática editorial/tabular de categoria diferente.
 
-## Princípios
+## Princípios reguladores
 
 1. Corrigir problemas observados antes de ampliar a biblioteca.
-2. Preservar os 16 tipos e as sete receitas enquanto não houver evidência contrária.
-3. Tratar efeitos gráficos complexos como assets quando não exigirem comportamento editável próprio.
-4. Medir redução de ações, não apenas existência de controles.
-5. Manter exportação, reimportação, impressão e histórico como gates bloqueantes.
-6. Distinguir defeito de produto de erro ou ambiguidade do harness antes de alterar runtime.
-7. Preferir capacidades gerais a atalhos específicos de uma única peça de referência.
+2. Preservar os 16 tipos enquanto receitas e tokens puderem expressar o comportamento.
+3. Tratar fotografia, personagem, megafone, desenho técnico e shapes irregulares como assets quando não exigirem comportamento próprio.
+4. Manter código, medida, preço, repetição, distribuição e hierarquia editáveis nativamente.
+5. Medir redução de ações e fidelidade de categoria, não apenas existência de controles.
+6. Manter exportação, reimportação, impressão, histórico e build idempotente como gates bloqueantes.
+7. Distinguir defeito de produto de erro ou ambiguidade do harness antes de alterar runtime.
+8. Preferir tokens semânticos e receitas editáveis a componentes específicos de uma referência.
+9. Quatro linhas de tabela não equivalem a quatro ofertas comerciais.
+10. Assets reais não podem ser usados para mascarar ausência de estrutura comercial ou vocabulário cromático.
 
-## Incrementos
+## Estado dos incrementos anteriores
 
 ### DB-05.20.1 — Benchmark de generalização promocional
 
 **Estado:** concluído e consolidado.
 
-Resultado final no run `29886064651`:
+Resultado final:
 
 - 180 ações;
 - 59 componentes;
-- quatro ofertas;
+- quatro linhas comerciais;
 - 11 aplicações conjuntas de frame;
 - zero aberturas de **Avançado** para geometria;
 - zero colisões;
 - zero overflows;
 - zero referências obrigatórias ausentes;
-- três tarefas finais revertidas/refeitas em três passos;
 - exportação/reimportação equivalentes;
-- PDF A4 gerado;
-- único finding emitido: três assets deliberadamente ausentes no runner.
+- PDF A4 gerado.
+
+A interpretação “quatro ofertas” foi posteriormente corrigida pela auditoria DB-05.20.9: havia quatro registros tabulares, mas somente uma unidade visual de oferta.
 
 ### DB-05.20.2 — Hit testing e seleção de peças internas
 
 **Estado:** concluído como correção de harness, sem mudança de runtime.
 
-O finding inicial não era causado por `specification`, `icon`, z-index ou sobreposição. O diálogo já estava aberto depois de um clique intencional no placeholder de arte. Como a arte já estava selecionada, o helper antigo encerrou cedo e deixou o modal ativo.
-
-Correção:
-
-- seleção de `art` para edição passa pela árvore de Camadas;
-- clique no placeholder permanece reservado à escolha/substituição de asset;
-- seleções não-art continuam no canvas;
-- diálogo residual é diagnosticado explicitamente.
-
-Validação no run `29883102906`:
-
-- quatro modos do card;
-- oito cenários detalhados;
-- quatro aberturas intencionais da biblioteca;
-- 100 alternâncias entre arte, especificação e ícone;
-- zero falhas;
-- zero erros de página ou console;
-- schema e geometria externa inalterados.
+A seleção de `art` para editar propriedades passa pela árvore de Camadas; o clique no placeholder permanece reservado à escolha/substituição de asset.
 
 ### DB-05.20.3 — Diagnóstico da referência ausente
 
 **Estado:** concluído.
 
-A referência era um `product-card` local com `productId: null`, estado válido que o validador anterior confundia com ID explicitamente inexistente.
-
-O `CatalogDocumentValidator 1.1.0` agora expõe:
-
-- `references.missing` para IDs obrigatórios ausentes;
-- `references.invalid` para vínculos existentes, porém incompatíveis;
-- `references.optional` para vínculos deliberadamente vazios.
-
-Resultados:
-
-- `missingReferences` deriva exclusivamente de `references.missing.length`;
-- card local aparece como `product / local-content`;
-- arte sem arquivo aparece como `asset / placeholder-without-asset`;
-- produto, asset, linha, legenda, variação e token explicitamente ausentes continuam diagnosticados e bloqueantes quando aplicável;
-- app e AuthoringKit permanecem em paridade;
-- schema continua `1.16.0`.
-
-Validações finais:
-
-- relatório dedicado: run `29884113297`;
-- benchmark promocional: zero referências ausentes;
-- gate estável e build idempotente aprovados.
+O validador separa referências `missing`, `invalid` e `optional`. Cards locais e placeholders de arte não são mais tratados como IDs obrigatórios ausentes.
 
 ### DB-05.20.4 — Fronteiras da coalescência de histórico
 
-**Estado:** condicionado; não reproduzido no benchmark corrigido.
+**Estado:** condicionado.
 
-A execução inicial exigiu dois passos para três tarefas. Depois das correções semânticas do harness, todas as execuções finais exigiram exatamente três undos e três redos, com equivalência integral.
-
-Este incremento só deve ser reativado se novo teste reproduzir agrupamento entre tarefas distintas. Nesse caso:
-
-- registrar chaves e timestamps de coalescência;
-- verificar seleção, troca de contexto e edição de outro componente;
-- preservar coalescência de digitação no mesmo campo;
-- impedir agrupamento entre tarefas visualmente distintas.
+Reabrir somente se uma nova execução reproduzir agrupamento entre tarefas visualmente distintas.
 
 ### DB-05.20.5 — Aplicação conjunta de frame
 
 **Estado:** concluído.
 
-A implementação reutiliza `applyComponentFramesBulk` como única autoridade geométrica e permite uma seleção mínima de um item.
-
-Entregas:
-
-- rascunho conjunto de `x`, `y`, largura e altura;
-- uma confirmação e uma entrada de histórico;
-- presets topo seguro, base segura, coluna esquerda, coluna principal e faixa total;
-- mínimos técnicos e limites preservados;
-- undo/redo exatos;
-- comando essencial sempre visível para seleção única;
-- controles legados, mínimos e identificação mantidos em **Avançado**;
-- store principal e AuthoringKit em paridade.
-
-Métricas:
+Resultados:
 
 - geometria: 44 → 11 ações;
 - total: 219 → 180 ações;
-- aberturas de **Avançado**: 6 → 0;
-- zero regressões de publicação, persistência ou histórico.
-
-Validações:
-
-- regressão dedicada: run `29886064630`;
-- benchmark promocional: run `29886064651`;
-- gate estável: run `29886064641`.
+- comando conjunto sempre visível;
+- undo/redo exatos;
+- app e AuthoringKit em paridade.
 
 ### DB-05.20.6 — Arranjo promocional de alto nível
 
-**Estado:** adiado por ausência de necessidade comprovada.
+**Estado:** substituído pela sequência DB-05.20.11–14.
 
-A meta de 180 ações foi atingida com uma capacidade geométrica geral, sem receita promocional completa. Criar uma estrutura específica agora adicionaria superfície de manutenção antes de demonstrar valor adicional.
-
-O incremento só deve ser reaberto se novos benchmarks mostrarem repetição consistente da mesma macroestrutura em múltiplas peças e contextos.
-
-Restrições preservadas para eventual retomada:
-
-- não criar novo tipo;
-- não preencher conteúdo comercial fictício;
-- manter cada peça independente;
-- tratar a composição como receita removível e editável;
-- manter reprodução manual como benchmark de transparência.
+Uma macroestrutura não deve ser criada antes de existirem unidade de oferta e bloco de preço reutilizáveis. Eventual receita de página será reconsiderada somente depois do benchmark V2 e de outra referência não relacionada.
 
 ### DB-05.20.7 — Legibilidade de benefícios e callout
 
-**Estado:** ativo.
+**Estado:** suspenso.
 
-**Prioridade:** P2 visual.
+**Prioridade:** P1, após DB-05.20.14.
 
-Melhorar representação em blocos estreitos sem alterar semântica:
+A tentativa de melhorar wrap e callout não resolve os déficits P0 confirmados. O teste dedicado permanece útil, mas nenhuma alteração visual deste incremento deve preceder estrutura de oferta, preço e superfícies promocionais.
 
-- rótulos de benefício com wrap controlado de até duas linhas;
-- tamanho mínimo recomendável para ícone + rótulo;
-- preservação da escala interna 80/100/120 do vetor;
-- callout amplo e compacto explicitamente diferenciados;
-- maior hierarquia de título sem sacrificar o corpo;
-- validação de tela e PDF;
-- nenhuma dependência da moldura de `layout-container` na impressão;
-- nenhuma mudança de tipo, receita obrigatória ou schema.
+Quando retomado, deve validar:
 
-Critérios de aceite:
-
-- quatro benefícios estreitos sem truncamento indevido, vazamento ou colisão;
-- rótulos longos preservados em até duas linhas;
-- callout amplo mais dominante que o compacto;
-- conteúdo opcional continua removível;
-- tela e impressão equivalentes;
-- benchmark promocional continua em no máximo 180 ações.
+- ícone, título e descrição curta quando houver espaço;
+- compactação em até duas linhas;
+- callout amplo e compacto distintos;
+- tela e impressão;
+- ausência de regressão no benchmark V2.
 
 ### DB-05.20.8 — Benchmark com assets reais
 
+**Estado:** adiado.
+
+**Prioridade:** P2, depois do benchmark V2.
+
+Assets reais só entram depois de estrutura comercial 100/100 e primeiro marco cromático. A execução deverá separar claramente melhoria causada por asset de melhoria causada por capacidades nativas.
+
+### DB-05.20.9 — Auditoria de fidelidade promocional
+
+**Estado:** concluído.
+
+Resultado:
+
+- cromático: 0/100;
+- estrutural: 50/100;
+- consolidado: 25/100;
+- vermelho: 0,92%;
+- amarelo: 0,003%;
+- escuro: 0,48%;
+- branco: 92,54%;
+- ofertas independentes: 1/4;
+- contêineres visuais de preço: 1/4.
+
+Achados reguladores:
+
+- `OFFER_UNITS_COLLAPSED`;
+- `PRICE_HIERARCHY_TABULAR`;
+- `PROMOTIONAL_RED_DEFICIT`;
+- `PROMOTIONAL_YELLOW_ABSENT`;
+- `DARK_CONTRAST_DEFICIT`;
+- `SATURATION_DEFICIT`;
+- `EDITORIAL_WHITESPACE_EXCESS`.
+
+## Nova sequência prioritária
+
+### DB-05.20.10 — Contrato e prontidão da remediação promocional
+
+**Estado:** ativo.
+
+**Prioridade:** P0 regulatória.
+
+Entregas:
+
+- contrato legível por máquina;
+- definições normativas de unidade de oferta, bloco de preço e superfícies;
+- teste Node de prontidão;
+- teste Chromium de aceitação futura;
+- workflow somente leitura;
+- baseline explícito de capacidades ausentes.
+
+Arquivos centrais:
+
+- `tests/fixtures/promotional-remediation-contract-05.20.10.json`;
+- `tests/promotional-remediation-readiness-05.20.10.test.js`;
+- `tests/browser-promotional-remediation-acceptance-05.20.10.test.js`;
+- `docs/evidence/05.20/developer-b/DB-05.20.10-PROMOTIONAL-REMEDIATION-PLAN.md`.
+
+O modo padrão dos testes é informativo. A variável `CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE=1` torna déficits bloqueantes após a implementação.
+
+### DB-05.20.11 — Vocabulário semântico promocional
+
 **Estado:** pendente.
 
-**Prioridade:** P3, depois da legibilidade.
+**Prioridade:** P0.
 
-Reexecutar a promoção com:
+Adicionar sem hardcode de referência:
+
+- `promo.primary`, `promo.secondary`, `promo.dark`;
+- tokens de contraste `promo.on-*`;
+- `surface.promo-primary`, `surface.promo-secondary`, `surface.promo-dark`;
+- `type.promo-title`, `type.promo-price`, `type.promo-qualifier`, `type.promo-meta`.
+
+Critérios:
+
+- guideline pode trocar valores sem alterar receitas;
+- tokens aparecem no inspetor atual;
+- app e AuthoringKit em paridade;
+- impressão preserva cor;
+- build idempotente;
+- teste de prontidão deixa de reportar tokens ausentes.
+
+### DB-05.20.12 — Receita `commerce-price-block`
+
+**Estado:** pendente.
+
+**Prioridade:** P0.
+
+Composição inicial com tipos existentes.
+
+Papéis obrigatórios:
+
+- `price-block`;
+- `currency`;
+- `amount`.
+
+Papéis opcionais:
+
+- `old-price`;
+- `qualifier`;
+- `unit`.
+
+Critérios:
+
+- preço atual ≥ 2× metadado;
+- preço atual ≥ 1,5× medida;
+- opcionais removíveis sem colapso;
+- inserção em uma transação;
+- tela e impressão equivalentes;
+- nenhuma promoção para novo tipo.
+
+### DB-05.20.13 — Receita `commerce-offer-unit`
+
+**Estado:** pendente.
+
+**Prioridade:** P0.
+
+Papéis obrigatórios:
+
+- `offer-unit`;
+- `media`;
+- `code`;
+- `measure`;
+- `price-block`.
+
+Critérios:
+
+- quatro instâncias independentes;
+- quatro contêineres de preço;
+- duplicação, exclusão e reordenação independentes;
+- IDs únicos;
+- nenhuma dependência de `data-table` para representar quatro ofertas;
+- zero colisões, overflow e referências obrigatórias ausentes;
+- undo/redo e exportação/reimportação exatos.
+
+### DB-05.20.14 — Benchmark promocional V2
+
+**Estado:** pendente.
+
+**Prioridade:** P0 — gate das remediações.
+
+Executar novamente a referência com as novas capacidades.
+
+Metas do primeiro marco:
+
+- estrutura comercial: 100/100;
+- cromático: ≥ 50/100;
+- consolidado: ≥ 75/100;
+- quatro ofertas independentes;
+- quatro preços visuais;
+- apresentação `independent-repeated-offers`;
+- até 190 ações;
+- zero regressões técnicas.
+
+Aumentar o cromático sem corrigir estrutura, ou corrigir estrutura mantendo 0/100 cromático, não encerra o marco.
+
+### DB-05.20.15 — Callout e faixa de benefícios
+
+**Estado:** pendente.
+
+**Prioridade:** P1.
+
+Consolida a retomada do DB-05.20.7:
+
+- callout com shape/asset opcional e texto nativo;
+- benefício com ícone, título e descrição;
+- estados amplo e compacto;
+- sem novo tipo na primeira tentativa;
+- deve manter as metas do benchmark V2.
+
+### DB-05.20.16 — Benchmark com assets reais
+
+**Estado:** pendente.
+
+**Prioridade:** P2.
+
+Executar somente após DB-05.20.14:
 
 - logo;
-- foto/render do produto;
+- produto;
 - desenho técnico;
-- asset composto opcional para personagem, megafone e faixas.
+- personagem/megafone/faixas como asset composto opcional.
 
-Medir:
+Medir crop, foco, persistência, PDF e contribuição real dos assets para a fidelidade.
 
-- tempo de importação e vinculação;
-- fidelidade de crop/foco;
-- persistência no pacote de projeto;
-- PDF;
-- diferença entre asset composto e reconstrução nativa.
+### DB-05.20.17 — Receita macro promocional
 
-## Ordem atualizada
+**Estado:** condicionado.
 
-1. DB-05.20.7 — legibilidade de benefícios e callout.
-2. Reexecutar DB-05.20.1 e confirmar até 180 ações.
-3. DB-05.20.8 — benchmark com assets reais.
-4. Reabrir DB-05.20.4 somente se a coalescência voltar a divergir.
-5. Reavaliar DB-05.20.6 somente após múltiplos benchmarks convergentes.
+**Prioridade:** P3.
+
+Só pode ser proposta se:
+
+- unidade de oferta e preço estiverem estáveis;
+- duas ou mais referências diferentes repetirem a macroestrutura;
+- a receita reduzir ações sem ocultar a composição;
+- cada unidade continuar independente.
+
+## Ordem regulada
+
+1. DB-05.20.10 — executar e registrar baseline de prontidão.
+2. DB-05.20.11 — tokens e superfícies semânticas.
+3. DB-05.20.12 — bloco de preço.
+4. DB-05.20.13 — unidade de oferta.
+5. DB-05.20.14 — benchmark promocional V2.
+6. DB-05.20.15 — callout e benefícios.
+7. DB-05.20.16 — assets reais.
+8. Reabrir DB-05.20.4 apenas com reprodução nova.
+9. Avaliar DB-05.20.17 somente com evidência multirreferência.
 
 ## Gates do ciclo
 
@@ -209,9 +310,21 @@ Nenhum incremento pode ser considerado concluído se introduzir:
 - divergência modelo × DOM;
 - perda em exportação/reimportação;
 - undo/redo não reversível;
-- colisão ou overflow não presentes no benchmark anterior;
+- colisão ou overflow inesperado;
 - referência obrigatória ausente;
 - mudança de schema;
 - promoção acidental de receita para tipo;
-- dependência nova no compilador sem espelho no AuthoringKit;
-- aumento do benchmark promocional acima de 180 ações sem justificativa explícita.
+- dependência no compilador sem espelho no AuthoringKit;
+- build não idempotente;
+- redução de conteúdo comercial para uma imagem única;
+- quatro registros tabulares apresentados como quatro ofertas;
+- tokens de cor codificados para uma referência em vez de papéis semânticos.
+
+## Gate editorial adicional
+
+A partir do DB-05.20.14, o gate técnico verde não é suficiente. Também são obrigatórios:
+
+- estrutura comercial 100/100;
+- cromático ≥ 50/100 no primeiro marco;
+- consolidado ≥ 75/100;
+- documentação do delta de ações e de categoria.
