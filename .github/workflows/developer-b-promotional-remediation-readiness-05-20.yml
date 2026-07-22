@@ -1,0 +1,81 @@
+name: Developer B Promotional Remediation Readiness
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-promotional-remediation-readiness-05-20.yml'
+      - 'tests/fixtures/promotional-remediation-contract-05.20.10.json'
+      - 'tests/promotional-remediation-readiness-05.20.10.test.js'
+      - 'tests/browser-promotional-remediation-acceptance-05.20.10.test.js'
+      - 'app/tokens.js'
+      - 'app/section-recipes.js'
+      - 'app/*recipe-contract.js'
+      - 'authoring-kit/runtime/tokens.js'
+      - 'authoring-kit/runtime/section-recipes.js'
+      - 'authoring-kit/runtime/*recipe-contract.js'
+permissions:
+  contents: read
+jobs:
+  promotional-remediation-readiness:
+    name: DB-05.20.10 - promotional remediation readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate readiness sources
+        run: |
+          node --check tests/promotional-remediation-readiness-05.20.10.test.js
+          node --check tests/browser-promotional-remediation-acceptance-05.20.10.test.js
+          python -m json.tool tests/fixtures/promotional-remediation-contract-05.20.10.json >/dev/null
+      - name: Run declarative readiness
+        env:
+          CATALOG_PROMOTIONAL_REMEDIATION_OUTPUT_DIR: audit-output/db-05.20.10/readiness
+        run: node tests/promotional-remediation-readiness-05.20.10.test.js
+      - name: Install visual runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run browser readiness
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_PROMOTIONAL_REMEDIATION_OUTPUT_DIR: audit-output/db-05.20.10/readiness
+        run: node tests/browser-promotional-remediation-acceptance-05.20.10.test.js
+      - name: Validate reports
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('audit-output/db-05.20.10/readiness')
+          node = json.loads((root / 'promotional-remediation-readiness.json').read_text())
+          browser = json.loads((root / 'promotional-remediation-browser-readiness.json').read_text())
+          assert node['status'] in {'not-ready', 'ready'}
+          assert browser['status'] in {'not-ready', 'ready', 'accepted'}
+          assert node['contractVersion'] == '05.20.10'
+          assert browser['contractVersion'] == '05.20.10'
+          print(f"node={node['status']} browser={browser['status']} deficits={len(node['deficits'])}")
+          PY
+      - name: Upload readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-promotional-remediation-readiness-05.20.10
+          path: audit-output/db-05.20.10/readiness
+          if-no-files-found: error
+          retention-days: 14
