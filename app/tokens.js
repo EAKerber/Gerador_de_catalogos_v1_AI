@@ -2,13 +2,19 @@
   "use strict";
 
   window.CATALOG_EDITOR_TOKENS = {
-    meta: { name: "Top Mobili — Catálogo V1", version: "2.0.0-alpha.3" },
+    meta: { name: "Top Mobili — Catálogo V1", version: "2.0.0-alpha.4" },
     colors: {
       "brand.soft": { label: "Vermelho suave", value: "#fff1f1", group: "Marca" },
       "brand.light": { label: "Vermelho claro", value: "#ffd7d7", group: "Marca" },
       "brand.primary": { label: "Vermelho Top Mobili", value: "#fd0807", group: "Marca" },
       "brand.deep": { label: "Vermelho profundo", value: "#d90909", group: "Marca" },
       "brand.dark": { label: "Vermelho escuro", value: "#b50000", group: "Marca" },
+      "promo.primary": { label: "Promoção principal", value: "#d90909", group: "Promoção" },
+      "promo.secondary": { label: "Promoção secundária", value: "#ffc400", group: "Promoção" },
+      "promo.dark": { label: "Contraste promocional", value: "#0a0909", group: "Promoção" },
+      "promo.on-primary": { label: "Sobre promoção principal", value: "#ffffff", group: "Promoção" },
+      "promo.on-secondary": { label: "Sobre promoção secundária", value: "#0a0909", group: "Promoção" },
+      "promo.on-dark": { label: "Sobre contraste promocional", value: "#ffffff", group: "Promoção" },
       "text.primary": { label: "Preto editorial", value: "#0a0909", group: "Texto" },
       "text.strong": { label: "Texto forte", value: "#252525", group: "Texto" },
       "text.muted": { label: "Texto secundário", value: "#626262", group: "Texto" },
@@ -37,6 +43,10 @@
       "type.table-head": { label: "Cabeçalho de tabela", family: "var(--font-display)", size: "10px", weight: 900, lineHeight: 1.1, letterSpacing: ".01em", transform: "uppercase" },
       "type.table-value": { label: "Valor de tabela", family: "var(--font-display)", size: "12px", weight: 800, lineHeight: 1.15, letterSpacing: "0", transform: "none" },
       "type.price": { label: "Preço em destaque", family: "var(--font-display)", size: "19px", weight: 900, lineHeight: 1, letterSpacing: "-.01em", transform: "none" },
+      "type.promo-title": { label: "Título promocional", family: "var(--font-display)", size: "30px", weight: 900, lineHeight: .92, letterSpacing: "-.025em", transform: "uppercase" },
+      "type.promo-price": { label: "Preço promocional", family: "var(--font-display)", size: "38px", weight: 900, lineHeight: .86, letterSpacing: "-.035em", transform: "none" },
+      "type.promo-qualifier": { label: "Qualificador promocional", family: "var(--font-display)", size: "15px", weight: 900, lineHeight: 1, letterSpacing: ".01em", transform: "uppercase" },
+      "type.promo-meta": { label: "Metadado promocional", family: "var(--font-display)", size: "11px", weight: 800, lineHeight: 1.08, letterSpacing: ".01em", transform: "uppercase" },
       "type.body": { label: "Texto corrido", family: "var(--font-sans)", size: "14px", weight: 400, lineHeight: 1.38, letterSpacing: "0", transform: "none" },
       "type.caption": { label: "Legenda", family: "var(--font-sans)", size: "10px", weight: 600, lineHeight: 1.3, letterSpacing: ".01em", transform: "none" }
     },
@@ -46,6 +56,9 @@
       "surface.warm": { label: "Quente suave", colorToken: "surface.warm" },
       "surface.cool": { label: "Frio suave", colorToken: "surface.cool" },
       "surface.lilac": { label: "Lilás suave", colorToken: "surface.lilac" },
+      "surface.promo-primary": { label: "Promoção principal", colorToken: "promo.primary" },
+      "surface.promo-secondary": { label: "Promoção secundária", colorToken: "promo.secondary" },
+      "surface.promo-dark": { label: "Contraste promocional", colorToken: "promo.dark" },
       "surface.pack-1000": { label: "Embalagem CX 1000", colorToken: "pack.1000" },
       "surface.pack-300": { label: "Embalagem CX 300", colorToken: "pack.300" },
       "surface.pack-250": { label: "Embalagem CX 250", colorToken: "pack.250" },
