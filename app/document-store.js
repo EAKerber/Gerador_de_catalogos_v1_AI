@@ -2850,7 +2850,7 @@
 
     applyComponentFramesBulk(entries = []) {
       const valid = entries.slice(0, 40).filter(entry => entry?.id && [entry.x, entry.y, entry.width, entry.height].every(value => Number.isFinite(Number(value))));
-      const selection = this.getBatchSelection(valid.map(entry => entry.id));
+      const selection = this.getBatchSelection(valid.map(entry => entry.id), 1);
       if (!selection || selection.records.length !== valid.length) throw new Error("A lista deve conter exatamente componentes irmãos da seleção atual.");
       const selectedIds = new Set(this.getSelectedIds());
       if (valid.some(entry => !selectedIds.has(entry.id)) || selectedIds.size !== valid.length) throw new Error("A geometria só pode ser aplicada ao conjunto atualmente selecionado.");

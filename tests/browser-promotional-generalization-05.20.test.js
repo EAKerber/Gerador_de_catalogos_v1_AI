@@ -96,18 +96,22 @@ async function setStyle(pathName, value) {
 }
 
 async function showAdvancedGeometry() {
-  if (await page.locator('[data-frame-path="x"]').count()) return;
+  if (await page.locator('[data-frame-draft-path="x"]').count()) return;
   const toggle = page.locator('[data-toggle-all-properties]').first();
   await act("Mostrar geometria avançada", () => toggle.click());
-  await page.locator('[data-frame-path="x"]').waitFor({ state: "attached" });
+  await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "attached" });
 }
 
 async function setFrame(frame) {
   await showAdvancedGeometry();
-  for (const key of ["width", "height", "x", "y"]) {
-    if (frame[key] == null) continue;
-    await changeControl(`[data-frame-path="${key}"]`, frame[key], `Definir ${key} = ${frame[key]}`);
-  }
+  await act(`Aplicar frame ${frame.x},${frame.y},${frame.width}×${frame.height}`, async () => {
+    for (const key of ["x", "y", "width", "height"]) {
+      if (frame[key] == null) continue;
+      await page.locator(`[data-frame-draft-path="${key}"]`).fill(String(frame[key]));
+    }
+    await page.locator("[data-frame-apply-all]").click();
+  });
+  await wait(35);
 }
 
 async function setPresentation(presentation) {
