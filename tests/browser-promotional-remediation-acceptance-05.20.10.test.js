@@ -87,11 +87,13 @@ function comparableDocument(value) {
     store.setEditorSettings({ zoom: 1, zoomMode: "manual", gridVisible: false, snapEnabled: false, smartSnapEnabled: false });
     const ids = [];
     for (let index = 0; index < contract.acceptance.minimumOfferUnits; index += 1) {
-      store.setEditingContext(null);
-      const inserted = store.insertComponentFromTemplate("commerce-offer-unit");
-      const current = store.findComponent(inserted.id).component;
-      store.updateComponent(current.id, { frame: { x: 24 + index * 183, y: 180, width: 171, height: 500 } });
-      ids.push(current.id);
+      const inserted = store.addComponentFromTemplate("commerce-offer-unit", {
+        x: 24 + index * 183,
+        y: 180,
+        width: 171,
+        height: 500
+      }, { parentId: null });
+      ids.push(inserted.id);
     }
     return { ids, document: JSON.parse(JSON.stringify(store.getState())) };
   }, contract);
@@ -166,7 +168,7 @@ function comparableDocument(value) {
   validate(printed);
   await page.emulateMedia({ media: "screen" });
 
-  const historySteps = contract.acceptance.minimumOfferUnits * 2;
+  const historySteps = contract.acceptance.minimumOfferUnits;
   const history = await page.evaluate(count => {
     const store = CatalogEditor.store;
     for (let index = 0; index < count; index += 1) store.undo();
