@@ -2399,6 +2399,36 @@
         "label": "Papel",
         "value": "#ffffff"
       },
+      "promo.dark": {
+        "group": "Promoção",
+        "label": "Contraste promocional",
+        "value": "#0a0909"
+      },
+      "promo.on-dark": {
+        "group": "Promoção",
+        "label": "Sobre contraste promocional",
+        "value": "#ffffff"
+      },
+      "promo.on-primary": {
+        "group": "Promoção",
+        "label": "Sobre promoção principal",
+        "value": "#ffffff"
+      },
+      "promo.on-secondary": {
+        "group": "Promoção",
+        "label": "Sobre promoção secundária",
+        "value": "#0a0909"
+      },
+      "promo.primary": {
+        "group": "Promoção",
+        "label": "Promoção principal",
+        "value": "#d90909"
+      },
+      "promo.secondary": {
+        "group": "Promoção",
+        "label": "Promoção secundária",
+        "value": "#ffc400"
+      },
       "surface.cool": {
         "group": "Superfícies",
         "label": "Card frio",
@@ -2437,7 +2467,7 @@
     },
     "meta": {
       "name": "Top Mobili — Catálogo V1",
-      "version": "2.0.0-alpha.3"
+      "version": "2.0.0-alpha.4"
     },
     "radii": {
       "radius.large": {
@@ -2506,6 +2536,18 @@
         "colorToken": "paper",
         "label": "Papel branco"
       },
+      "surface.promo-dark": {
+        "colorToken": "promo.dark",
+        "label": "Contraste promocional"
+      },
+      "surface.promo-primary": {
+        "colorToken": "promo.primary",
+        "label": "Promoção principal"
+      },
+      "surface.promo-secondary": {
+        "colorToken": "promo.secondary",
+        "label": "Promoção secundária"
+      },
       "surface.warm": {
         "colorToken": "surface.warm",
         "label": "Quente suave"
@@ -2573,6 +2615,42 @@
         "lineHeight": 1,
         "size": "19px",
         "transform": "none",
+        "weight": 900
+      },
+      "type.promo-meta": {
+        "family": "var(--font-display)",
+        "label": "Metadado promocional",
+        "letterSpacing": ".01em",
+        "lineHeight": 1.08,
+        "size": "11px",
+        "transform": "uppercase",
+        "weight": 800
+      },
+      "type.promo-price": {
+        "family": "var(--font-display)",
+        "label": "Preço promocional",
+        "letterSpacing": "-.035em",
+        "lineHeight": 0.86,
+        "size": "38px",
+        "transform": "none",
+        "weight": 900
+      },
+      "type.promo-qualifier": {
+        "family": "var(--font-display)",
+        "label": "Qualificador promocional",
+        "letterSpacing": ".01em",
+        "lineHeight": 1,
+        "size": "15px",
+        "transform": "uppercase",
+        "weight": 900
+      },
+      "type.promo-title": {
+        "family": "var(--font-display)",
+        "label": "Título promocional",
+        "letterSpacing": "-.025em",
+        "lineHeight": 0.92,
+        "size": "30px",
+        "transform": "uppercase",
         "weight": 900
       },
       "type.section": {
