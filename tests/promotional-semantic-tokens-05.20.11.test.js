@@ -40,10 +40,6 @@ assert(px(app.typography["type.promo-price"]) >= px(app.typography["type.promo-m
 assert(px(app.typography["type.promo-price"]) >= px(app.typography["type.promo-qualifier"]) * 1.5, "Preço promocional não domina qualificador em 1,5×.");
 assert(px(app.typography["type.promo-title"]) > px(app.typography["type.card-title"]), "Título promocional não supera título de card.");
 
-const recipeSource = fs.readFileSync(path.join(root, "app", "section-recipes.js"), "utf8");
-assert(!recipeSource.includes('"commerce-price-block"'), "DB-05.20.11 adicionou prematuramente a receita de preço.");
-assert(!recipeSource.includes('"commerce-offer-unit"'), "DB-05.20.11 adicionou prematuramente a unidade de oferta.");
-
 const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "catalog-promo-token-readiness-"));
 const readiness = spawnSync(process.execPath, [path.join(__dirname, "promotional-remediation-readiness-05.20.10.test.js")], {
   cwd: root,
@@ -53,14 +49,10 @@ const readiness = spawnSync(process.execPath, [path.join(__dirname, "promotional
 assert.strictEqual(readiness.status, 0, readiness.stderr || readiness.stdout);
 const report = JSON.parse(fs.readFileSync(path.join(outputDir, "promotional-remediation-readiness.json"), "utf8"));
 const tokenDeficits = report.deficits.filter(item => item.code === "MISSING_SEMANTIC_TOKEN");
-const recipeDeficits = report.deficits.filter(item => item.code === "MISSING_PROMOTIONAL_RECIPE");
-const roleDeficits = report.deficits.filter(item => item.code === "MISSING_RECIPE_ROLE");
 assert.strictEqual(tokenDeficits.length, 0, `Ainda há tokens ausentes: ${JSON.stringify(tokenDeficits)}`);
-assert.strictEqual(recipeDeficits.length, 2, "As duas receitas deveriam continuar pendentes.");
-assert.strictEqual(roleDeficits.length, 8, "Os oito papéis deveriam continuar pendentes.");
-assert.strictEqual(report.deficits.length, 10, `Déficits restantes inesperados: ${JSON.stringify(report.deficits)}`);
+assert(report.deficits.every(item => item.code !== "MISSING_SEMANTIC_TOKEN"), "A evolução das receitas reintroduziu déficit de token.");
 assert.strictEqual(report.currentInventory.colorTokens, 29, "Inventário de cores inesperado.");
 assert.strictEqual(report.currentInventory.surfaceTokens, 15, "Inventário de superfícies inesperado.");
 assert.strictEqual(report.currentInventory.typographyTokens, 14, "Inventário tipográfico inesperado.");
 
-console.log("✓ DB-05.20.11 registrou 13 tokens promocionais, preservou paridade e reduziu a prontidão de 23 para 10 déficits.");
+console.log(`✓ DB-05.20.11 preservou 13 tokens promocionais e zero déficit semântico; ${report.deficits.length} déficit(s) de receita permanecem fora do escopo.`);
