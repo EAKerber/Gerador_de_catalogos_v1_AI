@@ -13,47 +13,53 @@ Não autoriza merge nem altera as decisões base do projeto. O objetivo do ciclo
 3. Tratar efeitos gráficos complexos como assets quando não exigirem comportamento editável próprio.
 4. Medir redução de ações, não apenas existência de controles.
 5. Manter exportação, reimportação, impressão e histórico como gates bloqueantes.
+6. Distinguir defeito de produto de erro ou ambiguidade do harness antes de alterar runtime.
 
-## Incrementos propostos
+## Incrementos
 
 ### DB-05.20.1 — Benchmark de generalização promocional
 
-**Estado:** concluído.
+**Estado:** concluído e corrigido.
 
-Resultado `pass-with-findings` no run `29875259956`:
+Resultado `pass-with-findings` no run `29883102904`:
 
-- 221 ações;
+- 219 ações;
 - 59 componentes;
 - quatro ofertas;
 - zero colisões;
 - zero overflows;
+- três tarefas finais revertidas/refeitas em três passos;
 - exportação/reimportação equivalentes;
 - PDF A4 gerado;
-- nenhum bloqueador final.
+- nenhum bloqueador final;
+- único finding emitido: três assets deliberadamente ausentes no runner.
 
 ### DB-05.20.2 — Hit testing e seleção de peças internas
 
-**Prioridade:** P1 — correção imediata.
+**Estado:** concluído como correção de harness, sem mudança de runtime.
 
-Reproduzir e corrigir o caso em que clicar numa `specification` ou num `icon` interno abre a biblioteca de artes.
+O finding inicial não era causado por `specification`, `icon`, z-index ou sobreposição. O diálogo já estava aberto depois de um clique intencional no placeholder de arte. Como a arte já estava selecionada, o helper antigo encerrou cedo e deixou o modal ativo.
 
-Escopo:
+Correção:
 
-- identificar o elemento que recebe o pointer event;
-- medir caixas e z-index de arte, trigger e irmãos;
-- limitar a área clicável de `data-open-asset-library` ao frame efetivo da arte;
-- garantir que contexto interno priorize seleção de filhos editáveis;
-- preservar o clique intencional no placeholder de arte;
-- testar card `variants`, `technical`, `hero` e `data-only`;
-- validar mouse, teclado, Camadas, tela e impressão.
+- seleção de `art` para edição passa pela árvore de Camadas;
+- clique no placeholder permanece reservado à escolha/substituição de asset;
+- seleções não-art continuam no canvas;
+- diálogo residual é diagnosticado explicitamente.
 
-Critério de aceite:
+Validação no run `29883102906`:
 
-- cem seleções alternadas de arte, especificação e ícone sem abertura indevida de diálogo;
-- clique no placeholder de arte continua abrindo a biblioteca;
-- nenhuma mudança de schema ou geometria externa.
+- quatro modos do card;
+- oito cenários detalhados;
+- quatro aberturas intencionais da biblioteca;
+- 100 alternâncias entre arte, especificação e ícone;
+- zero falhas;
+- zero erros de página ou console;
+- schema e geometria externa inalterados.
 
 ### DB-05.20.3 — Diagnóstico da referência ausente
+
+**Estado:** ativo.
 
 **Prioridade:** P1.
 
@@ -64,33 +70,30 @@ Escopo:
 - registrar a referência e o componente de origem no relatório de publicação;
 - distinguir asset ausente, coleção ausente, binding ausente e referência opcional;
 - confirmar se `assetId: null` deve ou não participar da contagem;
-- repetir o documento promocional com e sem assets.
+- repetir o documento promocional com e sem assets;
+- preservar a contagem resumida para compatibilidade.
 
 Critério de aceite:
 
-- o relatório identifica precisamente a referência;
+- o relatório identifica precisamente cada referência;
 - placeholders deliberados não são confundidos com corrupção;
-- referências obrigatórias continuam bloqueantes.
+- referências obrigatórias continuam bloqueantes;
+- `missingReferences` permanece derivado dos detalhes, sem contagem paralela inconsistente.
 
 ### DB-05.20.4 — Fronteiras da coalescência de histórico
 
-**Prioridade:** P2.
+**Estado:** condicionado; não reproduzido no benchmark corrigido.
 
-Três edições em tarefas/componentes diferentes foram revertidas em dois passos, embora undo e redo tenham preservado o estado exato.
+**Prioridade:** P3 diagnóstico.
 
-Escopo:
+A execução inicial exigiu dois passos para três tarefas. Depois da correção semântica do harness, o run final exigiu exatamente três undos e três redos, com equivalência integral.
 
-- registrar chaves e timestamps de coalescência em teste diagnóstico;
-- verificar se seleção, troca de contexto ou edição de outro componente encerra a janela anterior;
+Este incremento só deve ser reativado se novo teste reproduzir agrupamento entre tarefas distintas. Nesse caso:
+
+- registrar chaves e timestamps de coalescência;
+- verificar seleção, troca de contexto e edição de outro componente;
 - preservar coalescência de digitação no mesmo campo;
 - impedir agrupamento entre tarefas visualmente distintas.
-
-Critério de aceite:
-
-- digitação contínua no mesmo campo permanece uma ação;
-- edição em outro componente inicia nova unidade;
-- troca de contexto inicia nova unidade;
-- benchmark final usa três passos para três tarefas distintas.
 
 ### DB-05.20.5 — Aplicação conjunta de frame
 
@@ -109,7 +112,7 @@ Escopo inicial:
 Meta:
 
 - reduzir a geometria do benchmark de 44 para no máximo 18 ações;
-- reduzir o total de 221 para menos de 180 sem automatizar conteúdo.
+- reduzir o total de 219 para menos de 180 sem automatizar conteúdo.
 
 ### DB-05.20.6 — Arranjo promocional de alto nível
 
@@ -164,15 +167,14 @@ Medir:
 - PDF;
 - diferença entre asset composto e reconstrução nativa.
 
-## Ordem recomendada
+## Ordem atualizada
 
-1. DB-05.20.2 — seleção/hit testing.
-2. DB-05.20.3 — referência ausente.
-3. DB-05.20.4 — coalescência de histórico.
-4. DB-05.20.5 — frame conjunto.
-5. Reexecutar DB-05.20.1 e medir redução de falhas e ações.
-6. Decidir sobre DB-05.20.6.
-7. Refinar legibilidade e executar benchmark com assets.
+1. DB-05.20.3 — identificar e classificar a referência ausente.
+2. DB-05.20.5 — aplicação conjunta de frame.
+3. Reexecutar DB-05.20.1 e medir redução de ações.
+4. Decidir sobre DB-05.20.6.
+5. Refinar legibilidade e executar benchmark com assets.
+6. Reabrir DB-05.20.4 somente se a coalescência voltar a divergir.
 
 ## Gates do ciclo
 
