@@ -14,24 +14,27 @@ Não autoriza merge nem altera as decisões base do projeto. O objetivo do ciclo
 4. Medir redução de ações, não apenas existência de controles.
 5. Manter exportação, reimportação, impressão e histórico como gates bloqueantes.
 6. Distinguir defeito de produto de erro ou ambiguidade do harness antes de alterar runtime.
+7. Preferir capacidades gerais a atalhos específicos de uma única peça de referência.
 
 ## Incrementos
 
 ### DB-05.20.1 — Benchmark de generalização promocional
 
-**Estado:** concluído e corrigido.
+**Estado:** concluído e consolidado.
 
-Resultado `pass-with-findings` no run `29883102904`:
+Resultado final no run `29886064651`:
 
-- 219 ações;
+- 180 ações;
 - 59 componentes;
 - quatro ofertas;
+- 11 aplicações conjuntas de frame;
+- zero aberturas de **Avançado** para geometria;
 - zero colisões;
 - zero overflows;
+- zero referências obrigatórias ausentes;
 - três tarefas finais revertidas/refeitas em três passos;
 - exportação/reimportação equivalentes;
 - PDF A4 gerado;
-- nenhum bloqueador final;
 - único finding emitido: três assets deliberadamente ausentes no runner.
 
 ### DB-05.20.2 — Hit testing e seleção de peças internas
@@ -59,34 +62,36 @@ Validação no run `29883102906`:
 
 ### DB-05.20.3 — Diagnóstico da referência ausente
 
-**Estado:** ativo.
+**Estado:** concluído.
 
-**Prioridade:** P1.
+A referência era um `product-card` local com `productId: null`, estado válido que o validador anterior confundia com ID explicitamente inexistente.
 
-O relatório final marcou `missingReferences: 1` apesar de modelo, DOM e round-trip íntegros.
+O `CatalogDocumentValidator 1.1.0` agora expõe:
 
-Escopo:
+- `references.missing` para IDs obrigatórios ausentes;
+- `references.invalid` para vínculos existentes, porém incompatíveis;
+- `references.optional` para vínculos deliberadamente vazios.
 
-- registrar a referência e o componente de origem no relatório de publicação;
-- distinguir asset ausente, coleção ausente, binding ausente e referência opcional;
-- confirmar se `assetId: null` deve ou não participar da contagem;
-- repetir o documento promocional com e sem assets;
-- preservar a contagem resumida para compatibilidade.
+Resultados:
 
-Critério de aceite:
+- `missingReferences` deriva exclusivamente de `references.missing.length`;
+- card local aparece como `product / local-content`;
+- arte sem arquivo aparece como `asset / placeholder-without-asset`;
+- produto, asset, linha, legenda, variação e token explicitamente ausentes continuam diagnosticados e bloqueantes quando aplicável;
+- app e AuthoringKit permanecem em paridade;
+- schema continua `1.16.0`.
 
-- o relatório identifica precisamente cada referência;
-- placeholders deliberados não são confundidos com corrupção;
-- referências obrigatórias continuam bloqueantes;
-- `missingReferences` permanece derivado dos detalhes, sem contagem paralela inconsistente.
+Validações finais:
+
+- relatório dedicado: run `29884113297`;
+- benchmark promocional: zero referências ausentes;
+- gate estável e build idempotente aprovados.
 
 ### DB-05.20.4 — Fronteiras da coalescência de histórico
 
 **Estado:** condicionado; não reproduzido no benchmark corrigido.
 
-**Prioridade:** P3 diagnóstico.
-
-A execução inicial exigiu dois passos para três tarefas. Depois da correção semântica do harness, o run final exigiu exatamente três undos e três redos, com equivalência integral.
+A execução inicial exigiu dois passos para três tarefas. Depois das correções semânticas do harness, todas as execuções finais exigiram exatamente três undos e três redos, com equivalência integral.
 
 Este incremento só deve ser reativado se novo teste reproduzir agrupamento entre tarefas distintas. Nesse caso:
 
@@ -97,60 +102,81 @@ Este incremento só deve ser reativado se novo teste reproduzir agrupamento entr
 
 ### DB-05.20.5 — Aplicação conjunta de frame
 
-**Prioridade:** P2 — maior oportunidade de redução de esforço.
+**Estado:** concluído.
 
-O benchmark exigiu 44 ações separadas para `x`, `y`, largura e altura.
+A implementação reutiliza `applyComponentFramesBulk` como única autoridade geométrica e permite uma seleção mínima de um item.
 
-Escopo inicial:
+Entregas:
 
-- permitir editar os quatro valores e aplicar em uma única ação;
-- oferecer presets “topo seguro”, “base segura”, “coluna esquerda”, “coluna principal” e “faixa total” como sugestões, não travas;
-- reutilizar `CatalogManualEntry` quando possível;
-- manter snap e mínimos técnicos;
-- uma aplicação deve gerar uma entrada de histórico.
+- rascunho conjunto de `x`, `y`, largura e altura;
+- uma confirmação e uma entrada de histórico;
+- presets topo seguro, base segura, coluna esquerda, coluna principal e faixa total;
+- mínimos técnicos e limites preservados;
+- undo/redo exatos;
+- comando essencial sempre visível para seleção única;
+- controles legados, mínimos e identificação mantidos em **Avançado**;
+- store principal e AuthoringKit em paridade.
 
-Meta:
+Métricas:
 
-- reduzir a geometria do benchmark de 44 para no máximo 18 ações;
-- reduzir o total de 219 para menos de 180 sem automatizar conteúdo.
+- geometria: 44 → 11 ações;
+- total: 219 → 180 ações;
+- aberturas de **Avançado**: 6 → 0;
+- zero regressões de publicação, persistência ou histórico.
+
+Validações:
+
+- regressão dedicada: run `29886064630`;
+- benchmark promocional: run `29886064651`;
+- gate estável: run `29886064641`.
 
 ### DB-05.20.6 — Arranjo promocional de alto nível
 
-**Prioridade:** P2, condicionado ao DB-05.20.5.
+**Estado:** adiado por ausência de necessidade comprovada.
 
-Avaliar um comando ou receita de página que crie apenas a estrutura espacial inicial de uma promoção:
+A meta de 180 ações foi atingida com uma capacidade geométrica geral, sem receita promocional completa. Criar uma estrutura específica agora adicionaria superfície de manutenção antes de demonstrar valor adicional.
 
-- identidade e heading no topo;
-- coluna de argumentos/facts;
-- região principal de produto;
-- região técnica/callout;
-- benefícios;
-- rodapé.
+O incremento só deve ser reaberto se novos benchmarks mostrarem repetição consistente da mesma macroestrutura em múltiplas peças e contextos.
 
-Restrições:
+Restrições preservadas para eventual retomada:
 
 - não criar novo tipo;
 - não preencher conteúdo comercial fictício;
 - manter cada peça independente;
-- tratar a composição como receita removível e editável.
-
-A promoção do benchmark deve continuar reproduzível manualmente; a receita serve para medir redução de ações, não para esconder limitações.
+- tratar a composição como receita removível e editável;
+- manter reprodução manual como benchmark de transparência.
 
 ### DB-05.20.7 — Legibilidade de benefícios e callout
 
-**Prioridade:** P3.
+**Estado:** ativo.
+
+**Prioridade:** P2 visual.
 
 Melhorar representação em blocos estreitos sem alterar semântica:
 
-- rótulos de benefício com wrap controlado ou duas linhas;
+- rótulos de benefício com wrap controlado de até duas linhas;
 - tamanho mínimo recomendável para ícone + rótulo;
-- callout com preset amplo e compacto explicitamente diferenciados;
+- preservação da escala interna 80/100/120 do vetor;
+- callout amplo e compacto explicitamente diferenciados;
+- maior hierarquia de título sem sacrificar o corpo;
 - validação de tela e PDF;
-- nenhuma dependência da moldura de `layout-container` na impressão.
+- nenhuma dependência da moldura de `layout-container` na impressão;
+- nenhuma mudança de tipo, receita obrigatória ou schema.
+
+Critérios de aceite:
+
+- quatro benefícios estreitos sem truncamento indevido, vazamento ou colisão;
+- rótulos longos preservados em até duas linhas;
+- callout amplo mais dominante que o compacto;
+- conteúdo opcional continua removível;
+- tela e impressão equivalentes;
+- benchmark promocional continua em no máximo 180 ações.
 
 ### DB-05.20.8 — Benchmark com assets reais
 
-**Prioridade:** P3, depois das correções P1/P2.
+**Estado:** pendente.
+
+**Prioridade:** P3, depois da legibilidade.
 
 Reexecutar a promoção com:
 
@@ -169,12 +195,11 @@ Medir:
 
 ## Ordem atualizada
 
-1. DB-05.20.3 — identificar e classificar a referência ausente.
-2. DB-05.20.5 — aplicação conjunta de frame.
-3. Reexecutar DB-05.20.1 e medir redução de ações.
-4. Decidir sobre DB-05.20.6.
-5. Refinar legibilidade e executar benchmark com assets.
-6. Reabrir DB-05.20.4 somente se a coalescência voltar a divergir.
+1. DB-05.20.7 — legibilidade de benefícios e callout.
+2. Reexecutar DB-05.20.1 e confirmar até 180 ações.
+3. DB-05.20.8 — benchmark com assets reais.
+4. Reabrir DB-05.20.4 somente se a coalescência voltar a divergir.
+5. Reavaliar DB-05.20.6 somente após múltiplos benchmarks convergentes.
 
 ## Gates do ciclo
 
@@ -185,6 +210,8 @@ Nenhum incremento pode ser considerado concluído se introduzir:
 - perda em exportação/reimportação;
 - undo/redo não reversível;
 - colisão ou overflow não presentes no benchmark anterior;
+- referência obrigatória ausente;
 - mudança de schema;
 - promoção acidental de receita para tipo;
-- dependência nova no compilador sem espelho no AuthoringKit.
+- dependência nova no compilador sem espelho no AuthoringKit;
+- aumento do benchmark promocional acima de 180 ações sem justificativa explícita.
