@@ -1,0 +1,69 @@
+name: Developer B Hit Testing
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-hit-testing-05-20.yml'
+      - 'tests/browser-hit-testing-05.20.2.test.js'
+      - 'app/**'
+      - 'styles/**'
+permissions:
+  contents: read
+jobs:
+  hit-testing:
+    name: DB-05.20.2 - internal hit testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate test syntax
+        run: node --check tests/browser-hit-testing-05.20.2.test.js
+      - name: Install Playwright and select system Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run hit-testing diagnostic
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_HIT_TEST_OUTPUT_DIR: audit-output/db-05.20.2/hit-testing
+        run: node tests/browser-hit-testing-05.20.2.test.js
+      - name: Summarize diagnostic
+        if: always()
+        shell: bash
+        run: |
+          report='audit-output/db-05.20.2/hit-testing/hit-testing-report.json'
+          if [ -f "$report" ]; then
+            node - "$report" <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          console.log(JSON.stringify({ status: report.status, failures: report.failures, fatalError: report.fatalError }, null, 2));
+          NODE
+          else
+            echo 'Hit-testing report was not generated.'
+            exit 1
+          fi
+      - name: Upload hit-testing evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-hit-testing-05.20.2
+          path: audit-output/db-05.20.2/hit-testing
+          if-no-files-found: error
+          retention-days: 14
