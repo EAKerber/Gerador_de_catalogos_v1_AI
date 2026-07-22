@@ -64,8 +64,8 @@ jobs:
                   raise SystemExit('Inspector structure panel not found.')
               source = source[:panel_at] + '        ${frameCommandSection}\n' + source[panel_at:]
 
-          if source.count('data-frame-draft-path=') != 4:
-              raise SystemExit(f'Expected four essential frame draft inputs, found {source.count("data-frame-draft-path=")}')
+          if source.count('data-frame-draft-path=') != 1:
+              raise SystemExit(f'Expected one generated frame draft template, found {source.count("data-frame-draft-path=")}')
           file.write_text(source)
 
           file = Path('tests/browser-frame-application-05.20.5.test.js')
