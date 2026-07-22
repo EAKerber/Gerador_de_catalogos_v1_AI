@@ -49,7 +49,7 @@ function normalizeColor(value) {
   });
 
   await page.waitForSelector(`[data-component-id="${ids.primary}"]`);
-  await page.locator('[data-inspector-tab="visual"]').click();
+  await page.locator('[data-inspector-tab="style"]').click();
   await page.locator('[data-style-path="surface"]').waitFor({ state: "visible" });
 
   const inspectorAvailability = await page.evaluate(() => {
