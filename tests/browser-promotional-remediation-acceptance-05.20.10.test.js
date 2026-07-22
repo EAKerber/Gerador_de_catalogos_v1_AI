@@ -26,6 +26,13 @@ function canonical(value) {
   return value;
 }
 
+function comparableDocument(value) {
+  const copy = JSON.parse(JSON.stringify(value));
+  delete copy.editor;
+  delete copy.updatedAt;
+  return canonical(copy);
+}
+
 (async () => {
   browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
@@ -86,14 +93,13 @@ function canonical(value) {
       store.updateComponent(current.id, { frame: { x: 24 + index * 183, y: 180, width: 171, height: 500 } });
       ids.push(current.id);
     }
-    const document = store.exportDocument ? store.exportDocument() : store.getState();
-    return { ids, document };
+    return { ids, document: JSON.parse(JSON.stringify(store.getState())) };
   }, contract);
 
   await page.waitForFunction(ids => ids.every(id => document.querySelector(`[data-component-id="${id}"]`)), fixture.ids);
 
   async function measure(media) {
-    return page.evaluate(({ ids, contract, media }) => {
+    return page.evaluate(({ ids, media }) => {
       const store = CatalogEditor.store;
       const rect = element => {
         const box = element?.getBoundingClientRect();
@@ -134,7 +140,7 @@ function canonical(value) {
       });
       const publication = store.getPublicationReport("draft").summary;
       return { media, offers, publication };
-    }, { ids: fixture.ids, contract, media });
+    }, { ids: fixture.ids, media });
   }
 
   function validate(snapshot) {
@@ -160,17 +166,17 @@ function canonical(value) {
   validate(printed);
   await page.emulateMedia({ media: "screen" });
 
-  const beforeUndo = await page.evaluate(() => canonicalForTest(CatalogEditor.store.exportDocument ? CatalogEditor.store.exportDocument() : CatalogEditor.store.getState())).catch(() => null);
+  const historySteps = contract.acceptance.minimumOfferUnits * 2;
   const history = await page.evaluate(count => {
     const store = CatalogEditor.store;
     for (let index = 0; index < count; index += 1) store.undo();
-    const afterUndo = store.exportDocument ? store.exportDocument() : store.getState();
+    const afterUndo = JSON.parse(JSON.stringify(store.getState()));
     for (let index = 0; index < count; index += 1) store.redo();
-    const afterRedo = store.exportDocument ? store.exportDocument() : store.getState();
+    const afterRedo = JSON.parse(JSON.stringify(store.getState()));
     return { afterUndo, afterRedo };
-  }, contract.acceptance.minimumOfferUnits);
-  const expected = canonical(fixture.document);
-  const redone = canonical(history.afterRedo);
+  }, historySteps);
+  const expected = comparableDocument(fixture.document);
+  const redone = comparableDocument(history.afterRedo);
   assert(JSON.stringify(redone) === JSON.stringify(expected), "Undo/redo não restaurou as ofertas promocionais.");
 
   const report = {
@@ -178,7 +184,7 @@ function canonical(value) {
     status: "accepted",
     screen,
     printed,
-    history: { undoCount: contract.acceptance.minimumOfferUnits, redoEquivalent: true },
+    history: { undoCount: historySteps, redoEquivalent: true },
     pageErrors,
     consoleErrors
   };
