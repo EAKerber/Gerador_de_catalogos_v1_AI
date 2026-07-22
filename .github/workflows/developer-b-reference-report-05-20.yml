@@ -1,0 +1,60 @@
+name: Developer B Reference Report
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-reference-report-05-20.yml'
+      - 'tests/reference-report-05.20.3.test.js'
+      - 'tests/browser-reference-report-05.20.3.test.js'
+      - 'app/catalog-validator.js'
+      - 'authoring-kit/runtime/catalog-validator.js'
+permissions:
+  contents: read
+jobs:
+  reference-report:
+    name: DB-05.20.3 - detailed reference report
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax and domain matrix
+        run: |
+          node --check app/catalog-validator.js
+          node --check authoring-kit/runtime/catalog-validator.js
+          node --check tests/reference-report-05.20.3.test.js
+          node --check tests/browser-reference-report-05.20.3.test.js
+          node tests/reference-report-05.20.3.test.js
+      - name: Install Playwright and select system Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run browser reference matrix
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_REFERENCE_OUTPUT_DIR: audit-output/db-05.20.3/references
+        run: node tests/browser-reference-report-05.20.3.test.js
+      - name: Upload reference evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-reference-report-05.20.3
+          path: audit-output/db-05.20.3/references
+          if-no-files-found: error
+          retention-days: 14
