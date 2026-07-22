@@ -130,7 +130,7 @@ Achados reguladores:
 
 ### DB-05.20.10 — Contrato e prontidão da remediação promocional
 
-**Estado:** ativo.
+**Estado:** concluído.
 
 **Prioridade:** P0 regulatória.
 
@@ -143,18 +143,30 @@ Entregas:
 - workflow somente leitura;
 - baseline explícito de capacidades ausentes.
 
+Baseline do run `29936136554`:
+
+- resultado técnico: success;
+- Node: `not-ready`;
+- navegador: `not-ready`;
+- 13 tokens semânticos ausentes;
+- duas receitas ausentes;
+- oito papéis obrigatórios ausentes;
+- 23 déficits contratuais totais;
+- zero erros de página ou console.
+
 Arquivos centrais:
 
 - `tests/fixtures/promotional-remediation-contract-05.20.10.json`;
 - `tests/promotional-remediation-readiness-05.20.10.test.js`;
 - `tests/browser-promotional-remediation-acceptance-05.20.10.test.js`;
-- `docs/evidence/05.20/developer-b/DB-05.20.10-PROMOTIONAL-REMEDIATION-PLAN.md`.
+- `docs/evidence/05.20/developer-b/DB-05.20.10-PROMOTIONAL-REMEDIATION-PLAN.md`;
+- `docs/evidence/05.20/developer-b/DB-05.20.10-PROMOTIONAL-READINESS-BASELINE.md`.
 
-O modo padrão dos testes é informativo. A variável `CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE=1` torna déficits bloqueantes após a implementação.
+O modo padrão dos testes permanece informativo durante DB-05.20.11–13. A variável `CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE=1` só entra no gate estável quando todos os contratos estiverem presentes.
 
 ### DB-05.20.11 — Vocabulário semântico promocional
 
-**Estado:** pendente.
+**Estado:** ativo.
 
 **Prioridade:** P0.
 
@@ -172,7 +184,8 @@ Critérios:
 - app e AuthoringKit em paridade;
 - impressão preserva cor;
 - build idempotente;
-- teste de prontidão deixa de reportar tokens ausentes.
+- teste de prontidão deixa de reportar os 13 tokens ausentes;
+- nenhuma receita é adicionada neste incremento.
 
 ### DB-05.20.12 — Receita `commerce-price-block`
 
@@ -292,10 +305,10 @@ Só pode ser proposta se:
 
 ## Ordem regulada
 
-1. DB-05.20.10 — executar e registrar baseline de prontidão.
-2. DB-05.20.11 — tokens e superfícies semânticas.
-3. DB-05.20.12 — bloco de preço.
-4. DB-05.20.13 — unidade de oferta.
+1. DB-05.20.11 — tokens e superfícies semânticas.
+2. DB-05.20.12 — bloco de preço.
+3. DB-05.20.13 — unidade de oferta.
+4. Ativar `CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE=1`.
 5. DB-05.20.14 — benchmark promocional V2.
 6. DB-05.20.15 — callout e benefícios.
 7. DB-05.20.16 — assets reais.
