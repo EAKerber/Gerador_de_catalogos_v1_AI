@@ -9,10 +9,16 @@ const outputDir = process.env.CATALOG_HIT_TEST_OUTPUT_DIR || path.join("audit-ou
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 let browser;
 let page;
-const report = { suite: "DB-05.20.2 — hit testing interno", startedAt: new Date().toISOString(), scenarios: [], failures: [] };
+const report = {
+  suite: "DB-05.20.2 — hit testing interno",
+  startedAt: new Date().toISOString(),
+  scenarios: [],
+  intentionalArtTriggers: [],
+  alternations: { requested: 100, completed: 0 },
+  failures: []
+};
 
 fs.mkdirSync(outputDir, { recursive: true });
-
 const selector = id => `[data-component-id="${id}"]`;
 
 async function closeAssetDialog() {
@@ -21,6 +27,25 @@ async function closeAssetDialog() {
     await dialog.locator("[data-close-asset-library]").first().click();
     await dialog.waitFor({ state: "hidden" });
   }
+}
+
+async function activateCard(cardId) {
+  await closeAssetDialog();
+  await page.evaluate(id => CatalogEditor.store.setEditingContext(id), cardId);
+  await page.waitForFunction(id => CatalogEditor.store.getState().editor.editingContextId === id, cardId);
+}
+
+async function selectThroughLayers(componentId) {
+  const layersTab = page.locator('[data-left-panel-tab="layers"]');
+  if (await layersTab.getAttribute("aria-selected") !== "true") await layersTab.click();
+  const layerItem = page.locator(`[data-layer-id="${componentId}"]`).first();
+  await layerItem.waitFor({ state: "visible" });
+  await layerItem.click();
+  await page.waitForFunction(id => CatalogEditor.store.getSelected()?.id === id, componentId);
+  const componentsTab = page.locator('[data-left-panel-tab="components"]');
+  if (await componentsTab.getAttribute("aria-selected") !== "true") await componentsTab.click();
+  const dialogOpen = await page.locator("#assetLibraryDialog").getAttribute("open") !== null;
+  return { selectedId: await page.evaluate(() => CatalogEditor.store.getSelected()?.id || null), dialogOpen };
 }
 
 async function inspectPoint(targetId) {
@@ -61,24 +86,22 @@ async function componentGeometry(ids) {
   })), ids);
 }
 
-async function clickAndRecord({ mode, targetKind, cardId, artId, targetId }) {
-  await closeAssetDialog();
-  await page.evaluate(({ cardId, artId }) => {
-    CatalogEditor.store.setEditingContext(cardId);
-    CatalogEditor.store.selectComponentInContext(artId);
-  }, { cardId, artId });
-  await page.waitForFunction(id => CatalogEditor.store.getSelected()?.id === id, artId);
+async function clickTarget({ mode, targetKind, cardId, artId, targetId, record = true }) {
+  await activateCard(cardId);
+  const artSelection = await selectThroughLayers(artId);
+  if (artSelection.dialogOpen || artSelection.selectedId !== artId) {
+    report.failures.push({ mode, targetKind: "art-layer-selection", artId, ...artSelection });
+  }
 
   const beforePoint = await inspectPoint(targetId);
-  const geometry = await componentGeometry([cardId, artId, targetId]);
+  const geometry = record ? await componentGeometry([cardId, artId, targetId]) : null;
   await page.mouse.click(beforePoint.x, beforePoint.y);
-  await page.waitForTimeout(40);
+  await page.waitForTimeout(20);
   const outcome = await page.evaluate(() => ({
     selectedId: CatalogEditor.store.getSelected()?.id || null,
     dialogOpen: document.getElementById("assetLibraryDialog")?.hasAttribute("open") === true
   }));
-  const scenario = { mode, targetKind, cardId, artId, targetId, beforePoint, geometry, outcome };
-  report.scenarios.push(scenario);
+  if (record) report.scenarios.push({ mode, targetKind, cardId, artId, targetId, beforePoint, geometry, outcome });
   if (outcome.dialogOpen || outcome.selectedId !== targetId) {
     report.failures.push({
       mode,
@@ -88,6 +111,24 @@ async function clickAndRecord({ mode, targetKind, cardId, artId, targetId }) {
       dialogOpen: outcome.dialogOpen,
       intercepting: beforePoint?.stack?.[0] || null
     });
+  }
+  await closeAssetDialog();
+  return outcome;
+}
+
+async function assertIntentionalArtTrigger(item) {
+  await activateCard(item.cardId);
+  const selected = await selectThroughLayers(item.artId);
+  const trigger = page.locator(`${selector(item.artId)} [data-open-asset-library]`).first();
+  await trigger.click();
+  await page.waitForTimeout(20);
+  const outcome = await page.evaluate(() => ({
+    selectedId: CatalogEditor.store.getSelected()?.id || null,
+    dialogOpen: document.getElementById("assetLibraryDialog")?.hasAttribute("open") === true
+  }));
+  report.intentionalArtTriggers.push({ mode: item.mode, artId: item.artId, selected, outcome });
+  if (!outcome.dialogOpen || outcome.selectedId !== item.artId) {
+    report.failures.push({ mode: item.mode, targetKind: "intentional-art-trigger", artId: item.artId, outcome });
   }
   await closeAssetDialog();
 }
@@ -131,8 +172,26 @@ async function clickAndRecord({ mode, targetKind, cardId, artId, targetId }) {
   });
 
   for (const item of fixture) {
-    await clickAndRecord({ ...item, targetKind: "specification", targetId: item.specificationId });
-    await clickAndRecord({ ...item, targetKind: "icon", targetId: item.iconId });
+    await clickTarget({ ...item, targetKind: "specification", targetId: item.specificationId });
+    await clickTarget({ ...item, targetKind: "icon", targetId: item.iconId });
+    await assertIntentionalArtTrigger(item);
+  }
+
+  const kinds = ["art", "specification", "icon"];
+  for (let index = 0; index < report.alternations.requested; index += 1) {
+    const item = fixture[index % fixture.length];
+    const kind = kinds[index % kinds.length];
+    if (kind === "art") {
+      await activateCard(item.cardId);
+      const outcome = await selectThroughLayers(item.artId);
+      if (outcome.dialogOpen || outcome.selectedId !== item.artId) {
+        report.failures.push({ mode: item.mode, targetKind: "art-alternation", artId: item.artId, ...outcome, iteration: index + 1 });
+      }
+    } else {
+      const targetId = kind === "specification" ? item.specificationId : item.iconId;
+      await clickTarget({ ...item, targetKind: `${kind}-alternation`, targetId, record: false });
+    }
+    report.alternations.completed += 1;
   }
 
   report.pageErrors = pageErrors;
@@ -144,11 +203,12 @@ async function clickAndRecord({ mode, targetKind, cardId, artId, targetId }) {
 
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
+  assert(report.alternations.completed === 100, "A matriz de cem alternâncias não foi concluída.");
   assert(report.failures.length === 0, `Intercepções encontradas: ${JSON.stringify(report.failures)}`);
 
   await browser.close();
   browser = null;
-  console.log("✓ DB-05.20.2 selecionou specification e icon sem abrir a biblioteca de artes.");
+  console.log("✓ DB-05.20.2 separou seleção de arte, seleção interna e abertura intencional da biblioteca em cem alternâncias.");
 })().catch(async error => {
   report.status = "error";
   report.finishedAt = new Date().toISOString();
