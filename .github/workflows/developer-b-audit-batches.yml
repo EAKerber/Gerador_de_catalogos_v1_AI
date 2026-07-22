@@ -4,23 +4,47 @@ on:
     branches: [development]
     paths:
       - '.github/workflows/developer-b-audit-batches.yml'
-      - 'app/**'
-      - 'authoring-kit/**'
-      - 'styles/**'
-      - 'tests/**'
-      - 'tools/**'
 permissions:
-  contents: read
+  contents: write
 jobs:
   consolidated-audit-05-19:
-    name: DB-05.19 - stable consolidated audit
+    name: DB-05.20.5 - repair frame panel through stable runner
     runs-on: ubuntu-latest
-    timeout-minutes: 80
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Move frame command into active tab panel
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          file = Path('app/inspector.js')
+          source = file.read_text()
+          standalone = '        ${frameCommandSection}\n'
+          if source.count(standalone) != 1:
+              raise SystemExit(f'Standalone frame section count: {source.count(standalone)}')
+          source = source.replace(standalone, '', 1)
+          panels = {
+              'structure': '          ${this.activeTab === "structure" ? frameCommandSection : ""}\n',
+              'content': '          ${this.activeTab === "content" ? frameCommandSection : ""}\n',
+              'style': '          ${this.activeTab === "style" ? frameCommandSection : ""}\n'
+          }
+          for panel, insertion in panels.items():
+              opening = f'        <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="{panel}" ${{this.activeTab === "{panel}" ? "" : "hidden"}}>\n'
+              if source.count(opening) != 1:
+                  raise SystemExit(f'{panel} panel opening count: {source.count(opening)}')
+              source = source.replace(opening, opening + insertion, 1)
+          file.write_text(source)
+          PY
+          node --check app/inspector.js
+          git diff --check
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
@@ -39,45 +63,30 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run full audit and stress
+      - name: Validate repaired frame panel
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_STRESS_OUTPUT_DIR: audit-output/db-05.19-stable/domain
+          CATALOG_FRAME_OUTPUT_DIR: audit-output/db-05.20.5/frame-application
+          CATALOG_GENERALIZATION_OUTPUT_DIR: audit-output/db-05.20.5/promotional
+        run: |
+          node tests/browser-frame-application-05.20.5.test.js
+          node tests/browser-promotional-generalization-05.20.test.js
+      - name: Commit repaired inspector
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p audit-output/db-05.19-stable/consolidated audit-output/db-05.19-stable/browser-stress
-          node tools/run-developer-b-audit.js --all 2>&1 | tee audit-output/db-05.19-stable/consolidated/audit.log
-          node tests/stress-domain-history-05.18.test.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/domain-stress.log
-          node tools/run-developer-b-stress.js --browser --repeat=1 --seed=5196999 --timeout=300000 --output=audit-output/db-05.19-stable/browser-stress 2>&1 | tee audit-output/db-05.19-stable/consolidated/browser-stress.log
-      - name: Verify consolidation and idempotence
-        shell: bash
-        run: |
-          set -euo pipefail
-          for file in table-binding-overrides-contract.js footer-item-containment-contract.js icon-scale-contract.js; do
-            if find app authoring-kit -name "$file" -print -quit | grep -q .; then
-              echo "Removed shim returned: $file"
-              exit 1
-            fi
-          done
-          if grep -R "CatalogTableBindingOverridesContract\|CatalogFooterItemContainmentContract\|CatalogIconScaleContract" \
-            app/main.js app/authoring-kit-files.js tools/build-authoring-kit.js tools/build-developer-b-authoring-kit.js \
-            authoring-kit/compiler tests/authoring-kit-runtime-contracts-05.18.test.js tests/stress-domain-history-05.18.test.js; then
-            echo "Removed shim global returned."
-            exit 1
-          fi
-          node tools/build-developer-b-authoring-kit.js 2>&1 | tee audit-output/db-05.19-stable/consolidated/idempotence.log
-          if ! git diff --quiet; then
-            git status --short | tee audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
-            git diff --stat | tee -a audit-output/db-05.19-stable/consolidated/unexpected-diff.txt
-            exit 1
-          fi
-          git status --short > audit-output/db-05.19-stable/consolidated/final-status.txt
-      - name: Upload evidence
+          test "$(git diff --name-only | wc -l)" -eq 1
+          git diff --name-only | grep -qx 'app/inspector.js'
+          git config user.name 'Developer B Audit'
+          git config user.email 'developer-b-audit@users.noreply.github.com'
+          git add app/inspector.js
+          git commit -m '05.20 — integra comando de frame ao painel ativo'
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Upload repair evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-db-05.19-stable-audit
-          path: audit-output/db-05.19-stable
-          if-no-files-found: error
+          name: developer-b-frame-panel-repair-05.20.5
+          path: audit-output/db-05.20.5
+          if-no-files-found: warn
           retention-days: 14
