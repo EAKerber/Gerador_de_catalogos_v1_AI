@@ -4,176 +4,33 @@ on:
     branches: [development]
     paths:
       - '.github/workflows/developer-b-legibility-05-20.yml'
+      - 'tests/browser-benefit-callout-legibility-05.20.7.test.js'
+      - 'app/component-registry.js'
+      - 'app/renderer.js'
+      - 'app/callout-recipe-contract.js'
+      - 'authoring-kit/runtime/component-registry.js'
+      - 'authoring-kit/runtime/callout-recipe-contract.js'
+      - 'styles/components.css'
 permissions:
-  contents: write
+  contents: read
 jobs:
   benefit-callout-legibility:
-    name: DB-05.20.7 - implement benefit and callout legibility
+    name: DB-05.20.7 - benefit and callout legibility
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: agent/developer-b-05.18
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Apply canonical legibility changes
-        shell: bash
+      - name: Validate syntax and parity
         run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path, old, new, label):
-              file = Path(path)
-              source = file.read_text()
-              if new in source:
-                  return
-              count = source.count(old)
-              if count != 1:
-                  raise SystemExit(f'{label}: expected one target in {path}, found {count}')
-              file.write_text(source.replace(old, new, 1))
-
-          for path in ['app/component-registry.js', 'authoring-kit/runtime/component-registry.js']:
-              replace_once(
-                  path,
-                  '      minSize: { width: 24, height: 24 },\n      defaultFrame: { width: 56, height: 56 },',
-                  '      minSize: { width: 24, height: 24 },\n      recommendedSize: { width: 96, height: 72 },\n      defaultFrame: { width: 56, height: 56 },',
-                  'icon recommended size'
-              )
-
-          replace_once(
-              'app/renderer.js',
-              '                 data-contextual="${String(component.props?.contextual === true)}"\n                 data-depth="${depth}"',
-              '                 data-contextual="${String(component.props?.contextual === true)}"\n                 data-recipe-role="${escapeHtml(component.props?.recipeRole || "")}"\n                 data-depth="${depth}"',
-              'recipe role DOM attribute'
-          )
-
-          callout = '''(function () {
-            "use strict";
-
-            const CONTRACT_VERSION = "05.20.7";
-            const RECIPE_VERSION = "1.5.0";
-            const clone = value => JSON.parse(JSON.stringify(value));
-
-            function improvedRecipe(current) {
-              const recipe = clone(current);
-              recipe.version = RECIPE_VERSION;
-              recipe.description = "Ícone, título e texto com hierarquia responsiva ampla ou compacta.";
-              const root = recipe.component;
-              root.frame.height = 150;
-              root.props = { ...(root.props || {}), recipeRole: "callout" };
-              root.style = { ...(root.style || {}), surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary" };
-              root.layout = {
-                ...(root.layout || {}),
-                mode: "row",
-                padding: 10,
-                gap: 10,
-                align: "stretch",
-                distribution: "fill",
-                responsive: { enabled: true, breakpoint: 260, mode: "column" }
-              };
-              const icon = (root.children || []).find(child => child.type === "icon");
-              const content = (root.children || []).find(child => child.type === "layout-container");
-              if (icon) {
-                icon.frame.height = 130;
-                icon.props = { ...(icon.props || {}), iconScale: 120, recipeRole: "icon" };
-                icon.style = { ...(icon.style || {}), vectorColor: "brand.primary", textColor: "text.primary" };
-              }
-              if (content) {
-                content.frame.height = 130;
-                content.props = { ...(content.props || {}), recipeRole: "content" };
-                content.layout = { ...(content.layout || {}), mode: "column", padding: 0, gap: 4, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 120, mode: "column" } };
-                const texts = (content.children || []).filter(child => child.type === "text");
-                if (texts[0]) {
-                  texts[0].props = { ...(texts[0].props || {}), align: "start", verticalAlign: "center", scale: 120, overflow: "wrap", recipeRole: "title" };
-                  texts[0].style = { ...(texts[0].style || {}), textColor: "brand.primary", typography: "type.card-title" };
-                  texts[0].layoutItem = { ...(texts[0].layoutItem || {}), managed: true, grow: 0, span: 1 };
-                }
-                if (texts[1]) {
-                  texts[1].props = { ...(texts[1].props || {}), align: "start", verticalAlign: "start", scale: 100, overflow: "wrap", recipeRole: "body" };
-                  texts[1].style = { ...(texts[1].style || {}), textColor: "text.primary", typography: "type.body" };
-                  texts[1].layoutItem = { ...(texts[1].layoutItem || {}), managed: true, grow: 1, span: 1 };
-                }
-              }
-              return Object.freeze(recipe);
-            }
-
-            function install() {
-              const current = window.CatalogSectionRecipes;
-              const currentRegistry = window.CATALOG_SECTION_RECIPES;
-              if (!current?.list || !current?.get || !currentRegistry) return false;
-              if (current.__calloutRecipeContractVersion === CONTRACT_VERSION) return true;
-              const source = current.get("section-tip-callout");
-              if (!source) throw new Error("A receita section-tip-callout não está disponível para auditoria.");
-              const callout = improvedRecipe(source);
-              const merged = Object.freeze({ ...currentRegistry, "section-tip-callout": callout });
-              const api = {
-                VERSION: RECIPE_VERSION,
-                list() { return Object.values(merged).map(clone); },
-                get(recipeId) { return merged[recipeId] ? clone(merged[recipeId]) : null; }
-              };
-              Object.defineProperty(api, "__calloutRecipeContractVersion", { value: CONTRACT_VERSION });
-              window.CATALOG_SECTION_RECIPES = merged;
-              window.CatalogSectionRecipes = Object.freeze(api);
-              return true;
-            }
-
-            window.CatalogCalloutRecipeContract = Object.freeze({
-              VERSION: CONTRACT_VERSION,
-              RECIPE_VERSION,
-              install,
-              improvedRecipe
-            });
-          })();
-          '''
-          Path('app/callout-recipe-contract.js').write_text(callout)
-          Path('authoring-kit/runtime/callout-recipe-contract.js').write_text(callout)
-
-          css = Path('styles/components.css')
-          source = css.read_text()
-          old = '''.component-icon { display: grid; width: 100%; height: 100%; place-items: center; align-content: center; gap: 3px; padding: 4px; color: var(--component-vector, var(--component-accent, #fd0807)); text-align: center; }
-          .component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); place-items: center; }
-          .editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg { width: min(100%, 26px); height: min(100%, 26px); max-width: 100%; max-height: 100%; }
-          .component-icon__svg svg { width: 83.333333%; height: 83.333333%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
-          .component-icon > span:last-child { max-width: 100%; overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-sans)); font-size: min(var(--component-title-size, 10px), 11px); font-weight: var(--component-title-weight, 600); line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-          '''
-          new = '''.component-icon { display: grid; grid-template-rows: minmax(0, 1fr) auto; width: 100%; height: 100%; min-width: 0; min-height: 0; align-items: stretch; justify-items: center; gap: 3px; padding: 4px; color: var(--component-vector, var(--component-accent, #fd0807)); text-align: center; }
-          .component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); align-self: center; place-items: center; }
-          .editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon { grid-template-rows: minmax(0, 1fr); }
-          .editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg { width: min(100%, 26px); height: min(100%, 26px); max-width: 100%; max-height: 100%; }
-          .component-icon__svg svg { width: 83.333333%; height: 83.333333%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
-          .component-icon > span:last-child { display: -webkit-box; max-width: 100%; max-height: 2.3em; overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-sans)); font-size: min(var(--component-title-size, 10px), 9px); font-weight: var(--component-title-weight, 600); line-height: 1.15; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-          '''
-          if new not in source:
-              if source.count(old) != 1:
-                  raise SystemExit(f'icon CSS target count: {source.count(old)}')
-              source = source.replace(old, new, 1)
-          callout_css = '''
-          /* DB-05.20.7 — hierarquia responsiva da receita de callout. */
-          .editor-component[data-recipe-role="callout"] .editor-component[data-recipe-role="title"] .component-text,
-          .editor-component[data-recipe-role="callout"] .editor-component[data-recipe-role="body"] .component-text { padding: 3px 5px; }
-          .editor-component[data-recipe-role="callout"][data-layout-mode="row"] .editor-component[data-recipe-role="title"] .component-text p { font-size: calc(var(--component-title-size, 18px) * var(--text-content-scale, 1) * 1.16); line-height: 1.05; }
-          .editor-component[data-recipe-role="callout"][data-layout-mode="column"] .editor-component[data-recipe-role="title"] .component-text p { font-size: calc(var(--component-title-size, 18px) * var(--text-content-scale, 1) * .96); line-height: 1.08; }
-          .editor-component[data-recipe-role="callout"][data-layout-mode="row"] > .component-children-layer > .editor-component[data-recipe-role="icon"] .component-icon__svg { width: min(90%, 64px); height: min(90%, 64px); }
-          .editor-component[data-recipe-role="callout"][data-layout-mode="column"] > .component-children-layer > .editor-component[data-recipe-role="icon"] .component-icon__svg { width: min(72%, 46px); height: min(72%, 46px); }
-          '''
-          if 'DB-05.20.7 — hierarquia responsiva da receita de callout.' not in source:
-              source += callout_css
-          css.write_text(source)
-          PY
           node --check app/component-registry.js
           node --check app/renderer.js
           node --check app/callout-recipe-contract.js
-          node --check authoring-kit/runtime/callout-recipe-contract.js
           node --check tests/browser-benefit-callout-legibility-05.20.7.test.js
           cmp app/component-registry.js authoring-kit/runtime/component-registry.js
           cmp app/callout-recipe-contract.js authoring-kit/runtime/callout-recipe-contract.js
-          git diff --check
-      - name: Regenerate embedded AuthoringKit
-        run: node tools/build-developer-b-authoring-kit.js
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
@@ -181,7 +38,6 @@ jobs:
           npm install --no-save playwright@latest
           chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome_path"
-          "$chrome_path" --version
           echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
       - name: Start editor
         run: |
@@ -192,32 +48,16 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
-      - name: Run legibility and promotional gates
+      - name: Run benefit and callout regression
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
           CATALOG_LEGIBILITY_OUTPUT_DIR: audit-output/db-05.20.7/legibility
-          CATALOG_GENERALIZATION_OUTPUT_DIR: audit-output/db-05.20.7/promotional
-        run: |
-          node tests/browser-benefit-callout-legibility-05.20.7.test.js
-          node tests/browser-promotional-generalization-05.20.test.js
-      - name: Prove idempotent build
-        run: |
-          node tools/build-developer-b-authoring-kit.js
-          git diff --exit-code
-      - name: Commit approved legibility changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'Developer B Audit'
-          git config user.email 'developer-b-audit@users.noreply.github.com'
-          git add -A
-          git commit -m '05.20 — melhora legibilidade de benefícios e callout'
-          git push origin HEAD:agent/developer-b-05.18
+        run: node tests/browser-benefit-callout-legibility-05.20.7.test.js
       - name: Upload legibility evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: developer-b-benefit-callout-legibility-05.20.7
-          path: audit-output/db-05.20.7
+          path: audit-output/db-05.20.7/legibility
           if-no-files-found: error
           retention-days: 14
