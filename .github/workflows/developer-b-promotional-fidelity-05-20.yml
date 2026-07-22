@@ -1,0 +1,78 @@
+name: Developer B Promotional Fidelity Audit
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-promotional-fidelity-05-20.yml'
+      - 'tests/promotional-fidelity-audit-05.20.9.py'
+      - 'tests/fixtures/promotional-reference-profile-05.20.9.json'
+      - 'tests/browser-promotional-generalization-05.20.test.js'
+      - 'docs/evidence/05.20/developer-b/DB-05.20.9-PROMOTIONAL-FIDELITY-AUDIT.md'
+permissions:
+  contents: read
+jobs:
+  promotional-fidelity:
+    name: DB-05.20.9 - promotional category fidelity
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate audit sources
+        run: |
+          python -m py_compile tests/promotional-fidelity-audit-05.20.9.py
+          python -m json.tool tests/fixtures/promotional-reference-profile-05.20.9.json >/dev/null
+          node --check tests/browser-promotional-generalization-05.20.test.js
+      - name: Install visual runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          python -m pip install --disable-pip-version-check pillow
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Rebuild promotional benchmark
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_GENERALIZATION_OUTPUT_DIR: audit-output/db-05.20.9/promotional
+        run: node tests/browser-promotional-generalization-05.20.test.js
+      - name: Measure promotional fidelity
+        run: |
+          python tests/promotional-fidelity-audit-05.20.9.py \
+            --artifact-dir audit-output/db-05.20.9/promotional \
+            --profile tests/fixtures/promotional-reference-profile-05.20.9.json \
+            --output audit-output/db-05.20.9/fidelity/promotional-fidelity-report.json
+      - name: Validate report integrity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('audit-output/db-05.20.9/fidelity/promotional-fidelity-report.json').read_text())
+          assert report['auditExecution'] == 'valid'
+          assert report['benchmarkStatus'] in {'pass', 'pass-with-findings'}
+          assert report['fidelityStatus'] in {'category-compatible', 'insufficient-category-match'}
+          assert len(report['checks']['color']) == 8
+          assert len(report['checks']['structure']) == 6
+          assert report['structure']['commercialRows'] >= 4
+          print(json.dumps({'status': report['fidelityStatus'], 'scores': report['scores']}, indent=2))
+          PY
+      - name: Upload promotional fidelity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-promotional-fidelity-05.20.9
+          path: audit-output/db-05.20.9
+          if-no-files-found: error
+          retention-days: 14
