@@ -1,0 +1,106 @@
+name: Developer B Commerce Price Block
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - 'app/commerce-price-block-recipe-contract.js'
+      - 'authoring-kit/runtime/commerce-price-block-recipe-contract.js'
+      - 'app/main.js'
+      - 'tools/build-developer-b-authoring-kit.js'
+      - 'tests/commerce-price-block-recipe-05.20.12.test.js'
+      - 'tests/browser-commerce-price-block-05.20.12.test.js'
+      - 'tests/promotional-remediation-readiness-05.20.10.test.js'
+      - '.github/workflows/developer-b-commerce-price-block-05-20.yml'
+permissions:
+  contents: write
+jobs:
+  commerce-price-block:
+    name: DB-05.20.12 - promotional price block
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate recipe contract and readiness
+        env:
+          CATALOG_PROMOTIONAL_REMEDIATION_OUTPUT_DIR: audit-output/db-05.20.12/readiness
+        run: |
+          node --check app/commerce-price-block-recipe-contract.js
+          node --check authoring-kit/runtime/commerce-price-block-recipe-contract.js
+          node --check tests/commerce-price-block-recipe-05.20.12.test.js
+          node --check tests/browser-commerce-price-block-05.20.12.test.js
+          cmp app/commerce-price-block-recipe-contract.js authoring-kit/runtime/commerce-price-block-recipe-contract.js
+          node tests/promotional-semantic-tokens-05.20.11.test.js
+          node tests/commerce-price-block-recipe-05.20.12.test.js
+          node tests/promotional-remediation-readiness-05.20.10.test.js
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('audit-output/db-05.20.12/readiness/promotional-remediation-readiness.json', 'utf8'));
+          if (report.deficits.some(item => item.code === 'MISSING_SEMANTIC_TOKEN')) throw new Error('Tokens promocionais regrediram.');
+          if (!report.recipes['commerce-price-block']?.available || report.recipes['commerce-price-block'].missingRoles.length) throw new Error('Bloco de preço não satisfaz a prontidão.');
+          if (report.deficits.length !== 6) throw new Error(`Esperados 6 déficits da unidade de oferta, obtidos ${report.deficits.length}.`);
+          NODE
+      - name: Install visual runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Validate browser, history and print
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_PRICE_BLOCK_OUTPUT_DIR: audit-output/db-05.20.12/price-block
+        run: node tests/browser-commerce-price-block-05.20.12.test.js
+      - name: Regenerate embedded AuthoringKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/build-developer-b-authoring-kit.js
+          allowed='^(app/authoring-kit-files\.js|authoring-kit/capabilities\.json|authoring-kit/feature-inventory\.json|authoring-kit/runtime/commerce-price-block-recipe-contract\.js|docs/FEATURE-CATALOG\.md)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'Unexpected generated files:\n%s\n' "$unexpected"
+            exit 1
+          fi
+          git diff --check
+      - name: Commit generated artifacts when needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'AuthoringKit already synchronized.'
+            exit 0
+          fi
+          git config user.name 'Developer B Audit'
+          git config user.email 'developer-b-audit@users.noreply.github.com'
+          git add app/authoring-kit-files.js authoring-kit/capabilities.json authoring-kit/feature-inventory.json authoring-kit/runtime/commerce-price-block-recipe-contract.js docs/FEATURE-CATALOG.md
+          git commit -m '05.20 — sincroniza bloco de preço no AuthoringKit'
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Prove idempotent build
+        run: |
+          node tools/build-developer-b-authoring-kit.js
+          git diff --exit-code
+      - name: Upload price block evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-commerce-price-block-05.20.12
+          path: audit-output/db-05.20.12
+          if-no-files-found: warn
