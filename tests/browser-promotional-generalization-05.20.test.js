@@ -365,6 +365,7 @@ async function collectMetrics() {
     const table = components.find(component => component.type === "data-table");
     const footer = components.find(component => component.type === "catalog-footer");
     const pageLevel = CatalogEditor.store.getPage().children;
+    const publicationReport = CatalogEditor.store.getPublicationReport("draft");
     return {
       schemaVersion: CatalogEditor.store.getState().schemaVersion,
       modelCount: components.length,
@@ -379,7 +380,8 @@ async function collectMetrics() {
       tableRows: table ? CatalogEditor.store.getTableRows(table).length : 0,
       footerFrame: footer ? { ...footer.frame } : null,
       history: CatalogEditor.store.getHistoryState(),
-      publication: CatalogEditor.store.getPublicationReport("draft").summary
+      publication: publicationReport.summary,
+      references: publicationReport.references
     };
   });
 }
@@ -542,6 +544,10 @@ async function collectMetrics() {
   if (!metrics.footerFrame || metrics.footerFrame.y < 990) findings.push({ code: "FOOTER_POSITION", message: `Rodapé terminou fora da faixa inferior esperada: ${JSON.stringify(metrics.footerFrame)}.` });
   if (metrics.publication.collisions > 0) findings.push({ code: "PUBLICATION_COLLISIONS", count: metrics.publication.collisions });
   if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });
+  if (metrics.publication.missingReferences > 0) blockers.push({ code: "MISSING_REFERENCES", count: metrics.publication.missingReferences, items: metrics.references?.missing || [] });
+  const optionalProducts = (metrics.references?.optional || []).filter(item => item.kind === "product" && item.reason === "local-content");
+  const optionalAssets = (metrics.references?.optional || []).filter(item => item.kind === "asset" && item.reason === "placeholder-without-asset");
+  if (optionalProducts.length !== 1 || optionalAssets.length !== metrics.placeholderArts) blockers.push({ code: "OPTIONAL_REFERENCE_CLASSIFICATION", expected: { products: 1, assets: metrics.placeholderArts }, observed: { products: optionalProducts.length, assets: optionalAssets.length }, items: metrics.references?.optional || [] });
   if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });
   if (insertionFallbacks.length) findings.push({ code: "AUTOMATIC_PLACEMENT_FALLBACK", count: insertionFallbacks.length, items: insertionFallbacks });
   if (responseErrors.length) findings.push({ code: "HTTP_ERRORS", items: responseErrors });
