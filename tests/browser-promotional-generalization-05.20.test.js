@@ -166,7 +166,31 @@ async function insertFromPalette(kind, id, desiredFrame) {
   return insertedId;
 }
 
+async function selectComponentThroughLayers(id) {
+  const layersTab = page.locator('[data-left-panel-tab="layers"]');
+  if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
+  const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
+  await layerItem.waitFor({ state: "visible" });
+  await act(`Selecionar ${id} pela árvore de camadas`, () => layerItem.click());
+  await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
+  const componentsTab = page.locator('[data-left-panel-tab="components"]');
+  if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
+}
+
 async function selectComponent(id) {
+  const componentType = await page.evaluate(componentId => CatalogEditor.store.findComponent(componentId)?.component?.type || null, id);
+  if (componentType === "art") {
+    await selectComponentThroughLayers(id);
+    return;
+  }
+
+  const assetDialog = page.locator("#assetLibraryDialog");
+  if (await assetDialog.getAttribute("open") !== null) {
+    findings.push({ code: "STALE_ASSET_DIALOG", componentId: id, message: "A biblioteca de artes permaneceu aberta antes de uma seleção não relacionada." });
+    await act("Fechar biblioteca de artes residual", () => assetDialog.locator("[data-close-asset-library]").first().click());
+    await assetDialog.waitFor({ state: "hidden" });
+  }
+
   const content = page.locator(`${selectorForComponent(id)} > .editor-component__content`).first();
   const root = page.locator(selectorForComponent(id)).first();
   const target = await content.count() ? content : root;
@@ -176,21 +200,12 @@ async function selectComponent(id) {
     return;
   } catch {}
 
-  const assetDialog = page.locator("#assetLibraryDialog");
   if (await assetDialog.getAttribute("open") !== null) {
-    findings.push({ code: "CANVAS_SELECTION_INTERCEPTED", componentId: id, message: "A tentativa de selecionar uma peça interna abriu a biblioteca de artes; a seleção continuou pela árvore de Camadas." });
+    findings.push({ code: "CANVAS_SELECTION_INTERCEPTED", componentId: id, message: "Uma seleção não-art abriu indevidamente a biblioteca de artes; o fluxo continuou pela árvore de Camadas." });
     await act("Fechar biblioteca de artes aberta durante a seleção", () => assetDialog.locator("[data-close-asset-library]").first().click());
     await assetDialog.waitFor({ state: "hidden" });
   }
-
-  const layersTab = page.locator('[data-left-panel-tab="layers"]');
-  if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir aba Camadas", () => layersTab.click());
-  const layerItem = page.locator(`[data-layer-id="${id}"]`).first();
-  await layerItem.waitFor({ state: "visible" });
-  await act(`Selecionar ${id} pela árvore de camadas`, () => layerItem.click());
-  await page.waitForFunction(componentId => CatalogEditor.store.getSelected()?.id === componentId, id, { timeout: 2000 });
-  const componentsTab = page.locator('[data-left-panel-tab="components"]');
-  if (await componentsTab.getAttribute("aria-selected") !== "true") await act("Voltar à aba Componentes", () => componentsTab.click());
+  await selectComponentThroughLayers(id);
 }
 
 async function enterContainer(id) {
