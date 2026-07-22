@@ -28,78 +28,69 @@ jobs:
 
           file = Path('app/inspector.js')
           source = file.read_text()
-          block = '''          <div class="recommended-minimum-editor frame-command-editor">
-                    <div class="inspector-section__heading"><h4>Aplicação conjunta</h4><span>uma ação no histórico</span></div>
+
+          if 'const frameCommandSection = `' not in source:
+              start_marker = '          <div class="recommended-minimum-editor frame-command-editor">'
+              end_marker = '          <div class="inspector-section__heading"><h4>Ajuste imediato por campo</h4><span>compatibilidade</span></div>'
+              start = source.find(start_marker, source.find('const geometrySection = `'))
+              end = source.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit(f'Frame command boundaries not found: start={start}, end={end}')
+              source = source[:start] + source[end:]
+
+              geometry_marker = '      const geometrySection = `\n'
+              geometry_at = source.find(geometry_marker)
+              if geometry_at < 0:
+                  raise SystemExit('Geometry declaration not found.')
+              command = '''      const frameCommandSection = `
+                <section class="inspector-section inspector-section--frame-command">
+                  <div class="inspector-section__heading"><h3 class="inspector-section__title">Posição e tamanho</h3><span>aplicação conjunta</span></div>
+                  <div class="recommended-minimum-editor frame-command-editor">
                     <div class="inspector-grid">
                       ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
                     </div>
                     <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
                     <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
-                    <p class="inspector-note">Edite os quatro valores ou preencha uma sugestão. O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
+                    <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
                   </div>
+                </section>`;
           '''
-          if source.count(block) != 1:
-              raise SystemExit(f'Frame block count: {source.count(block)}')
-          source = source.replace(block, '', 1)
-          marker = '''      const geometrySection = `
-          '''
-          command = '''      const frameCommandSection = `
-                  <section class="inspector-section inspector-section--frame-command">
-                    <div class="inspector-section__heading"><h3 class="inspector-section__title">Posição e tamanho</h3><span>aplicação conjunta</span></div>
-                    <div class="recommended-minimum-editor frame-command-editor">
-                      <div class="inspector-grid">
-                        ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
-                      </div>
-                      <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
-                      <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
-                      <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
-                    </div>
-                  </section>`;
-                const geometrySection = `
-          '''
-          if source.count(marker) != 1:
-              raise SystemExit(f'Geometry marker count: {source.count(marker)}')
-          source = source.replace(marker, command, 1)
-          nav = '''        </nav>
-                  <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure"'''
-          nav_new = '''        </nav>
-                  ${frameCommandSection}
-                  <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure"'''
-          if source.count(nav) != 1:
-              raise SystemExit(f'Inspector navigation target count: {source.count(nav)}')
-          source = source.replace(nav, nav_new, 1)
+              source = source[:geometry_at] + command + source[geometry_at:]
+
+          if '${frameCommandSection}' not in source:
+              panel_marker = '        <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure"'
+              panel_at = source.find(panel_marker)
+              if panel_at < 0:
+                  raise SystemExit('Inspector structure panel not found.')
+              source = source[:panel_at] + '        ${frameCommandSection}\n' + source[panel_at:]
+
+          if source.count('data-frame-draft-path=') != 4:
+              raise SystemExit(f'Expected four essential frame draft inputs, found {source.count("data-frame-draft-path=")}')
           file.write_text(source)
 
           file = Path('tests/browser-frame-application-05.20.5.test.js')
           source = file.read_text()
-          old = '''  await page.waitForSelector(`[data-component-id="${id}"]`);
-            await page.locator("[data-toggle-all-properties]").first().click();
-            await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
-          '''
-          new = '''  await page.waitForSelector(`[data-component-id="${id}"]`);
-            await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
-            assert(await page.locator('[data-toggle-all-properties]').first().getAttribute("aria-pressed") === "false", "A aplicação conjunta não deveria depender da abertura do painel avançado.");
-          '''
-          if source.count(old) != 1:
-              raise SystemExit(f'Frame test visibility target count: {source.count(old)}')
-          file.write_text(source.replace(old, new, 1))
+          click = '  await page.locator("[data-toggle-all-properties]").first().click();\n'
+          assertion = '  assert(await page.locator(\'[data-toggle-all-properties]\').first().getAttribute("aria-pressed") === "false", "A aplicação conjunta não deveria depender da abertura do painel avançado.");\n'
+          if click in source:
+              source = source.replace(click, assertion, 1)
+          elif assertion not in source:
+              raise SystemExit('Frame test advanced toggle target not found.')
+          file.write_text(source)
 
           file = Path('tests/browser-promotional-generalization-05.20.test.js')
           source = file.read_text()
-          old = '''async function showAdvancedGeometry() {
-            if (await page.locator('[data-frame-draft-path="x"]').count()) return;
-            const toggle = page.locator('[data-toggle-all-properties]').first();
-            await act("Mostrar geometria avançada", () => toggle.click());
-            await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "attached" });
-          }
-          '''
-          new = '''async function showAdvancedGeometry() {
+          simple = '''async function showAdvancedGeometry() {
             await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
-          }
-          '''
-          if source.count(old) != 1:
-              raise SystemExit(f'Benchmark visibility helper count: {source.count(old)}')
-          file.write_text(source.replace(old, new, 1))
+          }'''
+          if simple not in source:
+              start = source.find('async function showAdvancedGeometry() {')
+              end_marker = '\n}\n\nasync function setFrame'
+              end = source.find(end_marker, start)
+              if start < 0 or end < 0:
+                  raise SystemExit(f'Benchmark geometry helper boundaries not found: start={start}, end={end}')
+              source = source[:start] + simple + source[end + 2:]
+          file.write_text(source)
           PY
           node --check app/inspector.js
           node --check tests/browser-frame-application-05.20.5.test.js
