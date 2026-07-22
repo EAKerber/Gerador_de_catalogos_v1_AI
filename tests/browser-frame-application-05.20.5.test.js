@@ -49,7 +49,7 @@ async function applyFrame() {
     return store.addComponent("text", { x: 40, y: 60, width: 180, height: 70 }, { props: { content: "Geometria conjunta" } }).id;
   });
   await page.waitForSelector(`[data-component-id="${id}"]`);
-  await page.locator("[data-toggle-all-properties]").first().click();
+  assert(await page.locator('[data-toggle-all-properties]').first().getAttribute("aria-pressed") === "false", "A aplicação conjunta não deveria depender da abertura do painel avançado.");
   await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
 
   const initialFrame = await frame(id);

@@ -622,18 +622,21 @@
             <div class="inspector-field inspector-field--full"><label>Nome da camada</label><input type="text" value="${escapeHtml(component.name)}" data-component-name /></div>
           </div>
         </section>`;
+      const frameCommandSection = `
+      <section class="inspector-section inspector-section--frame-command">
+        <div class="inspector-section__heading"><h3 class="inspector-section__title">Posição e tamanho</h3><span>aplicação conjunta</span></div>
+        <div class="recommended-minimum-editor frame-command-editor">
+          <div class="inspector-grid">
+            ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
+          </div>
+          <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
+          <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
+          <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
+        </div>
+      </section>`;
       const geometrySection = `
         <section class="inspector-section">
           <h3 class="inspector-section__title">Posição e tamanho</h3>
-          <div class="recommended-minimum-editor frame-command-editor">
-            <div class="inspector-section__heading"><h4>Aplicação conjunta</h4><span>uma ação no histórico</span></div>
-            <div class="inspector-grid">
-              ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
-            </div>
-            <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
-            <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
-            <p class="inspector-note">Edite os quatro valores ou preencha uma sugestão. O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
-          </div>
           <div class="inspector-section__heading"><h4>Ajuste imediato por campo</h4><span>compatibilidade</span></div>
           <div class="inspector-grid">
             ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-path="${key}" /></div>`).join("")}
@@ -680,6 +683,7 @@
           <button type="button" role="tab" data-inspector-tab="structure" aria-selected="${String(this.activeTab === "structure")}"><span aria-hidden="true">▦</span> Layout</button>
           <button type="button" role="tab" data-inspector-tab="style" aria-selected="${String(this.activeTab === "style")}"><span aria-hidden="true">⌁</span> Visual</button>
         </nav>
+        ${frameCommandSection}
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure" ${this.activeTab === "structure" ? "" : "hidden"}>
           ${this.renderContainerSection(component, definition)}
           ${this.renderSlotSection(component, record)}

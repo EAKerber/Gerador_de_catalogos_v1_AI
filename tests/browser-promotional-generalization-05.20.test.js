@@ -96,10 +96,7 @@ async function setStyle(pathName, value) {
 }
 
 async function showAdvancedGeometry() {
-  if (await page.locator('[data-frame-draft-path="x"]').count()) return;
-  const toggle = page.locator('[data-toggle-all-properties]').first();
-  await act("Mostrar geometria avançada", () => toggle.click());
-  await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "attached" });
+  await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
 }
 
 async function setFrame(frame) {
