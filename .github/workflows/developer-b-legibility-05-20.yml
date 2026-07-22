@@ -1,0 +1,64 @@
+name: Developer B Benefit and Callout Legibility
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-legibility-05-20.yml'
+      - 'tests/browser-benefit-callout-legibility-05.20.7.test.js'
+      - 'app/component-registry.js'
+      - 'app/renderer.js'
+      - 'app/callout-recipe-contract.js'
+      - 'authoring-kit/runtime/component-registry.js'
+      - 'authoring-kit/runtime/callout-recipe-contract.js'
+      - 'styles/components.css'
+permissions:
+  contents: read
+jobs:
+  benefit-callout-legibility:
+    name: DB-05.20.7 - benefit and callout legibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax and parity
+        run: |
+          node --check app/component-registry.js
+          node --check app/renderer.js
+          node --check app/callout-recipe-contract.js
+          node --check tests/browser-benefit-callout-legibility-05.20.7.test.js
+          cmp app/component-registry.js authoring-kit/runtime/component-registry.js
+          cmp app/callout-recipe-contract.js authoring-kit/runtime/callout-recipe-contract.js
+      - name: Install Playwright and select system Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Run benefit and callout regression
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_LEGIBILITY_OUTPUT_DIR: audit-output/db-05.20.7/legibility
+        run: node tests/browser-benefit-callout-legibility-05.20.7.test.js
+      - name: Upload legibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-benefit-callout-legibility-05.20.7
+          path: audit-output/db-05.20.7/legibility
+          if-no-files-found: error
+          retention-days: 14
