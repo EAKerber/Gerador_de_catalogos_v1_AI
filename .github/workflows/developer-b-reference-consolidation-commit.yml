@@ -1,0 +1,90 @@
+name: Developer B Reference Consolidation Commit
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-reference-consolidation-commit.yml'
+permissions:
+  contents: write
+jobs:
+  consolidate-references:
+    name: DB-05.20.3 - consolidate reference diagnostics
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch promotional benchmark reference gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          file = Path('tests/browser-promotional-generalization-05.20.test.js')
+          source = file.read_text()
+          old = '''    const pageLevel = CatalogEditor.store.getPage().children;
+            return {
+          '''
+          new = '''    const pageLevel = CatalogEditor.store.getPage().children;
+            const publicationReport = CatalogEditor.store.getPublicationReport("draft");
+            return {
+          '''
+          if source.count(old) != 1:
+              raise SystemExit(f'Publication setup target count: {source.count(old)}')
+          source = source.replace(old, new, 1)
+          old = '''      history: CatalogEditor.store.getHistoryState(),
+                publication: CatalogEditor.store.getPublicationReport("draft").summary
+          '''
+          new = '''      history: CatalogEditor.store.getHistoryState(),
+                publication: publicationReport.summary,
+                references: publicationReport.references
+          '''
+          if source.count(old) != 1:
+              raise SystemExit(f'Publication return target count: {source.count(old)}')
+          source = source.replace(old, new, 1)
+          old = '''  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });
+            if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });
+          '''
+          new = '''  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });
+            if (metrics.publication.missingReferences > 0) blockers.push({ code: "MISSING_REFERENCES", count: metrics.publication.missingReferences, items: metrics.references?.missing || [] });
+            const optionalProducts = (metrics.references?.optional || []).filter(item => item.kind === "product" && item.reason === "local-content");
+            const optionalAssets = (metrics.references?.optional || []).filter(item => item.kind === "asset" && item.reason === "placeholder-without-asset");
+            if (optionalProducts.length !== 1 || optionalAssets.length !== metrics.placeholderArts) blockers.push({ code: "OPTIONAL_REFERENCE_CLASSIFICATION", expected: { products: 1, assets: metrics.placeholderArts }, observed: { products: optionalProducts.length, assets: optionalAssets.length }, items: metrics.references?.optional || [] });
+            if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });
+          '''
+          if source.count(old) != 1:
+              raise SystemExit(f'Publication assertion target count: {source.count(old)}')
+          file.write_text(source.replace(old, new, 1))
+          PY
+          node --check tests/browser-promotional-generalization-05.20.test.js
+      - name: Regenerate embedded AuthoringKit
+        run: node tools/build-developer-b-authoring-kit.js
+      - name: Verify and commit derived files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t actual < <(git diff --name-only --relative | sort)
+          unexpected=()
+          for file in "${actual[@]}"; do
+            case "$file" in
+              app/authoring-kit-files.js|authoring-kit/capabilities.json|authoring-kit/feature-inventory.json|docs/FEATURE-CATALOG.md|tests/browser-promotional-generalization-05.20.test.js) ;;
+              *) unexpected+=("$file") ;;
+            esac
+          done
+          if [ "${#unexpected[@]}" -gt 0 ]; then
+            echo 'Unexpected generated files:'
+            printf '%s\n' "${unexpected[@]}"
+            exit 1
+          fi
+          node tests/reference-report-05.20.3.test.js
+          git diff --check
+          git config user.name 'Developer B Audit'
+          git config user.email 'developer-b-audit@users.noreply.github.com'
+          git add app/authoring-kit-files.js authoring-kit/capabilities.json authoring-kit/feature-inventory.json docs/FEATURE-CATALOG.md tests/browser-promotional-generalization-05.20.test.js
+          git commit -m '05.20 — consolida diagnóstico detalhado de referências'
+          git push origin HEAD:agent/developer-b-05.18
