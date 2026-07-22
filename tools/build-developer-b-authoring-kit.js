@@ -22,6 +22,7 @@ const contractFiles = [
   "component-placement-registry.js",
   "component-placement-manifest-contract.js",
   "fact-recipe-contract.js",
+  "commerce-price-block-recipe-contract.js",
   "callout-recipe-contract.js"
 ];
 
@@ -37,10 +38,11 @@ const recipeWindow = {};
 const recipeSandbox = { window: recipeWindow, console, Object, Array, JSON };
 recipeWindow.window = recipeWindow;
 vm.createContext(recipeSandbox);
-for (const fileName of ["section-recipes.js", "fact-recipe-contract.js", "callout-recipe-contract.js"]) {
+for (const fileName of ["section-recipes.js", "fact-recipe-contract.js", "commerce-price-block-recipe-contract.js", "callout-recipe-contract.js"]) {
   vm.runInContext(fs.readFileSync(path.join(root, "app", fileName), "utf8"), recipeSandbox, { filename: fileName });
 }
 if (!recipeWindow.CatalogFactRecipeContract.install()) throw new Error("O contrato da receita fact não foi instalado no build.");
+if (!recipeWindow.CatalogCommercePriceBlockRecipeContract.install()) throw new Error("O contrato da receita commerce-price-block não foi instalado no build.");
 if (!recipeWindow.CatalogCalloutRecipeContract.install()) throw new Error("O contrato da receita callout não foi instalado no build.");
 
 const recipeManifestEntry = recipe => ({
@@ -53,7 +55,7 @@ const recipeManifestEntry = recipe => ({
   contexts: recipe.contexts || [],
   focusRole: recipe.focusRole || null
 });
-const developerRecipes = ["fact", "section-tip-callout"]
+const developerRecipes = ["fact", "commerce-price-block", "section-tip-callout"]
   .map(recipeId => recipeWindow.CatalogSectionRecipes.get(recipeId))
   .map(recipeManifestEntry);
 const developerRecipeIds = new Set(developerRecipes.map(recipe => recipe.id));
