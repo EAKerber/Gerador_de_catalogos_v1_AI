@@ -27,39 +27,31 @@ jobs:
           from pathlib import Path
           file = Path('tests/browser-promotional-generalization-05.20.test.js')
           source = file.read_text()
-          old = '''    const pageLevel = CatalogEditor.store.getPage().children;
-            return {
-          '''
-          new = '''    const pageLevel = CatalogEditor.store.getPage().children;
-            const publicationReport = CatalogEditor.store.getPublicationReport("draft");
-            return {
-          '''
-          if source.count(old) != 1:
-              raise SystemExit(f'Publication setup target count: {source.count(old)}')
-          source = source.replace(old, new, 1)
-          old = '''      history: CatalogEditor.store.getHistoryState(),
-                publication: CatalogEditor.store.getPublicationReport("draft").summary
-          '''
-          new = '''      history: CatalogEditor.store.getHistoryState(),
-                publication: publicationReport.summary,
-                references: publicationReport.references
-          '''
-          if source.count(old) != 1:
-              raise SystemExit(f'Publication return target count: {source.count(old)}')
-          source = source.replace(old, new, 1)
-          old = '''  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });
-            if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });
-          '''
-          new = '''  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });
-            if (metrics.publication.missingReferences > 0) blockers.push({ code: "MISSING_REFERENCES", count: metrics.publication.missingReferences, items: metrics.references?.missing || [] });
-            const optionalProducts = (metrics.references?.optional || []).filter(item => item.kind === "product" && item.reason === "local-content");
-            const optionalAssets = (metrics.references?.optional || []).filter(item => item.kind === "asset" && item.reason === "placeholder-without-asset");
-            if (optionalProducts.length !== 1 || optionalAssets.length !== metrics.placeholderArts) blockers.push({ code: "OPTIONAL_REFERENCE_CLASSIFICATION", expected: { products: 1, assets: metrics.placeholderArts }, observed: { products: optionalProducts.length, assets: optionalAssets.length }, items: metrics.references?.optional || [] });
-            if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });
-          '''
-          if source.count(old) != 1:
-              raise SystemExit(f'Publication assertion target count: {source.count(old)}')
-          file.write_text(source.replace(old, new, 1))
+
+          replacements = [
+              (
+                  '    const pageLevel = CatalogEditor.store.getPage().children;\n    return {',
+                  '    const pageLevel = CatalogEditor.store.getPage().children;\n    const publicationReport = CatalogEditor.store.getPublicationReport("draft");\n    return {',
+                  'publication setup'
+              ),
+              (
+                  '      history: CatalogEditor.store.getHistoryState(),\n      publication: CatalogEditor.store.getPublicationReport("draft").summary',
+                  '      history: CatalogEditor.store.getHistoryState(),\n      publication: publicationReport.summary,\n      references: publicationReport.references',
+                  'publication return'
+              ),
+              (
+                  '  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });\n  if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });',
+                  '  if (metrics.publication.overflows > 0) findings.push({ code: "PUBLICATION_OVERFLOWS", count: metrics.publication.overflows });\n  if (metrics.publication.missingReferences > 0) blockers.push({ code: "MISSING_REFERENCES", count: metrics.publication.missingReferences, items: metrics.references?.missing || [] });\n  const optionalProducts = (metrics.references?.optional || []).filter(item => item.kind === "product" && item.reason === "local-content");\n  const optionalAssets = (metrics.references?.optional || []).filter(item => item.kind === "asset" && item.reason === "placeholder-without-asset");\n  if (optionalProducts.length !== 1 || optionalAssets.length !== metrics.placeholderArts) blockers.push({ code: "OPTIONAL_REFERENCE_CLASSIFICATION", expected: { products: 1, assets: metrics.placeholderArts }, observed: { products: optionalProducts.length, assets: optionalAssets.length }, items: metrics.references?.optional || [] });\n  if (metrics.placeholderArts > 0) findings.push({ code: "PLACEHOLDER_ASSETS", count: metrics.placeholderArts, message: "Assets comerciais não estavam disponíveis no runner; arte foi avaliada estruturalmente." });',
+                  'publication assertions'
+              )
+          ]
+          for old, new, label in replacements:
+              if new in source:
+                  continue
+              if source.count(old) != 1:
+                  raise SystemExit(f'{label}: expected one target, found {source.count(old)}')
+              source = source.replace(old, new, 1)
+          file.write_text(source)
           PY
           node --check tests/browser-promotional-generalization-05.20.test.js
       - name: Regenerate embedded AuthoringKit
@@ -85,6 +77,6 @@ jobs:
           git diff --check
           git config user.name 'Developer B Audit'
           git config user.email 'developer-b-audit@users.noreply.github.com'
-          git add app/authoring-kit-files.js authoring-kit/capabilities.json authoring-kit/feature-inventory.json docs/FEATURE-CATALOG.md tests/browser-promotional-generalization-05.20.test.js
+          git add -A
           git commit -m '05.20 — consolida diagnóstico detalhado de referências'
           git push origin HEAD:agent/developer-b-05.18
