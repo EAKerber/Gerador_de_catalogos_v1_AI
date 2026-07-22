@@ -1,0 +1,95 @@
+name: Developer B Promotional Semantic Tokens
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - 'app/tokens.js'
+      - 'authoring-kit/runtime/tokens.js'
+      - 'tests/promotional-semantic-tokens-05.20.11.test.js'
+      - 'tests/browser-promotional-semantic-tokens-05.20.11.test.js'
+      - '.github/workflows/developer-b-promotional-tokens-05-20.yml'
+permissions:
+  contents: write
+jobs:
+  promotional-semantic-tokens:
+    name: DB-05.20.11 - semantic promotional vocabulary
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source and declarative readiness
+        run: |
+          node --check app/tokens.js
+          node --check authoring-kit/runtime/tokens.js
+          node --check tests/promotional-semantic-tokens-05.20.11.test.js
+          node --check tests/browser-promotional-semantic-tokens-05.20.11.test.js
+          cmp app/tokens.js authoring-kit/runtime/tokens.js
+          node tests/promotional-semantic-tokens-05.20.11.test.js
+      - name: Install visual runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Validate inspector, screen and print
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_PROMOTIONAL_TOKEN_OUTPUT_DIR: audit-output/db-05.20.11/semantic-tokens
+          CATALOG_PROMOTIONAL_REMEDIATION_OUTPUT_DIR: audit-output/db-05.20.11/readiness
+        run: |
+          node tests/browser-promotional-semantic-tokens-05.20.11.test.js
+          node tests/promotional-remediation-readiness-05.20.10.test.js
+      - name: Regenerate embedded AuthoringKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/build-developer-b-authoring-kit.js
+          allowed='^(app/authoring-kit-files\.js|authoring-kit/capabilities\.json|authoring-kit/feature-inventory\.json|authoring-kit/runtime/tokens\.js|docs/FEATURE-CATALOG\.md)$'
+          unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'Unexpected generated files:\n%s\n' "$unexpected"
+            exit 1
+          fi
+          git diff --check
+      - name: Commit generated artifacts when needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'Embedded AuthoringKit already synchronized.'
+            exit 0
+          fi
+          git config user.name 'Developer B Audit'
+          git config user.email 'developer-b-audit@users.noreply.github.com'
+          git add app/authoring-kit-files.js authoring-kit/capabilities.json authoring-kit/feature-inventory.json authoring-kit/runtime/tokens.js docs/FEATURE-CATALOG.md
+          git commit -m '05.20 — sincroniza tokens promocionais no AuthoringKit'
+          git push origin HEAD:agent/developer-b-05.18
+      - name: Prove idempotent build
+        run: |
+          node tools/build-developer-b-authoring-kit.js
+          git diff --exit-code
+      - name: Upload token evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-promotional-semantic-tokens-05.20.11
+          path: audit-output/db-05.20.11
+          if-no-files-found: warn
