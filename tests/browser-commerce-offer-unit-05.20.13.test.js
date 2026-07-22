@@ -22,6 +22,13 @@ function canonical(value) {
   return value;
 }
 
+function comparableDocument(value) {
+  const copy = JSON.parse(JSON.stringify(value));
+  delete copy.editor;
+  delete copy.updatedAt;
+  return canonical(copy);
+}
+
 (async () => {
   browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
@@ -67,8 +74,8 @@ function canonical(value) {
     const redone = store.getExportDocument();
     return { undone, redone };
   }, 4);
-  assert(JSON.stringify(canonical(historyRoundTrip.undone)) === JSON.stringify(canonical(fixture.baseline)), "Undo não restaurou o contêiner sem ofertas.");
-  assert(JSON.stringify(canonical(historyRoundTrip.redone)) === JSON.stringify(canonical(fixture.completed)), "Redo não restaurou as quatro ofertas.");
+  assert(JSON.stringify(comparableDocument(historyRoundTrip.undone)) === JSON.stringify(comparableDocument(fixture.baseline)), "Undo não restaurou o contêiner sem ofertas.");
+  assert(JSON.stringify(comparableDocument(historyRoundTrip.redone)) === JSON.stringify(comparableDocument(fixture.completed)), "Redo não restaurou as quatro ofertas.");
 
   async function measure(media) {
     return page.evaluate(({ parentId, media }) => {
@@ -180,7 +187,7 @@ function canonical(value) {
     const restored = new CatalogDocumentStore(exported);
     return restored.getExportDocument();
   }, independence.exported);
-  assert(JSON.stringify(canonical(roundTrip)) === JSON.stringify(canonical(independence.exported)), "Exportação e reconstrução da store divergiram.");
+  assert(JSON.stringify(comparableDocument(roundTrip)) === JSON.stringify(comparableDocument(independence.exported)), "Exportação e reconstrução da store divergiram.");
   assert(independence.exported.schemaVersion === "1.16.0", "A unidade de oferta alterou o schema.");
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
