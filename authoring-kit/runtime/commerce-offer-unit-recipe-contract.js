@@ -61,7 +61,7 @@
           node("recipe-commerce-offer-measure", "text", { x: 0, y: 254, width: 180, height: 52 }, {
             name: "Medida ou variação",
             props: { content: "100mm", align: "center", verticalAlign: "center", scale: 100, overflow: "ellipsis", recipeRole: "measure" },
-            style: { surface: "surface.promo-secondary", border: "border.none", radius: "radius.none", textColor: "promo.on-secondary", typography: "type.promo-title" },
+            style: { surface: "surface.promo-secondary", border: "border.none", radius: "radius.none", textColor: "promo.on-secondary", typography: "type.promo-qualifier" },
             layoutItem: { managed: true, grow: 0, span: 1 }
           }),
           priceBlock
