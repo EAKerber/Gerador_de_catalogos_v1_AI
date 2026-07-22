@@ -85,17 +85,18 @@ function comparableDocument(value) {
     const store = CatalogEditor.store;
     store.reset();
     store.setEditorSettings({ zoom: 1, zoomMode: "manual", gridVisible: false, snapEnabled: false, smartSnapEnabled: false });
+    const strip = store.addComponent("layout-container", { x: 24, y: 180, width: 746, height: 526 }, {
+      props: { label: "OFERTAS INDEPENDENTES", recipeRole: "offer-strip" },
+      style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+      layout: { mode: "row", padding: 0, gap: 8, columns: 4, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 500, mode: "row" } }
+    });
     const ids = [];
     for (let index = 0; index < contract.acceptance.minimumOfferUnits; index += 1) {
-      const inserted = store.addComponentFromTemplate("commerce-offer-unit", {
-        x: 24 + index * 183,
-        y: 180,
-        width: 171,
-        height: 500
-      }, { parentId: null });
+      store.setEditingContext(strip.id);
+      const inserted = store.insertComponentFromTemplate("commerce-offer-unit", { parentId: strip.id });
       ids.push(inserted.id);
     }
-    return { ids, document: JSON.parse(JSON.stringify(store.getState())) };
+    return { stripId: strip.id, ids, document: JSON.parse(JSON.stringify(store.getState())) };
   }, contract);
 
   await page.waitForFunction(ids => ids.every(id => document.querySelector(`[data-component-id="${id}"]`)), fixture.ids);
@@ -184,6 +185,7 @@ function comparableDocument(value) {
   const report = {
     ...baselineReport,
     status: "accepted",
+    stripId: fixture.stripId,
     screen,
     printed,
     history: { undoCount: historySteps, redoEquivalent: true },
