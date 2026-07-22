@@ -78,7 +78,7 @@ function inside(inner, outer, tolerance = 1) {
     store.reflowComponentTree(wideRoot.id);
     store.reflowComponentTree(compactRoot.id);
     return {
-      icons: icons.map(icon => ({ id: icon.id, label: icon.props.label, scale: icon.props.iconScale })),
+      icons: icons.map(icon => ({ id: icon.id, textLabel: icon.props.label, scale: icon.props.iconScale })),
       wide: { rootId: wideRoot.id, titleId: wideRoles.title.id, bodyId: wideRoles.body.id, iconId: wideRoles.icon.id },
       compact: { rootId: compactRoot.id, titleId: compactRoles.title.id, bodyId: compactRoles.body.id, iconId: compactRoles.icon.id }
     };
@@ -105,10 +105,11 @@ function inside(inner, outer, tolerance = 1) {
         return {
           ...item,
           root: rect(root),
-          label: rect(label),
+          labelRect: rect(label),
           svg: rect(svg),
           whiteSpace: style?.whiteSpace || null,
           overflowWrap: style?.overflowWrap || null,
+          fontSize: style ? Number.parseFloat(style.fontSize) : 0,
           clientWidth: label?.clientWidth || 0,
           scrollWidth: label?.scrollWidth || 0,
           clientHeight: label?.clientHeight || 0,
@@ -150,12 +151,12 @@ function inside(inner, outer, tolerance = 1) {
   function validate(snapshot) {
     assert(snapshot.icons.length === 4, "Os quatro benefícios não foram renderizados.");
     snapshot.icons.forEach(item => {
-      assert(item.whiteSpace !== "nowrap", `${item.label}: o rótulo continua preso a uma linha.`);
-      assert(item.estimatedLines >= 1 && item.estimatedLines <= 2, `${item.label}: quantidade de linhas inválida (${item.estimatedLines}).`);
-      assert(item.scrollWidth <= item.clientWidth + 1, `${item.label}: overflow horizontal no rótulo.`);
-      assert(item.scrollHeight <= item.clientHeight + 1, `${item.label}: truncamento vertical no rótulo.`);
-      assert(inside(item.label, item.root), `${item.label}: rótulo escapou do componente.`);
-      assert(inside(item.svg, item.root), `${item.label}: SVG escapou do componente.`);
+      assert(item.whiteSpace !== "nowrap", `${item.textLabel}: o rótulo continua preso a uma linha.`);
+      assert(item.estimatedLines >= 1 && item.estimatedLines <= 2, `${item.textLabel}: quantidade de linhas inválida (${item.estimatedLines}).`);
+      assert(item.scrollWidth <= item.clientWidth + 1, `${item.textLabel}: overflow horizontal no rótulo.`);
+      assert(item.scrollHeight <= item.clientHeight + 1, `${item.textLabel}: conteúdo não coube integralmente em duas linhas.`);
+      assert(inside(item.labelRect, item.root), `${item.textLabel}: rótulo escapou do componente.`);
+      assert(inside(item.svg, item.root), `${item.textLabel}: SVG escapou do componente.`);
     });
     const byScale = Object.fromEntries(snapshot.icons.map(item => [item.scale, item.svg.width]));
     assert(byScale[80] < byScale[100] && byScale[100] < byScale[120], "A legibilidade alterou a distinção 80/100/120 do vetor.");
@@ -189,8 +190,8 @@ function inside(inner, outer, tolerance = 1) {
   await page.evaluate(() => { delete document.documentElement.dataset.printing; });
   await page.evaluate(bodyId => {
     const store = CatalogEditor.store;
-    store.deleteComponent(bodyId);
     const parentId = store.getParentId(bodyId);
+    store.deleteComponent(bodyId);
     if (parentId) store.reflowComponentTree(parentId);
   }, fixture.compact.bodyId);
   await page.waitForFunction(id => !CatalogEditor.store.findComponent(id), fixture.compact.bodyId);
