@@ -2,8 +2,6 @@ name: Developer B Frame Application
 on:
   pull_request:
     branches: [development]
-    paths:
-      - '.github/workflows/developer-b-frame-application-05-20.yml'
 permissions:
   contents: write
 jobs:
