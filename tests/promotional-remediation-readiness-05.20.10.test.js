@@ -79,7 +79,13 @@ function flattenDeficits(tokenResult, recipeResult) {
   return deficits;
 }
 
-const runtime = loadRuntime(["app/tokens.js", "app/section-recipes.js"]);
+const runtimeFiles = ["app/tokens.js", "app/section-recipes.js"];
+for (const relative of ["app/commerce-price-block-recipe-contract.js", "app/commerce-offer-unit-recipe-contract.js"]) {
+  if (fs.existsSync(path.join(root, relative))) runtimeFiles.push(relative);
+}
+const runtime = loadRuntime(runtimeFiles);
+runtime.CatalogCommercePriceBlockRecipeContract?.install();
+runtime.CatalogCommerceOfferUnitRecipeContract?.install();
 const tokenResult = evaluateTokens(runtime.CATALOG_EDITOR_TOKENS);
 const recipeResult = evaluateRecipes(runtime.CatalogSectionRecipes);
 const deficits = flattenDeficits(tokenResult, recipeResult);
