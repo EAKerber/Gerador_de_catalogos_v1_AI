@@ -36,12 +36,6 @@ source = replaceOnce(
 );
 source = replaceOnce(
   source,
-  'page.locator(`[data-open-asset-library][data-component-id="${componentId}"]`).click({ force: true })',
-  'page.locator(`[data-open-asset-library][data-component-id="${componentId}"]`).first().click({ force: true })',
-  "botão inequívoco da biblioteca de assets"
-);
-source = replaceOnce(
-  source,
   'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session"]);',
   'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session", "reference", "sha256"]);',
   "normalização de referências locais e hashes derivados no round-trip"

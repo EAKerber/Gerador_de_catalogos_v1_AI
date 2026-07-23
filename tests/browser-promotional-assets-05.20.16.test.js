@@ -213,7 +213,7 @@ async function exportPackage(page, targetPath) {
 
     async function openAssetLibrary(componentId) {
       await selectArt(componentId);
-      await act(`Abrir biblioteca para ${componentId}`, () => page.locator(`[data-open-asset-library][data-component-id="${componentId}"]`).click({ force: true }));
+      await act(`Abrir biblioteca para ${componentId}`, () => page.locator(`[data-open-asset-library][data-component-id="${componentId}"]`).first().click({ force: true }));
       await page.locator("#assetLibraryDialog").waitFor({ state: "visible" });
     }
 

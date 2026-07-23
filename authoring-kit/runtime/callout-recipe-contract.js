@@ -24,7 +24,10 @@
             measureMinimum(component) {
               const base = typeof originalMeasure === "function"
                 ? originalMeasure(component)
-                : { width: 24, height: 34 };
+                : {
+                    width: Math.max(1, Number(component?.constraints?.minWidth) || 24),
+                    height: Math.max(1, Number(component?.constraints?.minHeight) || 34)
+                  };
               if (component?.props?.recipeRole === "title" && component?.style?.typography === "type.promo-title") {
                 return { width: Math.max(80, base.width || 0), height: Math.max(62, base.height || 0) };
               }
