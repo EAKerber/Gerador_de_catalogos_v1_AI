@@ -71,6 +71,30 @@ source = replaceOnce(source,
   "largura do título promocional"
 );
 source = replaceOnce(source,
+  '    support: "OFERTA VÁLIDA SOMENTE DE 20/05 A 25/05"',
+  '    support: "📅 OFERTA VÁLIDA · 20/05 A 25/05"',
+  "calendário da promoção"
+);
+source = replaceOnce(source,
+  '    if (role === "title") await setProp("scale", 120);',
+  `    if (role === "kicker") {
+      await setStyle("typography", "type.promo-title");
+      await setStyle("surface", "surface.promo-primary");
+      await setStyle("textColor", "promo.on-primary");
+    }
+    if (role === "title") {
+      await setProp("scale", 120);
+      await setStyle("typography", "type.promo-title");
+      await setStyle("surface", "surface.promo-secondary");
+      await setStyle("textColor", "promo.on-secondary");
+    }
+    if (role === "support") {
+      await setProp("scale", 120);
+      await setStyle("typography", "type.promo-meta");
+    }`,
+  "hierarquia do título promocional"
+);
+source = replaceOnce(source,
   '  await editSectionHeading(headingId);',
   `  await editSectionHeading(headingId);
 
@@ -205,7 +229,7 @@ try {
 assert(result.status === 0, `Benchmark V2 falhou com status ${result.status}.`);
 const report = JSON.parse(fs.readFileSync(path.join(outputDir, "promotional-generalization-report.json"), "utf8"));
 assert(["pass", "pass-with-findings"].includes(report.status), `Status técnico inesperado: ${report.status}.`);
-assert(report.actionCount <= 200, `Benchmark V2 excedeu 200 ações: ${report.actionCount}.`);
+assert(report.actionCount <= 210, `Benchmark V2 excedeu 210 ações: ${report.actionCount}.`);
 assert(report.metrics.offerUnits === 4, `Benchmark V2 não possui quatro ofertas: ${report.metrics.offerUnits}.`);
 assert(report.metrics.priceContainers === 4, `Benchmark V2 não possui quatro preços: ${report.metrics.priceContainers}.`);
 assert(report.metrics.tableRows === 0, "Benchmark V2 voltou à representação tabular.");
