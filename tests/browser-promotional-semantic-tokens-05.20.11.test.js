@@ -124,7 +124,6 @@ function normalizeColor(value) {
       schemaVersion: CatalogEditor.store.getExportDocument().schemaVersion
     };
   });
-  assert(!readiness.priceRecipe && !readiness.offerRecipe, "DB-05.20.11 adicionou receitas prematuramente.");
   assert(readiness.schemaVersion === "1.16.0", "DB-05.20.11 alterou o schema.");
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
@@ -137,7 +136,7 @@ function normalizeColor(value) {
 
   await browser.close();
   browser = null;
-  console.log("✓ DB-05.20.11 validou tokens promocionais no inspetor, tela e impressão.");
+  console.log("✓ DB-05.20.11 validou tokens promocionais no inspetor, tela e impressão, com capacidades posteriores tratadas de forma aditiva.");
 })().catch(async error => {
   fs.writeFileSync(path.join(outputDir, "promotional-semantic-tokens-error.json"), `${JSON.stringify({ message: error.message, stack: error.stack }, null, 2)}\n`);
   console.error(error);
