@@ -121,8 +121,17 @@ const fileFrom = (name, bytes) => ({
   const kitEntries = Object.keys(fflate.unzipSync(kitBytes));
   assert(kitEntries.some(name => name.endsWith("/GUIDE.md")) && kitEntries.some(name => name.endsWith("/capabilities.json")) && kitEntries.some(name => name.endsWith("/feature-inventory.json")) && kitEntries.some(name => name.endsWith("/feature-guide.json")), "O download do AuthoringKit não é autocontido ou perdeu o atlas funcional.");
   const capabilities = CatalogProjectManifests.buildCapabilitiesManifest(store.getExportDocument());
+  const recipeIds = new Set(capabilities.recipes.map(recipe => recipe.id));
+  const requiredRecipeIds = [
+    "page-catalog-base",
+    "section-applications",
+    "section-heading",
+    "section-hero-grid-strip",
+    "section-packaging-legend",
+    "section-tip-callout"
+  ];
   assert(capabilities.components.length === Object.keys(CATALOG_COMPONENT_REGISTRY).length && capabilities.icons.length === Object.keys(CATALOG_ICON_LIBRARY).length, "O manifesto declarativo diverge dos registros runtime.");
-  assert(capabilities.editor.increment === "05.18" && capabilities.recipes.length === 5 && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing, "O kit não preservou geometria e coleções em lote no 05.18.");
+  assert(capabilities.editor.increment === "05.20" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing, "O kit não preservou geometria, coleções em lote e receitas oficiais no 05.20.");
   assert(capabilities.capabilities.editorialTextControls && capabilities.capabilities.internalIconScale && capabilities.capabilities.distinctProductModes, "O kit não publicou a profundidade editorial do 05.18.");
   assert(capabilities.tableSchemas.length === 4 && capabilities.capabilities.batchTableSchemas && capabilities.capabilities.heroGridStripComposition, "O kit não publicou esquemas de tabela e composição focal.");
   assert(capabilities.separatorPresets.length === 5 && capabilities.capabilities.contextualTableRows && capabilities.capabilities.batchSeparators, "Ações contextuais e presets de separador não foram publicados no kit.");

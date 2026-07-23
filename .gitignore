@@ -5,4 +5,6 @@ node_modules/
 .playwright/
 coverage/
 dist/
-
+__pycache__/
+*.pyc
+/audit-output/

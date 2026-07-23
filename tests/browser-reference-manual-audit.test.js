@@ -8,6 +8,7 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const outputDir = path.resolve(process.env.CATALOG_AUDIT_OUTPUT_DIR || "/tmp/catalog-audit-05.12");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser;
 
 const products = [
   "Título\tCódigo\tEmbalagem\tPreço\tEspecificação 1\tEspecificação 2\tAplicações",
@@ -78,7 +79,7 @@ const legendPlans = [
 
 (async () => {
   fs.mkdirSync(outputDir, { recursive: true });
-  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 }, acceptDownloads: true });
   const actions = [];
   const pageErrors = [];
@@ -114,8 +115,15 @@ const legendPlans = [
     if (await locator.getAttribute("aria-selected") !== "true") await click(locator, `Abrir painel ${tab}`, { surface: "left-panel", contextSwitch: true });
   };
   const inspectorTab = async tab => {
-    const locator = page.locator(`[data-inspector-tab="${tab}"]`);
-    if (await locator.count() && await locator.getAttribute("aria-selected") !== "true") await click(locator, `Abrir inspetor ${tab}`, { surface: "inspector", contextSwitch: true });
+    const locator = page.locator(`[data-inspector-tab="${tab}"]`).first();
+    const panel = page.locator(`[data-inspector-panel="${tab}"]`).first();
+    if (await locator.count() && (await locator.getAttribute("aria-selected") !== "true" || !await panel.isVisible())) {
+      await click(locator, `Abrir inspetor ${tab}`, { surface: "inspector", contextSwitch: true });
+    }
+    if (await locator.count() && !await panel.isVisible()) {
+      await click(locator, `Repetir abertura do inspetor ${tab}`, { surface: "inspector", contextSwitch: true, correction: true, noEffect: true });
+    }
+    if (await panel.count()) await panel.waitFor({ state: "visible" });
   };
   const ensureDetails = async (selector, label, meta = {}) => {
     const details = page.locator(selector);
@@ -152,12 +160,12 @@ const legendPlans = [
   };
   const setFrame = async (componentId, frame, label) => {
     await selectLayer(componentId, `Selecionar ${label}`);
-    if (!await page.locator('[data-frame-path="x"]').count()) {
-      await click(page.locator("[data-toggle-all-properties]").first(), `Mostrar posição e tamanho de ${label}`, { surface: "inspector", contextSwitch: true });
+    const current = await page.evaluate(id => ({ ...CatalogEditor.store.findComponent(id).component.frame }), componentId);
+    const requested = { ...current, ...frame };
+    for (const [key, value] of Object.entries(requested)) {
+      await fill(page.locator(`[data-frame-draft-path="${key}"]`), value, `${label}: ${key} = ${value}`, { surface: "inspector" });
     }
-    for (const [key, value] of Object.entries(frame)) {
-      await fill(page.locator(`[data-frame-path="${key}"]`), value, `${label}: ${key} = ${value}`, { surface: "inspector" });
-    }
+    await click(page.locator("[data-frame-apply-all]"), `Aplicar geometria completa de ${label}`, { surface: "inspector" });
   };
 
   await page.goto(baseURL, { waitUntil: "networkidle" });
@@ -226,11 +234,18 @@ const legendPlans = [
       await ensureDetails(".table-column-editor", "Reabrir configuração de colunas após alterar função");
       await fill(page.locator(`[data-table-column-key="${price.key}"][data-table-column-path="label"]`), plan.priceLabel, `Tabela ${index + 1}: rótulo ${plan.priceLabel}`, { surface: "inspector" });
     }
-    await ensureDetailsContent(".table-bulk-entry", "[data-table-bulk-text]", "Abrir colagem de linhas");
+    const bulkEntry = page.locator('details.table-bulk-entry:has([data-table-bulk-text])');
+    await ensureDetailsContent('details.table-bulk-entry:has([data-table-bulk-text])', "[data-table-bulk-text]", "Abrir colagem de linhas");
     const headers = plan.omitPackage ? ["CÓDIGO", plan.middleLabel, plan.priceLabel] : ["CÓDIGO", plan.middleLabel, "EMBALAGEM", plan.priceLabel];
     const text = [headers, ...plan.rows].map(row => row.join("\t")).join("\n");
-    await fill(page.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
-    await click(page.locator("[data-table-bulk-apply]"), `Tabela ${index + 1}: aplicar linhas`, { surface: "inspector" });
+    await fill(bulkEntry.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
+    await click(bulkEntry.locator("[data-table-bulk-apply]"), `Tabela ${index + 1}: aplicar linhas`, { surface: "inspector" });
+    const applied = await page.evaluate(({ id, expected }) => ({
+      count: CatalogEditor.store.getTableRows(id).length,
+      expected,
+      feedback: document.querySelector('details.table-bulk-entry:has([data-table-bulk-text]) [role="status"]')?.textContent || ""
+    }), { id: tableId, expected: plan.rows.length });
+    assert(applied.count === applied.expected, `Tabela ${index + 1} não aplicou a colagem: ${JSON.stringify(applied)}.`);
   }
 
   for (let index = 0; index < ids.tableIds.length; index += 1) await configureTable(ids.tableIds[index], tablePlans[index], index);
@@ -289,7 +304,17 @@ const legendPlans = [
     }
     let gallery = await page.evaluate(cardId => CatalogEditor.store.findComponent(cardId)?.component?.children.find(component => component.type === "art-gallery"), ids.cardIds[cardIndex]);
     assert(gallery?.children.length === captions.length, `Card ${cardIndex + 1} não recebeu ${captions.length} imagens.`);
+    await selectLayer(gallery.id, `Selecionar galeria do card ${cardIndex + 1}`);
+    await inspectorTab("structure");
+    await fill(page.locator('[data-layout-path="columns"]'), String(captions.length), `Card ${cardIndex + 1}: ${captions.length} imagens por linha`, { surface: "inspector" });
+    if (captions.length >= 5) {
+      await fill(page.locator('[data-layout-path="padding"]'), "0", `Card ${cardIndex + 1}: remover padding da galeria compacta`, { surface: "inspector" });
+      await fill(page.locator('[data-layout-path="gap"]'), "1", `Card ${cardIndex + 1}: reduzir espaço entre variações`, { surface: "inspector" });
+    }
+    gallery = await page.evaluate(id => CatalogEditor.store.findComponent(id)?.component, gallery.id);
     const last = gallery.children[gallery.children.length - 1];
+    await selectLayer(last.id, `Selecionar última imagem do card ${cardIndex + 1}`);
+    await inspectorTab("content");
     await fill(page.locator('[data-prop-path="caption"]'), captions[captions.length - 1], `Card ${cardIndex + 1}: legenda ${captions[captions.length - 1]}`, { surface: "inspector" });
     for (let index = 0; index < gallery.children.length - 1; index += 1) {
       await selectLayer(gallery.children[index].id, `Selecionar imagem ${index + 1} do card ${cardIndex + 1}`);
@@ -312,47 +337,60 @@ const legendPlans = [
     await inspectorTab("content");
     await select(page.locator('[data-presentation-path="presetId"]'), "product-variants", `Card ${index + 1}: preset de variações`, { surface: "inspector" });
   }
+  for (const index of [1, 2, 3, 4, 5, 6]) {
+    await selectLayer(ids.cardIds[index], `Selecionar card ${index + 1} para compactação`);
+    await inspectorTab("content");
+    await select(page.locator('[data-presentation-path="density"]'), "compact", `Card ${index + 1}: densidade compacta`, { surface: "inspector" });
+    await select(page.locator('[data-presentation-path="responsiveState"]'), "compact", `Card ${index + 1}: layout compacto`, { surface: "inspector" });
+  }
 
   await selectLayer(ids.contentId, "Selecionar conteúdo principal");
   await inspectorTab("structure");
-  await click(page.locator("[data-toggle-all-properties]").first(), "Mostrar posição, tamanho e mínimos", { surface: "inspector", contextSwitch: true });
-  for (const [key, value] of Object.entries({ x: 0, y: 110, width: 746, height: 910 })) {
-    await fill(page.locator(`[data-frame-path="${key}"]`), value, `Conteúdo principal: ${key} = ${value}`, { surface: "inspector" });
-  }
   await select(page.locator('[data-layout-path="mode"]'), "free", "Conteúdo principal: layout livre", { surface: "inspector" });
+  await fill(page.locator('[data-layout-path="padding"]'), "0", "Conteúdo principal: remover padding interno", { surface: "inspector" });
 
   await click(page.locator(`[data-context-id="${ids.rootId}"]`), "Voltar ao contêiner da página", { surface: "breadcrumb", contextSwitch: true });
-  await setFrame(ids.rootId, { y: 0, height: 1100 }, "estrutura da página");
-  await setFrame(ids.headerId, { height: 110 }, "cabeçalho");
-  await setFrame(ids.footerId, { y: 1020, height: 80 }, "rodapé");
   const cardFrames = [
     { x: 0, y: 0, width: 746, height: 222 },
-    { x: 0, y: 234, width: 240, height: 246 },
-    { x: 252, y: 234, width: 240, height: 246 },
-    { x: 504, y: 234, width: 242, height: 246 },
-    { x: 0, y: 492, width: 240, height: 286 },
-    { x: 252, y: 492, width: 240, height: 286 },
-    { x: 504, y: 492, width: 242, height: 286 }
+    { x: 0, y: 222, width: 240, height: 262 },
+    { x: 252, y: 222, width: 240, height: 262 },
+    { x: 504, y: 222, width: 242, height: 262 },
+    { x: 0, y: 484, width: 240, height: 320 },
+    { x: 252, y: 484, width: 240, height: 320 },
+    { x: 504, y: 484, width: 242, height: 320 }
   ];
   for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.legendPanelId, { x: 0, y: 790, width: 500, height: 120 }, "painel de legenda");
-  await setFrame(ids.tipId, { x: 510, y: 790, width: 236, height: 120 }, "chamada de dica");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal");
+  await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
+  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
+  await setFrame(ids.rootId, { x: 0, y: 0, width: 794, height: 1123 }, "estrutura da página");
+  await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 110 }, "cabeçalho");
+  await setFrame(ids.footerId, { x: 24, y: 1043, width: 746, height: 80 }, "rodapé");
 
   const semanticTextIds = await page.evaluate(({ tipId, legendPanelId }) => {
     const tip = CatalogEditor.store.findComponent(tipId)?.component;
     const panel = CatalogEditor.store.findComponent(legendPanelId)?.component;
+    const descendants = component => component ? [component, ...(component.children || []).flatMap(descendants)] : [];
+    const tipParts = descendants(tip);
     return {
-      tipTitleId: tip?.children.find(component => component.type === "text" && component.props?.content === "DICA DO CATÁLOGO")?.id,
-      tipBodyId: tip?.children.find(component => component.type === "text" && component.props?.content?.startsWith("Edite esta chamada"))?.id,
+      tipTitleId: tipParts.find(component => component.type === "text" && component.props?.recipeRole === "title")?.id,
+      tipBodyId: tipParts.find(component => component.type === "text" && component.props?.recipeRole === "body")?.id,
       panelId: panel?.id
     };
   }, ids);
+  assert(semanticTextIds.tipTitleId && semanticTextIds.tipBodyId, "A receita de callout não expôs textos semânticos de título e corpo.");
   await selectLayer(semanticTextIds.tipTitleId, "Selecionar título da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "DICA TOP MOBILI", "Editar título da dica", { surface: "inspector" });
+  await inspectorTab("style");
+  await select(page.locator('[data-inspector-panel="style"]:not([hidden]) [data-style-path="typography"]'), "type.card-title", "Usar título compacto na dica", { surface: "inspector" });
   await selectLayer(semanticTextIds.tipBodyId, "Selecionar corpo da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "Utilize a bit Philips correta para maior durabilidade do parafuso e melhor performance na fixação.", "Editar corpo da dica", { surface: "inspector" });
+  await inspectorTab("style");
+  await select(page.locator('[data-inspector-panel="style"]:not([hidden]) [data-style-path="typography"]'), "type.caption", "Usar corpo compacto na dica", { surface: "inspector" });
+  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica compactada");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal após compactação");
   const documentPath = path.join(outputDir, "reference-manual.document.json");
   await click(page.locator("#exportMenu > summary"), "Abrir menu Exportar", { surface: "toolbar", contextSwitch: true });
   const downloadPromise = page.waitForEvent("download");
@@ -382,18 +420,36 @@ const legendPlans = [
     };
     const components = walk(pageState.children);
     const cards = components.filter(component => component.type === "product-card");
+    const tables = components.filter(component => component.type === "data-table");
     const galleries = components.filter(component => component.type === "art-gallery");
     const tableRows = CatalogEditor.store.getCollection("tableRows")?.items || [];
     const report = CatalogEditor.store.getPublicationReport("draft");
+    const clippedText = Array.from(document.querySelectorAll([
+      ".component-card__title h3",
+      ".component-title-symbol h3",
+      ".component-card__spec span",
+      ".component-specification > span:last-child",
+      ".component-data-table__header span",
+      ".component-data-table__row strong"
+    ].join(",")))
+      .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
+      .map(element => ({
+        componentId: element.closest("[data-component-id]")?.dataset.componentId || null,
+        text: element.textContent.trim(),
+        horizontalOverflow: Math.max(0, element.scrollWidth - element.clientWidth),
+        verticalOverflow: Math.max(0, element.scrollHeight - element.clientHeight)
+      }));
     return {
       schemaVersion: CatalogEditor.store.getState().schemaVersion,
       products: CatalogEditor.store.getProducts().length,
       components: components.length,
       cards: cards.length,
       tableRows: tableRows.length,
+      tableRowCounts: tables.map(table => ({ id: table.id, name: table.name, count: CatalogEditor.store.getTableRows(table).length })),
       galleries: galleries.map(gallery => gallery.children.filter(component => component.type === "art").length),
       legends: CatalogEditor.store.getColorLegends().length,
       report,
+      clippedText,
       viewport: { width: innerWidth, height: innerHeight },
       zoom: CatalogEditor.store.getState().editor.zoom,
       frames: cards.map(card => ({ id: card.id, frame: card.frame }))
@@ -426,12 +482,24 @@ const legendPlans = [
   fs.writeFileSync(path.join(outputDir, "reference-manual.metrics.json"), `${JSON.stringify(metrics, null, 2)}\n`);
 
   assert(result.viewport.width === 1366 && result.viewport.height === 768, "O ensaio não ocorreu em 1366×768.");
-  assert(result.products === 7 && result.cards === 7 && result.tableRows === 16, "Produtos, cards ou linhas divergiram da referência.");
+  assert(
+    result.products === 7 && result.cards === 7 && result.tableRows === 16,
+    `Produtos, cards ou linhas divergiram da referência: ${JSON.stringify({ products: result.products, cards: result.cards, tableRows: result.tableRows, tableRowCounts: result.tableRowCounts })}.`
+  );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
+  assert(
+    result.report.summary.collisions === 0 && result.report.summary.overflows === 0,
+    `A reconstrução técnica não está geometricamente íntegra: ${JSON.stringify(result.report.summary)}.`
+  );
+  assert(result.clippedText.length === 0, `A reconstrução técnica contém texto truncado: ${JSON.stringify(result.clippedText)}.`);
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
 
   await browser.close();
   console.log(`✓ Auditoria manual concluída: ${counts.total} ações (${counts.click} cliques, ${counts.fill} preenchimentos, ${counts.selection} seleções), ${result.report.summary.collisions} colisão(ões), ${result.report.summary.overflows} overflow(s).`);
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch(async error => {
+  console.error(error);
+  if (browser) await browser.close().catch(() => {});
+  process.exitCode = 1;
+});

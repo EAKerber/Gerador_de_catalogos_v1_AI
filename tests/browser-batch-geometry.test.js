@@ -5,13 +5,15 @@ const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwri
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser;
 
 (async () => {
-  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto(baseURL, { waitUntil: "networkidle" });
+  await page.waitForFunction(() => Boolean(window.CatalogEditor?.store));
   const ids = await page.evaluate(() => {
     CatalogEditor.store.reset();
     return [
@@ -53,5 +55,10 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(mapped.history.undoCount === historyBeforeMap + 1 && mapped.history.undoLabel === "Aplicar geometria da seleção", "A grade não foi uma ação única.");
   assert(errors.length === 0, `Erros de página: ${errors.join(" | ")}`);
   await browser.close();
+  browser = null;
   console.log("✓ Geometria relacional, exata e por delta validada em multisseleção real.");
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch(async error => {
+  console.error(error);
+  if (browser) await browser.close().catch(() => {});
+  process.exitCode = 1;
+});

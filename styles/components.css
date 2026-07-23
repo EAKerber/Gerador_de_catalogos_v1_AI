@@ -70,6 +70,11 @@
 
 .component-footer-shell { width: 100%; height: 100%; border-top: 3px solid var(--component-accent, #fd0807); }
 .component-footer-item { width: 100%; height: 100%; min-width: 0; border-right: 1px solid var(--component-border, #d9dcdf); text-align: center; }
+.editor-component--footer-item:not([data-active-context="true"]) > .component-children-layer { overflow: hidden; border-radius: inherit; }
+.editor-component--footer-item > .component-children-layer > .editor-component--text { min-width: 0; min-height: 0; }
+@media print {
+  .editor-component--footer-item > .component-children-layer { overflow: hidden !important; border-radius: inherit; }
+}
 .editor-component--footer-item > .component-children-layer > .editor-component--icon .component-icon { gap: 0; padding: 0; }
 .editor-component--footer-item > .component-children-layer > .editor-component--icon .component-icon__svg { width: 100%; height: 100%; }
 .editor-component--footer-item > .component-children-layer > .editor-component--icon .component-icon > span:empty { display: none; }
@@ -127,6 +132,8 @@
 .component-text[data-text-vertical="end"] { align-content: end; }
 .component-text[data-text-overflow="ellipsis"] p { text-overflow: ellipsis; white-space: nowrap; }
 .component-text[data-text-overflow="clip"] p { text-overflow: clip; }
+.editor-component[data-recipe-role="currency"] .component-text,
+.editor-component[data-recipe-role="amount"] .component-text { padding: 2px 4px; }
 
 .component-legend-panel, .component-legend-group { position: relative; width: 100%; height: 100%; }
 .component-legend-panel > header { position: absolute; z-index: 4; left: 9px; top: 6px; color: var(--component-text, #252525); font-family: var(--font-display); font-size: 9px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
@@ -176,8 +183,9 @@
 @page { size: A4 portrait; margin: 0; }
 
 .component-icon { display: grid; width: 100%; height: 100%; place-items: center; align-content: center; gap: 3px; padding: 4px; color: var(--component-vector, var(--component-accent, #fd0807)); text-align: center; }
-.component-icon__svg { display: grid; width: min(72%, 40px); height: min(72%, 40px); place-items: center; }
-.component-icon__svg svg { width: 100%; height: 100%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
+.component-icon__svg { display: grid; width: min(86.4%, 48px); height: min(86.4%, 48px); place-items: center; }
+.editor-component--footer-item > .component-children-layer > .editor-component--icon[data-slot-name="icon"] .component-icon__svg { width: min(100%, 26px); height: min(100%, 26px); max-width: 100%; max-height: 100%; }
+.component-icon__svg svg { width: 83.333333%; height: 83.333333%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
 .component-icon > span:last-child { max-width: 100%; overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-sans)); font-size: min(var(--component-title-size, 10px), 11px); font-weight: var(--component-title-weight, 600); line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Incremento 02 — componentes aninhados e slots */
@@ -209,7 +217,7 @@
 .component-title-symbol h3 { margin: 0; overflow: hidden; font-family: var(--component-title-family, var(--font-display)); font-size: var(--component-title-size, 18px); font-weight: var(--component-title-weight, 900); line-height: var(--component-title-line, 1); letter-spacing: var(--component-title-tracking, -.01em); text-transform: var(--component-title-transform, uppercase); text-overflow: ellipsis; white-space: nowrap; }
 
 .component-specification { display: grid; grid-template-columns: minmax(25px, 30%) minmax(0, 1fr); align-items: center; gap: min(7px, var(--presentation-gap, 7px)); width: 100%; height: 100%; padding: 2px 4px; }
-.component-specification__icon { display: grid; width: min(29px, 100%); aspect-ratio: 1; place-items: center; border: 1px solid var(--component-border, #cfd2d5); border-radius: 50%; color: var(--component-vector, var(--component-accent, #fd0807)); background: #fff; }
+.component-specification__icon { display: grid; width: min(29px, 100%); aspect-ratio: 1; justify-self: center; place-items: center; border: 1px solid var(--component-border, #cfd2d5); border-radius: 50%; color: var(--component-vector, var(--component-accent, #fd0807)); background: #fff; }
 .component-specification__icon svg { width: 56%; height: 56%; transform: scale(var(--icon-content-scale, 1)); transform-origin: center; }
 .editor-component--product-card .component-specification__icon svg { transform: scale(calc(var(--presentation-icon-scale, 1) * var(--icon-content-scale, 1))); }
 .component-specification > span:last-child { overflow: hidden; color: var(--component-text, #252525); font-family: var(--component-title-family, var(--font-display)); font-size: min(var(--component-title-size, 11px), 11px); font-weight: var(--component-title-weight, 900); line-height: 1.05; text-overflow: ellipsis; text-transform: var(--component-title-transform, uppercase); white-space: nowrap; }
@@ -232,6 +240,12 @@
 .component-data-table__row strong small { max-width: 100%; overflow: hidden; color: #252525; font-family: var(--font-sans); font-size: 6px; font-weight: 800; line-height: 1; text-overflow: ellipsis; text-transform: uppercase; }
 
 .editor-component--product-card[data-presentation-density="compact"] { --presentation-font-scale: .88; --presentation-icon-scale: .9; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol { gap: 4px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol__number { min-width: 25px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol h3 { font-size: 10px; letter-spacing: -.02em; }
+.editor-component--product-card[data-presentation-density="compact"] .component-specification { grid-template-columns: 22px minmax(0, 1fr); gap: 3px; padding: 1px 3px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-specification__icon { width: 24px; height: 24px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-specification > span:last-child { font-size: 7px; letter-spacing: -.01em; }
 .editor-component--product-card[data-presentation-density="comfortable"] { --presentation-font-scale: 1.08; --presentation-icon-scale: 1.12; }
 .editor-component--product-card[data-presentation-mode="hero"] .component-card-shell__accent { width: 7px; opacity: 1; }
 .editor-component--product-card[data-presentation-mode="technical"] .component-card-shell__accent { width: 100%; height: 4px; }
@@ -245,9 +259,9 @@
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__body { grid-auto-rows: minmax(20px, 1fr); }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__header { font-size: 6px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__header span,
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { padding: 1px 3px; }
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { font-size: 9px; }
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong[data-column-role="price"] { font-size: 10px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { padding: 1px 2px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { font-size: 7px; letter-spacing: -.01em; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong[data-column-role="price"] { font-size: 9px; }
 
 .editor-component--title-symbol,
 .editor-component--specification { background: transparent; }
