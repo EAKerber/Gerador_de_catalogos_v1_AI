@@ -70,6 +70,7 @@ assert(recipe.component.props.contextual === true, "A receita não publicou marc
 assert(treeCount(recipe.component) === 5, `A receita deveria conter cinco componentes; recebeu ${treeCount(recipe.component)}.`);
 assert(role(recipe.component, "icon")?.type === "icon", "O papel de ícone não foi declarado.");
 assert(role(recipe.component, "content")?.type === "layout-container", "O papel de conteúdo não foi declarado.");
+assert(role(recipe.component, "content").constraints?.minHeight === 100, "O conteúdo da dica ainda herda o mínimo genérico que força o callout a crescer.");
 assert(role(recipe.component, "title")?.type === "text" && role(recipe.component, "body")?.type === "text", "Título ou corpo não foram classificados.");
 assert(role(recipe.component, "title").style.surface === "surface.promo-dark", "Título não usa superfície promocional escura.");
 assert(role(recipe.component, "title").style.textColor === "promo.on-dark", "Título não usa contraste semântico.");
