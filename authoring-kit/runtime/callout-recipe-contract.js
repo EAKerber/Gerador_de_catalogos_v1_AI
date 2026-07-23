@@ -11,10 +11,10 @@
     if (!registry?.icon || !registry?.text) return false;
     const icon = registry.icon.recommendedSize?.width === 96 && registry.icon.recommendedSize?.height === 72
       ? registry.icon
-      : Object.freeze({
+      : {
           ...registry.icon,
-          recommendedSize: Object.freeze({ width: 96, height: 72 })
-        });
+          recommendedSize: { width: 96, height: 72 }
+        };
     const text = registry.text.__calloutLegibilityMinimumVersion === CONTRACT_VERSION
       ? registry.text
       : (() => {
@@ -35,7 +35,7 @@
             }
           };
           Object.defineProperty(patched, "__calloutLegibilityMinimumVersion", { value: CONTRACT_VERSION });
-          return Object.freeze(patched);
+          return patched;
         })();
     window.CATALOG_COMPONENT_REGISTRY = Object.freeze({ ...registry, icon, text });
     return true;
