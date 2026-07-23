@@ -1,0 +1,87 @@
+name: Developer B Promotional Benchmark V2
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - 'tests/browser-promotional-generalization-v2-05.20.14.test.js'
+      - 'tests/promotional-fidelity-audit-v2-05.20.14.py'
+      - 'app/commerce-price-block-recipe-contract.js'
+      - 'app/commerce-offer-unit-recipe-contract.js'
+      - 'app/tokens.js'
+      - '.github/workflows/developer-b-promotional-benchmark-v2-05-20.yml'
+permissions:
+  contents: read
+jobs:
+  promotional-benchmark-v2:
+    name: DB-05.20.14 - promotional benchmark V2
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate audit sources
+        run: |
+          node --check tests/browser-promotional-generalization-v2-05.20.14.test.js
+          python -m py_compile tests/promotional-fidelity-audit-v2-05.20.14.py
+      - name: Install visual runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          python -m pip install --disable-pip-version-check pillow
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Build promotional benchmark V2
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_GENERALIZATION_OUTPUT_DIR: audit-output/db-05.20.14/benchmark
+        run: node tests/browser-promotional-generalization-v2-05.20.14.test.js
+      - name: Measure category fidelity V2
+        run: |
+          python tests/promotional-fidelity-audit-v2-05.20.14.py \
+            --artifact-dir audit-output/db-05.20.14/benchmark \
+            --profile tests/fixtures/promotional-reference-profile-05.20.9.json \
+            --output audit-output/db-05.20.14/promotional-fidelity-v2-report.json
+      - name: Enforce milestone targets
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const benchmark = JSON.parse(fs.readFileSync('audit-output/db-05.20.14/benchmark/promotional-generalization-report.json', 'utf8'));
+          const fidelity = JSON.parse(fs.readFileSync('audit-output/db-05.20.14/promotional-fidelity-v2-report.json', 'utf8'));
+          const failures = [];
+          if (!['pass', 'pass-with-findings'].includes(benchmark.status)) failures.push(`benchmark=${benchmark.status}`);
+          if (benchmark.actionCount > 190) failures.push(`actions=${benchmark.actionCount}`);
+          if (benchmark.metrics.offerUnits !== 4) failures.push(`offers=${benchmark.metrics.offerUnits}`);
+          if (benchmark.metrics.priceContainers !== 4) failures.push(`prices=${benchmark.metrics.priceContainers}`);
+          if (benchmark.metrics.tableRows !== 0) failures.push(`tableRows=${benchmark.metrics.tableRows}`);
+          if (fidelity.scores.commercialStructure !== 100) failures.push(`structure=${fidelity.scores.commercialStructure}`);
+          if (fidelity.scores.promotionalColor < 50) failures.push(`color=${fidelity.scores.promotionalColor}`);
+          if (fidelity.scores.overall < 75) failures.push(`overall=${fidelity.scores.overall}`);
+          if (fidelity.structure.primaryOfferPresentation !== 'independent-repeated-offers') failures.push(`presentation=${fidelity.structure.primaryOfferPresentation}`);
+          if (fidelity.structure.commercialRecordSource !== 'independent-offer-units') failures.push(`records=${fidelity.structure.commercialRecordSource}`);
+          if (failures.length) throw new Error(`DB-05.20.14 não atingiu o marco: ${failures.join(', ')}`);
+          console.log(`✓ DB-05.20.14 atingiu ${fidelity.scores.commercialStructure}/100 estrutural, ${fidelity.scores.promotionalColor}/100 cromático e ${fidelity.scores.overall}/100 consolidado em ${benchmark.actionCount} ações.`);
+          NODE
+      - name: Upload V2 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-promotional-benchmark-v2-05.20.14
+          path: audit-output/db-05.20.14
+          if-no-files-found: warn
