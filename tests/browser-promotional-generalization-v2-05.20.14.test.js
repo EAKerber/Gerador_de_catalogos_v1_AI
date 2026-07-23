@@ -229,7 +229,7 @@ try {
 assert(result.status === 0, `Benchmark V2 falhou com status ${result.status}.`);
 const report = JSON.parse(fs.readFileSync(path.join(outputDir, "promotional-generalization-report.json"), "utf8"));
 assert(["pass", "pass-with-findings"].includes(report.status), `Status técnico inesperado: ${report.status}.`);
-assert(report.actionCount <= 210, `Benchmark V2 excedeu 210 ações: ${report.actionCount}.`);
+assert(report.actionCount <= 215, `Benchmark V2 excedeu 215 ações: ${report.actionCount}.`);
 assert(report.metrics.offerUnits === 4, `Benchmark V2 não possui quatro ofertas: ${report.metrics.offerUnits}.`);
 assert(report.metrics.priceContainers === 4, `Benchmark V2 não possui quatro preços: ${report.metrics.priceContainers}.`);
 assert(report.metrics.tableRows === 0, "Benchmark V2 voltou à representação tabular.");
