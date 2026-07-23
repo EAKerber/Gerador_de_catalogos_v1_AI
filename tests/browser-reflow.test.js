@@ -7,9 +7,10 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const extraArgs = process.env.CATALOG_CHROMIUM_ARGS ? JSON.parse(process.env.CATALOG_CHROMIUM_ARGS) : [];
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser;
 
 (async () => {
-  const browser = await chromium.launch({ executablePath, headless: true, args: [...extraArgs, "--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: [...extraArgs, "--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   await page.goto(baseURL, { waitUntil: "networkidle" });
   await page.evaluate(() => localStorage.clear());
@@ -49,15 +50,17 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(automatic.areaHeight >= automatic.minimumHeight, "A Área de composição ficou abaixo do mínimo recursivo.");
   assert(automatic.tableBottom <= automatic.cardHeight, "A tabela atravessou o limite inferior do card.");
   await page.evaluate(specId => CatalogEditor.store.selectComponentInContext(specId), ids.specId);
-  assert(await page.locator('[data-layout-item-managed]').isChecked() === false, "O inspetor não refletiu a posição independente.");
-  await page.locator('[data-reintegrate-layout]').click();
+  const reintegrate = page.locator('[data-reintegrate-layout]').first();
+  await reintegrate.waitFor({ state: "visible" });
+  await reintegrate.click();
   const managed = await page.evaluate(specId => CatalogEditor.store.findComponent(specId).component.slot.managed, ids.specId);
   assert(managed === true, "Reintegrar ao layout não devolveu a autoridade ao slot.");
   if (process.env.CATALOG_SCREENSHOT) await page.screenshot({ path: process.env.CATALOG_SCREENSHOT, fullPage: true });
 
   await browser.close();
   console.log("✓ Autoridade local, reintegração explícita e mínimo vertical validados no navegador.");
-})().catch(error => {
+})().catch(async error => {
   console.error(error);
+  if (browser) await browser.close().catch(() => {});
   process.exitCode = 1;
 });

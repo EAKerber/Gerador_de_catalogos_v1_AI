@@ -8,6 +8,7 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const outputDir = path.resolve(process.env.CATALOG_AUDIT_OUTPUT_DIR || "/tmp/catalog-audit-05.12");
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser;
 
 const products = [
   "Título\tCódigo\tEmbalagem\tPreço\tEspecificação 1\tEspecificação 2\tAplicações",
@@ -78,7 +79,7 @@ const legendPlans = [
 
 (async () => {
   fs.mkdirSync(outputDir, { recursive: true });
-  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 }, acceptDownloads: true });
   const actions = [];
   const pageErrors = [];
@@ -226,7 +227,7 @@ const legendPlans = [
       await ensureDetails(".table-column-editor", "Reabrir configuração de colunas após alterar função");
       await fill(page.locator(`[data-table-column-key="${price.key}"][data-table-column-path="label"]`), plan.priceLabel, `Tabela ${index + 1}: rótulo ${plan.priceLabel}`, { surface: "inspector" });
     }
-    await ensureDetailsContent(".table-bulk-entry", "[data-table-bulk-text]", "Abrir colagem de linhas");
+    await ensureDetailsContent('details.table-bulk-entry:has([data-table-bulk-text])', "[data-table-bulk-text]", "Abrir colagem de linhas");
     const headers = plan.omitPackage ? ["CÓDIGO", plan.middleLabel, plan.priceLabel] : ["CÓDIGO", plan.middleLabel, "EMBALAGEM", plan.priceLabel];
     const text = [headers, ...plan.rows].map(row => row.join("\t")).join("\n");
     await fill(page.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
@@ -434,4 +435,8 @@ const legendPlans = [
 
   await browser.close();
   console.log(`✓ Auditoria manual concluída: ${counts.total} ações (${counts.click} cliques, ${counts.fill} preenchimentos, ${counts.selection} seleções), ${result.report.summary.collisions} colisão(ões), ${result.report.summary.overflows} overflow(s).`);
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch(async error => {
+  console.error(error);
+  if (browser) await browser.close().catch(() => {});
+  process.exitCode = 1;
+});
