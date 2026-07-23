@@ -45,6 +45,16 @@ source = replaceOnce(source,
   'await page.waitForFunction(() => window.CatalogEditor && window.CatalogSectionRecipes?.get?.("fact") && window.CatalogSectionRecipes?.get?.("commerce-offer-unit"));',
   "prontidão após reload"
 );
+source = replaceOnce(source,
+  '  const materialFactId = await insertFromPalette("recipe", "fact", { x: 24, y: 420, width: 210, height: 170 });',
+  '  const materialFactId = await insertFromPalette("recipe", "fact", { x: 250, y: 205, width: 160, height: 170 });',
+  "posição do fato material"
+);
+source = replaceOnce(source,
+  '  const capacityFactId = await insertFromPalette("recipe", "fact", { x: 24, y: 595, width: 210, height: 170 });',
+  '  const capacityFactId = await insertFromPalette("recipe", "fact", { x: 420, y: 205, width: 160, height: 170 });',
+  "posição do fato capacidade"
+);
 
 const offerHelpers = `async function recursiveRoleMap(rootId) {
   return page.evaluate(componentId => {
@@ -97,7 +107,12 @@ const offerConstruction = `  const firstOfferId = await insertFromPalette("recip
   for (let index = 0; index < offerIds.length; index += 1) offerParts.push(await editOfferUnit(offerIds[index], offerValues[index]));
 
 `;
-source = replaceRange(source, "  const productCardId = await insertFromPalette", "  const calloutId = await insertFromPalette", offerConstruction + '  const calloutId = await insertFromPalette("recipe", "section-tip-callout", { x: 590, y: 205, width: 180, height: 170 });\n', "núcleo comercial");
+source = replaceRange(source, "  const productCardId = await insertFromPalette", "  const calloutId = await insertFromPalette", offerConstruction, "núcleo comercial");
+source = replaceOnce(source,
+  '  const calloutId = await insertFromPalette("recipe", "section-tip-callout", { x: 590, y: 720, width: 180, height: 160 });',
+  '  const calloutId = await insertFromPalette("recipe", "section-tip-callout", { x: 590, y: 205, width: 180, height: 170 });',
+  "posição do callout"
+);
 source = replaceOnce(source,
   '  const firstFeatureId = await insertFromPalette("component", "icon", { x: 24, y: 890, width: 160, height: 80 });',
   '  const firstFeatureId = await insertFromPalette("component", "icon", { x: 24, y: 940, width: 160, height: 70 });',
