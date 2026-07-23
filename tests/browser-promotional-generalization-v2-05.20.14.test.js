@@ -46,6 +46,16 @@ source = replaceOnce(source,
   "prontidão após reload"
 );
 source = replaceOnce(source,
+  '  await selectComponent(roles.icon);\n  await setProp("icon", values.icon);\n',
+  '',
+  "ícones secundários dos fatos"
+);
+source = replaceOnce(source,
+  '  await setStyle("textColor", "text.strong");\n',
+  '',
+  "cor já correspondente ao padrão"
+);
+source = replaceOnce(source,
   '  const materialFactId = await insertFromPalette("recipe", "fact", { x: 24, y: 420, width: 210, height: 170 });',
   '  const materialFactId = await insertFromPalette("recipe", "fact", { x: 250, y: 205, width: 160, height: 170 });',
   "posição do fato material"
@@ -103,8 +113,8 @@ const offerConstruction = `  const firstOfferId = await insertFromPalette("recip
     { code: "CÓD. 1147", measure: "150mm", amount: "5,99" },
     { code: "CÓD. 1148", measure: "200mm", amount: "6,90" }
   ];
-  const offerParts = [];
-  for (let index = 0; index < offerIds.length; index += 1) offerParts.push(await editOfferUnit(offerIds[index], offerValues[index]));
+  const offerParts = [await recursiveRoleMap(offerIds[0])];
+  for (let index = 1; index < offerIds.length; index += 1) offerParts.push(await editOfferUnit(offerIds[index], offerValues[index]));
 
 `;
 source = replaceRange(source, "  const productCardId = await insertFromPalette", "  const calloutId = await insertFromPalette", offerConstruction, "núcleo comercial");
