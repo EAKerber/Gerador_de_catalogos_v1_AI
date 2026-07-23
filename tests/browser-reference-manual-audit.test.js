@@ -341,19 +341,19 @@ const legendPlans = [
   await click(page.locator(`[data-context-id="${ids.rootId}"]`), "Voltar ao contêiner da página", { surface: "breadcrumb", contextSwitch: true });
   const cardFrames = [
     { x: 0, y: 0, width: 746, height: 222 },
-    { x: 0, y: 234, width: 240, height: 246 },
-    { x: 252, y: 234, width: 240, height: 246 },
-    { x: 504, y: 234, width: 242, height: 246 },
-    { x: 0, y: 492, width: 240, height: 286 },
-    { x: 252, y: 492, width: 240, height: 286 },
-    { x: 504, y: 492, width: 242, height: 286 }
+    { x: 0, y: 222, width: 240, height: 262 },
+    { x: 252, y: 222, width: 240, height: 262 },
+    { x: 504, y: 222, width: 242, height: 262 },
+    { x: 0, y: 484, width: 240, height: 320 },
+    { x: 252, y: 484, width: 240, height: 320 },
+    { x: 504, y: 484, width: 242, height: 320 }
   ];
   for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.legendPanelId, { x: 0, y: 790, width: 500, height: 120 }, "painel de legenda");
-  await setFrame(ids.tipId, { x: 510, y: 760, width: 236, height: 150 }, "chamada de dica");
-  await setFrame(ids.contentId, { x: 24, y: 100, width: 746, height: 943 }, "conteúdo principal");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal");
+  await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
+  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
   await setFrame(ids.rootId, { x: 0, y: 0, width: 794, height: 1123 }, "estrutura da página");
-  await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 100 }, "cabeçalho");
+  await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 110 }, "cabeçalho");
   await setFrame(ids.footerId, { x: 24, y: 1043, width: 746, height: 80 }, "rodapé");
 
   const semanticTextIds = await page.evaluate(({ tipId, legendPanelId }) => {
@@ -371,9 +371,12 @@ const legendPlans = [
   await selectLayer(semanticTextIds.tipTitleId, "Selecionar título da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "DICA TOP MOBILI", "Editar título da dica", { surface: "inspector" });
+  await select(page.locator('[data-style-path="typography"]'), "type.card-title", "Usar título compacto na dica", { surface: "inspector" });
   await selectLayer(semanticTextIds.tipBodyId, "Selecionar corpo da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "Utilize a bit Philips correta para maior durabilidade do parafuso e melhor performance na fixação.", "Editar corpo da dica", { surface: "inspector" });
+  await select(page.locator('[data-style-path="typography"]'), "type.caption", "Usar corpo compacto na dica", { surface: "inspector" });
+  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica compactada");
   const documentPath = path.join(outputDir, "reference-manual.document.json");
   await click(page.locator("#exportMenu > summary"), "Abrir menu Exportar", { surface: "toolbar", contextSwitch: true });
   const downloadPromise = page.waitForEvent("download");
@@ -409,6 +412,7 @@ const legendPlans = [
     const report = CatalogEditor.store.getPublicationReport("draft");
     const clippedText = Array.from(document.querySelectorAll([
       ".component-card__title h3",
+      ".component-title-symbol h3",
       ".component-card__spec span",
       ".component-specification > span:last-child",
       ".component-data-table__header span",
