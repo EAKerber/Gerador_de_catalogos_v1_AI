@@ -43,8 +43,8 @@ source = replaceOnce(
 source = replaceOnce(
   source,
   'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session"]);',
-  'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session", "reference"]);',
-  "normalização de referências locais no round-trip"
+  'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session", "reference", "sha256"]);',
+  "normalização de referências locais e hashes derivados no round-trip"
 );
 
 fs.writeFileSync(generatedPath, source);
