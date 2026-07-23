@@ -8,15 +8,36 @@
 
   function patchRegistry() {
     const registry = window.CATALOG_COMPONENT_REGISTRY;
-    if (!registry?.icon) return false;
-    if (registry.icon.recommendedSize?.width === 96 && registry.icon.recommendedSize?.height === 72) return true;
-    window.CATALOG_COMPONENT_REGISTRY = Object.freeze({
-      ...registry,
-      icon: Object.freeze({
-        ...registry.icon,
-        recommendedSize: Object.freeze({ width: 96, height: 72 })
-      })
-    });
+    if (!registry?.icon || !registry?.text) return false;
+    const icon = registry.icon.recommendedSize?.width === 96 && registry.icon.recommendedSize?.height === 72
+      ? registry.icon
+      : Object.freeze({
+          ...registry.icon,
+          recommendedSize: Object.freeze({ width: 96, height: 72 })
+        });
+    const text = registry.text.__calloutLegibilityMinimumVersion === CONTRACT_VERSION
+      ? registry.text
+      : (() => {
+          const originalMeasure = registry.text.measureMinimum;
+          const patched = {
+            ...registry.text,
+            measureMinimum(component) {
+              const base = typeof originalMeasure === "function"
+                ? originalMeasure(component)
+                : { width: 24, height: 34 };
+              if (component?.props?.recipeRole === "title" && component?.style?.typography === "type.promo-title") {
+                return { width: Math.max(80, base.width || 0), height: Math.max(64, base.height || 0) };
+              }
+              if (component?.props?.recipeRole === "body" && component?.style?.typography === "type.body") {
+                return { width: Math.max(80, base.width || 0), height: Math.max(62, base.height || 0) };
+              }
+              return base;
+            }
+          };
+          Object.defineProperty(patched, "__calloutLegibilityMinimumVersion", { value: CONTRACT_VERSION });
+          return Object.freeze(patched);
+        })();
+    window.CATALOG_COMPONENT_REGISTRY = Object.freeze({ ...registry, icon, text });
     return true;
   }
 
