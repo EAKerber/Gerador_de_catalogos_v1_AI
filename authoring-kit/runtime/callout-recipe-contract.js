@@ -151,8 +151,12 @@
         line-height: .94;
       }
       .editor-component--layout-container[data-contextual="true"][data-layout-mode="column"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:first-child .component-text p {
-        font-size: calc(var(--component-title-size, 30px) * .5);
-        line-height: .98;
+        font-size: calc(var(--component-title-size, 30px) * .48);
+        line-height: .92;
+      }
+      .editor-component--layout-container[data-contextual="true"][data-layout-mode="column"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:nth-child(2) .component-text p {
+        font-size: 12px;
+        line-height: 1.25;
       }
       .editor-component--layout-container[data-contextual="true"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text .component-text {
         padding: 3px 5px;
