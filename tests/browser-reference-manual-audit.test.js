@@ -386,6 +386,7 @@ const legendPlans = [
     };
     const components = walk(pageState.children);
     const cards = components.filter(component => component.type === "product-card");
+    const tables = components.filter(component => component.type === "data-table");
     const galleries = components.filter(component => component.type === "art-gallery");
     const tableRows = CatalogEditor.store.getCollection("tableRows")?.items || [];
     const report = CatalogEditor.store.getPublicationReport("draft");
@@ -395,6 +396,7 @@ const legendPlans = [
       components: components.length,
       cards: cards.length,
       tableRows: tableRows.length,
+      tableRowCounts: tables.map(table => ({ id: table.id, name: table.name, count: CatalogEditor.store.getTableRows(table).length })),
       galleries: galleries.map(gallery => gallery.children.filter(component => component.type === "art").length),
       legends: CatalogEditor.store.getColorLegends().length,
       report,
@@ -432,7 +434,7 @@ const legendPlans = [
   assert(result.viewport.width === 1366 && result.viewport.height === 768, "O ensaio não ocorreu em 1366×768.");
   assert(
     result.products === 7 && result.cards === 7 && result.tableRows === 16,
-    `Produtos, cards ou linhas divergiram da referência: ${JSON.stringify({ products: result.products, cards: result.cards, tableRows: result.tableRows })}.`
+    `Produtos, cards ou linhas divergiram da referência: ${JSON.stringify({ products: result.products, cards: result.cards, tableRows: result.tableRows, tableRowCounts: result.tableRowCounts })}.`
   );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
