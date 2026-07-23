@@ -342,12 +342,15 @@ const legendPlans = [
   const semanticTextIds = await page.evaluate(({ tipId, legendPanelId }) => {
     const tip = CatalogEditor.store.findComponent(tipId)?.component;
     const panel = CatalogEditor.store.findComponent(legendPanelId)?.component;
+    const descendants = component => component ? [component, ...(component.children || []).flatMap(descendants)] : [];
+    const tipParts = descendants(tip);
     return {
-      tipTitleId: tip?.children.find(component => component.type === "text" && component.props?.content === "DICA DO CATÁLOGO")?.id,
-      tipBodyId: tip?.children.find(component => component.type === "text" && component.props?.content?.startsWith("Edite esta chamada"))?.id,
+      tipTitleId: tipParts.find(component => component.type === "text" && component.props?.recipeRole === "title")?.id,
+      tipBodyId: tipParts.find(component => component.type === "text" && component.props?.recipeRole === "body")?.id,
       panelId: panel?.id
     };
   }, ids);
+  assert(semanticTextIds.tipTitleId && semanticTextIds.tipBodyId, "A receita de callout não expôs textos semânticos de título e corpo.");
   await selectLayer(semanticTextIds.tipTitleId, "Selecionar título da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "DICA TOP MOBILI", "Editar título da dica", { surface: "inspector" });
