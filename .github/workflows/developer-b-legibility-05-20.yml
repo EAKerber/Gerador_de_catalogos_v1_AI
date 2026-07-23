@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/developer-b-legibility-05-20.yml'
       - 'tests/browser-benefit-callout-legibility-05.20.7.test.js'
+      - 'tests/browser-callout-layout-diagnostic-05.20.15.test.js'
       - 'app/component-registry.js'
       - 'app/renderer.js'
       - 'app/callout-recipe-contract.js'
@@ -15,9 +16,9 @@ permissions:
   contents: read
 jobs:
   benefit-callout-legibility:
-    name: DB-05.20.7 - benefit and callout legibility
+    name: DB-05.20.15 - benefit and callout legibility
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,8 +30,10 @@ jobs:
           node --check app/renderer.js
           node --check app/callout-recipe-contract.js
           node --check tests/browser-benefit-callout-legibility-05.20.7.test.js
+          node --check tests/browser-callout-layout-diagnostic-05.20.15.test.js
           cmp app/component-registry.js authoring-kit/runtime/component-registry.js
           cmp app/callout-recipe-contract.js authoring-kit/runtime/callout-recipe-contract.js
+          node tests/callout-recipe-audit-05.18.19.test.js
       - name: Install Playwright and select system Chrome
         shell: bash
         run: |
@@ -48,16 +51,21 @@ jobs:
           done
           cat /tmp/catalog-http.log
           exit 1
+      - name: Record callout layout diagnostic
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_LEGIBILITY_OUTPUT_DIR: audit-output/db-05.20.15/legibility
+        run: node tests/browser-callout-layout-diagnostic-05.20.15.test.js
       - name: Run benefit and callout regression
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
-          CATALOG_LEGIBILITY_OUTPUT_DIR: audit-output/db-05.20.7/legibility
+          CATALOG_LEGIBILITY_OUTPUT_DIR: audit-output/db-05.20.15/legibility
         run: node tests/browser-benefit-callout-legibility-05.20.7.test.js
       - name: Upload legibility evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: developer-b-benefit-callout-legibility-05.20.7
-          path: audit-output/db-05.20.7/legibility
+          name: developer-b-benefit-callout-legibility-05.20.15
+          path: audit-output/db-05.20.15/legibility
           if-no-files-found: error
           retention-days: 14
