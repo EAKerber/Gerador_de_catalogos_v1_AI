@@ -38,7 +38,7 @@ fs.mkdirSync(outputDir, { recursive: true });
   });
 
   await page.waitForSelector(`[data-component-id="${fixture.rootId}"]`);
-  const report = await page.evaluate(fixture => {
+  const browserMetrics = await page.evaluate(fixture => {
     const store = CatalogEditor.store;
     const rect = element => {
       const box = element?.getBoundingClientRect();
@@ -79,12 +79,11 @@ fs.mkdirSync(outputDir, { recursive: true });
       icon: { modelFrame: icon ? { ...icon.frame } : null, domFrame: rect(document.querySelector(`[data-component-id="${fixture.roles.icon}"]`)) },
       content: { modelFrame: content ? { ...content.frame } : null, domFrame: rect(document.querySelector(`[data-component-id="${fixture.roles.content}"]`)), layout: content?.layout || null },
       title: readRole("title"),
-      body: readRole("body"),
-      pageErrors,
-      consoleErrors
+      body: readRole("body")
     };
   }, fixture);
 
+  const report = { ...browserMetrics, pageErrors, consoleErrors };
   fs.writeFileSync(path.join(outputDir, "callout-layout-diagnostic.json"), `${JSON.stringify(report, null, 2)}\n`);
   await page.screenshot({ path: path.join(outputDir, "callout-layout-diagnostic.png"), fullPage: true });
   if (pageErrors.length || consoleErrors.length) throw new Error(`Erros durante diagnóstico: ${[...pageErrors, ...consoleErrors].join(" | ")}`);
