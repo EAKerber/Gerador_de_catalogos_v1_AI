@@ -307,6 +307,10 @@ const legendPlans = [
     await selectLayer(gallery.id, `Selecionar galeria do card ${cardIndex + 1}`);
     await inspectorTab("structure");
     await fill(page.locator('[data-layout-path="columns"]'), String(captions.length), `Card ${cardIndex + 1}: ${captions.length} imagens por linha`, { surface: "inspector" });
+    if (captions.length >= 5) {
+      await fill(page.locator('[data-layout-path="padding"]'), "0", `Card ${cardIndex + 1}: remover padding da galeria compacta`, { surface: "inspector" });
+      await fill(page.locator('[data-layout-path="gap"]'), "1", `Card ${cardIndex + 1}: reduzir espaço entre variações`, { surface: "inspector" });
+    }
     gallery = await page.evaluate(id => CatalogEditor.store.findComponent(id)?.component, gallery.id);
     const last = gallery.children[gallery.children.length - 1];
     await selectLayer(last.id, `Selecionar última imagem do card ${cardIndex + 1}`);
