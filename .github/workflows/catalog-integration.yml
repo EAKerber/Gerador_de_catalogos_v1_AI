@@ -56,6 +56,8 @@ jobs:
       CATALOG_TEST_TIMEOUT_MS: "600000"
       CATALOG_TEST_SHARD_COUNT: "4"
       CATALOG_TEST_SHARD_INDEX: ${{ matrix.shard_index }}
+      CATALOG_ASSETS_OUTPUT_DIR: audit-output/visual-review/promotional-assets
+      CATALOG_AUDIT_OUTPUT_DIR: audit-output/visual-review/technical-reference
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -83,6 +85,14 @@ jobs:
           cat /tmp/catalog-server.log
           exit 1
       - run: npm run test:browser
+      - name: Upload visual review evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: catalog-visual-review-${{ matrix.shard_index }}
+          path: audit-output/visual-review/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Upload browser diagnostics
         if: failure()
         uses: actions/upload-artifact@v7
