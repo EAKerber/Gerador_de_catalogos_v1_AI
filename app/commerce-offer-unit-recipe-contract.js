@@ -44,7 +44,7 @@
         name: "Unidade de oferta comercial",
         props: { label: "OFERTA COMERCIAL", recipeRole: "offer-unit" },
         style: { surface: "surface.paper", border: "border.strong", radius: "radius.small", accentColor: "promo.primary" },
-        layout: { mode: "column", padding: 0, gap: 0, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 150, mode: "column" } },
+        layout: { mode: "free", padding: 0, gap: 0, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 150, mode: "column" } },
         children: [
           node("recipe-commerce-offer-media", "art", { x: 0, y: 0, width: 180, height: 220 }, {
             name: "Produto ou variação",
