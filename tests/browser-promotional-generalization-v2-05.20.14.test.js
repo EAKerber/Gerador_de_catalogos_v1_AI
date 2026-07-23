@@ -71,10 +71,6 @@ source = replaceOnce(source,
   "largura do título promocional"
 );
 source = replaceOnce(source,
-  '    if (role === "title") await setProp("scale", 120);',
-  "escala do título promocional"
-);
-source = replaceOnce(source,
   '  await editSectionHeading(headingId);',
   `  await editSectionHeading(headingId);
 
