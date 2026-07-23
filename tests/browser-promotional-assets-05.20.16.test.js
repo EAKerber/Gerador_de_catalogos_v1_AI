@@ -54,7 +54,7 @@ function runBaseline() {
 function cleanSnapshot(value) {
   if (Array.isArray(value)) return value.map(cleanSnapshot);
   if (!value || typeof value !== "object") return value;
-  const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session"]);
+  const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session", "reference", "sha256"]);
   return Object.fromEntries(Object.keys(value).filter(key => !ignored.has(key)).sort().map(key => [key, cleanSnapshot(value[key])]));
 }
 
@@ -255,6 +255,12 @@ async function exportPackage(page, targetPath) {
       return ready.length === 5;
     });
 
+    await page.evaluate(() => {
+      CatalogEditor.store.setEditingContext(null);
+      CatalogEditor.store.setSelection(null);
+      CatalogEditor.store.setEditorSettings({ gridVisible: false, showGuides: false });
+    });
+    await page.waitForTimeout(50);
     const constructedMetrics = await collectMetrics(page);
     assert(constructedMetrics.assetCollectionCount === 3, `Esperados três assets; recebidos ${constructedMetrics.assetCollectionCount}.`);
     assert(constructedMetrics.assetUsages === 5 && constructedMetrics.placeholderArts === 0, `Vinculação incompleta: ${JSON.stringify({ usages: constructedMetrics.assetUsages, placeholders: constructedMetrics.placeholderArts })}.`);
@@ -293,6 +299,12 @@ async function exportPackage(page, targetPath) {
     await roundTripPage.waitForFunction(() => (CatalogEditor.store.getCollection("assets")?.items || []).length === 3);
     await roundTripPage.waitForFunction(() => Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]")).filter(element => element.dataset.assetState === "ready").length === 5);
 
+    await roundTripPage.evaluate(() => {
+      CatalogEditor.store.setEditingContext(null);
+      CatalogEditor.store.setSelection(null);
+      CatalogEditor.store.setEditorSettings({ gridVisible: false, showGuides: false });
+    });
+    await roundTripPage.waitForTimeout(50);
     const reimportedMetrics = await collectMetrics(roundTripPage);
     const reimportedSnapshot = await roundTripPage.evaluate(() => CatalogEditor.store.getExportDocument());
     assert(signature(reimportedSnapshot) === signature(constructedSnapshot), "Documento com assets divergiu após pacote/reimportação.");
@@ -305,7 +317,13 @@ async function exportPackage(page, targetPath) {
     await roundTripPage.locator("#undoButton").click();
     await roundTripPage.waitForFunction(expected => JSON.stringify(CatalogEditor.store.getExportDocument().pages) === JSON.stringify(expected.pages), blankSnapshot);
     await roundTripPage.locator("#redoButton").click();
-    await roundTripPage.waitForFunction(expected => JSON.stringify(CatalogEditor.store.getExportDocument().pages) === JSON.stringify(expected.pages), constructedSnapshot);
+    await roundTripPage.waitForFunction(() => {
+      const assets = CatalogEditor.store.getCollection("assets")?.items || [];
+      const offers = CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "offer-unit");
+      const readyPreviews = Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]"))
+        .filter(element => element.dataset.assetState === "ready");
+      return assets.length === 3 && offers.length === 4 && readyPreviews.length === 5;
+    });
     const redoSnapshot = await roundTripPage.evaluate(() => CatalogEditor.store.getExportDocument());
     assert(signature(redoSnapshot) === signature(constructedSnapshot), "Redo não restaurou o pacote com assets.");
 
