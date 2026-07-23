@@ -26,10 +26,10 @@
                 ? originalMeasure(component)
                 : { width: 24, height: 34 };
               if (component?.props?.recipeRole === "title" && component?.style?.typography === "type.promo-title") {
-                return { width: Math.max(80, base.width || 0), height: Math.max(64, base.height || 0) };
+                return { width: Math.max(80, base.width || 0), height: Math.max(62, base.height || 0) };
               }
               if (component?.props?.recipeRole === "body" && component?.style?.typography === "type.body") {
-                return { width: Math.max(80, base.width || 0), height: Math.max(62, base.height || 0) };
+                return { width: Math.max(80, base.width || 0), height: Math.max(64, base.height || 0) };
               }
               return base;
             }
@@ -88,7 +88,7 @@
       };
       const texts = (content.children || []).filter(child => child.type === "text");
       if (texts[0]) {
-        texts[0].frame.height = 64;
+        texts[0].frame.height = 62;
         texts[0].props = { ...(texts[0].props || {}), align: "start", verticalAlign: "center", scale: 100, overflow: "wrap", recipeRole: "title" };
         texts[0].style = {
           ...(texts[0].style || {}),
@@ -101,7 +101,7 @@
         texts[0].layoutItem = { ...(texts[0].layoutItem || {}), managed: true, grow: 0, span: 1 };
       }
       if (texts[1]) {
-        texts[1].frame.height = 62;
+        texts[1].frame.height = 64;
         texts[1].props = { ...(texts[1].props || {}), align: "start", verticalAlign: "start", scale: 100, overflow: "wrap", recipeRole: "body" };
         texts[1].style = {
           ...(texts[1].style || {}),
@@ -147,11 +147,11 @@
         grid-template-rows: minmax(0, 1fr);
       }
       .editor-component--layout-container[data-contextual="true"][data-layout-mode="row"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:first-child .component-text p {
-        font-size: calc(var(--component-title-size, 30px) * .93);
+        font-size: calc(var(--component-title-size, 30px) * .62);
         line-height: .94;
       }
       .editor-component--layout-container[data-contextual="true"][data-layout-mode="column"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:first-child .component-text p {
-        font-size: calc(var(--component-title-size, 30px) * .75);
+        font-size: calc(var(--component-title-size, 30px) * .5);
         line-height: .98;
       }
       .editor-component--layout-container[data-contextual="true"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text .component-text {
