@@ -2132,9 +2132,9 @@
     },
     {
       "id": "section-tip-callout",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "label": "Chamada de dica",
-      "description": "Ícone, título e texto em uma composição responsiva e editável.",
+      "description": "Ícone, título e texto com hierarquia responsiva ampla ou compacta.",
       "icon": "bulb",
       "rootType": "layout-container",
       "contexts": [
