@@ -430,7 +430,10 @@ const legendPlans = [
   fs.writeFileSync(path.join(outputDir, "reference-manual.metrics.json"), `${JSON.stringify(metrics, null, 2)}\n`);
 
   assert(result.viewport.width === 1366 && result.viewport.height === 768, "O ensaio não ocorreu em 1366×768.");
-  assert(result.products === 7 && result.cards === 7 && result.tableRows === 16, "Produtos, cards ou linhas divergiram da referência.");
+  assert(
+    result.products === 7 && result.cards === 7 && result.tableRows === 16,
+    `Produtos, cards ou linhas divergiram da referência: ${JSON.stringify({ products: result.products, cards: result.cards, tableRows: result.tableRows })}.`
+  );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
