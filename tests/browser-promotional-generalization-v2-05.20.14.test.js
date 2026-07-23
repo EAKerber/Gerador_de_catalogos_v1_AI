@@ -81,6 +81,16 @@ source = replaceOnce(source,
   await setProp("fit", "contain");`,
   "personagem promocional"
 );
+source = replaceOnce(source,
+  '  const heroTitleId = await insertFromPalette("component", "text", { x: 24, y: 200, width: 210, height: 105 });',
+  '  const heroTitleId = await insertFromPalette("component", "text", { x: 24, y: 200, width: 210, height: 85 });',
+  "compactação do título lateral"
+);
+source = replaceOnce(source,
+  '  const heroSupportId = await insertFromPalette("component", "text", { x: 24, y: 315, width: 210, height: 90 });',
+  '  const heroSupportId = await insertFromPalette("component", "text", { x: 24, y: 295, width: 210, height: 90 });',
+  "compactação do apoio lateral"
+);
 
 const offerHelpers = `async function recursiveRoleMap(rootId) {
   return page.evaluate(componentId => {
@@ -121,7 +131,7 @@ async function duplicateOfferUnits(firstId) {
 `;
 source = replaceRange(source, "async function editProductCard(cardId) {", "async function editCallout(rootId) {", offerHelpers, "helpers comerciais");
 
-const offerConstruction = `  const firstOfferId = await insertFromPalette("recipe", "commerce-offer-unit", { x: 24, y: 384, width: 180, height: 526 });
+const offerConstruction = `  const firstOfferId = await insertFromPalette("recipe", "commerce-offer-unit", { x: 24, y: 393, width: 180, height: 526 });
   const offerIds = await duplicateOfferUnits(firstOfferId);
   const offerValues = [
     { code: "CÓD. 1123", measure: "100mm", amount: "3,99" },
@@ -141,7 +151,7 @@ source = replaceOnce(source,
 );
 source = replaceOnce(source,
   '  const firstFeatureId = await insertFromPalette("component", "icon", { x: 24, y: 890, width: 160, height: 80 });',
-  '  const firstFeatureId = await insertFromPalette("component", "icon", { x: 24, y: 940, width: 160, height: 70 });',
+  '  const firstFeatureId = await insertFromPalette("component", "icon", { x: 24, y: 949, width: 160, height: 70 });',
   "faixa de benefícios"
 );
 source = replaceOnce(source,
