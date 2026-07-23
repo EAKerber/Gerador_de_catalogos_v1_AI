@@ -72,7 +72,6 @@ source = replaceOnce(source,
 );
 source = replaceOnce(source,
   '    if (role === "title") await setProp("scale", 120);',
-  '    if (role === "title") await setProp("scale", 160);',
   "escala do título promocional"
 );
 source = replaceOnce(source,
