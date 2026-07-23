@@ -52,6 +52,18 @@ source = replaceOnce(
   'await roundTripPage.waitForFunction(() => (CatalogEditor.store.getCollection("assets")?.items || []).length === 3);',
   "prontidão semântica após redo"
 );
+source = replaceOnce(
+  source,
+  '    const constructedMetrics = await collectMetrics(page);',
+  `    await page.evaluate(() => {\n      CatalogEditor.store.setEditingContext(null);\n      CatalogEditor.store.setSelection(null);\n      CatalogEditor.store.setEditorSettings({ gridVisible: false, showGuides: false });\n    });\n    await page.waitForTimeout(50);\n    const constructedMetrics = await collectMetrics(page);`,
+  "visualização neutra da fase com assets"
+);
+source = replaceOnce(
+  source,
+  '    const reimportedMetrics = await collectMetrics(roundTripPage);',
+  `    await roundTripPage.evaluate(() => {\n      CatalogEditor.store.setEditingContext(null);\n      CatalogEditor.store.setSelection(null);\n      CatalogEditor.store.setEditorSettings({ gridVisible: false, showGuides: false });\n    });\n    await roundTripPage.waitForTimeout(50);\n    const reimportedMetrics = await collectMetrics(roundTripPage);`,
+  "visualização neutra após reimportação"
+);
 
 fs.writeFileSync(generatedPath, source);
 let result;
@@ -69,4 +81,4 @@ try {
 }
 
 assert(result.status === 0, `Benchmark de assets reais falhou com status ${result.status}.`);
-console.log("✓ DB-05.20.16 executou o harness com rodapé válido, seleção inequívoca e round-trip sem chaves locais.");
+console.log("✓ DB-05.20.16 executou o harness com rodapé válido, seleção inequívoca, visualização neutra e round-trip sem chaves locais.");
