@@ -78,6 +78,7 @@
     }
     if (content) {
       content.frame.height = 130;
+      content.constraints = { ...(content.constraints || {}), minWidth: 80, minHeight: 100 };
       content.props = { ...(content.props || {}), recipeRole: "content" };
       content.style = { ...(content.style || {}), surface: "surface.paper", border: "border.none", radius: "radius.none" };
       content.layout = {
