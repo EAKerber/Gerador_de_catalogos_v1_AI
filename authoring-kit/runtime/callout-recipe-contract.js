@@ -191,7 +191,8 @@
     Object.defineProperty(api, "__calloutRecipeContractVersion", { value: CONTRACT_VERSION });
     window.CATALOG_SECTION_RECIPES = merged;
     window.CatalogSectionRecipes = Object.freeze(api);
-    return patchRegistry() && installStyles();
+    const registryInstalled = window.CATALOG_COMPONENT_REGISTRY ? patchRegistry() : true;
+    return registryInstalled && installStyles();
   }
 
   window.CatalogCalloutRecipeContract = Object.freeze({
