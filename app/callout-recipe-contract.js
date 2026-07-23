@@ -124,11 +124,11 @@
         grid-template-rows: minmax(0, 1fr);
       }
       .editor-component--layout-container[data-contextual="true"][data-layout-mode="row"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:first-child .component-text p {
-        font-size: calc(var(--component-title-size, 30px) * 1.08);
+        font-size: calc(var(--component-title-size, 30px) * .93);
         line-height: .94;
       }
       .editor-component--layout-container[data-contextual="true"][data-layout-mode="column"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text:first-child .component-text p {
-        font-size: calc(var(--component-title-size, 30px) * .82);
+        font-size: calc(var(--component-title-size, 30px) * .75);
         line-height: .98;
       }
       .editor-component--layout-container[data-contextual="true"] > .component-children-layer > .editor-component--layout-container > .component-children-layer > .editor-component--text .component-text {
