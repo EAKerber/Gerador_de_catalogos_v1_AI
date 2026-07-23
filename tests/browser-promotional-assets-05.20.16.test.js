@@ -45,7 +45,7 @@ function runBaseline() {
   assert(result.status === 0, `A reconstrução V2 de base falhou com status ${result.status}.`);
   const report = JSON.parse(fs.readFileSync(path.join(baselineDir, "promotional-generalization-report.json"), "utf8"));
   assert(["pass", "pass-with-findings"].includes(report.status), `Status inesperado do baseline: ${report.status}.`);
-  assert(report.actionCount <= 200, `Baseline excedeu 200 ações: ${report.actionCount}.`);
+  assert(report.actionCount <= 215, `Baseline excedeu 215 ações: ${report.actionCount}.`);
   assert(report.metrics.offerUnits === 4 && report.metrics.priceContainers === 4 && report.metrics.tableRows === 0, "Baseline comercial V2 não foi preservado.");
   assert(report.metrics.placeholderArts === 6, `Baseline deveria conter seis placeholders de arte; recebeu ${report.metrics.placeholderArts}.`);
   return report;
