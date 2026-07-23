@@ -397,6 +397,20 @@ const legendPlans = [
     const galleries = components.filter(component => component.type === "art-gallery");
     const tableRows = CatalogEditor.store.getCollection("tableRows")?.items || [];
     const report = CatalogEditor.store.getPublicationReport("draft");
+    const clippedText = Array.from(document.querySelectorAll([
+      ".component-card__title h3",
+      ".component-card__spec span",
+      ".component-specification > span:last-child",
+      ".component-data-table__header span",
+      ".component-data-table__row strong"
+    ].join(",")))
+      .filter(element => element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1)
+      .map(element => ({
+        componentId: element.closest("[data-component-id]")?.dataset.componentId || null,
+        text: element.textContent.trim(),
+        horizontalOverflow: Math.max(0, element.scrollWidth - element.clientWidth),
+        verticalOverflow: Math.max(0, element.scrollHeight - element.clientHeight)
+      }));
     return {
       schemaVersion: CatalogEditor.store.getState().schemaVersion,
       products: CatalogEditor.store.getProducts().length,
@@ -407,6 +421,7 @@ const legendPlans = [
       galleries: galleries.map(gallery => gallery.children.filter(component => component.type === "art").length),
       legends: CatalogEditor.store.getColorLegends().length,
       report,
+      clippedText,
       viewport: { width: innerWidth, height: innerHeight },
       zoom: CatalogEditor.store.getState().editor.zoom,
       frames: cards.map(card => ({ id: card.id, frame: card.frame }))
@@ -445,6 +460,11 @@ const legendPlans = [
   );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
+  assert(
+    result.report.summary.collisions === 0 && result.report.summary.overflows === 0,
+    `A reconstrução técnica não está geometricamente íntegra: ${JSON.stringify(result.report.summary)}.`
+  );
+  assert(result.clippedText.length === 0, `A reconstrução técnica contém texto truncado: ${JSON.stringify(result.clippedText)}.`);
   assert(pageErrors.length === 0, `Erros de página: ${pageErrors.join(" | ")}`);
   assert(consoleErrors.length === 0, `Erros de console: ${consoleErrors.join(" | ")}`);
 
