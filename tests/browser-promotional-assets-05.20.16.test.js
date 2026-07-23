@@ -45,9 +45,9 @@ function runBaseline() {
   assert(result.status === 0, `A reconstrução V2 de base falhou com status ${result.status}.`);
   const report = JSON.parse(fs.readFileSync(path.join(baselineDir, "promotional-generalization-report.json"), "utf8"));
   assert(["pass", "pass-with-findings"].includes(report.status), `Status inesperado do baseline: ${report.status}.`);
-  assert(report.actionCount <= 190, `Baseline excedeu 190 ações: ${report.actionCount}.`);
+  assert(report.actionCount <= 200, `Baseline excedeu 200 ações: ${report.actionCount}.`);
   assert(report.metrics.offerUnits === 4 && report.metrics.priceContainers === 4 && report.metrics.tableRows === 0, "Baseline comercial V2 não foi preservado.");
-  assert(report.metrics.placeholderArts === 5, `Baseline deveria conter cinco placeholders de arte; recebeu ${report.metrics.placeholderArts}.`);
+  assert(report.metrics.placeholderArts === 6, `Baseline deveria conter seis placeholders de arte; recebeu ${report.metrics.placeholderArts}.`);
   return report;
 }
 
@@ -75,11 +75,12 @@ async function pageAssetTargets(page) {
     const flatten = component => [component, ...(component.children || []).flatMap(flatten)];
     const pageChildren = CatalogEditor.store.getPage().children;
     const logo = pageChildren.find(component => component.type === "art" && component.props?.role === "logo");
+    const character = pageChildren.find(component => component.type === "art" && component.props?.label === "PERSONAGEM DA PROMOÇÃO");
     const offers = pageChildren
       .filter(component => component.props?.recipeRole === "offer-unit")
       .sort((left, right) => left.frame.x - right.frame.x);
     const media = offers.map(offer => flatten(offer).find(component => component.type === "art" && component.props?.recipeRole === "media"));
-    return { logoId: logo?.id || null, mediaIds: media.map(component => component?.id || null) };
+    return { logoId: logo?.id || null, characterId: character?.id || null, mediaIds: media.map(component => component?.id || null) };
   });
 }
 
@@ -189,7 +190,7 @@ async function exportPackage(page, targetPath) {
     await importDocument(page, baselineDocumentPath);
     await page.waitForFunction(() => CatalogEditor.store.getPage().children.some(component => component.props?.recipeRole === "offer-unit"));
     const targets = await pageAssetTargets(page);
-    assert(targets.logoId && targets.mediaIds.length === 4 && targets.mediaIds.every(Boolean), `Slots de asset inesperados: ${JSON.stringify(targets)}.`);
+    assert(targets.logoId && targets.characterId && targets.mediaIds.length === 4 && targets.mediaIds.every(Boolean), `Slots de asset inesperados: ${JSON.stringify(targets)}.`);
 
     const layersTab = page.locator('[data-left-panel-tab="layers"]');
     if (await layersTab.getAttribute("aria-selected") !== "true") await act("Abrir Camadas para vincular assets", () => layersTab.click());
@@ -238,6 +239,8 @@ async function exportPackage(page, targetPath) {
 
     await setRole(targets.logoId, "logo");
     const logoAssetId = await importAsset(targets.logoId, fixtures.get("logo"));
+    await setRole(targets.characterId, "generic");
+    const characterAssetId = await importAsset(targets.characterId, fixtures.get("character"));
     await setRole(targets.mediaIds[0], "product");
     const productAssetId = await importAsset(targets.mediaIds[0], fixtures.get("product"));
     for (const mediaId of targets.mediaIds.slice(1, 3)) {
@@ -247,12 +250,12 @@ async function exportPackage(page, targetPath) {
     await setRole(targets.mediaIds[3], "technical");
     const technicalAssetId = await importAsset(targets.mediaIds[3], fixtures.get("technical"));
 
-    const importedIds = { logoAssetId, productAssetId, technicalAssetId };
-    assert(new Set(Object.values(importedIds)).size === 3, `Assets importados não são independentes: ${JSON.stringify(importedIds)}.`);
+    const importedIds = { logoAssetId, characterAssetId, productAssetId, technicalAssetId };
+    assert(new Set(Object.values(importedIds)).size === 4, `Assets importados não são independentes: ${JSON.stringify(importedIds)}.`);
     await page.waitForFunction(() => {
       const ready = Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]"))
         .filter(element => element.dataset.assetId && element.dataset.assetState === "ready");
-      return ready.length === 5;
+      return ready.length === 6;
     });
 
     await page.evaluate(() => {
@@ -262,8 +265,8 @@ async function exportPackage(page, targetPath) {
     });
     await page.waitForTimeout(50);
     const constructedMetrics = await collectMetrics(page);
-    assert(constructedMetrics.assetCollectionCount === 3, `Esperados três assets; recebidos ${constructedMetrics.assetCollectionCount}.`);
-    assert(constructedMetrics.assetUsages === 5 && constructedMetrics.placeholderArts === 0, `Vinculação incompleta: ${JSON.stringify({ usages: constructedMetrics.assetUsages, placeholders: constructedMetrics.placeholderArts })}.`);
+    assert(constructedMetrics.assetCollectionCount === 4, `Esperados quatro assets; recebidos ${constructedMetrics.assetCollectionCount}.`);
+    assert(constructedMetrics.assetUsages === 6 && constructedMetrics.placeholderArts === 0, `Vinculação incompleta: ${JSON.stringify({ usages: constructedMetrics.assetUsages, placeholders: constructedMetrics.placeholderArts })}.`);
     assert(constructedMetrics.offerUnits === 4 && constructedMetrics.priceBlocks === 4 && constructedMetrics.tableRows === 0, "Assets alteraram a estrutura comercial independente.");
     assert(constructedMetrics.schemaVersion === "1.16.0", `Assets alteraram o schema: ${constructedMetrics.schemaVersion}.`);
     assert(constructedMetrics.modelCount === constructedMetrics.domCount && constructedMetrics.uniqueModelIds === constructedMetrics.uniqueDOMIds && constructedMetrics.missingDOM.length === 0, "Modelo e DOM divergiram após assets.");
@@ -282,7 +285,7 @@ async function exportPackage(page, targetPath) {
     await exportPackage(page, packagePath);
     const packageEntries = fflate.unzipSync(fs.readFileSync(packagePath));
     const packageManifest = JSON.parse(new TextDecoder().decode(packageEntries["catalog-project.json"]));
-    assert(packageManifest.assets.length === 3, `Pacote contém ${packageManifest.assets.length} assets.`);
+    assert(packageManifest.assets.length === 4, `Pacote contém ${packageManifest.assets.length} assets.`);
     assert(packageManifest.assets.every(asset => expectedHashes.has(asset.sha256)), "O pacote não preservou os SHA-256 dos fixtures.");
 
     roundTripPage = await browser.newPage({ viewport: { width: 1366, height: 768 }, acceptDownloads: true });
@@ -296,8 +299,8 @@ async function exportPackage(page, targetPath) {
     await roundTripPage.waitForFunction(() => window.CatalogEditor?.store && window.CatalogEditor?.projectPackage);
     const blankSnapshot = await roundTripPage.evaluate(() => CatalogEditor.store.getExportDocument());
     await importDocument(roundTripPage, packagePath);
-    await roundTripPage.waitForFunction(() => (CatalogEditor.store.getCollection("assets")?.items || []).length === 3);
-    await roundTripPage.waitForFunction(() => Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]")).filter(element => element.dataset.assetState === "ready").length === 5);
+    await roundTripPage.waitForFunction(() => (CatalogEditor.store.getCollection("assets")?.items || []).length === 4);
+    await roundTripPage.waitForFunction(() => Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]")).filter(element => element.dataset.assetState === "ready").length === 6);
 
     await roundTripPage.evaluate(() => {
       CatalogEditor.store.setEditingContext(null);
@@ -309,7 +312,7 @@ async function exportPackage(page, targetPath) {
     const reimportedSnapshot = await roundTripPage.evaluate(() => CatalogEditor.store.getExportDocument());
     assert(signature(reimportedSnapshot) === signature(constructedSnapshot), "Documento com assets divergiu após pacote/reimportação.");
     assert(reimportedMetrics.assetDigests.every(item => expectedHashes.has(item.sha256) && item.reference?.provider === "indexeddb"), `Bytes reimportados ou referências divergiram: ${JSON.stringify(reimportedMetrics.assetDigests)}.`);
-    assert(reimportedMetrics.assetUsages === 5 && reimportedMetrics.placeholderArts === 0, "A reimportação perdeu vínculos de asset.");
+    assert(reimportedMetrics.assetUsages === 6 && reimportedMetrics.placeholderArts === 0, "A reimportação perdeu vínculos de asset.");
     assert(reimportedMetrics.publication.collisions === 0 && reimportedMetrics.publication.overflows === 0 && reimportedMetrics.publication.missingReferences === 0, "A reimportação introduziu problemas de publicação.");
 
     await roundTripPage.locator("#pageCanvas").screenshot({ path: path.join(assetsDir, "reimported-canvas.png") });
@@ -322,7 +325,7 @@ async function exportPackage(page, targetPath) {
       const offers = CatalogEditor.store.getPage().children.filter(component => component.props?.recipeRole === "offer-unit");
       const readyPreviews = Array.from(document.querySelectorAll("#pageCanvas [data-asset-preview][data-asset-id]"))
         .filter(element => element.dataset.assetState === "ready");
-      return assets.length === 3 && offers.length === 4 && readyPreviews.length === 5;
+      return assets.length === 4 && offers.length === 4 && readyPreviews.length === 6;
     });
     const redoSnapshot = await roundTripPage.evaluate(() => CatalogEditor.store.getExportDocument());
     assert(signature(redoSnapshot) === signature(constructedSnapshot), "Redo não restaurou o pacote com assets.");
@@ -364,7 +367,7 @@ async function exportPackage(page, targetPath) {
       errors: { pageErrors, consoleErrors, responseErrors }
     };
     fs.writeFileSync(path.join(assetsDir, "promotional-generalization-report.json"), `${JSON.stringify(report, null, 2)}\n`);
-    console.log(`✓ DB-05.20.16 vinculou três assets em cinco usos com ${assetActions.length} ações adicionais e round-trip portátil íntegro.`);
+    console.log(`✓ DB-05.20.16 vinculou quatro assets em seis usos com ${assetActions.length} ações adicionais e round-trip portátil íntegro.`);
   } finally {
     if (roundTripPage) await roundTripPage.close().catch(() => {});
     if (page) await page.close().catch(() => {});
