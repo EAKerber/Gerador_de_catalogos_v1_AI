@@ -227,11 +227,18 @@ const legendPlans = [
       await ensureDetails(".table-column-editor", "Reabrir configuração de colunas após alterar função");
       await fill(page.locator(`[data-table-column-key="${price.key}"][data-table-column-path="label"]`), plan.priceLabel, `Tabela ${index + 1}: rótulo ${plan.priceLabel}`, { surface: "inspector" });
     }
+    const bulkEntry = page.locator('details.table-bulk-entry:has([data-table-bulk-text])');
     await ensureDetailsContent('details.table-bulk-entry:has([data-table-bulk-text])', "[data-table-bulk-text]", "Abrir colagem de linhas");
     const headers = plan.omitPackage ? ["CÓDIGO", plan.middleLabel, plan.priceLabel] : ["CÓDIGO", plan.middleLabel, "EMBALAGEM", plan.priceLabel];
     const text = [headers, ...plan.rows].map(row => row.join("\t")).join("\n");
-    await fill(page.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
-    await click(page.locator("[data-table-bulk-apply]"), `Tabela ${index + 1}: aplicar linhas`, { surface: "inspector" });
+    await fill(bulkEntry.locator("[data-table-bulk-text]"), text, `Tabela ${index + 1}: colar ${plan.rows.length} linha(s)`, { surface: "inspector" });
+    await click(bulkEntry.locator("[data-table-bulk-apply]"), `Tabela ${index + 1}: aplicar linhas`, { surface: "inspector" });
+    const applied = await page.evaluate(({ id, expected }) => ({
+      count: CatalogEditor.store.getTableRows(id).length,
+      expected,
+      feedback: document.querySelector('details.table-bulk-entry:has([data-table-bulk-text]) [role="status"]')?.textContent || ""
+    }), { id: tableId, expected: plan.rows.length });
+    assert(applied.count === applied.expected, `Tabela ${index + 1} não aplicou a colagem: ${JSON.stringify(applied)}.`);
   }
 
   for (let index = 0; index < ids.tableIds.length; index += 1) await configureTable(ids.tableIds[index], tablePlans[index], index);

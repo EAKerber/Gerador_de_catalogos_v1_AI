@@ -25,6 +25,7 @@
       this.galleryBulkFeedback = "";
       this.legendBulkOpen = false;
       this.legendBulkFeedback = "";
+      this.skipNextRender = false;
       this.taskStateByType = new Map();
       this.root.addEventListener("change", event => this.handleChange(event));
       this.root.addEventListener("click", event => this.handleClick(event));
@@ -570,6 +571,10 @@
     }
 
     render() {
+      if (this.skipNextRender) {
+        this.skipNextRender = false;
+        return;
+      }
       const selectedComponents = this.store.getSelectedComponents();
       if (selectedComponents.length > 1) {
         this.renderBatch(selectedComponents);
@@ -771,6 +776,10 @@
       if (target.matches("[data-table-row-path]")) {
         this.store.updateTableRow(component.id, target.dataset.tableRowId, { [target.dataset.tableRowPath]: target.value });
       } else if (target.matches("[data-table-column-path]")) {
+        // A label text field commits on blur. Re-rendering synchronously during that
+        // blur would replace the control the user is moving focus to (for example,
+        // the bulk-entry textarea) and discard the first interaction with it.
+        if (target.dataset.tableColumnPath === "label") this.skipNextRender = true;
         const columns = this.store.getTableColumns(component).map(column => column.key === target.dataset.tableColumnKey
           ? { ...column, [target.dataset.tableColumnPath]: target.dataset.tableColumnPath === "width" ? Number(target.value) : target.value }
           : column);
