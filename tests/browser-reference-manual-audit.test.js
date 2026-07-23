@@ -390,6 +390,7 @@ const legendPlans = [
   await inspectorTab("style");
   await select(page.locator('[data-inspector-panel="style"]:not([hidden]) [data-style-path="typography"]'), "type.caption", "Usar corpo compacto na dica", { surface: "inspector" });
   await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica compactada");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal após compactação");
   const documentPath = path.join(outputDir, "reference-manual.document.json");
   await click(page.locator("#exportMenu > summary"), "Abrir menu Exportar", { surface: "toolbar", contextSwitch: true });
   const downloadPromise = page.waitForEvent("download");
