@@ -19,6 +19,7 @@ assert(source.includes('file.startsWith("browser-")'), "A separação entre Node
 assert(source.includes("build-authoring-kit.js"), "O executor não usa o build canônico.");
 assert(source.includes("CATALOG_TEST_TIMEOUT_MS") && source.includes("ETIMEDOUT"), "O executor não encerra ou classifica testes travados.");
 assert(source.includes("CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE"), "O gate promocional não é bloqueante por padrão.");
+assert(source.includes("CATALOG_TEST_SHARD_COUNT") && source.includes("CATALOG_TEST_SHARD_INDEX"), "O executor não permite particionar a suíte Chromium.");
 assert(!/execSync|shell\s*:\s*true|npx\s+/.test(source), "O executor introduziu shell ou resolução de dependência não determinística.");
 
 const execution = spawnSync(process.execPath, [runnerPath, "--list"], { cwd: root, encoding: "utf8" });
@@ -42,5 +43,11 @@ const listed = execution.stdout.split("\n").filter(line => line.trim().startsWit
 const expectedCount = fs.readdirSync(path.join(root, "tests")).filter(file => file.endsWith(".test.js")).length;
 assert(listed.length === expectedCount, `O inventário listou ${listed.length} de ${expectedCount} testes.`);
 assert(listed.length === new Set(listed).size, "O inventário contém testes duplicados.");
+
+const browserFiles = listed.filter(file => path.basename(file).startsWith("browser-"));
+const shardAssignments = Array.from({ length: 4 }, (_, shardIndex) => browserFiles.filter((file, index) => index % 4 === shardIndex));
+assert(shardAssignments.flat().length === browserFiles.length, "O particionamento perdeu testes Chromium.");
+assert(new Set(shardAssignments.flat()).size === browserFiles.length, "O particionamento duplicou testes Chromium.");
+assert(Math.max(...shardAssignments.map(shard => shard.length)) - Math.min(...shardAssignments.map(shard => shard.length)) <= 1, "Os shards Chromium estão desequilibrados.");
 
 console.log(`✓ Executor canônico descobriu todos os ${listed.length} testes, incluindo 05.20 e estresse.`);

@@ -17,6 +17,13 @@ const runBuild = runAll || args.has("--build");
 const runNode = runAll || args.has("--node") || (!runBrowser && !runBuild && !listOnly);
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const timeoutMs = Math.max(10000, Number(process.env.CATALOG_TEST_TIMEOUT_MS) || 10 * 60 * 1000);
+const shardCount = Number(process.env.CATALOG_TEST_SHARD_COUNT ?? 1);
+const shardIndex = Number(process.env.CATALOG_TEST_SHARD_INDEX ?? 0);
+
+if (!Number.isInteger(shardCount) || shardCount < 1 || !Number.isInteger(shardIndex) || shardIndex < 0 || shardIndex >= shardCount) {
+  console.error(`Shard inválido: índice ${shardIndex}, total ${shardCount}.`);
+  process.exit(2);
+}
 
 function discover() {
   const files = fs.readdirSync(testsRoot)
@@ -33,6 +40,10 @@ function printList(suites) {
   suites.node.forEach(file => console.log(`  tests/${file}`));
   console.log(`\nChromium (${suites.browser.length})`);
   suites.browser.forEach(file => console.log(`  tests/${file}`));
+}
+
+function selectShard(files) {
+  return files.filter((file, index) => index % shardCount === shardIndex);
 }
 
 function runFiles(label, files) {
@@ -118,7 +129,10 @@ async function main() {
       return;
     }
     console.log(`\nServidor confirmado em ${baseURL}.`);
-    failures.push(...runFiles("Chromium", suites.browser));
+    const browserFiles = selectShard(suites.browser);
+    const shardLabel = shardCount > 1 ? ` — shard ${shardIndex + 1}/${shardCount}` : "";
+    console.log(`Cobertura Chromium selecionada: ${browserFiles.length}/${suites.browser.length} teste(s)${shardLabel}.`);
+    failures.push(...runFiles(`Chromium${shardLabel}`, browserFiles));
   }
 
   if (failures.length) {
