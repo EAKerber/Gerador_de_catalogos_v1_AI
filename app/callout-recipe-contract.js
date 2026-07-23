@@ -67,6 +67,7 @@
       };
       const texts = (content.children || []).filter(child => child.type === "text");
       if (texts[0]) {
+        texts[0].frame.height = 64;
         texts[0].props = { ...(texts[0].props || {}), align: "start", verticalAlign: "center", scale: 100, overflow: "wrap", recipeRole: "title" };
         texts[0].style = {
           ...(texts[0].style || {}),
@@ -79,6 +80,7 @@
         texts[0].layoutItem = { ...(texts[0].layoutItem || {}), managed: true, grow: 0, span: 1 };
       }
       if (texts[1]) {
+        texts[1].frame.height = 62;
         texts[1].props = { ...(texts[1].props || {}), align: "start", verticalAlign: "start", scale: 100, overflow: "wrap", recipeRole: "body" };
         texts[1].style = {
           ...(texts[1].style || {}),
