@@ -419,6 +419,22 @@ Critérios de aceite:
 
 O incremento não reabre expansão multimídia, publicação, colaboração ou touch/mobile. Também não introduz editor rico, CSS arbitrário nem famílias redundantes de preço, selo, botão, QR code ou tabela.
 
+## Incremento 05.20 — Linguagem promocional e integração multirreferência
+
+Critérios de aceite:
+
+- preservar os dezesseis tipos e o schema 1.16.0;
+- representar ofertas comerciais repetidas como receitas nativas editáveis, não como tabela;
+- tratar personagem, calendário, ilustração e desenho técnico como assets;
+- manter valores de preço completos em tela e impressão;
+- validar catálogos técnico e promocional em Chromium;
+- preservar PDF A4, pacote portátil, reimportação, histórico e hashes de assets;
+- carregar contratos obrigatórios de forma estática e bloquear inicialização parcial;
+- executar a suíte integral por um workflow somente leitura e reproduzível;
+- integrar por branch limpa e PR draft antes de qualquer merge em `development`.
+
+O incremento está em integração. A suíte Node e o build idempotente são gates locais; Chromium publicado e revisão do PR permanecem obrigatórios.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Critérios de aceite:

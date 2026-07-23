@@ -75,6 +75,21 @@ A biblioteca possui dezesseis tipos e cobre bem estrutura de página, produto, d
 
 Não entram como novos tipos neste ciclo: preço, selo, chip, botão, QR code, caixa colorida, card de contato, aplicação ou variações paralelas de tabela. Esses resultados devem usar `text`, tokens, `specification`, `footer-item`, `legend-item`, `art`, receitas e presets até que uma intenção exclusiva seja demonstrada.
 
+### Integração 05.20 — linguagem promocional e gate multirreferência
+
+| Prioridade | Frente | Decisão | Estado / critério |
+| --- | --- | --- | --- |
+| P0 | Integração curada | Incorporar código e fixtures necessárias a partir de uma branch limpa; excluir workflows experimentais e evidências duplicadas. | Implementado; merge depende do PR draft e dos gates remotos. |
+| P0 | Regressão integral | Um runner deve descobrir todos os testes, inclusive 05.20 e estresse. | Implementado; nenhum filtro por incremento. |
+| P0 | Inicialização segura | Contratos obrigatórios são estáticos, ordenados e fail-closed. | Implementado; runtime parcial não abre o editor. |
+| P0 | Rodapé mínimo | Redimensionamento do pai precisa propagar os slots internos. | Corrigido e coberto em 80 px. |
+| P0 | Preço completo | Valor e moeda devem permanecer legíveis em tela e impressão. | Gate bloqueante mede conteúdo e `scrollWidth`. |
+| P1 | Linguagem promocional | Preço e oferta permanecem receitas; personagem, calendário e desenho técnico permanecem assets. | Nove receitas, dezesseis tipos e schema 1.16.0. |
+| P1 | CI reproduzível | Um workflow somente leitura, dependências fixadas e artefatos apenas em falha. | Implementado; nenhum commit/push automático. |
+| P2 | Consolidação interna | Transferir subclasses e patches incrementais aos módulos canônicos em recortes isolados. | Posterior; não misturar com novas capacidades. |
+
+O contrato completo do incremento está em `INCREMENT-05.20.md`. A aprovação local de Node não substitui o job Chromium publicado.
+
 ### Frentes congeladas
 
 Expansão multimídia, hospedagem, colaboração, touch/mobile completo e workflow de publicação não possuem incremento ativo. PDF continua no núcleo de fidelidade; portabilidade existente é apenas mantida.

@@ -6,6 +6,7 @@
   const HISTORY_LIMIT = 100;
   const HISTORY_COALESCE_MS = 700;
   const PRODUCT_FIELDS = ["title", "specOne", "specTwo", "code", "package", "price", "assetId"];
+  const TABLE_BINDING_FIELDS = Object.freeze(["code", "package", "price"]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
 
@@ -665,6 +666,14 @@
     const managed = occupants.filter(child => child.slot?.managed !== false);
     if (!managed.length) return;
     const minimumFor = child => window.CatalogLayoutEngine?.itemMinimum?.(child, child.frame) || { width: child.constraints?.minWidth || 1, height: child.constraints?.minHeight || 1 };
+    const refreshNestedSlots = () => {
+      managed.forEach(child => {
+        const childDefinition = definitionFor(child.type);
+        if (!childDefinition?.container) return;
+        layoutAllSlots(child);
+        if (childDefinition.container.autoLayout) window.CatalogLayoutEngine?.applyAutoLayout(child);
+      });
+    };
 
     const slotLayout = typeof slot.layout === "function" ? slot.layout(parent) : slot.layout;
     if (slotLayout === "column") {
@@ -684,6 +693,7 @@
         };
         y += height + gap;
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -704,6 +714,7 @@
         };
         x += width + gap;
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -731,6 +742,7 @@
           height: Math.max(minimumFor(child).height, Math.round(sharedHeight))
         };
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -742,6 +754,7 @@
         height: Math.max(minimumFor(child).height, Math.round(frame.height))
       };
     });
+    refreshNestedSlots();
   }
 
   function layoutAllSlots(parent) {
@@ -1982,7 +1995,7 @@
           if (table) {
             this.updateComponent(table.id, { props: { density } });
             this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
-            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
           }
           return card;
         });
@@ -2021,7 +2034,7 @@
           if (table) {
             this.updateComponent(table.id, { props: { density: presentation.density } });
             this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
-            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
           }
           return card;
         };
@@ -2849,7 +2862,7 @@
 
     applyComponentFramesBulk(entries = []) {
       const valid = entries.slice(0, 40).filter(entry => entry?.id && [entry.x, entry.y, entry.width, entry.height].every(value => Number.isFinite(Number(value))));
-      const selection = this.getBatchSelection(valid.map(entry => entry.id));
+      const selection = this.getBatchSelection(valid.map(entry => entry.id), 1);
       if (!selection || selection.records.length !== valid.length) throw new Error("A lista deve conter exatamente componentes irmãos da seleção atual.");
       const selectedIds = new Set(this.getSelectedIds());
       if (valid.some(entry => !selectedIds.has(entry.id)) || selectedIds.size !== valid.length) throw new Error("A geometria só pode ser aplicada ao conjunto atualmente selecionado.");
@@ -3164,13 +3177,27 @@
     replaceTableRowsBulk(componentId, entries = [], options = {}) {
       const mode = options.mode === "append" ? "append" : "replace";
       return this.runCompoundChange({ type: "table-rows-replaced", componentId, mode, count: entries.length }, () => {
-        const component = this.findComponent(componentId)?.component;
+        const record = this.findComponent(componentId);
+        const component = record?.component;
         if (!component || component.type !== "data-table") throw new Error("O componente selecionado não é uma tabela.");
         const normalizedEntries = (Array.isArray(entries) ? entries : []).filter(Boolean);
         const currentIds = component.props?.rowIds?.slice() || [];
         const available = Math.max(0, 12 - (mode === "append" ? currentIds.length : 0));
         const limited = normalizedEntries.slice(0, available);
         if (!limited.length) throw new Error("Nenhuma linha válida foi fornecida.");
+
+        if (mode === "replace" && options.bindingSync !== true && !this.bindingSyncDepth) {
+          const card = productCardForRecord(record);
+          const table = cardDataTable(card);
+          const values = limited[0]?.values || limited[0] || {};
+          if (card?.binding?.productId && table?.id === component.id) {
+            card.binding = normalizeProductBinding(card.binding);
+            TABLE_BINDING_FIELDS.forEach(field => {
+              if (Object.hasOwn(values, field)) card.binding.overrides[field] = true;
+            });
+          }
+        }
+
         const nextIds = mode === "append" ? currentIds.slice() : [];
         limited.forEach((entry, index) => {
           const values = entry.values || entry;

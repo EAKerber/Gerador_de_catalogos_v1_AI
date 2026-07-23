@@ -6,10 +6,29 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 - 45 capacidades de produto;
 - 16 tipos de componente;
-- 5 receitas oficiais;
+- 5 grupos de descoberta por intenção;
+- 2 posições iniciais prováveis;
+- 9 receitas oficiais;
 - 17 fluxos curados;
-- 27 ícones declarados.
+- 35 ícones declarados.
 - governança: 30 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+
+## Grupos de componentes por intenção
+
+| Intenção | Camada | Tipos |
+| --- | --- | --- |
+| Página | primary | `catalog-footer`, `catalog-header` |
+| Produto | primary | `art`, `art-gallery`, `product-card`, `specification`, `title-symbol` |
+| Dados | primary | `data-table`, `legend-group`, `legend-item`, `legend-panel` |
+| Comunicação | primary | `footer-item`, `icon`, `separator`, `text` |
+| Estrutura avançada | advanced | `layout-container` |
+
+## Posições iniciais prováveis
+
+| Tipo | Âncora | Largura | Política de colisão |
+| --- | --- | --- | --- |
+| `catalog-header` | top | safe-area | move-inward |
+| `catalog-footer` | bottom | safe-area | move-inward |
 
 ## Fluxos por intenção
 
@@ -306,22 +325,22 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 ## Inventário de componentes
 
-| Tipo | Categoria | Contêiner | Mínimo técnico | Recomendado |
-| --- | --- | --- | --- | --- |
-| `art` — Arte / logo | Elementos | não | 80×60 | 210×160 |
-| `art-gallery` — Galeria de imagens | Estruturas | sim | 150×96 | 260×150 |
-| `catalog-footer` — Rodapé | Estruturas | sim | 500×80 | 746×100 |
-| `catalog-header` — Cabeçalho | Estruturas | sim | 420×110 | 730×150 |
-| `data-table` — Tabela de dados | Peças internas | não | 180×32 | 300×48 |
-| `footer-item` — Item do rodapé | Peças internas | sim | 80×64 | 112×96 |
-| `icon` — Ícone | Elementos | não | 24×24 | 56×56 |
-| `layout-container` — Área de composição | Estruturas | sim | 160×120 | 360×300 |
-| `legend-group` — Grupo de legenda | Peças internas | sim | 140×38 | 320×54 |
-| `legend-item` — Item de legenda | Peças internas | não | 72×24 | 96×30 |
-| `legend-panel` — Painel de legenda | Estruturas | sim | 180×54 | 360×92 |
-| `product-card` — Card de produto | Estruturas | sim | 220×190 | 270×220 |
-| `separator` — Linha separadora | Elementos | não | 8×8 | 220×8 |
-| `specification` — Especificação | Peças internas | não | 82×28 | 130×38 |
-| `text` — Texto | Elementos | não | 80×34 | 260×80 |
-| `title-symbol` — Título com símbolo | Peças internas | não | 140×32 | 260×38 |
+| Tipo | Intenção | Categoria legada | Posição inicial | Contêiner | Mínimo técnico | Recomendado |
+| --- | --- | --- | --- | --- | --- | --- |
+| `art` — Arte / logo | Produto | Elementos | genérica | não | 80×60 | 210×160 |
+| `art-gallery` — Galeria de imagens | Produto | Estruturas | genérica | sim | 150×96 | 260×150 |
+| `catalog-footer` — Rodapé | Página | Estruturas | bottom | sim | 500×80 | 746×100 |
+| `catalog-header` — Cabeçalho | Página | Estruturas | top | sim | 420×110 | 730×150 |
+| `data-table` — Tabela de dados | Dados | Peças internas | genérica | não | 180×32 | 300×48 |
+| `footer-item` — Item do rodapé | Comunicação | Peças internas | genérica | sim | 80×64 | 112×96 |
+| `icon` — Ícone | Comunicação | Elementos | genérica | não | 24×24 | 96×72 |
+| `layout-container` — Área de composição | Estrutura avançada | Estruturas | genérica | sim | 160×120 | 360×300 |
+| `legend-group` — Grupo de legenda | Dados | Peças internas | genérica | sim | 140×38 | 320×54 |
+| `legend-item` — Item de legenda | Dados | Peças internas | genérica | não | 72×24 | 96×30 |
+| `legend-panel` — Painel de legenda | Dados | Estruturas | genérica | sim | 180×54 | 360×92 |
+| `product-card` — Card de produto | Produto | Estruturas | genérica | sim | 220×190 | 270×220 |
+| `separator` — Linha separadora | Comunicação | Elementos | genérica | não | 8×8 | 220×8 |
+| `specification` — Especificação | Produto | Peças internas | genérica | não | 82×28 | 130×38 |
+| `text` — Texto | Comunicação | Elementos | genérica | não | 80×34 | 260×80 |
+| `title-symbol` — Título com símbolo | Produto | Peças internas | genérica | não | 140×32 | 260×38 |
 

@@ -622,9 +622,22 @@
             <div class="inspector-field inspector-field--full"><label>Nome da camada</label><input type="text" value="${escapeHtml(component.name)}" data-component-name /></div>
           </div>
         </section>`;
+      const frameCommandSection = `
+      <section class="inspector-section inspector-section--frame-command">
+        <div class="inspector-section__heading"><h3 class="inspector-section__title">Posição e tamanho</h3><span>aplicação conjunta</span></div>
+        <div class="recommended-minimum-editor frame-command-editor">
+          <div class="inspector-grid">
+            ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
+          </div>
+          <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
+          <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
+          <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
+        </div>
+      </section>`;
       const geometrySection = `
         <section class="inspector-section">
           <h3 class="inspector-section__title">Posição e tamanho</h3>
+          <div class="inspector-section__heading"><h4>Ajuste imediato por campo</h4><span>compatibilidade</span></div>
           <div class="inspector-grid">
             ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-path="${key}" /></div>`).join("")}
           </div>
@@ -670,6 +683,7 @@
           <button type="button" role="tab" data-inspector-tab="structure" aria-selected="${String(this.activeTab === "structure")}"><span aria-hidden="true">▦</span> Layout</button>
           <button type="button" role="tab" data-inspector-tab="style" aria-selected="${String(this.activeTab === "style")}"><span aria-hidden="true">⌁</span> Visual</button>
         </nav>
+        ${frameCommandSection}
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure" ${this.activeTab === "structure" ? "" : "hidden"}>
           ${this.renderContainerSection(component, definition)}
           ${this.renderSlotSection(component, record)}
@@ -729,6 +743,31 @@
         return;
       }
       const component = this.store.getSelected();
+      if (target.matches("[data-frame-preset]")) {
+        const parentId = this.store.getParentId(component.id);
+        const size = this.store.getContainerSize(parentId);
+        const safe = parentId ? 0 : Math.max(0, Number(this.store.getPage().grid?.safeMargin) || 24);
+        const gap = Math.max(8, Number(component.constraints?.gridUnit) || 4) * 4;
+        const availableWidth = Math.max(1, size.width - safe * 2);
+        const technical = this.store.getMinimumProfile(component).technical;
+        const leftWidth = Math.max(Number(technical.width) || 1, Math.round((availableWidth - gap) * .28));
+        const mainX = safe + leftWidth + gap;
+        const frames = {
+          "safe-top": { ...component.frame, x: safe, y: safe },
+          "safe-bottom": { ...component.frame, y: Math.max(safe, size.height - safe - component.frame.height) },
+          "left-column": { ...component.frame, x: safe, width: leftWidth },
+          "main-column": { ...component.frame, x: mainX, width: Math.max(Number(technical.width) || 1, size.width - safe - mainX) },
+          "full-width": { ...component.frame, x: safe, width: availableWidth }
+        };
+        const frame = frames[target.value];
+        if (frame) Object.entries(frame).forEach(([key, value]) => {
+          const input = this.root.querySelector(`[data-frame-draft-path="${key}"]`);
+          if (input && Number.isFinite(Number(value))) input.value = Math.round(Number(value));
+        });
+        const status = document.getElementById("documentStatus");
+        if (status && frame) status.textContent = "Sugestão preenchida. Confirme para alterar o documento.";
+        return;
+      }
       if (target.matches("[data-table-row-path]")) {
         this.store.updateTableRow(component.id, target.dataset.tableRowId, { [target.dataset.tableRowPath]: target.value });
       } else if (target.matches("[data-table-column-path]")) {
@@ -890,7 +929,22 @@
         this.showAllProperties = !this.showAllProperties;
         this.rememberTaskState(component);
         this.render();
-      } else if (event.target.closest("[data-delete-component]")) {
+      } else if (event.target.closest("[data-frame-apply-all]")) {
+          try {
+            const entry = { id: component.id };
+            for (const key of ["x", "y", "width", "height"]) {
+              const value = Number(this.root.querySelector(`[data-frame-draft-path="${key}"]`)?.value);
+              if (!Number.isFinite(value)) throw new Error(`Informe um valor numérico para ${key}.`);
+              entry[key] = value;
+            }
+            this.store.applyComponentFramesBulk([entry]);
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = "Posição e tamanho aplicados em uma única ação.";
+          } catch (error) {
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = error.message;
+          }
+        } else if (event.target.closest("[data-delete-component]")) {
         this.store.deleteComponent(component.id);
       } else if (event.target.closest("[data-duplicate-component]")) {
         this.store.duplicateComponent(component.id);

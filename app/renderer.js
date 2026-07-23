@@ -189,6 +189,7 @@
         <article class="editor-component editor-component--${escapeHtml(component.type)}"
                  data-component-id="${escapeHtml(component.id)}"
                  data-component-type="${escapeHtml(component.type)}"
+                 data-recipe-role="${escapeHtml(component.props?.recipeRole || "")}"
                  data-parent-id="${escapeHtml(parentId || "")}"
                  data-slot-name="${escapeHtml(component.slot?.name || "")}"
                  data-contextual="${String(component.props?.contextual === true)}"

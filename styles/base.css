@@ -8,6 +8,19 @@ body {
   font-family: var(--font-sans);
   font-size: 14px;
 }
+.startup-failure {
+  width: min(680px, calc(100vw - 48px));
+  margin: 15vh auto 0;
+  padding: 32px;
+  border: 1px solid #d9d9d9;
+  border-top: 5px solid #fd0807;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 60px rgb(0 0 0 / 12%);
+}
+.startup-failure h1 { margin: 0 0 12px; font-family: var(--font-display); font-size: 28px; }
+.startup-failure p { margin: 0 0 18px; color: #555; line-height: 1.5; }
+.startup-failure code { display: block; padding: 12px; overflow-wrap: anywhere; border-radius: 6px; background: #f4f4f4; color: #8b2525; }
 button, input, select, textarea { font: inherit; }
 button, select, input { accent-color: var(--color-brand-500); }
 select, option { color: var(--color-ink-800); background-color: #fff; color-scheme: light; }

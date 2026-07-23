@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
 
@@ -40,7 +40,27 @@
   function validate(document, options = {}) {
     const target = options.target === "publication" ? "publication" : "draft";
     const issues = [];
+    const missingReferences = [];
+    const invalidReferences = [];
+    const optionalReferences = [];
     const add = (severity, code, message, details = {}) => issues.push({ severity, code, message, ...details });
+    const recordMissing = (severity, code, message, reference, details = {}) => {
+      const entry = { status: "missing", required: true, severity, code, message, kind: reference.kind, referenceId: reference.referenceId ?? null, ...details };
+      missingReferences.push(entry);
+      add(severity, code, message, details);
+      return entry;
+    };
+    const recordInvalid = (severity, code, message, reference, details = {}) => {
+      const entry = { status: "invalid", required: true, severity, code, message, kind: reference.kind, referenceId: reference.referenceId ?? null, ...details };
+      invalidReferences.push(entry);
+      add(severity, code, message, details);
+      return entry;
+    };
+    const recordOptional = (kind, reason, details = {}, referenceId = null) => {
+      const entry = { status: "optional-unbound", required: false, kind, referenceId, reason, ...details };
+      optionalReferences.push(entry);
+      return entry;
+    };
     const componentIds = new Set();
     const productItems = collection(document, "products").items;
     const products = new Set(productItems.map(item => item.id));
@@ -51,10 +71,11 @@
     const legendKeys = new Set(legendItems.map(item => item.metadata?.key).filter(Boolean));
     const variantIds = new Set(productItems.flatMap(item => item.metadata?.variants || []).map(item => item.id));
     const summary = { pages: document?.pages?.length || 0, components: 0, products: products.size, tableRows: rows.size, collisions: 0, overflows: 0, missingReferences: 0 };
+    const references = { missing: missingReferences, invalid: invalidReferences, optional: optionalReferences };
 
     if (!document || typeof document !== "object" || Array.isArray(document)) {
       add("error", "DOCUMENT_TYPE", "O documento compilado precisa ser um objeto JSON.");
-      return { ok: false, target, validatorVersion: VERSION, summary, issues };
+      return { ok: false, target, validatorVersion: VERSION, summary, references, issues };
     }
     if (!Array.isArray(document.pages) || !document.pages.length) add("error", "PAGE_REQUIRED", "O documento precisa conter ao menos uma página.");
 
@@ -91,25 +112,30 @@
         }
 
         if (component.type === "product-card") {
-          if (!component.binding?.productId || !products.has(component.binding.productId)) {
-            summary.missingReferences += 1;
-            add("error", "PRODUCT_REFERENCE_MISSING", `O card “${component.name || component.id}” não possui um produto válido.`, { path, componentId: component.id, pageId });
+          const productId = component.binding?.productId || null;
+          if (!productId) {
+            recordOptional("product", "local-content", { path, componentId: component.id, pageId });
+          } else if (!products.has(productId)) {
+            recordMissing("error", "PRODUCT_REFERENCE_MISSING", `O card “${component.name || component.id}” aponta para o produto ausente “${productId}”.`, { kind: "product", referenceId: productId }, { path, componentId: component.id, pageId, productId });
           }
         }
         if (component.type === "data-table") {
           (component.props?.rowIds || []).forEach(rowId => {
             if (rows.has(rowId)) return;
-            summary.missingReferences += 1;
-            add("error", "TABLE_ROW_REFERENCE_MISSING", `A linha “${rowId}” não existe na coleção tableRows.`, { path, componentId: component.id, pageId });
+            recordMissing("error", "TABLE_ROW_REFERENCE_MISSING", `A linha “${rowId}” não existe na coleção tableRows.`, { kind: "table-row", referenceId: rowId }, { path, componentId: component.id, pageId, collectionId: "tableRows", rowId });
           });
         }
         if (component.type === "legend-item" && (!component.props?.legendKey || !legendKeys.has(component.props.legendKey))) {
-          summary.missingReferences += 1;
-          add(target === "publication" ? "error" : "warning", "LEGEND_REFERENCE_MISSING", `O item visual “${component.name || component.id}” não aponta para uma legenda semântica válida.`, { path, componentId: component.id, pageId, legendKey: component.props?.legendKey || null });
+          const legendKey = component.props?.legendKey || null;
+          recordMissing(target === "publication" ? "error" : "warning", "LEGEND_REFERENCE_MISSING", `O item visual “${component.name || component.id}” não aponta para uma legenda semântica válida.`, { kind: "legend", referenceId: legendKey }, { path, componentId: component.id, pageId, collectionId: "colorLegends", legendKey });
         }
-        if (component.type === "art" && component.props?.assetId && !assets.has(component.props.assetId)) {
-          summary.missingReferences += 1;
-          add(target === "publication" ? "error" : "warning", "ASSET_REFERENCE_MISSING", `O asset “${component.props.assetId}” não acompanha o documento e usará placeholder.`, { path, componentId: component.id, pageId });
+        if (component.type === "art") {
+          const assetId = component.props?.assetId || null;
+          if (!assetId) {
+            recordOptional("asset", "placeholder-without-asset", { path, componentId: component.id, pageId, role: component.props?.role || "generic" });
+          } else if (!assets.has(assetId)) {
+            recordMissing(target === "publication" ? "error" : "warning", "ASSET_REFERENCE_MISSING", `O asset “${assetId}” não acompanha o documento e usará placeholder.`, { kind: "asset", referenceId: assetId }, { path, componentId: component.id, pageId, collectionId: "assets", assetId });
+          }
         }
         visitChildren(component.children || [], { width: frame.width, height: frame.height }, path, pageId);
       });
@@ -156,16 +182,23 @@
         (variant.commercialRowIds || []).forEach(rowId => {
           const row = commercialById.get(rowId);
           if (row && row.variantId === variant.id) return;
-          add("error", "VARIANT_ROW_REFERENCE_INVALID", `A variação “${variant.label || variant.id}” possui vínculo comercial inconsistente com “${rowId}”.`, { productId: product.id, variantId: variant.id, rowId });
+          const details = { productId: product.id, variantId: variant.id, rowId };
+          if (!row) {
+            recordMissing("error", "VARIANT_ROW_REFERENCE_INVALID", `A variação “${variant.label || variant.id}” aponta para a linha comercial ausente “${rowId}”.`, { kind: "variant-row", referenceId: rowId }, details);
+          } else {
+            recordInvalid("error", "VARIANT_ROW_REFERENCE_INVALID", `A linha comercial “${rowId}” pertence à variação “${row.variantId || "sem vínculo"}”, não a “${variant.id}”.`, { kind: "variant-row", referenceId: rowId }, { ...details, actualVariantId: row.variantId || null });
+          }
         });
       });
     });
 
     rowItems.forEach(row => {
-      if (row.metadata?.variantId && !variantIds.has(row.metadata.variantId)) add(target === "publication" ? "error" : "warning", "TABLE_VARIANT_REFERENCE_MISSING", `A linha “${row.label || row.id}” aponta para uma variação inexistente.`, { rowId: row.id, variantId: row.metadata.variantId });
+      if (row.metadata?.variantId && !variantIds.has(row.metadata.variantId)) {
+        recordMissing(target === "publication" ? "error" : "warning", "TABLE_VARIANT_REFERENCE_MISSING", `A linha “${row.label || row.id}” aponta para a variação inexistente “${row.metadata.variantId}”.`, { kind: "variant", referenceId: row.metadata.variantId }, { rowId: row.id, variantId: row.metadata.variantId });
+      }
       Object.entries(row.metadata?.legendKeys || {}).forEach(([columnKey, legendKey]) => {
         if (legendKeys.has(legendKey)) return;
-        add(target === "publication" ? "error" : "warning", "TABLE_LEGEND_REFERENCE_MISSING", `A célula “${columnKey}” da linha “${row.label || row.id}” aponta para a legenda ausente “${legendKey}”.`, { rowId: row.id, columnKey, legendKey });
+        recordMissing(target === "publication" ? "error" : "warning", "TABLE_LEGEND_REFERENCE_MISSING", `A célula “${columnKey}” da linha “${row.label || row.id}” aponta para a legenda ausente “${legendKey}”.`, { kind: "legend", referenceId: legendKey }, { rowId: row.id, columnKey, collectionId: "colorLegends", legendKey });
       });
     });
 
@@ -173,19 +206,21 @@
       const token = legend.metadata?.token;
       const color = window.CATALOG_EDITOR_TOKENS?.colors?.[token]?.value;
       if (!color) {
-        add(target === "publication" ? "error" : "warning", "LEGEND_TOKEN_MISSING", `A legenda “${legend.label || legend.id}” usa o token de cor inexistente “${token || "vazio"}”.`, { legendId: legend.id, token });
+        recordMissing(target === "publication" ? "error" : "warning", "LEGEND_TOKEN_MISSING", `A legenda “${legend.label || legend.id}” usa o token de cor inexistente “${token || "vazio"}”.`, { kind: "color-token", referenceId: token || null }, { legendId: legend.id, token: token || null });
         return;
       }
       const ratio = contrastAgainstWhite(color);
       if (ratio != null && ratio < 1.2) add("warning", "LEGEND_CONTRAST_LOW", `A amostra da legenda “${legend.label || legend.id}” quase não se distingue do papel branco (${ratio.toFixed(2)}:1).`, { legendId: legend.id, token, contrast: ratio });
     });
 
+    summary.missingReferences = missingReferences.length;
     if (!issues.length) add("info", "VALIDATION_READY", "Documento estrutural, referencial, editorial e visualmente válido.");
     return {
       ok: !issues.some(issue => issue.severity === "error"),
       target,
       validatorVersion: VERSION,
       summary,
+      references,
       issues
     };
   }

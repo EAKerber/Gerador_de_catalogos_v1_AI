@@ -1,0 +1,79 @@
+name: Catalog Integration
+
+on:
+  pull_request:
+    branches:
+      - development
+  push:
+    branches:
+      - agent/integracao-05.20
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node:
+    name: Node, schema and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - name: Verify generated files
+        run: git diff --exit-code
+      - run: npm run test:node
+
+  chromium:
+    name: Chromium and visual gates
+    needs: node
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      CATALOG_BASE_URL: http://127.0.0.1:8080
+      CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE: "1"
+      CATALOG_TEST_TIMEOUT_MS: "600000"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Resolve system Chromium
+        shell: bash
+        run: |
+          browser_path="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser_path"
+          "$browser_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$browser_path" >> "$GITHUB_ENV"
+      - name: Start catalog server
+        shell: bash
+        run: |
+          python3 -m http.server 8080 > /tmp/catalog-server.log 2>&1 &
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/catalog-server.log
+          exit 1
+      - run: npm run test:browser
+      - name: Upload browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: catalog-browser-diagnostics
+          path: audit-output/
+          if-no-files-found: ignore
+          retention-days: 7

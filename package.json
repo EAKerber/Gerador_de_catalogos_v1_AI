@@ -1,0 +1,19 @@
+{
+  "name": "gerador-de-catalogos-v1",
+  "version": "1.6.0",
+  "private": true,
+  "description": "Editor visual A4 e kit de autoria para catálogos técnicos e promocionais.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node tools/build-authoring-kit.js",
+    "test:node": "node tools/run-catalog-tests.js --node",
+    "test:browser": "node tools/run-catalog-tests.js --browser",
+    "test": "node tools/run-catalog-tests.js --all",
+    "test:stress": "node tools/run-catalog-stress.js --all"
+  },
+  "devDependencies": {
+    "playwright": "1.61.1"
+  }
+}

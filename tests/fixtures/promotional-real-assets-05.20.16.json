@@ -1,0 +1,83 @@
+{
+  "format": "CatalogRealAssetFixture",
+  "version": "05.20.16",
+  "assets": [
+    {
+      "key": "logo",
+      "fileName": "mobilitop-logo.jpg",
+      "label": "Mobili Top",
+      "role": "logo",
+      "source": "WhatsApp Image 2026-07-14 at 08.21.04.jpeg",
+      "crop": [20, 20, 250, 190],
+      "fit": "contain",
+      "focalX": 50,
+      "focalY": 50,
+      "mimeType": "image/jpeg",
+      "width": 230,
+      "height": 170,
+      "size": 8727,
+      "sha256": "601373a01af726fbb9cc4ee7cfca71783a5762437bcc39c455212c223e13a6a6",
+      "provenance": {
+        "origin": "provided",
+        "method": "crop-from-provided-reference",
+        "fidelity": "product-faithful",
+        "containsCommercialText": false,
+        "notes": "Recorte sem preço, código ou medida comercial."
+      },
+      "base64Path": "tests/fixtures/assets-05.20.16/logo.jpg.b64"
+    },
+    {
+      "key": "product",
+      "fileName": "pe-movel-produto.jpg",
+      "label": "Pé para móveis",
+      "role": "product-main",
+      "source": "WhatsApp Image 2026-07-20 at 09.59.49.jpeg",
+      "crop": [520, 575, 625, 1008],
+      "fit": "contain",
+      "focalX": 50,
+      "focalY": 50,
+      "mimeType": "image/jpeg",
+      "width": 105,
+      "height": 433,
+      "size": 5053,
+      "sha256": "a2e7b664c257ea526170b2c2fde72047081a1527e1a3ce742c3c63ff06fd9134",
+      "provenance": {
+        "origin": "provided",
+        "method": "crop-from-provided-reference",
+        "fidelity": "product-faithful",
+        "containsCommercialText": false,
+        "notes": "Recorte sem preço, código ou medida comercial."
+      },
+      "base64Path": "tests/fixtures/assets-05.20.16/product.jpg.b64"
+    },
+    {
+      "key": "technical",
+      "fileName": "pe-movel-desenho-tecnico.jpg",
+      "label": "Desenho técnico",
+      "role": "technical",
+      "source": "WhatsApp Image 2026-07-20 at 09.59.49.jpeg",
+      "crop": [788, 548, 1002, 1088],
+      "fit": "contain",
+      "focalX": 50,
+      "focalY": 50,
+      "mimeType": "image/jpeg",
+      "width": 214,
+      "height": 540,
+      "size": 23170,
+      "sha256": "87f28db1dbefb62c7e899c18493fce01dca7b44071e58ed4f4d07caaa55f7f8f",
+      "provenance": {
+        "origin": "provided",
+        "method": "crop-from-provided-reference",
+        "fidelity": "product-faithful",
+        "containsCommercialText": false,
+        "notes": "Recorte sem preço, código ou medida comercial nativa; informação dimensional permanece nativa no desenho técnico."
+      },
+      "base64Path": "tests/fixtures/assets-05.20.16/technical.jpg.b64"
+    }
+  ],
+  "policy": {
+    "fullReferenceAsAsset": false,
+    "commercialDataNative": true,
+    "optionalCompositeAsset": "omitted-to-avoid-layout-leakage"
+  }
+}

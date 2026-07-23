@@ -327,15 +327,33 @@
   }];
 
   function footerItemTextFrame(component, slotName) {
+    const width = Math.max(1, Number(component?.frame?.width) || 80);
+    const height = Math.max(1, Number(component?.frame?.height) || 64);
     const iconPresent = hasSlot(component, "icon");
     const titlePresent = hasSlot(component, "title");
     const subtitlePresent = hasSlot(component, "subtitle");
-    const top = iconPresent ? 31 : 3;
-    const available = Math.max(34, component.frame.height - top - 3);
-    const bothTexts = titlePresent && subtitlePresent;
-    const height = bothTexts ? Math.max(34, Math.floor(available / 2)) : available;
-    const y = slotName === "subtitle" && titlePresent ? top + height : top;
-    return { x: 4, y, width: Math.max(80, component.frame.width - 8), height };
+    const insetX = Math.min(4, Math.floor(width / 2));
+    const top = Math.min(iconPresent ? 31 : 3, height);
+    const bottomInset = Math.min(3, Math.max(0, height - top));
+    const available = Math.max(0, height - top - bottomInset);
+    const innerWidth = Math.max(1, width - insetX * 2);
+
+    if (titlePresent && subtitlePresent) {
+      const gap = available >= 30 ? 2 : available >= 12 ? 1 : 0;
+      const usable = Math.max(0, available - gap);
+      const titleHeight = usable >= 28
+        ? Math.max(14, Math.min(usable - 14, Math.round(usable * .52)))
+        : Math.ceil(usable / 2);
+      const subtitleHeight = Math.max(0, usable - titleHeight);
+      return slotName === "title"
+        ? { x: insetX, y: top, width: innerWidth, height: titleHeight }
+        : { x: insetX, y: top + titleHeight + gap, width: innerWidth, height: subtitleHeight };
+    }
+
+    const present = slotName === "title" ? titlePresent : subtitlePresent;
+    return present
+      ? { x: insetX, y: top, width: innerWidth, height: available }
+      : { x: insetX, y: top, width: innerWidth, height: 0 };
   }
 
   const footerItemSlots = [{

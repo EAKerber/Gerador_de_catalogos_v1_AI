@@ -1,0 +1,93 @@
+{
+  "version": "05.20.10",
+  "status": "proposed",
+  "policy": {
+    "pixelPerfectRequired": false,
+    "newComponentTypesAllowedInitially": false,
+    "initialImplementationStrategy": "semantic-tokens-and-editable-recipes",
+    "hardcodedReferenceColorsAllowed": false,
+    "assetsMaySupply": [
+      "photography",
+      "character-illustration",
+      "megaphone",
+      "technical-drawing",
+      "irregular-burst-shape"
+    ],
+    "nativeEditingMustSupply": [
+      "offer-unit-structure",
+      "price-hierarchy",
+      "commercial-copy",
+      "semantic-surfaces",
+      "repetition-and-layout"
+    ]
+  },
+  "semanticTokens": {
+    "colors": [
+      "promo.primary",
+      "promo.secondary",
+      "promo.dark",
+      "promo.on-primary",
+      "promo.on-secondary",
+      "promo.on-dark"
+    ],
+    "surfaces": [
+      "surface.promo-primary",
+      "surface.promo-secondary",
+      "surface.promo-dark"
+    ],
+    "typography": [
+      "type.promo-title",
+      "type.promo-price",
+      "type.promo-qualifier",
+      "type.promo-meta"
+    ]
+  },
+  "recipes": {
+    "commerce-price-block": {
+      "rootRole": "price-block",
+      "requiredRoles": ["currency", "amount"],
+      "optionalRoles": ["old-price", "qualifier", "unit"],
+      "behavior": [
+        "optional-roles-removable",
+        "current-price-remains-dominant",
+        "screen-print-equivalence"
+      ]
+    },
+    "commerce-offer-unit": {
+      "rootRole": "offer-unit",
+      "requiredRoles": ["media", "code", "measure", "price-block"],
+      "optionalRoles": ["old-price", "qualifier", "unit", "badge"],
+      "behavior": [
+        "independent-editing",
+        "independent-duplication",
+        "independent-reordering",
+        "screen-print-equivalence"
+      ]
+    }
+  },
+  "acceptance": {
+    "minimumOfferUnits": 4,
+    "minimumPriceContainers": 4,
+    "minimumCommercialRowsPreserved": 4,
+    "minimumBenefits": 4,
+    "minimumCallouts": 1,
+    "minimumPriceToMetaFontRatio": 2.0,
+    "minimumPriceToMeasureFontRatio": 1.5,
+    "minimumDistinctPromoSurfaceFamilies": 3,
+    "maximumUnexpectedCollisions": 0,
+    "maximumUnexpectedOverflows": 0,
+    "maximumMissingReferences": 0,
+    "maximumBenchmarkActions": 190,
+    "requiredPresentationKind": "independent-repeated-offers",
+    "requiredStructuralScore": 100,
+    "minimumChromaticScoreFirstMilestone": 50,
+    "minimumConsolidatedScoreFirstMilestone": 75
+  },
+  "escalationRule": {
+    "newComponentTypeMayBeConsideredWhen": [
+      "two-or-more-unrelated-references-require-the-same-behavior",
+      "the-behavior-cannot-be-expressed-with-layout-container-text-art-and-icon",
+      "a-dedicated-renderer-reduces-state-or-history-complexity-instead-of-only-reducing-clicks"
+    ]
+  }
+}
