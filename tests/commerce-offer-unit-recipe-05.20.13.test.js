@@ -55,6 +55,8 @@ for (const role of ["offer-unit", "media", "code", "measure", "price-block", "cu
 }
 assert.strictEqual(all.filter(component => component.props?.recipeRole === "price-block").length, 1, "A unidade deveria conter exatamente um bloco de preço.");
 assert(roles.get("media").type === "art", "Mídia da oferta não é arte substituível.");
+assert.strictEqual(recipe.component.layout.mode, "free", "A unidade redistribui a mídia e perde a hierarquia promocional autoral.");
+assert.strictEqual(roles.get("media").frame.height, 220, "A mídia não preserva a área dominante do produto.");
 assert(roles.get("code").style.surface === "surface.promo-dark", "Código não usa superfície promocional escura.");
 assert(roles.get("measure").style.surface === "surface.promo-secondary", "Medida não usa superfície promocional secundária.");
 assert(roles.get("price-block").style.surface === "surface.promo-primary", "Preço não usa superfície promocional principal.");
