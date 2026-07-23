@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/developer-b-promotional-assets-05-20.yml'
       - 'tests/browser-promotional-assets-05.20.16.test.js'
+      - 'tests/browser-promotional-assets-runner-05.20.16.test.js'
       - 'tests/promotional-assets-contribution-05.20.16.py'
       - 'tests/promotional-fidelity-audit-v2-05.20.14.py'
       - 'tests/browser-promotional-generalization-v2-05.20.14.test.js'
@@ -32,6 +33,7 @@ jobs:
       - name: Validate benchmark sources
         run: |
           node --check tests/browser-promotional-assets-05.20.16.test.js
+          node --check tests/browser-promotional-assets-runner-05.20.16.test.js
           node --check tests/browser-promotional-generalization-v2-05.20.14.test.js
           python -m py_compile tests/promotional-fidelity-audit-v2-05.20.14.py
           python -m py_compile tests/promotional-assets-contribution-05.20.16.py
@@ -70,7 +72,7 @@ jobs:
         env:
           CATALOG_BASE_URL: http://127.0.0.1:8080
           CATALOG_ASSETS_OUTPUT_DIR: audit-output/db-05.20.16
-        run: node tests/browser-promotional-assets-05.20.16.test.js
+        run: node tests/browser-promotional-assets-runner-05.20.16.test.js
       - name: Measure baseline fidelity
         run: |
           python tests/promotional-fidelity-audit-v2-05.20.14.py \
