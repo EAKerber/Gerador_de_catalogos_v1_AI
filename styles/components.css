@@ -242,7 +242,7 @@
 .editor-component--product-card[data-presentation-density="compact"] { --presentation-font-scale: .88; --presentation-icon-scale: .9; }
 .editor-component--product-card[data-presentation-density="compact"] .component-title-symbol { gap: 4px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-title-symbol__number { min-width: 25px; }
-.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol h3 { font-size: 11px; letter-spacing: -.02em; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol h3 { font-size: 10px; letter-spacing: -.02em; }
 .editor-component--product-card[data-presentation-density="compact"] .component-specification { grid-template-columns: 22px minmax(0, 1fr); gap: 3px; padding: 1px 3px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-specification__icon { width: 24px; height: 24px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-specification > span:last-child { font-size: 7px; letter-spacing: -.01em; }
