@@ -70,7 +70,7 @@ Só poderá ser retomado após evidência de macroestrutura repetida em pelo men
 
 **Estado:** substituído por DB-05.20.15.
 
-O teste vermelho existente registra um limite real de rótulo longo, mas não bloqueou os incrementos P0.
+O teste vermelho existente registrou um limite real de rótulo longo e foi retomado após o fechamento dos incrementos P0.
 
 ### DB-05.20.8 — Assets reais
 
@@ -134,7 +134,7 @@ Entregas:
 - app e AuthoringKit em paridade;
 - build idempotente.
 
-O inventário passou a 29 cores, 15 superfícies e 14 tipografias. Os 13 déficits semânticos foram eliminados sem adicionar receita.
+O inventário passou a 29 cores, 15 superfícies e 14 tipografias. Os 13 déficits semânticos foram eliminados sem adicionar receita. O gate histórico foi tornado aditivo após a conclusão das receitas posteriores.
 
 ### DB-05.20.12 — Receita `commerce-price-block`
 
@@ -234,46 +234,49 @@ Findings técnicos residuais:
 
 O marco P0 foi atingido sem novo tipo.
 
-## Próximos incrementos
-
 ### DB-05.20.15 — Callout e faixa de benefícios
 
-**Estado:** ativo.
+**Estado:** concluído.
 
-**Prioridade:** P1.
+**Run de legibilidade:** `29973934450`.
 
-Objetivo: retomar a legibilidade suspensa sem reduzir as metas do V2.
+**Run de preservação do V2:** `29973934463`.
 
-Callout:
+Resultados:
 
-- shape ou asset opcional separado do texto;
-- título e corpo nativos;
-- estados amplo e compacto distintos;
-- possibilidade de reforçar uma massa escura contínua;
-- sem novo tipo na primeira tentativa.
+- quatro benefícios aceitam rótulos longos em até duas linhas;
+- escalas vetoriais 80/100/120 permanecem distintas;
+- callout amplo usa linha e compacto usa coluna;
+- título e corpo nativos cabem integralmente nos dois modos;
+- corpo opcional pode ser removido sem quebrar a composição;
+- tela e impressão equivalentes;
+- zero erros de página e console;
+- zero colisões, overflows e referências obrigatórias ausentes;
+- 16 tipos e schema `1.16.0` preservados;
+- nenhuma promoção de callout ou benefício para novo tipo;
+- AuthoringKit sincronizado e build idempotente;
+- benchmark V2 preservado em 189 ações, 100/100 estrutural, 87,5/100 cromático e 93,8/100 consolidado.
 
-Benefícios:
+As falhas intermediárias foram classificadas entre produto, harness, integração de build e concorrência de workflow. A evidência completa está em `docs/evidence/05.20/developer-b/DB-05.20.15-CALLOUT-BENEFITS.md`.
 
-- ícone, título e descrição curta quando houver espaço;
-- modo compacto com até duas linhas;
-- escala vetorial 80/100/120 preservada;
-- tela e impressão equivalentes.
-
-Critérios bloqueantes:
-
-- benchmark V2 ≤ 190 ações;
-- estrutura 100/100;
-- cromático ≥ 50/100;
-- consolidado ≥ 75/100;
-- zero regressões técnicas.
+## Próximos incrementos
 
 ### DB-05.20.16 — Benchmark com assets reais
 
-**Estado:** pendente.
+**Estado:** ativo.
 
 **Prioridade:** P2.
 
 Executar com logo, produto, desenho técnico e asset composto opcional para personagem/faixas/megafone. Medir contribuição dos assets separadamente do repertório nativo.
+
+Critérios:
+
+- não usar assets para substituir oferta, preço, código ou medida nativos;
+- registrar crop, fit, foco e persistência de cada asset;
+- preservar exportação/reimportação, impressão e referências;
+- comparar métricas editoriais com o V2 sem assets;
+- distinguir ganho de asset de ganho estrutural;
+- manter estrutura 100/100 e consolidado ≥ 75/100.
 
 ### DB-05.20.17 — Receita macro promocional
 
@@ -285,11 +288,10 @@ Só pode ser proposta se uma segunda referência não relacionada repetir a macr
 
 ## Ordem regulada atual
 
-1. DB-05.20.15 — callout e benefícios.
-2. Reexecutar o benchmark V2 e preservar os gates editoriais.
-3. DB-05.20.16 — assets reais.
-4. Reabrir DB-05.20.4 somente com nova reprodução.
-5. Avaliar DB-05.20.17 somente com evidência multirreferência.
+1. DB-05.20.16 — benchmark com assets reais.
+2. Reexecutar a auditoria e separar contribuição visual de capacidade nativa.
+3. Reabrir DB-05.20.4 somente com nova reprodução.
+4. Avaliar DB-05.20.17 somente com evidência multirreferência.
 
 ## Gates permanentes
 
