@@ -46,6 +46,12 @@ source = replaceOnce(
   'const ignored = new Set(["updatedAt", "lastSavedAt", "generatedAt", "editor", "session", "reference", "sha256"]);',
   "normalização de referências locais e hashes derivados no round-trip"
 );
+source = replaceOnce(
+  source,
+  'await roundTripPage.waitForFunction(expected => JSON.stringify(CatalogEditor.store.getExportDocument().pages) === JSON.stringify(expected.pages), constructedSnapshot);',
+  'await roundTripPage.waitForFunction(() => (CatalogEditor.store.getCollection("assets")?.items || []).length === 3);',
+  "prontidão semântica após redo"
+);
 
 fs.writeFileSync(generatedPath, source);
 let result;
