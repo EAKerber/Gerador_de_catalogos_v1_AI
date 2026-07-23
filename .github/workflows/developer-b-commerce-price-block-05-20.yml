@@ -73,6 +73,9 @@ jobs:
         run: |
           set -euo pipefail
           node tools/build-developer-b-authoring-kit.js
+          mkdir -p audit-output/db-05.20.12/build
+          git diff --name-only | tee audit-output/db-05.20.12/build/generated-files.txt
+          git status --short | tee audit-output/db-05.20.12/build/git-status.txt
           allowed='^(app/authoring-kit-files\.js|authoring-kit/capabilities\.json|authoring-kit/feature-inventory\.json|authoring-kit/runtime/commerce-price-block-recipe-contract\.js|docs/FEATURE-CATALOG\.md)$'
           unexpected="$(git diff --name-only | grep -Ev "$allowed" || true)"
           if [ -n "$unexpected" ]; then
