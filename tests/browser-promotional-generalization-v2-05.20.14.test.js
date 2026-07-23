@@ -121,7 +121,7 @@ async function duplicateOfferUnits(firstId) {
 `;
 source = replaceRange(source, "async function editProductCard(cardId) {", "async function editCallout(rootId) {", offerHelpers, "helpers comerciais");
 
-const offerConstruction = `  const firstOfferId = await insertFromPalette("recipe", "commerce-offer-unit", { x: 24, y: 410, width: 180, height: 526 });
+const offerConstruction = `  const firstOfferId = await insertFromPalette("recipe", "commerce-offer-unit", { x: 24, y: 384, width: 180, height: 526 });
   const offerIds = await duplicateOfferUnits(firstOfferId);
   const offerValues = [
     { code: "CÓD. 1123", measure: "100mm", amount: "3,99" },
