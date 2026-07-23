@@ -50,6 +50,8 @@ let browser;
   assert(automatic.areaHeight >= automatic.minimumHeight, "A Área de composição ficou abaixo do mínimo recursivo.");
   assert(automatic.tableBottom <= automatic.cardHeight, "A tabela atravessou o limite inferior do card.");
   await page.evaluate(specId => CatalogEditor.store.selectComponentInContext(specId), ids.specId);
+  const structureTab = page.locator('[data-inspector-tab="structure"]').first();
+  if (await structureTab.getAttribute("aria-selected") !== "true") await structureTab.click();
   const reintegrate = page.locator('[data-reintegrate-layout]').first();
   await reintegrate.waitFor({ state: "visible" });
   await reintegrate.click();
