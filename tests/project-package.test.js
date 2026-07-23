@@ -131,7 +131,7 @@ const fileFrom = (name, bytes) => ({
     "section-tip-callout"
   ];
   assert(capabilities.components.length === Object.keys(CATALOG_COMPONENT_REGISTRY).length && capabilities.icons.length === Object.keys(CATALOG_ICON_LIBRARY).length, "O manifesto declarativo diverge dos registros runtime.");
-  assert(capabilities.editor.increment === "05.18" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing, "O kit não preservou geometria, coleções em lote e receitas oficiais no 05.18.");
+  assert(capabilities.editor.increment === "05.20" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing, "O kit não preservou geometria, coleções em lote e receitas oficiais no 05.20.");
   assert(capabilities.capabilities.editorialTextControls && capabilities.capabilities.internalIconScale && capabilities.capabilities.distinctProductModes, "O kit não publicou a profundidade editorial do 05.18.");
   assert(capabilities.tableSchemas.length === 4 && capabilities.capabilities.batchTableSchemas && capabilities.capabilities.heroGridStripComposition, "O kit não publicou esquemas de tabela e composição focal.");
   assert(capabilities.separatorPresets.length === 5 && capabilities.capabilities.contextualTableRows && capabilities.capabilities.batchSeparators, "Ações contextuais e presets de separador não foram publicados no kit.");
