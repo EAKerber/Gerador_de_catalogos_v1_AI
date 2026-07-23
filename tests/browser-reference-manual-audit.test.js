@@ -371,10 +371,12 @@ const legendPlans = [
   await selectLayer(semanticTextIds.tipTitleId, "Selecionar título da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "DICA TOP MOBILI", "Editar título da dica", { surface: "inspector" });
+  await inspectorTab("style");
   await select(page.locator('[data-style-path="typography"]'), "type.card-title", "Usar título compacto na dica", { surface: "inspector" });
   await selectLayer(semanticTextIds.tipBodyId, "Selecionar corpo da dica");
   await inspectorTab("content");
   await fill(page.locator('[data-prop-path="content"]'), "Utilize a bit Philips correta para maior durabilidade do parafuso e melhor performance na fixação.", "Editar corpo da dica", { surface: "inspector" });
+  await inspectorTab("style");
   await select(page.locator('[data-style-path="typography"]'), "type.caption", "Usar corpo compacto na dica", { surface: "inspector" });
   await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica compactada");
   const documentPath = path.join(outputDir, "reference-manual.document.json");
