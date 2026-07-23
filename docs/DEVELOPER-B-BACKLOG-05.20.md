@@ -259,24 +259,37 @@ Resultados:
 
 As falhas intermediárias foram classificadas entre produto, harness, integração de build e concorrência de workflow. A evidência completa está em `docs/evidence/05.20/developer-b/DB-05.20.15-CALLOUT-BENEFITS.md`.
 
-## Próximos incrementos
-
 ### DB-05.20.16 — Benchmark com assets reais
 
-**Estado:** ativo.
+**Estado:** concluído.
 
 **Prioridade:** P2.
 
-Executar com logo, produto, desenho técnico e asset composto opcional para personagem/faixas/megafone. Medir contribuição dos assets separadamente do repertório nativo.
+**Run principal:** `29980210249`.
 
-Critérios:
+Resultados:
 
-- não usar assets para substituir oferta, preço, código ou medida nativos;
-- registrar crop, fit, foco e persistência de cada asset;
-- preservar exportação/reimportação, impressão e referências;
-- comparar métricas editoriais com o V2 sem assets;
-- distinguir ganho de asset de ganho estrutural;
-- manter estrutura 100/100 e consolidado ≥ 75/100.
+- composição nativa V2: 190 ações;
+- fase de assets: 26 ações;
+- total observado: 216 ações, com atribuição separada;
+- três assets independentes: logo, produto e desenho técnico;
+- cinco usos: um logo, três produtos e um desenho técnico;
+- cinco placeholders eliminados e zero restantes;
+- quatro ofertas e quatro papéis `price-block` preservados;
+- zero linhas tabulares;
+- estrutura comercial: **100/100** antes e depois;
+- cromático: **87,5/100** antes e depois;
+- consolidado: **93,8/100** antes e depois;
+- zero colisões, overflows e referências obrigatórias ausentes;
+- modelo e DOM em paridade com 96 componentes;
+- schema `1.16.0` preservado;
+- JSON, pacote portátil, hashes, reimportação, undo e redo aprovados;
+- nenhuma imagem contém preço, código, medida ou composição promocional completa;
+- nenhum novo tipo e nenhuma mudança de produto foram necessários.
+
+A contribuição dos assets foi limitada a mídia, marca e desenho técnico. Oferta, preço, código, medida, repetição e hierarquia permaneceram nativos. A evidência completa está em `docs/evidence/05.20/developer-b/DB-05.20.16-PROMOTIONAL-ASSETS.md`.
+
+## Próximos incrementos
 
 ### DB-05.20.17 — Receita macro promocional
 
@@ -286,12 +299,13 @@ Critérios:
 
 Só pode ser proposta se uma segunda referência não relacionada repetir a macroestrutura e se a receita reduzir ações sem ocultar a independência das ofertas.
 
+O benchmark com assets não fornece essa evidência: ele completou mídias da mesma referência sem introduzir uma segunda macroestrutura editorial.
+
 ## Ordem regulada atual
 
-1. DB-05.20.16 — benchmark com assets reais.
-2. Reexecutar a auditoria e separar contribuição visual de capacidade nativa.
-3. Reabrir DB-05.20.4 somente com nova reprodução.
-4. Avaliar DB-05.20.17 somente com evidência multirreferência.
+1. Reabrir DB-05.20.4 somente com nova reprodução de coalescência entre tarefas distintas.
+2. Avaliar DB-05.20.17 somente após uma segunda referência não relacionada repetir a macroestrutura promocional.
+3. Não adicionar novo tipo, receita macro ou token específico enquanto os condicionantes não forem satisfeitos.
 
 ## Gates permanentes
 
