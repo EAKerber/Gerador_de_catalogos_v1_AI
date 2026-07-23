@@ -240,7 +240,12 @@
 .component-data-table__row strong small { max-width: 100%; overflow: hidden; color: #252525; font-family: var(--font-sans); font-size: 6px; font-weight: 800; line-height: 1; text-overflow: ellipsis; text-transform: uppercase; }
 
 .editor-component--product-card[data-presentation-density="compact"] { --presentation-font-scale: .88; --presentation-icon-scale: .9; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol { gap: 4px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol__number { min-width: 25px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-title-symbol h3 { font-size: 11px; letter-spacing: -.02em; }
+.editor-component--product-card[data-presentation-density="compact"] .component-specification { grid-template-columns: 22px minmax(0, 1fr); gap: 3px; padding: 1px 3px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-specification__icon { width: 24px; height: 24px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-specification > span:last-child { font-size: 7px; letter-spacing: -.01em; }
 .editor-component--product-card[data-presentation-density="comfortable"] { --presentation-font-scale: 1.08; --presentation-icon-scale: 1.12; }
 .editor-component--product-card[data-presentation-mode="hero"] .component-card-shell__accent { width: 7px; opacity: 1; }
 .editor-component--product-card[data-presentation-mode="technical"] .component-card-shell__accent { width: 100%; height: 4px; }
@@ -254,9 +259,9 @@
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__body { grid-auto-rows: minmax(20px, 1fr); }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__header { font-size: 6px; }
 .editor-component--product-card[data-presentation-density="compact"] .component-data-table__header span,
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { padding: 1px 3px; }
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { font-size: 9px; }
-.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong[data-column-role="price"] { font-size: 10px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { padding: 1px 2px; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong { font-size: 7px; letter-spacing: -.01em; }
+.editor-component--product-card[data-presentation-density="compact"] .component-data-table__row strong[data-column-role="price"] { font-size: 9px; }
 
 .editor-component--title-symbol,
 .editor-component--specification { background: transparent; }
