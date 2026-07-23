@@ -1,4 +1,4 @@
-/* DB-05.18.19 — auditoria de reuso, responsividade e consistência do callout. */
+/* DB-05.18.19 / DB-05.20.15 — auditoria aditiva de reuso, responsividade e legibilidade do callout. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -55,20 +55,25 @@ const noSiblingOverlap = component => {
 
 assert(Object.keys(CATALOG_COMPONENT_REGISTRY).length === 16, "A auditoria alterou a quantidade de tipos.");
 assert(!CATALOG_COMPONENT_REGISTRY.callout, "callout foi registrado como tipo durante uma auditoria.");
-assert(CatalogCalloutRecipeContract.VERSION === "05.18.19", "Versão inesperada do contrato callout.");
-assert(CatalogSectionRecipes.VERSION === "1.4.1", `Versão inesperada do registro final de receitas: ${CatalogSectionRecipes.VERSION}.`);
+assert(CatalogCalloutRecipeContract.VERSION === "05.20.15", "Versão inesperada do contrato callout.");
+assert(CatalogSectionRecipes.VERSION === "1.5.0", `Versão inesperada do registro final de receitas: ${CatalogSectionRecipes.VERSION}.`);
+assert(CATALOG_COMPONENT_REGISTRY.icon.recommendedSize.width === 96 && CATALOG_COMPONENT_REGISTRY.icon.recommendedSize.height === 72, "Tamanho recomendável do benefício não foi atualizado.");
 
 const recipe = CatalogSectionRecipes.get("section-tip-callout");
-assert(recipe.version === "1.4.1", `Versão inesperada da receita auditada: ${recipe.version}.`);
+assert(recipe.version === "1.5.0", `Versão inesperada da receita auditada: ${recipe.version}.`);
 assert(recipe.component.type === "layout-container", "A receita deixou de ser uma composição canônica.");
-assert(recipe.component.frame.width === 330 && recipe.component.frame.height === 140, `Frame amplo não foi normalizado: ${JSON.stringify(recipe.component.frame)}.`);
-assert(recipe.component.style.border === "border.none" && recipe.component.style.radius === "radius.none", "A receita ainda depende de infraestrutura visual que desaparece no PDF.");
+assert(recipe.component.frame.width === 330 && recipe.component.frame.height === 150, `Frame amplo não foi normalizado: ${JSON.stringify(recipe.component.frame)}.`);
+assert(recipe.component.style.border === "border.none" && recipe.component.style.radius === "radius.none", "A receita depende de infraestrutura visual que desaparece no PDF.");
 assert(recipe.component.layout.responsive.enabled === true, "A responsividade continua desativada.");
-assert(recipe.component.layout.responsive.breakpoint === 240 && recipe.component.layout.responsive.mode === "column", "Breakpoint responsivo inesperado.");
+assert(recipe.component.layout.responsive.breakpoint === 260 && recipe.component.layout.responsive.mode === "column", "Breakpoint responsivo inesperado.");
+assert(recipe.component.props.contextual === true, "A receita não publicou marcador contextual para sua hierarquia visual.");
 assert(treeCount(recipe.component) === 5, `A receita deveria conter cinco componentes; recebeu ${treeCount(recipe.component)}.`);
 assert(role(recipe.component, "icon")?.type === "icon", "O papel de ícone não foi declarado.");
 assert(role(recipe.component, "content")?.type === "layout-container", "O papel de conteúdo não foi declarado.");
 assert(role(recipe.component, "title")?.type === "text" && role(recipe.component, "body")?.type === "text", "Título ou corpo não foram classificados.");
+assert(role(recipe.component, "title").style.surface === "surface.promo-dark", "Título não usa superfície promocional escura.");
+assert(role(recipe.component, "title").style.textColor === "promo.on-dark", "Título não usa contraste semântico.");
+assert(role(recipe.component, "icon").style.vectorColor === "promo.secondary", "Ícone não usa contraste promocional secundário.");
 
 const scenarios = [
   {
@@ -76,7 +81,7 @@ const scenarios = [
     icon: "torque",
     title: "DICA DE INSTALAÇÃO",
     body: "Aplique o torque recomendado para evitar deformação da ferragem.",
-    frame: { x: 24, y: 24, width: 330, height: 140 },
+    frame: { x: 24, y: 24, width: 430, height: 150 },
     expectedMode: "row"
   },
   {
@@ -84,7 +89,7 @@ const scenarios = [
     icon: "payment",
     title: "CONDIÇÃO COMERCIAL",
     body: "Consulte disponibilidade, prazo e condições de pagamento para o seu pedido.",
-    frame: { x: 366, y: 24, width: 180, height: 190 },
+    frame: { x: 466, y: 24, width: 220, height: 210 },
     expectedMode: "column"
   }
 ];
@@ -108,6 +113,7 @@ for (const scenario of scenarios) {
 for (const { id, scenario } of callouts) {
   const current = store.findComponent(id).component;
   assert(current.props?.recipeRole === "callout", `${scenario.kind}: papel da raiz perdido.`);
+  assert(current.props?.contextual === true, `${scenario.kind}: marcador contextual perdido.`);
   assert(role(current, "icon")?.props.icon === scenario.icon, `${scenario.kind}: ícone não persistiu.`);
   assert(role(current, "title")?.props.content === scenario.title, `${scenario.kind}: título não persistiu.`);
   assert(role(current, "body")?.props.content === scenario.body, `${scenario.kind}: corpo não persistiu.`);
@@ -136,4 +142,4 @@ assert(fs.readFileSync(path.join(root, "app", "main.js"), "utf8").includes('file
 assert(fs.readFileSync(path.join(root, "tools", "build-developer-b-authoring-kit.js"), "utf8").includes('"callout-recipe-contract.js"'), "O build Developer B não copia o contrato callout.");
 assert(CATALOG_SCHEMA_VERSION === "1.16.0", "A auditoria callout alterou o schema.");
 
-console.log("✓ DB-05.18.19 validou callout técnico e comercial, modos amplo/compacto, uma ação e ausência de novo tipo.");
+console.log("✓ DB-05.20.15 validou callout amplo/compacto, vocabulário promocional, benefício recomendável, uma ação e ausência de novo tipo.");
