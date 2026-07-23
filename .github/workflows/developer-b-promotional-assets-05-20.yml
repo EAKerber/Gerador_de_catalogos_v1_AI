@@ -1,0 +1,99 @@
+name: Developer B Promotional Assets
+on:
+  pull_request:
+    branches: [development]
+    paths:
+      - '.github/workflows/developer-b-promotional-assets-05-20.yml'
+      - 'tests/browser-promotional-assets-05.20.16.test.js'
+      - 'tests/promotional-assets-contribution-05.20.16.py'
+      - 'tests/promotional-fidelity-audit-v2-05.20.14.py'
+      - 'tests/browser-promotional-generalization-v2-05.20.14.test.js'
+      - 'tests/fixtures/promotional-assets-05.20.16.json'
+      - 'app/asset-library.js'
+      - 'app/asset-storage.js'
+      - 'app/project-package.js'
+      - 'app/document-store.js'
+      - 'app/renderer.js'
+permissions:
+  contents: read
+jobs:
+  promotional-assets:
+    name: DB-05.20.16 - promotional assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/developer-b-05.18
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate benchmark sources
+        run: |
+          node --check tests/browser-promotional-assets-05.20.16.test.js
+          node --check tests/browser-promotional-generalization-v2-05.20.14.test.js
+          python -m py_compile tests/promotional-fidelity-audit-v2-05.20.14.py
+          python -m py_compile tests/promotional-assets-contribution-05.20.16.py
+          python - <<'PY'
+          import base64, hashlib, json
+          from pathlib import Path
+          manifest = json.loads(Path('tests/fixtures/promotional-assets-05.20.16.json').read_text(encoding='utf-8'))
+          assert manifest['policy']['commercialDataEmbedded'] is False
+          assert manifest['policy']['wholeReferenceUsed'] is False
+          for asset in manifest['assets']:
+              data = base64.b64decode(asset['dataBase64'])
+              assert len(data) == asset['size']
+              assert hashlib.sha256(data).hexdigest() == asset['sha256']
+          print('✓ Fixtures reais íntegros e sem composição comercial completa.')
+          PY
+      - name: Install visual runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@latest
+          python -m pip install --disable-pip-version-check pillow
+          chrome_path="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_path"
+          "$chrome_path" --version
+          echo "CATALOG_CHROMIUM_EXECUTABLE=$chrome_path" >> "$GITHUB_ENV"
+      - name: Start editor
+        run: |
+          python -m http.server 8080 > /tmp/catalog-http.log 2>&1 &
+          for attempt in {1..30}; do
+            curl -fsS http://127.0.0.1:8080/index.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/catalog-http.log
+          exit 1
+      - name: Build baseline and apply real assets
+        env:
+          CATALOG_BASE_URL: http://127.0.0.1:8080
+          CATALOG_ASSETS_OUTPUT_DIR: audit-output/db-05.20.16
+        run: node tests/browser-promotional-assets-05.20.16.test.js
+      - name: Measure baseline fidelity
+        run: |
+          python tests/promotional-fidelity-audit-v2-05.20.14.py \
+            --artifact-dir audit-output/db-05.20.16/baseline \
+            --profile tests/fixtures/promotional-reference-profile-05.20.9.json \
+            --output audit-output/db-05.20.16/baseline-fidelity-report.json
+      - name: Measure fidelity with assets
+        run: |
+          python tests/promotional-fidelity-audit-v2-05.20.14.py \
+            --artifact-dir audit-output/db-05.20.16/assets \
+            --profile tests/fixtures/promotional-reference-profile-05.20.9.json \
+            --output audit-output/db-05.20.16/assets-fidelity-report.json
+      - name: Enforce separated contribution
+        run: |
+          python tests/promotional-assets-contribution-05.20.16.py \
+            --artifact-root audit-output/db-05.20.16 \
+            --output audit-output/db-05.20.16/promotional-assets-contribution-report.json \
+            --enforce
+      - name: Upload real-assets evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: developer-b-promotional-assets-05.20.16
+          path: audit-output/db-05.20.16
+          if-no-files-found: error
+          retention-days: 14
