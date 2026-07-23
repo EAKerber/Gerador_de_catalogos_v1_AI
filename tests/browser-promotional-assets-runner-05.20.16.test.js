@@ -7,6 +7,9 @@ const { spawnSync } = require("child_process");
 
 const sourcePath = path.join(__dirname, "browser-promotional-assets-05.20.16.test.js");
 const generatedPath = path.join(__dirname, ".generated-browser-promotional-assets-05.20.16.test.js");
+const v2SourcePath = path.join(__dirname, "browser-promotional-generalization-v2-05.20.14.test.js");
+const v2GeneratedName = ".generated-browser-promotional-generalization-v2-assets-05.20.16.test.js";
+const v2GeneratedPath = path.join(__dirname, v2GeneratedName);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 function replaceOnce(source, oldValue, newValue, label) {
@@ -15,7 +18,22 @@ function replaceOnce(source, oldValue, newValue, label) {
   return source.replace(oldValue, newValue);
 }
 
+let v2Source = fs.readFileSync(v2SourcePath, "utf8");
+v2Source = replaceOnce(
+  v2Source,
+  'for (const forbidden of ["editProductCard", "productCardId", "productParts", "technicalArtId"]) {',
+  `source = replaceOnce(source,\n  '  const footerId = await insertFromPalette("component", "catalog-footer", { x: 24, y: 1019, width: 746, height: 80 });',\n  '  const footerId = await insertFromPalette("component", "catalog-footer", { x: 24, y: 1019, width: 746, height: 100 });',\n  "altura padrão do rodapé no benchmark com assets"\n);\n\nfor (const forbidden of ["editProductCard", "productCardId", "productParts", "technicalArtId"]) {`,
+  "normalização do rodapé do baseline"
+);
+fs.writeFileSync(v2GeneratedPath, v2Source);
+
 let source = fs.readFileSync(sourcePath, "utf8");
+source = replaceOnce(
+  source,
+  'browser-promotional-generalization-v2-05.20.14.test.js',
+  v2GeneratedName,
+  "baseline V2 normalizado para o benchmark de assets"
+);
 source = replaceOnce(
   source,
   'page.locator(`[data-open-asset-library][data-component-id="${componentId}"]`).click({ force: true })',
@@ -39,8 +57,10 @@ try {
     stdio: "inherit"
   });
 } finally {
-  try { fs.unlinkSync(generatedPath); } catch {}
+  for (const file of [generatedPath, v2GeneratedPath]) {
+    try { fs.unlinkSync(file); } catch {}
+  }
 }
 
 assert(result.status === 0, `Benchmark de assets reais falhou com status ${result.status}.`);
-console.log("✓ DB-05.20.16 executou o harness com seleção inequívoca e round-trip sem chaves locais.");
+console.log("✓ DB-05.20.16 executou o harness com rodapé válido, seleção inequívoca e round-trip sem chaves locais.");
