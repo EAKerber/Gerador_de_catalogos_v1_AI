@@ -120,6 +120,9 @@ const legendPlans = [
     if (await locator.count() && (await locator.getAttribute("aria-selected") !== "true" || !await panel.isVisible())) {
       await click(locator, `Abrir inspetor ${tab}`, { surface: "inspector", contextSwitch: true });
     }
+    if (await locator.count() && !await panel.isVisible()) {
+      await click(locator, `Repetir abertura do inspetor ${tab}`, { surface: "inspector", contextSwitch: true, correction: true, noEffect: true });
+    }
     if (await panel.count()) await panel.waitFor({ state: "visible" });
   };
   const ensureDetails = async (selector, label, meta = {}) => {
