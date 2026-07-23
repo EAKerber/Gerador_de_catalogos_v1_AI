@@ -65,6 +65,27 @@ source = replaceOnce(source,
   '  const capacityFactId = await insertFromPalette("recipe", "fact", { x: 420, y: 205, width: 160, height: 170 });',
   "posição do fato capacidade"
 );
+source = replaceOnce(source,
+  '  const headingId = await insertFromPalette("recipe", "section-heading", { x: 250, y: 24, width: 500, height: 170 });',
+  '  const headingId = await insertFromPalette("recipe", "section-heading", { x: 250, y: 24, width: 320, height: 170 });',
+  "largura do título promocional"
+);
+source = replaceOnce(source,
+  '    if (role === "title") await setProp("scale", 120);',
+  '    if (role === "title") await setProp("scale", 160);',
+  "escala do título promocional"
+);
+source = replaceOnce(source,
+  '  await editSectionHeading(headingId);',
+  `  await editSectionHeading(headingId);
+
+  const characterArtId = await insertFromPalette("component", "art", { x: 580, y: 24, width: 190, height: 170 });
+  await setProp("label", "PERSONAGEM DA PROMOÇÃO");
+  await setProp("hint", "Apresentador da oferta semanal");
+  await setProp("role", "generic");
+  await setProp("fit", "contain");`,
+  "personagem promocional"
+);
 
 const offerHelpers = `async function recursiveRoleMap(rootId) {
   return page.evaluate(componentId => {
@@ -179,7 +200,7 @@ try {
 assert(result.status === 0, `Benchmark V2 falhou com status ${result.status}.`);
 const report = JSON.parse(fs.readFileSync(path.join(outputDir, "promotional-generalization-report.json"), "utf8"));
 assert(["pass", "pass-with-findings"].includes(report.status), `Status técnico inesperado: ${report.status}.`);
-assert(report.actionCount <= 190, `Benchmark V2 excedeu 190 ações: ${report.actionCount}.`);
+assert(report.actionCount <= 200, `Benchmark V2 excedeu 200 ações: ${report.actionCount}.`);
 assert(report.metrics.offerUnits === 4, `Benchmark V2 não possui quatro ofertas: ${report.metrics.offerUnits}.`);
 assert(report.metrics.priceContainers === 4, `Benchmark V2 não possui quatro preços: ${report.metrics.priceContainers}.`);
 assert(report.metrics.tableRows === 0, "Benchmark V2 voltou à representação tabular.");
