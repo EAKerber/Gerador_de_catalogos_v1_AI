@@ -79,7 +79,7 @@ Não entram como novos tipos neste ciclo: preço, selo, chip, botão, QR code, c
 
 | Prioridade | Frente | Decisão | Estado / critério |
 | --- | --- | --- | --- |
-| P0 | Integração curada | Incorporar código e fixtures necessárias a partir de uma branch limpa; excluir workflows experimentais e evidências duplicadas. | Implementado; merge depende do PR draft e dos gates remotos. |
+| P0 | Integração curada | Incorporar código e fixtures necessárias a partir de uma branch limpa; excluir workflows experimentais e evidências duplicadas. | Concluído: PR #2 integrada por squash em `development` (`dbfca98`) após 86 testes Node e 63 Chromium. |
 | P0 | Regressão integral | Um runner deve descobrir todos os testes, inclusive 05.20 e estresse. | Implementado; nenhum filtro por incremento. |
 | P0 | Inicialização segura | Contratos obrigatórios são estáticos, ordenados e fail-closed. | Implementado; runtime parcial não abre o editor. |
 | P0 | Rodapé mínimo | Redimensionamento do pai precisa propagar os slots internos. | Corrigido e coberto em 80 px. |
@@ -89,6 +89,48 @@ Não entram como novos tipos neste ciclo: preço, selo, chip, botão, QR code, c
 | P2 | Consolidação interna | Transferir subclasses e patches incrementais aos módulos canônicos em recortes isolados. | Posterior; não misturar com novas capacidades. |
 
 O contrato completo do incremento está em `INCREMENT-05.20.md`. A aprovação local de Node não substitui o job Chromium publicado.
+
+### Revisão pós-integração 05.20 — orientação contextual e segurança de edição
+
+Esta revisão separa capacidades já existentes de lacunas, oportunidades e riscos. Não cria um sistema adaptativo opaco nem promove sobreposição/camadas promocionais ao núcleo. A interface pode orientar a próxima ação, mas deve preservar acesso estável às capacidades, explicar por que uma sugestão apareceu e manter toda ação autoral explícita, reversível e compatível com o JSON canônico.
+
+#### Estado observado
+
+| Classe | Frente | Estado atual | Decisão / critério de saída |
+| --- | --- | --- | --- |
+| Existente | Contexto e próxima ação provável | A biblioteca filtra compatibilidade; o `+` combina componentes e ações derivadas da seleção; abas/disclosures lembram continuidade por tipo; ações sem efeito explicam a causa. | Preservar como base determinística da orientação contextual. |
+| Existente | Seleção contextual | Camadas ajusta o contexto e seleciona um descendente na mesma ação; multisseleção aceita apenas irmãos; breadcrumb reflete o contexto aberto. | Não reabrir a transição atômica como problema genérico; medir apenas atritos restantes. |
+| Existente | Grade e autoridade | Grid, snap global, smart snap, guias, tolerância, snap X/Y, override livre por eixo e estados gerenciado/independente/reintegrar já existem. | Usar estes contratos; não criar um segundo motor geométrico. |
+| Incompleto | Inspector progressivo | Conteúdo, Layout, Visual e Avançado organizam propriedades e a sessão lembra estado, mas a priorização ainda é majoritariamente fixa por tipo. | Auditar tarefas reais antes de alterar ordem ou visibilidade. |
+| Ausente | Painéis laterais redimensionáveis | Painéis apenas recolhem/expandem e usam larguras fixas por breakpoint. | P1: permitir arrastar a divisória de cada painel, usando a largura atual do respectivo viewport como mínimo; limitar o máximo para preservar uma área útil do canvas; duplo clique restaura o default; preferência é efêmera/local e o modo recolhido continua disponível. |
+| Ausente | Breadcrumb resiliente | Todo o caminho é renderizado em uma única linha; nomes truncam individualmente, sem colapso do miolo, overflow acessível ou navegação por menu. | P1: manter página e contexto atual visíveis, condensar ancestrais intermediários em menu e preservar teclado, título completo e ação “Subir um nível”; bloquear overflow em 1366×768 e em profundidade extrema. |
+| Incompleto | Camadas como instrumento de seleção | A árvore mostra hierarquia, slot, ordem, seleção, descendentes enfatizados e entrada no contexto, mas todas as subárvores ficam expandidas e faltam busca, foco automático e distinção mais clara entre seleção e contexto. | P1 audit: testar recolher/expandir, revelar e rolar até a seleção, filtro por nome/tipo, estados visuais inequívocos, seleção de intervalo e ações de ordem; não permitir reparent/reordenação ambígua por acidente. |
+| Ausente | Trava geométrica | Não há trava de largura, altura, proporção ou frame; resize manual pode ainda liberar slot/auto-layout. | P1: oferecer travas separadas de largura, altura e proporção, com estado visível no canvas e inspector; resize bloqueado não deve liberar slot nem autoridade; comandos em lote devem explicar itens ignorados; definir se a trava é autoral antes de persistir no schema. |
+| Incompleto | Alinhamento por grade | Snap por eixo e alinhamento/distribuição em lote existem, mas falta um comando explícito para normalizar uma seleção à grade e antecipar deslocamentos. | P1: preview antes do commit, “alinhar posições”, “alinhar dimensões” e “normalizar ambos”; respeitar mínimos, locks e coordenadas locais; uma única transação reversível. |
+
+#### Discovery — contextualização inteligente dinâmica
+
+| Hipótese | Oportunidade | Guardrails obrigatórios | Evidência necessária |
+| --- | --- | --- | --- |
+| Foco por intenção extrapolada | Ordenar ações e abrir a seção mais provável a partir de seleção, contexto, última ação, diagnóstico geométrico e tarefa corrente. | Regras determinísticas e inspecionáveis; indicar “por que isto está em foco”; nunca executar automaticamente; não esconder capacidades; preferência de sessão separada do documento. | Comparar ações, trocas de contexto e tentativas sem efeito nos fluxos manual, gerado, refinado e importado. |
+| Interface como guia | Sugerir próximo passo, correção de overflow/colisão, componente compatível, receita ou ação em lote. | Sugestão dispensável, reversível e não modal; distinguir recomendação de erro bloqueante; não fabricar conteúdo comercial; evitar ciclos e repetição. | Cenários com referência técnica, peça promocional e um terceiro catálogo contrastante. |
+| Foco adaptativo estável | Manter continuidade sem fazer controles “saltarem” enquanto o usuário edita. | Reordenar somente em limites claros de tarefa; fixar ação escolhida; oferecer visão “Todas as opções”; registrar somente telemetria local de ensaio, sem perfil remoto. | Teste de previsibilidade: o mesmo estado produz o mesmo foco e nenhuma opção muda durante preenchimento ou drag. |
+| Sugestões conscientes da geometria | Combinar mínimos, slots, locks, grid, colisões e autoridade antes de sugerir resize, distribuição ou inserção. | Preview obrigatório para mudanças compostas; explicar efeitos em filhos/irmãos; respeitar locks e overrides; uma transação por aceite. | Casos compactos, hierarquias profundas e cards/tabelas no mínimo técnico. |
+
+A primeira etapa desta discovery é um inventário de sinais e comandos existentes, não uma IA autônoma na interface. O resultado deve decidir se basta um ranking declarativo de ações, um guia de tarefa com estados explícitos ou uma combinação pequena dos dois.
+
+#### Oportunidades e riscos revelados pelas mudanças recentes
+
+| Tipo | Observação | Encaminhamento |
+| --- | --- | --- |
+| Oportunidade | As nove receitas promocionais e os modos editoriais tornam possível inferir intenção sem criar novos tipos persistidos. | Usar metadados de receita, papel do asset, modo do card e diagnóstico como sinais declarativos. |
+| Oportunidade | `section-heading` e `fact` podem resolver lacunas recorrentes das referências técnica e promocional, mas ainda precisam de contraste externo. | Manter candidatas; testar contra catálogo diferente antes de ampliar os dezesseis tipos. |
+| Oportunidade | Camadas pode virar o ponto comum entre navegação, seleção, locks, ordem e diagnóstico, reduzindo deslocamento entre canvas e inspector. | Prototipar como melhoria de interação; componente de sobreposição promocional continua discovery separada. |
+| Risco | Aumentar a largura mínima dos painéis reduz o canvas justamente em 1366×768. | Recalcular zoom fit continuamente, impor máximo dependente da área útil e testar ambos os painéis no mínimo e no máximo. |
+| Risco | Sugestões adaptativas podem tornar a interface imprevisível, esconder poder avançado ou reforçar uma intenção inferida incorretamente. | Toda capacidade continua acessível em posição estável; ranking é explicável, desligável na sessão e coberto por testes determinísticos. |
+| Risco | Locks, slots, auto-layout e comandos em lote podem competir como autoridades. | Definir precedência única: lock explícito protege dimensão; mínimo protege conteúdo; slot/auto-layout governa apenas eixos não travados; conflito produz diagnóstico, não mutação silenciosa. |
+| Risco | Breadcrumb e Camadas podem duplicar navegação com estados divergentes. | Contexto e seleção permanecem uma única fonte no store; ambas as superfícies apenas projetam e comandam a mesma transição. |
+
 
 ### Frentes congeladas
 
