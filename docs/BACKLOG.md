@@ -112,6 +112,7 @@ Expansão multimídia, hospedagem, colaboração, touch/mobile completo e workfl
 - limite de participantes validado por benchmark;
 - critérios objetivos para reconsiderar TURN;
 - escopo de revisão/correção em touch depois da nova medição manual.
+- componente de sobreposição/camadas para peças promocionais (mascote, calendário, selos e faixas): investigar empilhamento, posicionamento livre ou ancorado, seleção, interação com reflow e fidelidade na exportação; discovery apenas, sem entrar como requisito do núcleo ou bloqueio de merge.
 
 Essas perguntas permanecem documentadas, mas não competem com o backlog ativo.
 
