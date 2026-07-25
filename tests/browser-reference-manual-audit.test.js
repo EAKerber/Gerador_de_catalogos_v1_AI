@@ -104,15 +104,21 @@ const legendPlans = [
   };
   const clickContext = async (contextId, label) => {
     const breadcrumb = page.locator("#contextBreadcrumb");
-    const target = breadcrumb.locator(`[data-context-id="${contextId}"]`);
-    if (!await target.isVisible()) {
+    const menuTarget = breadcrumb.locator(`.context-breadcrumb__menu [data-context-id="${contextId}"]`);
+    if (await menuTarget.count()) {
       await click(
         breadcrumb.locator(".context-breadcrumb__overflow > summary"),
         "Abrir ancestrais condensados",
         { surface: "breadcrumb", contextSwitch: true }
       );
+      await click(menuTarget, label, { surface: "breadcrumb", contextSwitch: true });
+      return;
     }
-    await click(target, label, { surface: "breadcrumb", contextSwitch: true });
+    await click(
+      breadcrumb.locator(`:scope > [data-context-id="${contextId}"]`),
+      label,
+      { surface: "breadcrumb", contextSwitch: true }
+    );
   };
   const fill = async (locator, value, label, meta = {}) => {
     await locator.fill(String(value));
