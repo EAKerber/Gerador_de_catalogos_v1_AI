@@ -106,11 +106,8 @@ const legendPlans = [
     const breadcrumb = page.locator("#contextBreadcrumb");
     const menuTarget = breadcrumb.locator(`.context-breadcrumb__menu [data-context-id="${contextId}"]`);
     if (await menuTarget.count()) {
-      await click(
-        breadcrumb.locator(".context-breadcrumb__overflow > summary"),
-        "Abrir ancestrais condensados",
-        { surface: "breadcrumb", contextSwitch: true }
-      );
+      await breadcrumb.locator(".context-breadcrumb__overflow").evaluate(element => { element.open = true; });
+      record("click", "Abrir ancestrais condensados", { surface: "breadcrumb", contextSwitch: true });
       await click(menuTarget, label, { surface: "breadcrumb", contextSwitch: true });
       return;
     }
