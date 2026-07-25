@@ -33,6 +33,8 @@
       this.viewport = document.getElementById("workspaceViewport");
       this.zoomSelect = document.getElementById("zoomSelect");
       this.scale = number(store.getState().editor.zoom, 0.7);
+      this.panelWidths = { left: null, right: null };
+      this.panelStoragePrefix = "catalog-editor:panel-width:";
       this.bind();
     }
 
@@ -42,6 +44,19 @@
           const side = button.dataset.togglePanel;
           const key = side === "left" ? "leftPanelCollapsed" : "rightPanelCollapsed";
           this.store.setEditorSetting(key, !this.store.getState().editor[key]);
+        });
+      });
+      document.querySelectorAll("[data-resize-panel]").forEach(handle => {
+        const side = handle.dataset.resizePanel;
+        handle.addEventListener("pointerdown", event => this.startPanelResize(side, event));
+        handle.addEventListener("dblclick", () => this.resetPanelWidth(side));
+        handle.addEventListener("keydown", event => {
+          if (!["ArrowLeft", "ArrowRight", "Home"].includes(event.key)) return;
+          event.preventDefault();
+          if (event.key === "Home") return this.resetPanelWidth(side);
+          const direction = event.key === "ArrowRight" ? 1 : -1;
+          const delta = side === "left" ? direction * 12 : direction * -12;
+          this.setPanelWidth(side, this.currentPanelWidth(side) + delta);
         });
       });
       window.addEventListener("resize", () => this.recalculate());
@@ -59,6 +74,79 @@
       }
     }
 
+    defaultPanelWidth(side) {
+      const property = side === "left" ? "--left-panel-width" : "--right-panel-width";
+      return number(getComputedStyle(document.documentElement).getPropertyValue(property), side === "left" ? 310 : 310);
+    }
+
+    currentPanelWidth(side) {
+      return number(this.panelWidths[side], this.defaultPanelWidth(side));
+    }
+
+    panelLimits(side) {
+      const minimum = this.defaultPanelWidth(side);
+      const otherSide = side === "left" ? "right" : "left";
+      const state = this.store.getState().editor;
+      const otherCollapsed = Boolean(state[`${otherSide}PanelCollapsed`]);
+      const otherWidth = otherCollapsed ? 42 : this.currentPanelWidth(otherSide);
+      const shellWidth = Math.max(1, this.shell?.clientWidth || window.innerWidth);
+      const maximum = Math.max(minimum, shellWidth - otherWidth - 420);
+      return { minimum, maximum };
+    }
+
+    setPanelWidth(side, width, options = {}) {
+      const limits = this.panelLimits(side);
+      const resolved = Math.round(Math.max(limits.minimum, Math.min(limits.maximum, number(width, limits.minimum))));
+      this.panelWidths[side] = resolved;
+      this.shell?.style.setProperty(`--${side}-panel-width`, `${resolved}px`);
+      const handle = document.querySelector(`[data-resize-panel="${side}"]`);
+      handle?.setAttribute("aria-valuemin", String(limits.minimum));
+      handle?.setAttribute("aria-valuemax", String(limits.maximum));
+      handle?.setAttribute("aria-valuenow", String(resolved));
+      if (options.persist !== false) {
+        try { localStorage.setItem(`${this.panelStoragePrefix}${side}`, String(resolved)); } catch (_error) {}
+      }
+      this.recalculate();
+      return resolved;
+    }
+
+    resetPanelWidth(side) {
+      try { localStorage.removeItem(`${this.panelStoragePrefix}${side}`); } catch (_error) {}
+      this.panelWidths[side] = null;
+      this.shell?.style.removeProperty(`--${side}-panel-width`);
+      this.setPanelWidth(side, this.defaultPanelWidth(side), { persist: false });
+    }
+
+    startPanelResize(side, event) {
+      if (event.button !== 0 || this.store.getState().editor[`${side}PanelCollapsed`]) return;
+      event.preventDefault();
+      const handle = event.currentTarget;
+      const startX = event.clientX;
+      const startWidth = this.currentPanelWidth(side);
+      const direction = side === "left" ? 1 : -1;
+      handle.setPointerCapture?.(event.pointerId);
+      document.body.dataset.resizingPanel = side;
+      const move = moveEvent => this.setPanelWidth(side, startWidth + (moveEvent.clientX - startX) * direction);
+      const stop = () => {
+        handle.removeEventListener("pointermove", move);
+        handle.removeEventListener("pointerup", stop);
+        handle.removeEventListener("pointercancel", stop);
+        delete document.body.dataset.resizingPanel;
+      };
+      handle.addEventListener("pointermove", move);
+      handle.addEventListener("pointerup", stop);
+      handle.addEventListener("pointercancel", stop);
+    }
+
+    restorePanelWidths() {
+      ["left", "right"].forEach(side => {
+        if (this.panelWidths[side] !== null) return;
+        let saved = null;
+        try { saved = localStorage.getItem(`${this.panelStoragePrefix}${side}`); } catch (_error) {}
+        this.panelWidths[side] = number(saved, this.defaultPanelWidth(side));
+      });
+    }
+
     panelState(side, collapsed) {
       const button = document.querySelector(`[data-toggle-panel="${side}"]`);
       const panel = document.querySelector(`.side-panel--${side}`);
@@ -71,17 +159,23 @@
     }
 
     render(state = this.store.getState()) {
+      this.restorePanelWidths();
       const leftCollapsed = Boolean(state.editor.leftPanelCollapsed);
       const rightCollapsed = Boolean(state.editor.rightPanelCollapsed);
       this.shell.dataset.leftPanelCollapsed = String(leftCollapsed);
       this.shell.dataset.rightPanelCollapsed = String(rightCollapsed);
       this.panelState("left", leftCollapsed);
       this.panelState("right", rightCollapsed);
+      this.setPanelWidthWithoutRecalculate("left");
+      this.setPanelWidthWithoutRecalculate("right");
       this.recalculate(state);
     }
 
     recalculate(state = this.store.getState()) {
       if (!this.viewport) return this.scale;
+      ["left", "right"].forEach(side => {
+        if (this.panelWidths[side] !== null) this.setPanelWidthWithoutRecalculate(side);
+      });
       const page = this.store.getPage();
       const mode = state.editor.zoomMode === "manual" ? "manual" : "fit";
       if (mode === "fit") {
@@ -111,6 +205,17 @@
         if (fitOption) fitOption.textContent = `Ajustar (${Math.round(this.scale * 100)}%)`;
       }
       return this.scale;
+    }
+
+    setPanelWidthWithoutRecalculate(side) {
+      const limits = this.panelLimits(side);
+      const resolved = Math.round(Math.max(limits.minimum, Math.min(limits.maximum, this.currentPanelWidth(side))));
+      this.panelWidths[side] = resolved;
+      this.shell?.style.setProperty(`--${side}-panel-width`, `${resolved}px`);
+      const handle = document.querySelector(`[data-resize-panel="${side}"]`);
+      handle?.setAttribute("aria-valuemin", String(limits.minimum));
+      handle?.setAttribute("aria-valuemax", String(limits.maximum));
+      handle?.setAttribute("aria-valuenow", String(resolved));
     }
 
     getScale() {
