@@ -102,6 +102,18 @@ const legendPlans = [
     await locator.click();
     record("click", label, meta);
   };
+  const clickContext = async (contextId, label) => {
+    const breadcrumb = page.locator("#contextBreadcrumb");
+    const target = breadcrumb.locator(`[data-context-id="${contextId}"]`);
+    if (!await target.isVisible()) {
+      await click(
+        breadcrumb.locator(".context-breadcrumb__overflow > summary"),
+        "Abrir ancestrais condensados",
+        { surface: "breadcrumb", contextSwitch: true }
+      );
+    }
+    await click(target, label, { surface: "breadcrumb", contextSwitch: true });
+  };
   const fill = async (locator, value, label, meta = {}) => {
     await locator.fill(String(value));
     record("fill", label, meta);
@@ -324,9 +336,9 @@ const legendPlans = [
   }
 
   await configureGallery(3, ["Cromado", "Preto", "Branco"]);
-  await click(page.locator(`[data-context-id="${ids.contentId}"]`), "Voltar da galeria 04 ao conteúdo principal", { surface: "breadcrumb", contextSwitch: true });
+  await clickContext(ids.contentId, "Voltar da galeria 04 ao conteúdo principal");
   await configureGallery(6, ["Branco", "Cinza", "Marrom", "Preto", "Bege"]);
-  await click(page.locator(`[data-context-id="${ids.contentId}"]`), "Voltar da galeria 07 ao conteúdo principal", { surface: "breadcrumb", contextSwitch: true });
+  await clickContext(ids.contentId, "Voltar da galeria 07 ao conteúdo principal");
 
   await selectLayer(ids.cardIds[0], "Selecionar card 01");
   await inspectorTab("content");
@@ -349,7 +361,7 @@ const legendPlans = [
   await select(page.locator('[data-layout-path="mode"]'), "free", "Conteúdo principal: layout livre", { surface: "inspector" });
   await fill(page.locator('[data-layout-path="padding"]'), "0", "Conteúdo principal: remover padding interno", { surface: "inspector" });
 
-  await click(page.locator(`[data-context-id="${ids.rootId}"]`), "Voltar ao contêiner da página", { surface: "breadcrumb", contextSwitch: true });
+  await clickContext(ids.rootId, "Voltar ao contêiner da página");
   const cardFrames = [
     { x: 0, y: 0, width: 746, height: 222 },
     { x: 0, y: 222, width: 240, height: 262 },
