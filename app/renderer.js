@@ -229,13 +229,24 @@
     renderBreadcrumb(state) {
       const page = this.store.getPage();
       const path = this.store.getContextPath();
+      const plan = window.CatalogContextNavigation.planBreadcrumb(path, { visibleTail: 2 });
       const pageCurrent = !state.editor.editingContextId;
       const items = [
-        `<button type="button" class="context-breadcrumb__item" data-context-id="" data-current="${String(pageCurrent)}">${icon("page", "context-breadcrumb__icon")}<span>${escapeHtml(page.name)}</span></button>`
+        `<button type="button" class="context-breadcrumb__item context-breadcrumb__item--root" data-context-id="" data-current="${String(pageCurrent)}" title="${escapeHtml(page.name)}">${icon("page", "context-breadcrumb__icon")}<span>${escapeHtml(page.name)}</span></button>`
       ];
-      path.forEach(component => {
+      if (plan.hidden.length) {
         items.push(`<span class="context-breadcrumb__separator">›</span>`);
-        items.push(`<button type="button" class="context-breadcrumb__item" data-context-id="${escapeHtml(component.id)}" data-current="${String(component.id === state.editor.editingContextId)}"><span>${escapeHtml(component.name)}</span></button>`);
+        items.push(`
+          <details class="context-breadcrumb__overflow">
+            <summary aria-label="Mostrar ${plan.hidden.length} ancestral(is) oculto(s)" title="Mostrar ancestrais ocultos">•••</summary>
+            <div class="context-breadcrumb__menu" role="menu">
+              ${plan.hidden.map(component => `<button type="button" role="menuitem" data-context-id="${escapeHtml(component.id)}" title="${escapeHtml(component.name)}">${escapeHtml(component.name)}</button>`).join("")}
+            </div>
+          </details>`);
+      }
+      plan.visible.forEach(component => {
+        items.push(`<span class="context-breadcrumb__separator">›</span>`);
+        items.push(`<button type="button" class="context-breadcrumb__item" data-context-id="${escapeHtml(component.id)}" data-current="${String(component.id === state.editor.editingContextId)}" title="${escapeHtml(component.name)}"><span>${escapeHtml(component.name)}</span></button>`);
       });
       this.breadcrumb.innerHTML = `<span class="context-breadcrumb__label">Contexto</span>${items.join("")}${state.editor.editingContextId ? `<button type="button" class="context-breadcrumb__exit" data-exit-context>Subir um nível <kbd>Esc</kbd></button>` : ""}`;
     }

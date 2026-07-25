@@ -119,6 +119,8 @@ Esta revisão separa capacidades já existentes de lacunas, oportunidades e risc
 
 A primeira etapa desta discovery é um inventário de sinais e comandos existentes, não uma IA autônoma na interface. O resultado deve decidir se basta um ranking declarativo de ações, um guia de tarefa com estados explícitos ou uma combinação pequena dos dois.
 
+Decisão posterior: a contextualização não usará IA, modelos locais/remotos, classificação probabilística ou geração de conteúdo. A solução deve permanecer em regras declarativas, intenção explicitamente escolhida, diagnósticos do próprio editor e resultados determinísticos. O contrato técnico e a ordem dos recortes estão em `INCREMENT-05.21.md`.
+
 #### Oportunidades e riscos revelados pelas mudanças recentes
 
 | Tipo | Observação | Encaminhamento |
