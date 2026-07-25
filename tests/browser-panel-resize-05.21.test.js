@@ -2,10 +2,11 @@
 "use strict";
 
 const { chromium } = require("playwright");
+const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const assert = require("assert");
 
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   await page.goto("http://127.0.0.1:8080", { waitUntil: "networkidle" });
 
