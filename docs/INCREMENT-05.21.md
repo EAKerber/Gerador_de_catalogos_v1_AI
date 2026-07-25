@@ -53,9 +53,18 @@ Cada recorte permanece isolado e não altera o schema `1.16.0` salvo quando uma 
 - colapso permanece uma ação independente;
 - mudança de largura dispara o cálculo existente de zoom fit.
 
+## Recorte 3 — Camadas
+
+- recolhimento de subárvores é estado efêmero do renderer e não altera documento, seleção ou histórico;
+- a transição canônica continua no `document-store`; Camadas apenas a projeta e comanda;
+- seleção primária, membros da seleção, ancestrais, descendentes e contexto ativo recebem estados distintos;
+- selecionar ou mudar contexto reabre apenas os ancestrais necessários e preserva os demais recolhimentos manuais;
+- a seleção primária é revelada e rolada para a área visível somente quando Camadas está aberta;
+- busca, seleção por intervalo, reordenação e reparenting permanecem fora deste recorte.
+
 ## Evidência
 
-- suíte Node: 88/88;
+- suíte Node: 89/89;
 - build do Authoring Kit: aprovado, 16 tipos e schema `1.16.0`;
-- testes Chromium dedicados a breadcrumb e painéis incluídos;
+- testes Chromium dedicados a breadcrumb, painéis e Camadas incluídos;
 - execução Chromium local pendente porque o binário do Playwright não está instalado nesta sessão.
