@@ -467,7 +467,11 @@ const legendPlans = [
       clippedText,
       viewport: { width: innerWidth, height: innerHeight },
       zoom: CatalogEditor.store.getState().editor.zoom,
-      frames: cards.map(card => ({ id: card.id, frame: card.frame }))
+      frames: cards.map(card => ({ id: card.id, frame: card.frame })),
+      finalSections: {
+        legend: components.find(component => component.type === "legend-panel")?.frame || null,
+        tip: components.find(component => component.name === "Chamada de dica")?.frame || null
+      }
     };
   });
 
@@ -503,6 +507,12 @@ const legendPlans = [
   );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
+  assert(
+    result.finalSections.legend?.y === 804
+      && result.finalSections.tip?.x === 485
+      && result.finalSections.tip?.y === 804,
+    `Legenda ou dica não preservou a geometria aplicada: ${JSON.stringify(result.finalSections)}.`
+  );
   assert(
     result.report.summary.collisions === 0 && result.report.summary.overflows === 0,
     `A reconstrução técnica não está geometricamente íntegra: ${JSON.stringify(result.report.summary)}.`

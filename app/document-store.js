@@ -10,7 +10,7 @@
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
-  const GEOMETRY_EPSILON = 0.5;
+  const GEOMETRY_EPSILON = 1;
 
   function documentSnapshot(state) {
     const snapshot = clone(state);
