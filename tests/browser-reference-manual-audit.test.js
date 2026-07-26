@@ -181,6 +181,15 @@ const legendPlans = [
       await fill(page.locator(`[data-frame-draft-path="${key}"]`), value, `${label}: ${key} = ${value}`, { surface: "inspector" });
     }
     await click(page.locator("[data-frame-apply-all]"), `Aplicar geometria completa de ${label}`, { surface: "inspector" });
+    const applied = await page.evaluate(({ id, requestedFrame }) => ({
+      frame: { ...CatalogEditor.store.findComponent(id).component.frame },
+      transaction: CatalogEditor.store.getLastGeometryTransaction(),
+      status: document.getElementById("documentStatus")?.textContent || ""
+    }), { id: componentId, requestedFrame: requested });
+    assert(
+      ["x", "y", "width", "height"].every(key => applied.frame[key] === requested[key]),
+      `A geometria completa de ${label} não foi aplicada: ${JSON.stringify({ requested, applied })}.`
+    );
   };
 
   await page.goto(baseURL, { waitUntil: "networkidle" });
