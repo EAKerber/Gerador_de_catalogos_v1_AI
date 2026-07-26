@@ -355,7 +355,6 @@
       const component = record.component;
       const liveElement = this.layer.querySelector(`[data-component-id="${CSS.escape(componentId)}"]`) || hitElement;
       const point = this.pointInContext(event, parentId);
-      const parentAutoLayout = Boolean(record.parent && window.CATALOG_COMPONENT_REGISTRY[record.parent.type]?.container?.autoLayout);
       this.session = {
         mode: resizing ? "resize" : "move",
         componentId,
@@ -363,9 +362,7 @@
         element: liveElement,
         startPoint: point,
         startFrame: { ...component.frame },
-        axisLock: null,
-        wasSlotted: Boolean(component.slot?.name),
-        wasAutoManaged: Boolean(parentAutoLayout && component.layoutItem?.managed !== false)
+        axisLock: null
       };
       event.preventDefault();
     }
@@ -421,9 +418,16 @@
     handlePointerUp() {
       if (!this.session) return;
       if (this.session.previewFrame) {
-        if (this.session.wasSlotted) this.store.markSlotFree(this.session.componentId);
-        if (this.session.wasAutoManaged) this.store.markLayoutFree(this.session.componentId);
-        this.store.updateComponent(this.session.componentId, { frame: this.session.previewFrame });
+        const plan = this.store.updateComponentGeometry(this.session.componentId, this.session.previewFrame);
+        if (plan.status === "blocked") {
+          const component = this.store.findComponent(this.session.componentId)?.component;
+          if (component) Object.assign(this.session.element.style, {
+            left: `${component.frame.x}px`,
+            top: `${component.frame.y}px`,
+            width: `${component.frame.width}px`,
+            height: `${component.frame.height}px`
+          });
+        }
       }
       this.session = null;
       this.clearGuides();

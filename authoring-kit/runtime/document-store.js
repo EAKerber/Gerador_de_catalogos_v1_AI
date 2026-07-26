@@ -9,6 +9,8 @@
   const TABLE_BINDING_FIELDS = Object.freeze(["code", "package", "price"]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
+  const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
+  const GEOMETRY_EPSILON = 0.5;
 
   function documentSnapshot(state) {
     const snapshot = clone(state);
@@ -808,6 +810,132 @@
     return window.CatalogLayoutEngine?.contentMinimum(preview, preview.frame);
   }
 
+  function frameEquals(left, right) {
+    return ["x", "y", "width", "height"].every(key => Number(left?.[key]) === Number(right?.[key]));
+  }
+
+  function publicGeometryPlan(plan) {
+    return {
+      status: plan.status,
+      requested: clone(plan.requested),
+      resolved: clone(plan.resolved),
+      changes: clone(plan.changes),
+      authorityChanges: clone(plan.authorityChanges),
+      reasons: clone(plan.reasons),
+      conflicts: clone(plan.conflicts)
+    };
+  }
+
+  function geometrySnapshot(store) {
+    const entries = new Map();
+    const visit = (children, parentId = null, ancestors = []) => (children || []).forEach(component => {
+      const path = [...ancestors, component.id];
+      entries.set(component.id, {
+        component,
+        parentId,
+        path,
+        frame: { ...component.frame },
+        slotManaged: component.slot?.name ? component.slot.managed !== false : null,
+        layoutManaged: component.layoutItem ? component.layoutItem.managed !== false : null
+      });
+      visit(component.children, component.id, path);
+    });
+    visit(store.getPage()?.children || []);
+    return entries;
+  }
+
+  function geometryAffectedIds(before, after, requestedIds) {
+    const affected = new Set(requestedIds);
+    const addPath = entry => (entry?.path || []).forEach(componentId => affected.add(componentId));
+    const addDescendants = (entries, rootId) => entries.forEach(entry => {
+      if (entry.path.includes(rootId)) affected.add(entry.component.id);
+    });
+
+    new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+      const previous = before.get(componentId);
+      const next = after.get(componentId);
+      if (!previous || !next
+        || !frameEquals(previous.frame, next.frame)
+        || previous.slotManaged !== next.slotManaged
+        || previous.layoutManaged !== next.layoutManaged) {
+        affected.add(componentId);
+        addPath(previous);
+        addPath(next);
+      }
+    });
+    requestedIds.forEach(componentId => {
+      addPath(before.get(componentId));
+      addPath(after.get(componentId));
+      addDescendants(before, componentId);
+      addDescendants(after, componentId);
+    });
+    return affected;
+  }
+
+  function geometryConflicts(store, componentIds) {
+    const entries = geometrySnapshot(store);
+    const conflicts = new Map();
+    const add = (componentId, code, magnitude, details = {}) => {
+      const normalizedMagnitude = Number.isFinite(Number(magnitude)) ? Math.max(0, Number(magnitude)) : Number.MAX_SAFE_INTEGER;
+      conflicts.set(`${componentId}:${code}`, { componentId, code, magnitude: normalizedMagnitude, ...details });
+    };
+
+    componentIds.forEach(componentId => {
+      const entry = entries.get(componentId);
+      if (!entry) {
+        add(componentId, "component-missing", Number.MAX_SAFE_INTEGER);
+        return;
+      }
+      const frame = entry.frame;
+      if (!["x", "y", "width", "height"].every(key => Number.isFinite(Number(frame[key])))
+        || Number(frame.width) <= 0
+        || Number(frame.height) <= 0) {
+        add(componentId, "invalid-frame", Number.MAX_SAFE_INTEGER, { frame: { ...frame } });
+        return;
+      }
+
+      const size = entry.parentId
+        ? { width: entries.get(entry.parentId)?.frame.width || 0, height: entries.get(entry.parentId)?.frame.height || 0 }
+        : store.getPage().size;
+      const overflow = {
+        left: Math.max(0, -Number(frame.x)),
+        top: Math.max(0, -Number(frame.y)),
+        right: Math.max(0, Number(frame.x) + Number(frame.width) - Number(size.width)),
+        bottom: Math.max(0, Number(frame.y) + Number(frame.height) - Number(size.height))
+      };
+      const overflowMagnitude = Math.max(...Object.values(overflow));
+      if (overflowMagnitude > GEOMETRY_EPSILON) add(componentId, "bounds", overflowMagnitude, { overflow });
+
+      const minimum = store.getReflowMinimum(entry.component, frame);
+      const shortage = {
+        width: Math.max(0, Number(minimum?.width) - Number(frame.width)),
+        height: Math.max(0, Number(minimum?.height) - Number(frame.height))
+      };
+      const minimumMagnitude = Math.max(shortage.width, shortage.height);
+      if (minimumMagnitude > GEOMETRY_EPSILON) add(componentId, "minimum-or-content", minimumMagnitude, { minimum: { ...minimum }, shortage });
+    });
+    return conflicts;
+  }
+
+  function worsenedGeometryConflicts(before, after) {
+    return [...after.entries()]
+      .filter(([key, conflict]) => conflict.magnitude > (before.get(key)?.magnitude || 0) + GEOMETRY_EPSILON)
+      .map(([, conflict]) => conflict);
+  }
+
+  function synchronizeGeometryState(targetStore, draftStore) {
+    const target = geometrySnapshot(targetStore);
+    const draft = geometrySnapshot(draftStore);
+    draft.forEach((entry, componentId) => {
+      const current = target.get(componentId)?.component;
+      if (!current) return;
+      if (!frameEquals(current.frame, entry.component.frame)) Object.assign(current.frame, clone(entry.component.frame));
+      if (JSON.stringify(current.slot) !== JSON.stringify(entry.component.slot)) current.slot = entry.component.slot ? clone(entry.component.slot) : null;
+      if (JSON.stringify(current.layoutItem) !== JSON.stringify(entry.component.layoutItem)) current.layoutItem = entry.component.layoutItem ? clone(entry.component.layoutItem) : null;
+      if (JSON.stringify(current.props) !== JSON.stringify(entry.component.props)) current.props = clone(entry.component.props);
+    });
+  }
+
   function hydrateDefaultChildren(parent) {
     const definition = definitionFor(parent.type);
     if (!definition?.container) return;
@@ -1085,6 +1213,7 @@
       this.listeners = new Set();
       this.bindingSyncDepth = 0;
       this.geometryResolutions = new Map();
+      this.lastGeometryTransaction = null;
       this.historyUndo = [];
       this.historyRedo = [];
       this.historySuspended = false;
@@ -1268,6 +1397,10 @@
 
     getLastGeometryResolution(componentId) {
       return this.geometryResolutions.get(componentId) || null;
+    }
+
+    getLastGeometryTransaction() {
+      return this.lastGeometryTransaction ? clone(this.lastGeometryTransaction) : null;
     }
 
     getEditingContext() {
@@ -2509,6 +2642,172 @@
       }, component, parentId);
     }
 
+    createGeometryDraftStore() {
+      const draft = new this.constructor(clone(this.state));
+      draft.listeners.clear();
+      draft.historyUndo = [];
+      draft.historyRedo = [];
+      draft.historySuspended = true;
+      draft.geometryResolutions = new Map();
+      draft.lastGeometryTransaction = null;
+      return draft;
+    }
+
+    planGeometryTransaction(requests = [], options = {}) {
+      const source = Array.isArray(requests) ? requests.slice(0, 40) : [];
+      const requestedIds = new Set();
+      const invalid = Array.isArray(requests) && requests.length > 40
+        ? [{ componentId: null, code: "too-many-requests", maximum: 40, received: requests.length }]
+        : [];
+      const normalized = source.map(request => {
+        const componentId = String(request?.componentId || "");
+        const component = this.findComponent(componentId)?.component;
+        const framePatch = request?.frame && typeof request.frame === "object" ? request.frame : null;
+        const keys = framePatch ? Object.keys(framePatch).filter(key => ["x", "y", "width", "height"].includes(key)) : [];
+        if (!component || !keys.length || keys.some(key => !Number.isFinite(Number(framePatch[key]))) || requestedIds.has(componentId)) {
+          invalid.push({
+            componentId: componentId || null,
+            code: !component ? "component-missing" : requestedIds.has(componentId) ? "duplicate-request" : "invalid-frame"
+          });
+          return null;
+        }
+        requestedIds.add(componentId);
+        return {
+          componentId,
+          frame: {
+            ...component.frame,
+            ...Object.fromEntries(keys.map(key => [key, Number(framePatch[key])]))
+          },
+          releaseAuthority: request.releaseAuthority === true
+        };
+      }).filter(Boolean);
+
+      const blocked = conflicts => ({
+        status: "blocked",
+        requested: normalized.map(request => ({ componentId: request.componentId, frame: { ...request.frame } })),
+        resolved: normalized.map(request => ({ componentId: request.componentId, frame: { ...this.findComponent(request.componentId).component.frame } })),
+        changes: [],
+        authorityChanges: [],
+        reasons: [...new Set(conflicts.map(conflict => conflict.code))],
+        conflicts
+      });
+      if (!normalized.length || invalid.length) return blocked(invalid.length ? invalid : [{ componentId: null, code: "empty-request" }]);
+
+      const before = geometrySnapshot(this);
+      const draft = this.createGeometryDraftStore();
+      normalized.forEach(request => {
+        if (request.releaseAuthority) {
+          draft.markSlotFree(request.componentId);
+          draft.markLayoutFree(request.componentId);
+        }
+        draft.updateComponent(request.componentId, { frame: request.frame });
+      });
+
+      if (options.selection?.componentIds) {
+        draft.state.editor.selectedComponentIds = options.selection.componentIds.slice();
+        draft.state.editor.selectedComponentId = options.selection.primaryId || options.selection.componentIds.at(-1) || null;
+      }
+      draft.emit(options.change || { type: "geometry-transaction-planned", componentIds: normalized.map(request => request.componentId) }, { ephemeral: true });
+      (draft.getPage()?.children || []).forEach(component => {
+        if (definitionFor(component.type)?.container && component.reflow?.mode !== "manual") draft.reflowComponentTree(component, { derived: true });
+      });
+
+      const after = geometrySnapshot(draft);
+      const directIds = new Set(normalized.map(request => request.componentId));
+      const changes = [];
+      const authorityChanges = [];
+      new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+        const previous = before.get(componentId);
+        const next = after.get(componentId);
+        if (!previous || !next) return;
+        if (!frameEquals(previous.frame, next.frame)) {
+          changes.push({
+            componentId,
+            direct: directIds.has(componentId),
+            before: { ...previous.frame },
+            after: { ...next.frame }
+          });
+        }
+        if (previous.slotManaged !== next.slotManaged || previous.layoutManaged !== next.layoutManaged) {
+          authorityChanges.push({
+            componentId,
+            before: { slotManaged: previous.slotManaged, layoutManaged: previous.layoutManaged },
+            after: { slotManaged: next.slotManaged, layoutManaged: next.layoutManaged }
+          });
+        }
+      });
+
+      const affectedIds = geometryAffectedIds(before, after, directIds);
+      const conflicts = worsenedGeometryConflicts(
+        geometryConflicts(this, affectedIds),
+        geometryConflicts(draft, affectedIds)
+      );
+      const resolved = normalized.map(request => ({
+        componentId: request.componentId,
+        frame: { ...after.get(request.componentId).frame }
+      }));
+      const reasons = [];
+      normalized.forEach(request => {
+        const resolution = draft.getLastGeometryResolution(request.componentId);
+        reasons.push(...(resolution?.reasons || []));
+      });
+      if (changes.some(change => !change.direct)) reasons.push("derived-reflow");
+      if (authorityChanges.length) reasons.push("layout-authority-released");
+      if (conflicts.length) reasons.push(...conflicts.map(conflict => conflict.code));
+
+      const plan = {
+        status: conflicts.length
+          ? "blocked"
+          : resolved.some((entry, index) => !frameEquals(entry.frame, normalized[index].frame)) || changes.some(change => !change.direct)
+            ? "adjusted"
+            : "applied",
+        requested: normalized.map(request => ({ componentId: request.componentId, frame: { ...request.frame } })),
+        resolved,
+        changes,
+        authorityChanges,
+        reasons: [...new Set(reasons)],
+        conflicts
+      };
+      Object.defineProperty(plan, GEOMETRY_PLAN_DRAFT, { value: draft });
+      return plan;
+    }
+
+    applyGeometryTransaction(requests = [], options = {}) {
+      const plan = this.planGeometryTransaction(requests, options);
+      const report = publicGeometryPlan(plan);
+      this.lastGeometryTransaction = report;
+      if (plan.status === "blocked") return report;
+
+      const draft = plan[GEOMETRY_PLAN_DRAFT];
+      synchronizeGeometryState(this, draft);
+      if (options.selection?.componentIds) {
+        this.state.editor.selectedComponentIds = options.selection.componentIds.slice();
+        this.state.editor.selectedComponentId = options.selection.primaryId || options.selection.componentIds.at(-1) || null;
+      }
+      plan.requested.forEach((request, index) => {
+        this.geometryResolutions.set(request.componentId, {
+          requested: { ...request.frame },
+          resolved: { ...plan.resolved[index].frame },
+          reasons: report.reasons.slice(),
+          status: report.status
+        });
+      });
+      const change = options.change || { type: "components-transformed", componentIds: plan.requested.map(request => request.componentId) };
+      this.emit({ ...change, geometryTransaction: report });
+      return report;
+    }
+
+    updateComponentGeometry(componentId, frame, options = {}) {
+      return this.applyGeometryTransaction([{
+        componentId,
+        frame,
+        releaseAuthority: options.releaseAuthority !== false
+      }], {
+        change: options.change || { type: "component-updated", componentId, patch: { frame: clone(frame) } },
+        selection: options.selection
+      });
+    }
+
     addComponent(type, frame, options = {}) {
       const parentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
       if (!this.isTypeAllowed(type, parentId)) throw new Error("Este componente não é aceito no contexto atual.");
@@ -2778,52 +3077,59 @@
       const allowed = new Set(["left", "center", "right", "top", "middle", "bottom"]);
       const selection = this.getBatchSelection(componentIds);
       if (!selection || !allowed.has(alignment)) return false;
-      return this.runCompoundChange({ type: "components-aligned", componentIds: selection.records.map(record => record.component.id), alignment }, () => {
-        this.releaseBatchLayout(selection.records);
-        const components = selection.records.map(record => record.component);
-        const left = Math.min(...components.map(component => component.frame.x));
-        const right = Math.max(...components.map(component => component.frame.x + component.frame.width));
-        const top = Math.min(...components.map(component => component.frame.y));
-        const bottom = Math.max(...components.map(component => component.frame.y + component.frame.height));
-        components.forEach(component => {
-          const frame = {};
-          if (alignment === "left") frame.x = left;
-          if (alignment === "center") frame.x = left + (right - left - component.frame.width) / 2;
-          if (alignment === "right") frame.x = right - component.frame.width;
-          if (alignment === "top") frame.y = top;
-          if (alignment === "middle") frame.y = top + (bottom - top - component.frame.height) / 2;
-          if (alignment === "bottom") frame.y = bottom - component.frame.height;
-          this.updateComponent(component.id, { frame });
-        });
-        this.state.editor.selectedComponentIds = components.map(component => component.id);
-        this.state.editor.selectedComponentId = components[components.length - 1].id;
-        return true;
+      const components = selection.records.map(record => record.component);
+      const left = Math.min(...components.map(component => component.frame.x));
+      const right = Math.max(...components.map(component => component.frame.x + component.frame.width));
+      const top = Math.min(...components.map(component => component.frame.y));
+      const bottom = Math.max(...components.map(component => component.frame.y + component.frame.height));
+      const requests = components.map(component => {
+        const frame = {};
+        if (alignment === "left") frame.x = left;
+        if (alignment === "center") frame.x = left + (right - left - component.frame.width) / 2;
+        if (alignment === "right") frame.x = right - component.frame.width;
+        if (alignment === "top") frame.y = top;
+        if (alignment === "middle") frame.y = top + (bottom - top - component.frame.height) / 2;
+        if (alignment === "bottom") frame.y = bottom - component.frame.height;
+        return { componentId: component.id, frame, releaseAuthority: true };
       });
+      const componentIdsInOrder = components.map(component => component.id);
+      const plan = this.applyGeometryTransaction(requests, {
+        change: { type: "components-aligned", componentIds: componentIdsInOrder, alignment },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      });
+      return plan.status !== "blocked";
     }
 
     distributeComponents(componentIds, axis) {
       const selection = this.getBatchSelection(componentIds, 3);
       if (!selection || !["horizontal", "vertical"].includes(axis)) return false;
-      return this.runCompoundChange({ type: "components-distributed", componentIds: selection.records.map(record => record.component.id), axis }, () => {
-        this.releaseBatchLayout(selection.records);
-        const horizontal = axis === "horizontal";
-        const components = selection.records.map(record => record.component).sort((left, right) => {
-          const leftCenter = left.frame[horizontal ? "x" : "y"] + left.frame[horizontal ? "width" : "height"] / 2;
-          const rightCenter = right.frame[horizontal ? "x" : "y"] + right.frame[horizontal ? "width" : "height"] / 2;
-          return leftCenter - rightCenter;
-        });
-        const position = horizontal ? "x" : "y";
-        const size = horizontal ? "width" : "height";
-        const firstCenter = components[0].frame[position] + components[0].frame[size] / 2;
-        const lastCenter = components[components.length - 1].frame[position] + components[components.length - 1].frame[size] / 2;
-        const step = (lastCenter - firstCenter) / (components.length - 1);
-        components.slice(1, -1).forEach((component, index) => {
-          this.updateComponent(component.id, { frame: { [position]: firstCenter + step * (index + 1) - component.frame[size] / 2 } });
-        });
-        this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
-        this.state.editor.selectedComponentId = this.state.editor.selectedComponentIds[this.state.editor.selectedComponentIds.length - 1];
-        return true;
+      const horizontal = axis === "horizontal";
+      const components = selection.records.map(record => record.component).sort((left, right) => {
+        const leftCenter = left.frame[horizontal ? "x" : "y"] + left.frame[horizontal ? "width" : "height"] / 2;
+        const rightCenter = right.frame[horizontal ? "x" : "y"] + right.frame[horizontal ? "width" : "height"] / 2;
+        return leftCenter - rightCenter;
       });
+      const position = horizontal ? "x" : "y";
+      const size = horizontal ? "width" : "height";
+      const firstCenter = components[0].frame[position] + components[0].frame[size] / 2;
+      const lastCenter = components[components.length - 1].frame[position] + components[components.length - 1].frame[size] / 2;
+      const step = (lastCenter - firstCenter) / (components.length - 1);
+      const placementById = new Map(components.map((component, index) => [
+        component.id,
+        index === 0 || index === components.length - 1
+          ? component.frame[position]
+          : firstCenter + step * index - component.frame[size] / 2
+      ]));
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const plan = this.applyGeometryTransaction(selection.records.map(record => ({
+        componentId: record.component.id,
+        frame: { [position]: placementById.get(record.component.id) },
+        releaseAuthority: true
+      })), {
+        change: { type: "components-distributed", componentIds: componentIdsInOrder, axis },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      });
+      return plan.status !== "blocked";
     }
 
     transformComponents(componentIds, operation = {}) {
@@ -2842,22 +3148,19 @@
         ? operation.referenceId
         : this.state.editor.selectedComponentId;
       const reference = selection.records.find(record => record.component.id === referenceId)?.component || selection.records[selection.records.length - 1].component;
-      return this.runCompoundChange({
-        type: "components-transformed",
-        componentIds: selection.records.map(record => record.component.id),
-        operation: { kind, path, values, value: kind === "equalize" ? reference.frame[path] : requested, referenceId: reference.id }
-      }, () => {
-        this.releaseBatchLayout(selection.records);
-        selection.records.forEach(record => {
-          const patch = values
-            ? Object.fromEntries(Object.entries(values).map(([key, value]) => [key, kind === "delta" ? record.component.frame[key] + value : value]))
-            : { [path]: kind === "delta" ? record.component.frame[path] + requested : kind === "equalize" ? reference.frame[path] : requested };
-          this.updateComponent(record.component.id, { frame: patch });
-        });
-        this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
-        this.state.editor.selectedComponentId = reference.id;
-        return true;
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const operationReport = { kind, path, values, value: kind === "equalize" ? reference.frame[path] : requested, referenceId: reference.id };
+      const requests = selection.records.map(record => {
+        const frame = values
+          ? Object.fromEntries(Object.entries(values).map(([key, value]) => [key, kind === "delta" ? record.component.frame[key] + value : value]))
+          : { [path]: kind === "delta" ? record.component.frame[path] + requested : kind === "equalize" ? reference.frame[path] : requested };
+        return { componentId: record.component.id, frame, releaseAuthority: true };
       });
+      const plan = this.applyGeometryTransaction(requests, {
+        change: { type: "components-transformed", componentIds: componentIdsInOrder, operation: operationReport },
+        selection: { componentIds: componentIdsInOrder, primaryId: reference.id }
+      });
+      return plan.status !== "blocked";
     }
 
     applyComponentFramesBulk(entries = []) {
@@ -2867,16 +3170,25 @@
       const selectedIds = new Set(this.getSelectedIds());
       if (valid.some(entry => !selectedIds.has(entry.id)) || selectedIds.size !== valid.length) throw new Error("A geometria só pode ser aplicada ao conjunto atualmente selecionado.");
       const byId = new Map(valid.map(entry => [entry.id, entry]));
-      return this.runCompoundChange({ type: "component-frames-bulk-applied", componentIds: valid.map(entry => entry.id) }, () => {
-        this.releaseBatchLayout(selection.records);
-        selection.records.forEach(record => {
-          const frame = byId.get(record.component.id);
-          this.updateComponent(record.component.id, { frame: { x: Number(frame.x), y: Number(frame.y), width: Number(frame.width), height: Number(frame.height) } });
-        });
-        this.state.editor.selectedComponentIds = valid.map(entry => entry.id);
-        this.state.editor.selectedComponentId = valid[valid.length - 1].id;
-        return valid.map(entry => this.findComponent(entry.id).component);
+      const componentIdsInOrder = valid.map(entry => entry.id);
+      const plan = this.applyGeometryTransaction(selection.records.map(record => {
+        const frame = byId.get(record.component.id);
+        return {
+          componentId: record.component.id,
+          frame: { x: Number(frame.x), y: Number(frame.y), width: Number(frame.width), height: Number(frame.height) },
+          releaseAuthority: true
+        };
+      }), {
+        change: { type: "component-frames-bulk-applied", componentIds: componentIdsInOrder },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
       });
+      if (plan.status === "blocked") {
+        const error = new Error("A geometria solicitada não possui uma solução estrutural válida.");
+        error.code = "GEOMETRY_TRANSACTION_BLOCKED";
+        error.geometryTransaction = plan;
+        throw error;
+      }
+      return componentIdsInOrder.map(componentId => this.findComponent(componentId).component);
     }
 
     inferSpacingAxis(records, requested = "auto") {
