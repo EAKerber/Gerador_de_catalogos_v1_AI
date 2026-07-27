@@ -181,6 +181,15 @@ const legendPlans = [
       await fill(page.locator(`[data-frame-draft-path="${key}"]`), value, `${label}: ${key} = ${value}`, { surface: "inspector" });
     }
     await click(page.locator("[data-frame-apply-all]"), `Aplicar geometria completa de ${label}`, { surface: "inspector" });
+    const applied = await page.evaluate(({ id, requestedFrame }) => ({
+      frame: { ...CatalogEditor.store.findComponent(id).component.frame },
+      transaction: CatalogEditor.store.getLastGeometryTransaction(),
+      status: document.getElementById("documentStatus")?.textContent || ""
+    }), { id: componentId, requestedFrame: requested });
+    assert(
+      ["x", "y", "width", "height"].every(key => applied.frame[key] === requested[key]),
+      `A geometria completa de ${label} não foi aplicada: ${JSON.stringify({ requested, applied })}.`
+    );
   };
 
   await page.goto(baseURL, { waitUntil: "networkidle" });
@@ -375,9 +384,10 @@ const legendPlans = [
     { x: 504, y: 484, width: 242, height: 320 }
   ];
   for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal");
+  await setFrame(ids.legendPanelId, { x: 0, width: 475 }, "painel de legenda alinhado");
+  await setFrame(ids.tipId, { x: 485, width: 261 }, "chamada de dica alinhada");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal final");
   await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
-  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
   await setFrame(ids.rootId, { x: 0, y: 0, width: 794, height: 1123 }, "estrutura da página");
   await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 110 }, "cabeçalho");
   await setFrame(ids.footerId, { x: 24, y: 1043, width: 746, height: 80 }, "rodapé");
@@ -467,7 +477,11 @@ const legendPlans = [
       clippedText,
       viewport: { width: innerWidth, height: innerHeight },
       zoom: CatalogEditor.store.getState().editor.zoom,
-      frames: cards.map(card => ({ id: card.id, frame: card.frame }))
+      frames: cards.map(card => ({ id: card.id, frame: card.frame })),
+      finalSections: {
+        legend: components.find(component => component.type === "legend-panel")?.frame || null,
+        tip: components.find(component => component.name === "Chamada de dica")?.frame || null
+      }
     };
   });
 
@@ -503,6 +517,12 @@ const legendPlans = [
   );
   assert(result.galleries.join(",") === "3,5", `Galerias divergiram: ${result.galleries.join(",")}.`);
   assert(result.legends === 8, "A legenda global não preservou oito definições.");
+  assert(
+    result.finalSections.legend?.y === 804
+      && result.finalSections.tip?.x === 485
+      && result.finalSections.tip?.y === 804,
+    `Legenda ou dica não preservou a geometria aplicada: ${JSON.stringify(result.finalSections)}.`
+  );
   assert(
     result.report.summary.collisions === 0 && result.report.summary.overflows === 0,
     `A reconstrução técnica não está geometricamente íntegra: ${JSON.stringify(result.report.summary)}.`

@@ -40,6 +40,9 @@ A pasta reúne as seguintes etapas evolutivas:
 - **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
 - **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, grade de caixas heterogêneas, diagnóstico da seleção e editores de coleção; benchmark final em 157 ações sem colisão ou overflow.
 - **Incremento 05.18 — profundidade editorial:** texto ganha alinhamento, escala e overflow controlados; ícones ganham escala interna; modos de card passam a priorizar visualmente arte, especificações, galeria ou dados sem criar tipos paralelos.
+- **Incremento 05.20 — linguagem promocional:** receitas editáveis para preço e oferta, tokens promocionais, novos ícones semânticos e gates conjuntos para as referências técnica e promocional.
+- **Incremento 05.21 — navegação contextual:** breadcrumb resiliente, painéis redimensionáveis e Camadas recolhíveis com foco e estados distintos, sempre por regras determinísticas e sem IA.
+- **Incremento 05.22 — encerramento geométrico da V1:** pedidos de canvas, inspetor e multisseleção são planejados com reflow e autoridade numa cópia e aplicados em um único commit ou rejeitados sem mutação; locks persistentes permanecem em discovery.
 
 ## Abrir
 

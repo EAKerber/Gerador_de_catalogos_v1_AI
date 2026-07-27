@@ -433,7 +433,32 @@ Critérios de aceite:
 - executar a suíte integral por um workflow somente leitura e reproduzível;
 - integrar por branch limpa e PR draft antes de qualquer merge em `development`.
 
-O incremento está em integração. A suíte Node e o build idempotente são gates locais; Chromium publicado e revisão do PR permanecem obrigatórios.
+O incremento foi integrado em `development` com os gates Node, build e Chromium aprovados.
+
+## Incremento 05.21 — Navegação contextual e painéis
+
+Entregue:
+
+- breadcrumb resiliente com ancestrais condensados;
+- painéis laterais redimensionáveis preservando a área útil;
+- Camadas recolhíveis, com foco, revelação e estados distintos;
+- contextualização formalmente restrita a regras determinísticas, sem IA;
+- schema `1.16.0` preservado.
+
+Busca, reordenação, reparenting e orientação contextual mais sofisticada permanecem adiados.
+
+## Incremento 05.22 — Encerramento geométrico da V1
+
+Direção:
+
+- corrigir atomicidade e observabilidade das mutações geométricas existentes;
+- simular clamp, mínimos, slots, auto-layout e reflow antes do commit;
+- aplicar frame, derivados e autoridade numa única ação ou não aplicar nada;
+- preservar o schema `1.16.0`;
+- não implementar locks persistentes na V1;
+- não reescrever a aplicação do zero.
+
+O primeiro checkpoint cobre canvas, frame avançado do inspetor e comandos geométricos de multisseleção. Espaçamento/separadores e demais mudanças estruturais permanecem em recortes posteriores. A arquitetura V2 será uma migração interna incremental sob os mesmos gates.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

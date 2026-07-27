@@ -68,3 +68,15 @@ Cada recorte permanece isolado e não altera o schema `1.16.0` salvo quando uma 
 - build do Authoring Kit: aprovado, 16 tipos e schema `1.16.0`;
 - testes Chromium dedicados a breadcrumb, painéis e Camadas incluídos;
 - execução Chromium local pendente porque o binário do Playwright não está instalado nesta sessão.
+
+## Continuidade 05.22
+
+A auditoria de precedência foi concluída em
+`GEOMETRY-PRECEDENCE-AUDIT-05.22.md`. Ela confirmou que locks não podem ser
+adicionados apenas ao `clampFrame`: slots e auto-layout escrevem frames depois
+dele, e algumas operações liberam autoridade antes de confirmar que a mudança
+é válida.
+
+O próximo recorte será um resolvedor transacional sem locks e sem mudança de
+schema. Ele deverá validar o plano completo, incluindo mudanças derivadas e de
+autoridade, antes de qualquer mutação.

@@ -810,12 +810,9 @@
         const height = this.root.querySelector('[data-custom-minimum-path="height"]')?.value;
         this.store.setRecommendedMinimum(component.id, { enabled: true, width, height });
       } else if (target.matches("[data-frame-path]")) {
-        const record = this.store.getSelectedRecord();
         const key = target.dataset.framePath;
         const value = Number(target.value);
-        if (component.slot?.name) this.store.markSlotFree(component.id);
-        if (record?.parent && window.CATALOG_COMPONENT_REGISTRY[record.parent.type]?.container?.autoLayout) this.store.markLayoutFree(component.id);
-        this.update({ frame: { [key]: value } });
+        this.store.updateComponentGeometry(component.id, { [key]: value });
       } else if (target.matches("[data-constraint-path]")) {
         this.update({ constraints: { [target.dataset.constraintPath]: target.checked } });
       } else if (target.matches("[data-style-path]")) {
