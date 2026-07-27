@@ -384,8 +384,8 @@ const legendPlans = [
     { x: 504, y: 484, width: 242, height: 320 }
   ];
   for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.legendPanelId, { x: 0 }, "painel de legenda alinhado");
-  await setFrame(ids.tipId, { x: 485 }, "chamada de dica alinhada");
+  await setFrame(ids.legendPanelId, { x: 0, width: 475 }, "painel de legenda alinhado");
+  await setFrame(ids.tipId, { x: 485, width: 261 }, "chamada de dica alinhada");
   await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal final");
   await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
   await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
