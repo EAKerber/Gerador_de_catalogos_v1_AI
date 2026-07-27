@@ -388,7 +388,6 @@ const legendPlans = [
   await setFrame(ids.tipId, { x: 485, width: 261 }, "chamada de dica alinhada");
   await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal final");
   await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
-  await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
   await setFrame(ids.rootId, { x: 0, y: 0, width: 794, height: 1123 }, "estrutura da página");
   await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 110 }, "cabeçalho");
   await setFrame(ids.footerId, { x: 24, y: 1043, width: 746, height: 80 }, "rodapé");
