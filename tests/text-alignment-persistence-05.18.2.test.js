@@ -18,6 +18,8 @@ global.CatalogEditorIcon = name => `<svg data-icon="${name}"></svg>`;
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const StoreBeforeInstall = CatalogDocumentStore;
+const updateBeforeInstall = CatalogDocumentStore.prototype.updateComponent;
 const clone = value => JSON.parse(JSON.stringify(value));
 const findIn = (children, id) => {
   for (const component of children || []) {
@@ -31,6 +33,8 @@ const findIn = (children, id) => {
 const installation = CatalogTextAlignmentContract.install();
 assert(installation.registryInstalled && installation.storeInstalled, "O contrato não foi instalado no registro e na store.");
 assert(CatalogTextAlignmentContract.VERSION === "05.18.2", "Versão inesperada do contrato de alinhamento.");
+assert(CatalogDocumentStore === StoreBeforeInstall, "O contrato voltou a substituir a classe da store em runtime.");
+assert(CatalogDocumentStore.prototype.updateComponent === updateBeforeInstall, "O contrato voltou a substituir métodos da store em runtime.");
 
 const store = new CatalogDocumentStore(createBlankCatalogDocument());
 const standalone = store.addComponent("text", { x: 20, y: 20, width: 260, height: 80 });

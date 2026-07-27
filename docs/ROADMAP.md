@@ -483,12 +483,24 @@ contextualização por IA, novos tipos e reescrita do store.
 
 ## Incremento 05.25 — Consolidação interna do posicionamento inicial
 
-Em validação:
+Concluído:
 
 - mover o cálculo de posições prováveis para o registro declarativo;
 - fazer o store canônico consultar o registro durante a inserção;
 - retirar a substituição tardia de métodos do protótipo;
 - preservar comportamento, histórico, Authoring Kit e schema `1.16.0`;
+- validar Node, build e quatro shards Chromium antes da integração.
+
+## Incremento 05.26 — Consolidação interna do alinhamento textual
+
+Em validação:
+
+- mover normalização de alinhamento legado para o store canônico;
+- marcar escolhas explícitas em `updateComponent`, sem interceptor tardio;
+- preservar importação, análise, histórico e aparência do rodapé;
+- reduzir o contrato de runtime a registro, estilos e verificação;
+- proibir por teste a substituição da classe ou de seus métodos;
+- preservar schema `1.16.0`, 16 tipos, 45 capacidades e kit `1.6.0`;
 - validar Node, build e quatro shards Chromium antes da integração.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸

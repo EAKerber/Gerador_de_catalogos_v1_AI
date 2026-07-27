@@ -12,6 +12,26 @@
   const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
   const SPACING_PLAN_DRAFT = Symbol("spacing-plan-draft");
   const GEOMETRY_EPSILON = 1;
+  const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value || {}, key);
+
+  function normalizeLegacyFooterAlignment(source) {
+    if (!source || typeof source !== "object" || Array.isArray(source)) return source;
+    const next = clone(source);
+    const visit = (component, parent = null) => {
+      if (!component || typeof component !== "object") return;
+      if (component.type === "text" && parent?.type === "footer-item") {
+        component.props ||= {};
+        const explicit = component.props.alignExplicit === true;
+        if (!explicit && (!hasOwn(component.props, "align") || component.props.align === "start")) {
+          component.props.align = "center";
+        }
+        if (!hasOwn(component.props, "alignExplicit")) component.props.alignExplicit = false;
+      }
+      (component.children || []).forEach(child => visit(child, component));
+    };
+    (next.pages || []).forEach(page => (page.children || []).forEach(component => visit(component)));
+    return next;
+  }
 
   function documentSnapshot(state) {
     const snapshot = clone(state);
@@ -1249,7 +1269,7 @@
 
   class DocumentStore {
     constructor(initialState) {
-      this.state = migrateDocument(initialState || createBlankDocument());
+      this.state = migrateDocument(normalizeLegacyFooterAlignment(initialState || createBlankDocument()));
       this.listeners = new Set();
       this.bindingSyncDepth = 0;
       this.geometryResolutions = new Map();
@@ -1404,7 +1424,10 @@
     }
 
     analyzeDocument(document) {
-      return analyzeDocumentInput(document === undefined ? document : clone(document));
+      const source = document === undefined ? document : normalizeLegacyFooterAlignment(document);
+      const analysis = analyzeDocumentInput(source);
+      if (analysis?.document) analysis.document = normalizeLegacyFooterAlignment(analysis.document);
+      return analysis;
     }
 
     getState() { return this.state; }
@@ -2931,6 +2954,7 @@
       if (patch.constraints) Object.assign(component.constraints, patch.constraints);
       if (patch.props) {
         const props = { ...patch.props };
+        if (component.type === "text" && hasOwn(props, "align")) props.alignExplicit = true;
         if (component.type === "art") {
           for (const key of ["focalX", "focalY"]) {
             if (props[key] !== undefined) props[key] = Math.max(0, Math.min(100, Number(props[key]) || 0));
@@ -4112,7 +4136,7 @@
 
     replaceDocument(document, options = {}) {
       const localEditor = clone(this.state.editor || {});
-      const next = migrateDocument(document);
+      const next = migrateDocument(normalizeLegacyFooterAlignment(document));
       if (options.preserveEditor !== false) {
         next.editor = {
           ...next.editor,
@@ -4176,6 +4200,8 @@
       return document;
     }
   }
+
+  Object.defineProperty(DocumentStore, "__textAlignmentContractVersion", { value: "05.18.2" });
 
   window.CatalogDocumentStore = DocumentStore;
   window.createBlankCatalogDocument = createBlankDocument;
