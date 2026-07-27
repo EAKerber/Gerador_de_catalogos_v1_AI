@@ -4064,12 +4064,29 @@
       if (!component) return null;
       const definition = definitionFor(component.type);
       const source = component.constraints?.minimums || {};
+      const technical = { width: definition.minSize.width, height: definition.minSize.height, ...(source.technical || {}) };
+      const reachable = this.getReflowMinimum(component, {
+        ...component.frame,
+        height: technical.height
+      });
       return {
-        technical: { width: definition.minSize.width, height: definition.minSize.height, ...(source.technical || {}) },
+        technical,
         recommended: { width: definition.recommendedSize?.width || definition.defaultFrame.width, height: definition.recommendedSize?.height || definition.defaultFrame.height, ...(source.recommended || {}) },
         custom: source.custom ? { ...source.custom } : null,
-        calculated: this.getContentMinimum(component)
+        calculated: reachable
       };
+    }
+
+    fitComponentHeightToContent(componentId) {
+      const component = this.findComponent(componentId)?.component;
+      if (!component) return null;
+      const profile = this.getMinimumProfile(component);
+      return this.updateComponent(component.id, {
+        frame: {
+          ...component.frame,
+          height: profile.calculated.height
+        }
+      });
     }
 
     setRecommendedMinimum(componentId, patch = {}) {

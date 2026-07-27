@@ -531,7 +531,7 @@ Concluído e integrado em `development` pela PR #10:
 
 ## Incremento 05.29 — Fluxo direto de placeholders
 
-Em validação:
+Concluído e integrado em `development` pela PR #11:
 
 - preservar o placeholder inteiro como entrada direta para a biblioteca;
 - explicitar a sequência biblioteca do projeto → computador;
@@ -540,6 +540,18 @@ Em validação:
 - preservar IndexedDB, `assetId`, schema `1.16.0`, 16 tipos e 45 capacidades;
 - bloquear publicação quando `origin/development` local estiver obsoleta;
 - medir o ganho operacional do pré-voo Git estabilizado no 05.28.
+
+## Incremento 05.30 — Altura alcançável após remoção estrutural
+
+Em validação:
+
+- remover a reserva compacta de especificações quando o último item desse tipo
+  não existe;
+- somar a galeria ao mínimo somente quando ela está presente;
+- antecipar no painel a altura alcançável pelo reflow;
+- oferecer ajuste explícito ao conteúdo em uma única ação reversível;
+- preservar a tabela integralmente dentro do card reduzido;
+- repetir a medição do fluxo Git após a correção de frescor remoto do 05.29.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
