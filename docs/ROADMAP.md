@@ -518,7 +518,7 @@ Concluído e integrado em `development` pela PR #9:
 
 ## Incremento 05.28 — Estabilização do fluxo Git
 
-Em validação:
+Concluído e integrado em `development` pela PR #10:
 
 - iniciar cada incremento numa worktree limpa derivada do
   `origin/development` integrado;
@@ -528,6 +528,18 @@ Em validação:
 - selecionar `direct-git`, `github-connector` ou `blocked` por evidência;
 - preservar worktrees históricos sem torná-los base de novos incrementos;
 - manter `main` intocada e a CI completa como gate de integração.
+
+## Incremento 05.29 — Fluxo direto de placeholders
+
+Em validação:
+
+- preservar o placeholder inteiro como entrada direta para a biblioteca;
+- explicitar a sequência biblioteca do projeto → computador;
+- transformar cada miniatura existente em uma única ação acessível;
+- provar seleção por mouse, reuso por teclado, upload, persistência e reload;
+- preservar IndexedDB, `assetId`, schema `1.16.0`, 16 tipos e 45 capacidades;
+- bloquear publicação quando `origin/development` local estiver obsoleta;
+- medir o ganho operacional do pré-voo Git estabilizado no 05.28.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

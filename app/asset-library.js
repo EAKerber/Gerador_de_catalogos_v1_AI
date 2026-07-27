@@ -200,15 +200,15 @@
         const metadata = item.metadata || {};
         const details = [metadata.width && metadata.height ? `${metadata.width}×${metadata.height}` : null, formatBytes(metadata.size)].filter(Boolean).join(" · ");
         return `
-          <article class="asset-card" data-asset-card="${escapeHtml(item.id)}">
+          <button type="button" class="asset-card" data-asset-card="${escapeHtml(item.id)}" data-use-asset="${escapeHtml(item.id)}" aria-label="${escapeHtml(`Usar ${item.label}`)}">
             <div class="asset-card__preview component-art__preview" data-asset-preview data-asset-id="${escapeHtml(item.id)}" data-fit="contain" data-focal-x="50" data-focal-y="50" data-vector-mode="original">
               <img data-asset-image alt="" />
               <span data-asset-vector aria-hidden="true"></span>
               <span class="component-art__missing">Prévia indisponível</span>
             </div>
             <div class="asset-card__meta"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(metadata.mimeType || "Imagem")}</span><small>${escapeHtml(details)}</small></div>
-            <button type="button" data-use-asset="${escapeHtml(item.id)}">Usar esta arte</button>
-          </article>`;
+            <span class="asset-card__action">Usar esta arte</span>
+          </button>`;
       }).join("");
       this.hydratePreviews(this.dialog);
     }
