@@ -62,12 +62,18 @@ npm run git:preflight
 ```
 
 O comando verifica, numa única passagem, raiz, branch `agent/*`, árvore limpa,
-base `origin/development`, ancestralidade, leitura remota e autenticação de push
-com `--dry-run`. A saída declara um transporte:
+base `origin/development`, head real de `development` via `ls-remote`,
+frescor da referência local, ancestralidade, leitura remota e autenticação de
+push com `--dry-run`. A saída declara um transporte:
 
 - `direct-git`: o push local está autenticado;
 - `github-connector`: leitura Git funciona, mas a credencial local está ausente;
 - `blocked`: rede, divergência, base ou estado local impedem publicação segura.
+
+Uma referência local `origin/development` diferente de `remoteBase` é bloqueada
+como `origin-development-stale`; atualize-a por fetch e repita o comando. A
+ancestralidade nunca deve ser aprovada apenas contra uma referência local
+obsoleta.
 
 Use `npm run git:preflight -- --json` para saída legível por máquina e
 `npm run git:preflight -- --local-only` em testes sem rede. Não repita descoberta

@@ -37,8 +37,11 @@ function inspect(options = {}) {
   const remote = git(["remote", "get-url", "origin"]);
   const head = git(["rev-parse", "HEAD"]);
   const base = git(["rev-parse", "origin/development"]);
-  const ancestry = base.ok && head.ok ? git(["merge-base", "--is-ancestor", base.stdout, head.stdout]) : { ok: false };
   const remoteRead = options.remote === false ? { ok: null, skipped: true } : git(["ls-remote", "origin", "refs/heads/development"]);
+  const remoteBase = remoteRead.ok ? remoteRead.stdout.split(/\s+/)[0] || null : null;
+  const effectiveBase = remoteBase || (options.remote === false ? base.stdout : null);
+  const ancestry = effectiveBase && head.ok ? git(["merge-base", "--is-ancestor", effectiveBase, head.stdout]) : { ok: false };
+  const remoteBaseFresh = options.remote === false ? null : Boolean(base.ok && remoteBase && base.stdout === remoteBase);
   let pushProbe = { ok: null, skipped: true };
   if (options.remote !== false && branch.ok && branch.stdout.startsWith("agent/")) {
     pushProbe = git(["push", "--dry-run", "origin", `HEAD:refs/heads/${branch.stdout}`]);
@@ -48,6 +51,7 @@ function inspect(options = {}) {
   if (!branch.stdout.startsWith("agent/")) blockers.push("branch-must-use-agent-prefix");
   if (status.stdout) blockers.push("worktree-not-clean");
   if (!base.ok) blockers.push("origin-development-unavailable");
+  if (remoteBaseFresh === false) blockers.push("origin-development-stale");
   if (!ancestry.ok) blockers.push("branch-not-based-on-origin-development");
   if (remoteRead.ok === false) blockers.push("remote-read-unavailable");
 
@@ -66,11 +70,12 @@ function inspect(options = {}) {
     branch: branch.stdout,
     head: head.stdout,
     base: base.stdout,
+    remoteBase,
     remote: remote.stdout,
     transport,
     pushFailure,
     blockers,
-    checks: { clean: !status.stdout, ancestry: ancestry.ok, remoteRead: remoteRead.ok, pushProbe: pushProbe.ok }
+    checks: { clean: !status.stdout, ancestry: ancestry.ok, remoteRead: remoteRead.ok, remoteBaseFresh, pushProbe: pushProbe.ok }
   };
 }
 

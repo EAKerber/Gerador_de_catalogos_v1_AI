@@ -34,6 +34,8 @@ assert(renderer.includes("--component-vector") && componentCss.includes("--compo
 assert(interactions.includes("CatalogWorkspace?.getScale()"), "As interações não usam a escala efetiva do workspace.");
 assert(html.includes('id="assetLibraryDialog"') && html.includes('id="assetFileInput"'), "A biblioteca de artes e o upload não estão expostos na interface.");
 assert(html.indexOf('id="assetLibraryGrid"') < html.indexOf('id="assetDropzone"'), "A lista do projeto deve aparecer antes da importação do computador.");
+assert(html.includes('id="assetLibraryExistingTitle"') && html.includes('id="assetLibraryUploadTitle"'), "O seletor não explicita biblioteca primeiro e computador como alternativa.");
+assert(assetLibrary.includes('class="asset-card"') && assetLibrary.includes('data-use-asset=') && assetLibrary.includes('aria-label="${escapeHtml(`Usar ${item.label}`)}"'), "A miniatura da biblioteca não é uma ação única e acessível.");
 assert(html.includes('app/asset-storage.js') && html.includes('app/asset-library.js'), "Os módulos de assets não foram carregados.");
 assert(assetStorage.includes("indexedDB") && assetLibrary.includes("image/svg+xml") && assetLibrary.includes("image/webp"), "O contrato de armazenamento e formatos de arte está incompleto.");
 assert(componentCss.includes("vector-token"), "A recoloração de SVG por token não está conectada ao preview.");

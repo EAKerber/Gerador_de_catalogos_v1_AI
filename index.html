@@ -250,15 +250,22 @@
         <button type="button" data-close-asset-library aria-label="Fechar biblioteca">×</button>
       </header>
       <div class="asset-library-dialog__body">
-        <section class="asset-library-existing" aria-label="Artes disponíveis">
+        <section class="asset-library-existing" aria-labelledby="assetLibraryExistingTitle">
+          <div class="asset-library-section-heading">
+            <span aria-hidden="true">1</span>
+            <div><strong id="assetLibraryExistingTitle">Escolha uma arte do projeto</strong><small>Selecione uma miniatura para aplicar sem criar uma cópia.</small></div>
+          </div>
           <div id="assetLibraryEmpty" class="asset-library-empty">
             <strong>Nenhuma arte cadastrada</strong>
             <span>Adicione o primeiro SVG, PNG, JPG ou WebP pelo computador.</span>
           </div>
           <div id="assetLibraryGrid" class="asset-library-grid"></div>
         </section>
-        <section id="assetDropzone" class="asset-dropzone" data-drag-active="false" aria-label="Adicionar arquivos">
-          <strong>Adicionar do computador</strong>
+        <section id="assetDropzone" class="asset-dropzone" data-drag-active="false" aria-labelledby="assetLibraryUploadTitle">
+          <div class="asset-library-section-heading asset-library-section-heading--center">
+            <span aria-hidden="true">2</span>
+            <div><strong id="assetLibraryUploadTitle">Ou adicione do computador</strong></div>
+          </div>
           <span>Arraste arquivos aqui ou escolha no dispositivo · SVG, PNG, JPG e WebP · até 25 MB</span>
           <label class="asset-upload-button">Escolher arquivos<input id="assetFileInput" type="file" accept=".svg,.png,.jpg,.jpeg,.webp,image/svg+xml,image/png,image/jpeg,image/webp" multiple /></label>
         </section>
