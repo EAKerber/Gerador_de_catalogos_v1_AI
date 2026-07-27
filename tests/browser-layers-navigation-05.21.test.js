@@ -39,8 +39,31 @@ const assert = require("assert");
   }));
   assert(state.selected === ids.leaf && state.context === ids.branch, "Recolher a árvore alterou seleção ou contexto.");
 
+  await page.locator(`[data-toggle-layer="${ids.branch}"]`).click();
+  const siblingIds = await page.evaluate(branchId => {
+    const store = CatalogEditor.store;
+    store.setEditingContext(branchId);
+    const second = store.addComponent("text", { x: 12, y: 72, width: 220, height: 48 }, { parentId: branchId, name: "Segunda folha" });
+    const third = store.addComponent("text", { x: 12, y: 132, width: 220, height: 48 }, { parentId: branchId, name: "Terceira folha" });
+    return [store.findComponent(branchId).component.children[0].id, second.id, third.id];
+  }, ids.branch);
+  const historyBefore = await page.evaluate(() => CatalogEditor.store.getHistoryState().undoCount);
+  const moveUp = page.locator(`[data-reorder-layer="${siblingIds[1]}"][data-reorder-direction="-1"]`);
+  await moveUp.focus();
+  await page.keyboard.press("Enter");
+  const reordered = await page.evaluate(branchId => ({
+    order: CatalogEditor.store.findComponent(branchId).component.children.map(component => component.id),
+    undoCount: CatalogEditor.store.getHistoryState().undoCount
+  }), ids.branch);
+  assert.deepStrictEqual(reordered.order, [siblingIds[1], siblingIds[0], siblingIds[2]], "O controle de Camadas não alterou a ordem serializada.");
+  assert(reordered.undoCount === historyBefore + 1, "A reordenação não criou exatamente uma ação no histórico.");
+  assert(await page.locator(`[data-reorder-layer="${siblingIds[1]}"][data-reorder-direction="-1"]`).isDisabled(), "O novo primeiro irmão ainda pode subir.");
+  await page.evaluate(() => CatalogEditor.store.undo());
+  const restored = await page.evaluate(branchId => CatalogEditor.store.findComponent(branchId).component.children.map(component => component.id), ids.branch);
+  assert.deepStrictEqual(restored, siblingIds, "Undo não restaurou a ordem anterior.");
+
   await browser.close();
-  console.log("✓ Camadas 05.21 recolhe, revela e distingue seleção/contexto sem criar estado de documento.");
+  console.log("✓ Camadas recolhe, revela, seleciona e reordena irmãos com teclado e undo.");
 })().catch(error => {
   console.error(error);
   process.exit(1);

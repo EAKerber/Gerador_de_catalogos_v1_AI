@@ -292,6 +292,8 @@
 
       const renderNodes = (children, depth = 0, selectedAncestorId = null) => children.map((component, index) => {
         const definition = registry()[component.type];
+        const group = children.filter(sibling => (sibling.slot?.name || null) === (component.slot?.name || null));
+        const groupIndex = group.findIndex(sibling => sibling.id === component.id);
         const hasChildren = Boolean(component.children?.length);
         const isContainer = Boolean(definition?.container);
         const isSelected = selectedIds.has(component.id);
@@ -308,6 +310,10 @@
                 <span class="layer-item__name">${escapeHtml(component.name || definition?.label || component.type)}</span>
                 ${component.slot?.name ? `<span class="layer-item__slot">${escapeHtml(component.slot.name)}</span>` : `<span class="layer-item__order">${String(index + 1).padStart(2, "0")}</span>`}
               </button>
+              <span class="layer-order-actions" aria-label="Reordenar ${escapeHtml(component.name || definition?.label || component.type)}">
+                <button type="button" data-reorder-layer="${escapeHtml(component.id)}" data-reorder-direction="-1" aria-label="Mover ${escapeHtml(component.name || definition?.label || component.type)} para cima" title="Mover para cima" ${groupIndex <= 0 ? "disabled" : ""}>↑</button>
+                <button type="button" data-reorder-layer="${escapeHtml(component.id)}" data-reorder-direction="1" aria-label="Mover ${escapeHtml(component.name || definition?.label || component.type)} para baixo" title="Mover para baixo" ${groupIndex >= group.length - 1 ? "disabled" : ""}>↓</button>
+              </span>
               ${isContainer ? `<button type="button" class="layer-enter" data-enter-container="${escapeHtml(component.id)}" title="Entrar no componente">${state.editor.editingContextId === component.id ? "●" : "↳"}</button>` : ""}
             </div>
             ${hasChildren && !isCollapsed ? `<div class="layer-children">${renderNodes(component.children, depth + 1, selectedOwnerId)}</div>` : ""}

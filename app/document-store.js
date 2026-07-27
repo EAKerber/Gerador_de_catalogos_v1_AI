@@ -84,6 +84,7 @@
       "component-updated": "Editar componente",
       "component-deleted": "Excluir componente",
       "component-duplicated": "Duplicar componente",
+      "component-reordered": "Reordenar camada",
       "component-duplicated-series": "Distribuir cópias",
       "component-template-saved": "Salvar componente",
       "component-template-inserted": "Inserir componente salvo",
