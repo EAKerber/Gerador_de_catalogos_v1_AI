@@ -449,7 +449,7 @@ Busca, reordenação, reparenting e orientação contextual mais sofisticada per
 
 ## Incremento 05.22 — Encerramento geométrico da V1
 
-Direção:
+Concluído e integrado em `development` pela PR #4:
 
 - corrigir atomicidade e observabilidade das mutações geométricas existentes;
 - simular clamp, mínimos, slots, auto-layout e reflow antes do commit;
@@ -458,9 +458,30 @@ Direção:
 - não implementar locks persistentes na V1;
 - não reescrever a aplicação do zero.
 
-O primeiro checkpoint cobre canvas, frame avançado do inspetor e comandos geométricos de multisseleção. Espaçamento/separadores e demais mudanças estruturais permanecem em recortes posteriores. A arquitetura V2 será uma migração interna incremental sob os mesmos gates.
+O checkpoint cobre canvas, frame avançado do inspetor e comandos geométricos
+de multisseleção. A CI integrada aprovou Node, build, schema e os quatro shards
+Chromium. A arquitetura V2 continuará como migração interna incremental sob os
+mesmos gates.
+
+## Incremento 05.23 — Transação estrutural e fechamento da V1
+
+Em execução:
+
+- planejar espaçamento e separadores numa cópia isolada;
+- validar frames, mínimos, limites, reflow, autoridade e alterações estruturais;
+- aplicar o estado planejado numa única emissão e num único undo, ou não aplicar;
+- preservar 16 tipos, 45 capacidades e `CatalogDocument 1.16.0`;
+- executar a regressão integral técnico/promocional;
+- publicar limites da V1 e reduzir o backlog operacional.
+
+Não entram neste incremento: locks persistentes, multipágina, colaboração,
+contextualização por IA, novos tipos e reescrita do store.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
+
+Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
+retomada. Os gates 05.14–05.16 já foram vencidos e não são mais a dependência
+operacional desta frente.
 
 Critérios de aceite:
 

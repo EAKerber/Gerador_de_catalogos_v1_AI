@@ -67,7 +67,8 @@ Cada recorte permanece isolado e não altera o schema `1.16.0` salvo quando uma 
 - suíte Node: 89/89;
 - build do Authoring Kit: aprovado, 16 tipos e schema `1.16.0`;
 - testes Chromium dedicados a breadcrumb, painéis e Camadas incluídos;
-- execução Chromium local pendente porque o binário do Playwright não está instalado nesta sessão.
+- a execução Chromium não estava disponível no checkout local, mas a CI posterior
+  da PR #3 aprovou build, Node e os quatro shards do navegador.
 
 ## Continuidade 05.22
 

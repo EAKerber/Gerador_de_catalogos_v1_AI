@@ -10,6 +10,7 @@
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
+  const SPACING_PLAN_DRAFT = Symbol("spacing-plan-draft");
   const GEOMETRY_EPSILON = 1;
 
   function documentSnapshot(state) {
@@ -826,6 +827,19 @@
     };
   }
 
+  function publicSpacingPlan(plan) {
+    return {
+      status: plan.status,
+      requested: clone(plan.requested),
+      resolved: clone(plan.resolved),
+      changes: clone(plan.changes),
+      structuralChanges: clone(plan.structuralChanges),
+      authorityChanges: clone(plan.authorityChanges),
+      reasons: clone(plan.reasons),
+      conflicts: clone(plan.conflicts)
+    };
+  }
+
   function geometrySnapshot(store) {
     const entries = new Map();
     const visit = (children, parentId = null, ancestors = []) => (children || []).forEach(component => {
@@ -934,6 +948,32 @@
       if (JSON.stringify(current.layoutItem) !== JSON.stringify(entry.component.layoutItem)) current.layoutItem = entry.component.layoutItem ? clone(entry.component.layoutItem) : null;
       if (JSON.stringify(current.props) !== JSON.stringify(entry.component.props)) current.props = clone(entry.component.props);
     });
+  }
+
+  function synchronizeComponentChildren(targetChildren, draftChildren) {
+    const currentById = new Map((targetChildren || []).map(component => [component.id, component]));
+    const synchronized = (draftChildren || []).map(draftComponent => {
+      const current = currentById.get(draftComponent.id);
+      if (!current) return clone(draftComponent);
+      Object.keys(current).forEach(key => {
+        if (key !== "children" && !Object.hasOwn(draftComponent, key)) delete current[key];
+      });
+      Object.entries(draftComponent).forEach(([key, value]) => {
+        if (key !== "children") current[key] = clone(value);
+      });
+      current.children = synchronizeComponentChildren(current.children || [], draftComponent.children || []);
+      return current;
+    });
+    targetChildren.splice(0, targetChildren.length, ...synchronized);
+    return targetChildren;
+  }
+
+  function synchronizeStructuralState(targetStore, draftStore) {
+    const targetPage = targetStore.getPage();
+    const draftPage = draftStore.getPage();
+    synchronizeComponentChildren(targetPage.children, draftPage.children);
+    targetStore.state.editor.selectedComponentIds = draftStore.state.editor.selectedComponentIds.slice();
+    targetStore.state.editor.selectedComponentId = draftStore.state.editor.selectedComponentId;
   }
 
   function hydrateDefaultChildren(parent) {
@@ -3247,50 +3287,170 @@
       return created;
     }
 
-    spaceComponents(componentIds, options = {}) {
+    applySpacingMutation(componentIds, options = {}) {
       const selection = this.getBatchSelection(componentIds, 2);
-      if (!selection) return false;
+      if (!selection) throw new Error("Selecione ao menos dois componentes irmãos.");
       const gap = Math.max(0, Math.min(1000, Number(options.gap) || 0));
       const axis = this.inferSpacingAxis(selection.records, options.axis);
       const addSeparators = options.separators === true;
       const threshold = Math.max(1, Number(definitionFor("separator")?.minThickness) || 2) * 3;
       if (addSeparators && gap <= threshold) throw new Error(`Use espaçamento maior que ${threshold} px para adicionar separadores.`);
-      return this.runCompoundChange({ type: "components-spaced", componentIds: selection.records.map(record => record.component.id), axis, gap, separators: addSeparators }, () => {
-        const parent = selection.records[0].parent || null;
-        const mode = parent ? (window.CatalogLayoutEngine?.effectiveMode(parent) || parent.layout?.mode) : "free";
-        const managed = parent?.children?.filter(child => !child.slot?.name && child.layoutItem?.managed !== false && child.layoutItem?.overlay !== true) || [];
-        const selectedSet = new Set(selection.records.map(record => record.component.id));
-        const allManaged = Boolean(parent
-          && definitionFor(parent.type)?.container?.autoLayout
-          && ((axis === "horizontal" && mode === "row") || (axis === "vertical" && mode === "column"))
-          && managed.length === selection.records.length
-          && managed.every(component => selectedSet.has(component.id)));
-        let components;
-        if (allManaged) {
-          parent.layout.gap = gap;
-          parent.layout.distribution = "fill";
-          reflowTree(parent);
-          components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
-        } else {
-          this.releaseBatchLayout(selection.records);
-          components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
-          const position = axis === "horizontal" ? "x" : "y";
-          const size = axis === "horizontal" ? "width" : "height";
-          const limit = this.getContainerSize(selection.parentId)[size];
-          let cursor = components[0].frame[position];
-          const placements = components.map((component, index) => {
-            const value = index ? cursor : component.frame[position];
-            cursor = value + component.frame[size] + gap;
-            return value;
-          });
-          if (cursor - gap > limit) throw new Error("O espaçamento solicitado ultrapassa o contexto atual.");
-          components.slice(1).forEach((component, index) => this.updateComponent(component.id, { frame: { [position]: placements[index + 1] } }));
-        }
-        const separators = addSeparators ? this.addSeparatorsForComponents(selection, components, axis, options.separatorPresetId, allManaged) : [];
-        this.state.editor.selectedComponentIds = components.map(component => component.id);
-        this.state.editor.selectedComponentId = components[components.length - 1].id;
-        return { components, separators, axis, gap };
+      const parent = selection.records[0].parent || null;
+      const mode = parent ? (window.CatalogLayoutEngine?.effectiveMode(parent) || parent.layout?.mode) : "free";
+      const managed = parent?.children?.filter(child => !child.slot?.name && child.layoutItem?.managed !== false && child.layoutItem?.overlay !== true) || [];
+      const selectedSet = new Set(selection.records.map(record => record.component.id));
+      const allManaged = Boolean(parent
+        && definitionFor(parent.type)?.container?.autoLayout
+        && ((axis === "horizontal" && mode === "row") || (axis === "vertical" && mode === "column"))
+        && managed.length === selection.records.length
+        && managed.every(component => selectedSet.has(component.id)));
+      let components;
+      if (allManaged) {
+        parent.layout.gap = gap;
+        parent.layout.distribution = "fill";
+        reflowTree(parent);
+        components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
+      } else {
+        this.releaseBatchLayout(selection.records);
+        components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
+        const position = axis === "horizontal" ? "x" : "y";
+        const size = axis === "horizontal" ? "width" : "height";
+        const limit = this.getContainerSize(selection.parentId)[size];
+        let cursor = components[0].frame[position];
+        const placements = components.map((component, index) => {
+          const value = index ? cursor : component.frame[position];
+          cursor = value + component.frame[size] + gap;
+          return value;
+        });
+        if (cursor - gap > limit) throw new Error("O espaçamento solicitado ultrapassa o contexto atual.");
+        components.slice(1).forEach((component, index) => this.updateComponent(component.id, { frame: { [position]: placements[index + 1] } }));
+      }
+      const separators = addSeparators ? this.addSeparatorsForComponents(selection, components, axis, options.separatorPresetId, allManaged) : [];
+      this.state.editor.selectedComponentIds = components.map(component => component.id);
+      this.state.editor.selectedComponentId = components[components.length - 1].id;
+      return { components, separators, axis, gap };
+    }
+
+    planSpacingTransaction(componentIds, options = {}) {
+      const requestedIds = Array.isArray(componentIds) ? [...new Set(componentIds.map(String))] : [];
+      const blocked = (code, message, conflicts = []) => ({
+        status: "blocked",
+        requested: { componentIds: requestedIds, options: clone(options) },
+        resolved: null,
+        changes: [],
+        structuralChanges: [],
+        authorityChanges: [],
+        reasons: [code],
+        conflicts: conflicts.length ? conflicts : [{ componentId: null, code, message }]
       });
+      if (requestedIds.length < 2) return blocked("invalid-selection", "Selecione ao menos dois componentes irmãos.");
+
+      const before = geometrySnapshot(this);
+      const draft = this.createGeometryDraftStore();
+      let result;
+      try {
+        result = draft.applySpacingMutation(requestedIds, options);
+      } catch (error) {
+        return blocked(error.message.includes("ultrapassa") ? "bounds" : "invalid-spacing", error.message);
+      }
+      const after = geometrySnapshot(draft);
+      const directIds = new Set(requestedIds);
+      const changes = [];
+      const authorityChanges = [];
+      new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+        const previous = before.get(componentId);
+        const next = after.get(componentId);
+        if (previous && next && !frameEquals(previous.frame, next.frame)) {
+          changes.push({ componentId, direct: directIds.has(componentId), before: { ...previous.frame }, after: { ...next.frame } });
+        }
+        if (previous && next && (previous.slotManaged !== next.slotManaged || previous.layoutManaged !== next.layoutManaged)) {
+          authorityChanges.push({
+            componentId,
+            before: { slotManaged: previous.slotManaged, layoutManaged: previous.layoutManaged },
+            after: { slotManaged: next.slotManaged, layoutManaged: next.layoutManaged }
+          });
+        }
+      });
+      const structuralChanges = [];
+      after.forEach((entry, componentId) => {
+        const previous = before.get(componentId);
+        if (!previous) {
+          structuralChanges.push({ type: "component-added", componentId, parentId: entry.parentId, componentType: entry.component.type });
+          return;
+        }
+        if (entry.component.type === "separator" && JSON.stringify(previous.component.props) !== JSON.stringify(entry.component.props)) {
+          structuralChanges.push({ type: "component-updated", componentId, parentId: entry.parentId, componentType: entry.component.type, field: "props" });
+        }
+        if (JSON.stringify(previous.component.layout) !== JSON.stringify(entry.component.layout)) {
+          structuralChanges.push({ type: "component-updated", componentId, parentId: entry.parentId, componentType: entry.component.type, field: "layout" });
+        }
+      });
+      before.forEach((entry, componentId) => {
+        if (!after.has(componentId)) structuralChanges.push({ type: "component-removed", componentId, parentId: entry.parentId, componentType: entry.component.type });
+      });
+      const affectedIds = geometryAffectedIds(before, after, directIds);
+      structuralChanges.forEach(change => {
+        affectedIds.add(change.componentId);
+        if (change.parentId) affectedIds.add(change.parentId);
+      });
+      const previousAffectedIds = new Set([...affectedIds].filter(componentId => before.has(componentId)));
+      const conflicts = worsenedGeometryConflicts(geometryConflicts(this, previousAffectedIds), geometryConflicts(draft, affectedIds));
+      const plan = {
+        status: conflicts.length ? "blocked" : changes.some(change => !change.direct) ? "adjusted" : "applied",
+        requested: { componentIds: requestedIds, options: clone(options) },
+        resolved: {
+          componentIds: result.components.map(component => component.id),
+          frames: result.components.map(component => ({ componentId: component.id, frame: { ...component.frame } })),
+          separatorIds: result.separators.map(separator => separator.id),
+          axis: result.axis,
+          gap: result.gap
+        },
+        changes,
+        structuralChanges,
+        authorityChanges,
+        reasons: [...new Set([
+          ...(changes.some(change => !change.direct) ? ["derived-reflow"] : []),
+          ...(authorityChanges.length ? ["layout-authority-released"] : []),
+          ...(structuralChanges.length ? ["structural-change"] : []),
+          ...conflicts.map(conflict => conflict.code)
+        ])],
+        conflicts
+      };
+      Object.defineProperty(plan, SPACING_PLAN_DRAFT, { value: draft });
+      return plan;
+    }
+
+    applySpacingTransaction(componentIds, options = {}) {
+      const plan = this.planSpacingTransaction(componentIds, options);
+      const report = publicSpacingPlan(plan);
+      if (plan.status === "blocked") {
+        const error = new Error(plan.conflicts[0]?.message || "O espaçamento solicitado não possui uma solução estrutural válida.");
+        error.code = "SPACING_TRANSACTION_BLOCKED";
+        error.spacingTransaction = report;
+        throw error;
+      }
+      const draft = plan[SPACING_PLAN_DRAFT];
+      synchronizeStructuralState(this, draft);
+      this.emit({
+        type: "components-spaced",
+        componentIds: report.resolved.componentIds,
+        axis: report.resolved.axis,
+        gap: report.resolved.gap,
+        separators: options.separators === true,
+        spacingTransaction: report
+      });
+      return {
+        components: report.resolved.componentIds.map(componentId => this.findComponent(componentId).component),
+        separators: report.resolved.separatorIds.map(componentId => this.findComponent(componentId).component),
+        axis: report.resolved.axis,
+        gap: report.resolved.gap,
+        transaction: report
+      };
+    }
+
+    spaceComponents(componentIds, options = {}) {
+      if (!this.getBatchSelection(componentIds, 2)) return false;
+      return this.applySpacingTransaction(componentIds, options);
     }
 
     setPresentationBatch(componentIds, patch = {}) {
