@@ -384,9 +384,10 @@ const legendPlans = [
     { x: 504, y: 484, width: 242, height: 320 }
   ];
   for (let index = 0; index < ids.cardIds.length; index += 1) await setFrame(ids.cardIds[index], cardFrames[index], `card ${index + 1}`);
-  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal");
+  await setFrame(ids.contentId, { x: 0, y: 110, height: 933 }, "conteúdo principal expandido");
   await setFrame(ids.legendPanelId, { x: 0, y: 804, width: 475, height: 129 }, "painel de legenda");
   await setFrame(ids.tipId, { x: 485, y: 804, width: 261, height: 129 }, "chamada de dica");
+  await setFrame(ids.contentId, { x: 0, y: 110, width: 746, height: 933 }, "conteúdo principal final");
   await setFrame(ids.rootId, { x: 0, y: 0, width: 794, height: 1123 }, "estrutura da página");
   await setFrame(ids.headerId, { x: 24, y: 0, width: 746, height: 110 }, "cabeçalho");
   await setFrame(ids.footerId, { x: 24, y: 1043, width: 746, height: 80 }, "rodapé");
