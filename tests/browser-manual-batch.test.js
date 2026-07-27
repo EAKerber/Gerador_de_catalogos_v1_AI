@@ -46,6 +46,15 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   if (process.env.CATALOG_BATCH_SCREENSHOT) await page.screenshot({ path: process.env.CATALOG_BATCH_SCREENSHOT, fullPage: true });
 
   await page.locator('[data-batch-presentation="density"]').selectOption("comfortable");
+  const draftState = await page.evaluate(() => ({
+    densities: CatalogEditor.store.getSelectedComponents().map(component => component.presentation?.density),
+    preview: document.querySelector('[data-batch-presentation-preview]')?.textContent || "",
+    history: CatalogEditor.store.getHistoryState()
+  }));
+  assert(draftState.densities.every((value, index) => value === selectedCards.densities[index]), "O rascunho de apresentação alterou os cards antes da confirmação.");
+  assert(/7 card\(s\)/.test(draftState.preview), "O preview não informou os cards afetados.");
+  assert(draftState.history.undoCount === selectedCards.history.undoCount, "O rascunho criou histórico antes da confirmação.");
+  await page.locator('[data-batch-presentation-apply]').click();
   const compactState = await page.evaluate(() => ({
     densities: CatalogEditor.store.getSelectedComponents().map(component => component.presentation?.density),
     history: CatalogEditor.store.getHistoryState()

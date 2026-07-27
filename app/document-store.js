@@ -3586,6 +3586,39 @@
       });
     }
 
+    getPresentationBatchPreview(componentIds, patch = {}) {
+      const cards = Array.from(new Map((componentIds || []).map(componentId => this.getProductCard(componentId)).filter(Boolean).map(card => [card.id, card])).values());
+      const requested = clone(patch || {});
+      const items = cards.map(card => {
+        const before = window.CatalogPresentations?.normalizePresentation?.(card.presentation, card.type) || clone(card.presentation || {});
+        const after = window.CatalogPresentations?.normalizePresentation?.({ ...before, ...requested }, card.type) || { ...before, ...requested };
+        const currentMinimum = this.getReflowMinimum(card, card.frame);
+        const preview = clone(card);
+        preview.presentation = after;
+        const nextMinimum = this.getReflowMinimum(preview, preview.frame);
+        return {
+          componentId: card.id,
+          changed: JSON.stringify(before) !== JSON.stringify(after),
+          before,
+          after,
+          minimum: {
+            before: clone(currentMinimum),
+            after: clone(nextMinimum),
+            heightDelta: Math.round(Number(nextMinimum?.height || 0) - Number(currentMinimum?.height || 0))
+          }
+        };
+      });
+      const changed = items.filter(item => item.changed);
+      return {
+        componentIds: cards.map(card => card.id),
+        requested,
+        changedCount: changed.length,
+        maximumMinimumHeightDelta: changed.reduce((maximum, item) => Math.max(maximum, Math.abs(item.minimum.heightDelta)), 0),
+        expandsCount: changed.filter(item => item.minimum.heightDelta > 0).length,
+        items
+      };
+    }
+
     setStyleBatch(componentIds, patch = {}) {
       const components = (componentIds || []).map(componentId => this.findComponent(componentId)?.component).filter(Boolean);
       const applicable = components.filter(component => Object.keys(patch).some(key => definitionFor(component.type)?.styleFields?.includes(key)));
