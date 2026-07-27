@@ -1,5 +1,8 @@
 # Incremento 05.22 — encerramento geométrico da V1
 
+**Estado:** integrado em `development` pela PR #4, com Node, build, schema e
+quatro shards Chromium aprovados.
+
 ## Direção
 
 O incremento corrige a atomicidade geométrica existente sem introduzir locks, constraints persistentes, campos de schema ou nova superfície visual. A decisão estratégica é concluir a V1 confiável e preparar uma migração arquitetural interna posterior, preservando documentos, testes e contratos de domínio.
@@ -59,7 +62,7 @@ Fora do checkpoint:
 
 ## Próximos recortes
 
-1. Migrar espaçamento/separadores para uma transação que inclua mudanças estruturais.
+1. Migrar espaçamento/separadores para uma transação que inclua mudanças estruturais — iniciado no 05.23.
 2. Migrar os demais caminhos manuais apenas quando houver risco comprovado de estado parcial.
 3. Encerrar a V1 com regressões, documentação de limites e backlog ativo reduzido.
 4. Iniciar a arquitetura V2 como extração incremental de comandos geométricos, conteúdo, histórico e seleção; não reescrever do zero.

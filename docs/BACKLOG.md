@@ -2,9 +2,24 @@
 
 Registro consolidado das observações recebidas após o Incremento 04. As prioridades orientam a sequência, mas não substituem validação de interface. A direção canônica está em `PRODUCT-DEFINITION.md`; itens concluídos abaixo permanecem como histórico.
 
-## Fila priorizada após o Incremento 05.14
+## Fila operacional pós-Incremento 05.22
 
-Esta fila é a referência operacional para novos incrementos. O registro consolidado abaixo preserva decisões e entregas anteriores, mas não deve ser usado isoladamente para escolher o próximo trabalho.
+O núcleo geométrico 05.22 está integrado em `development`. A fila ativa da V1
+fica restrita a: transação estrutural de espaçamento/separadores, regressão
+final, documentação de limites e saneamento do backlog. As seções históricas
+abaixo preservam rastreabilidade, mas não comandam a próxima prioridade.
+
+### Em execução — Incremento 05.23
+
+| Prioridade | Recorte | Critério de saída |
+| --- | --- | --- |
+| P0 | Espaçamento/separadores transacionais | Planejamento isolado; frames, autoridade e criação/atualização de separadores aplicados numa única emissão e num único undo, ou nenhuma mutação. |
+| P0 | Regressão final | Node, schema, build, quatro shards Chromium e gates técnico/promocional verdes. |
+| P0 | Limites e backlog da V1 | Estados ativo, dívida, discovery, pausado, congelado e histórico publicados sem ambiguidade. |
+
+O benchmark comparável mais recente permanece o 05.17, com **157 ações,
+zero colisão e zero overflow**. Os incrementos 05.20–05.22 são gates de
+generalização, interface e confiabilidade, não novas medições integrais.
 
 ### Entregue — Incremento 05.13
 
@@ -146,7 +161,7 @@ Expansão multimídia, hospedagem, colaboração, touch/mobile completo e workfl
 | P1 | Snapshots locais | Contrato portátil preservado; nenhuma expansão operacional. | Descongelamento explícito. |
 | P2 | Sala browser-only | Direção local-first preservada, sem protótipo ou infraestrutura. | Descongelamento explícito. |
 | P2 | Fundamentos touch/mobile | Apenas guardrails contra dependência exclusiva de mouse/hover/teclado. | Descongelamento explícito. |
-| P2 | Documento multipágina | Pausado, não congelado; depende de layout e reflow confiáveis. | Resultados dos Incrementos 05.14–05.16. |
+| P2 | Documento multipágina | Pausado, não congelado; layout e reflow já possuem gates, mas a retomada não é automática. | Encerramento formal da V1 single-page e decisão explícita. |
 
 ### Discovery congelada
 
@@ -173,7 +188,7 @@ Essas perguntas permanecem documentadas, mas não competem com o backlog ativo.
 | P1 | Modelo semântico de produto | Substituir a limitação `specOne/specTwo` por atributos, destaques, aplicações, variantes, assets e valores comerciais tipados. | CatalogSource | Base concluída 05.4; binding semântico no compilador 05.5 |
 | P1 | Plano e compilador editorial | Materializar páginas, IDs, slots e frames a partir de intenção editorial validável. | Templates oficiais, modelo de produto | Concluído 05.5 para estratégias `hero-grid` e `grid-only`; novas famílias seguem incrementais |
 | P1 | Interface progressiva | Priorizar conteúdo e problemas, depois layout e visual; manter geometria e restrições em divulgação avançada. | Manifesto de capacidades | Vocabulário atual auditado; continuidade de tarefa passa ao 05.16 |
-| P1 | Redução de ações manuais | Agrupar cadastro, vínculo, preenchimento e composição repetitivos sem retirar controle nem edição individual. | Histórico, inventário, tabelas | 05.16: 223 ações, −16,5% desde 05.12 e −30,1% desde a base |
+| P1 | Redução de ações manuais | Agrupar cadastro, vínculo, preenchimento e composição repetitivos sem retirar controle nem edição individual. | Histórico, inventário, tabelas | 05.17: 157 ações, −50,8% desde a base; zero colisão/overflow |
 | P1 | Tamanho recomendável | Separar mínimo técnico de mínimo recomendado/personalizado e permitir override explícito com aviso de overflow. | Histórico, layout | Concluído 05.4 |
 | P1 | Escala interna dos átomos | Fonte, ícone, padding, gap e presets compacto/padrão/confortável, sem CSS arbitrário. | Tokens de densidade | Presets mantidos; novos controles congelados salvo dívida concreta |
 | P1 | Templates, modos e densidades | Formalizar vocabulário, IDs, requisitos, fallback e bindings das apresentações oficiais. | Manifesto, modelo de produto | Contratos mantidos; exposição conjunta em auditoria 05.13 |
@@ -187,7 +202,7 @@ Essas perguntas permanecem documentadas, mas não competem com o backlog ativo.
 | P2 | Hospedagem estática por Git | Publicar o editor atual com deploy de preview, testes e promoção controlada, sem confundir hospedagem com persistência compartilhada. | Repositório, CI e política de dados | Congelado 05.13 |
 | P1 | Persistência local-first e snapshots | Projeto portátil com checkpoints, backups e restauração local; futura colaboração por sala browser-only, autoridade do hoster e réplicas manuais, sem banco central como fonte de verdade. | Pacote, hashes, histórico, WebRTC/sinalização efêmera e política de conflito | Congelado; somente compatibilidade |
 | P2 | Fundamentos touch e mobile | Evitar dependências futuras de hover, mouse e teclado sem prometer paridade editorial mobile antes da medição de esforço manual. | Eventos, shell responsivo e acessibilidade | Guardrail; expansão congelada |
-| P2 | Paginação e balanceamento | Distribuir produtos e seções em múltiplas páginas sem overflow, preservando intenção e ordem. | Compilador, multipágina | Pausado até 05.14–05.16 |
+| P2 | Paginação e balanceamento | Distribuir produtos e seções em múltiplas páginas sem overflow, preservando intenção e ordem. | Compilador, multipágina | Pausado até o encerramento formal da V1 e decisão explícita |
 | P2 | Revisão do chrome do editor | Consolidar toolbar, ações contextuais, camadas, atalhos e largura/recolhimento dos painéis. | Interface progressiva | Auditoria subtrativa ativa; interface orientada à tarefa 05.16 |
 
 ## Automação da criação entregue no 05.5
