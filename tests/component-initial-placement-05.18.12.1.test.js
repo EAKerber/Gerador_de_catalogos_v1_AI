@@ -23,8 +23,11 @@ global.CatalogEditorIcon = () => "";
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const installation = CatalogComponentInitialPlacementContract.install();
-assert(installation.storeInstalled, "O contrato da store não foi instalado.");
+assert(installation.storeInstalled, "A integração canônica da store não foi detectada.");
 assert(CatalogComponentPlacements.validate(CATALOG_COMPONENT_REGISTRY).ok, "O registro de posições prováveis é inválido.");
+const insertComponentBeforeInstall = CatalogDocumentStore.prototype.insertComponent;
+CatalogComponentInitialPlacementContract.install();
+assert(CatalogDocumentStore.prototype.insertComponent === insertComponentBeforeInstall, "O contrato voltou a substituir métodos da store em runtime.");
 
 const headerStore = new CatalogDocumentStore(createBlankCatalogDocument());
 const header = headerStore.insertComponent("catalog-header");

@@ -30,6 +30,10 @@ generalização, interface e confiabilidade, não novas medições integrais.
 - consolidação interna em recortes isolados;
 - discovery explícito antes de reabrir multipágina, colaboração ou frentes congeladas.
 
+O Incremento 05.25 inicia essa consolidação removendo a substituição tardia dos
+métodos de posicionamento inicial do store. Cabeçalho e rodapé preservam as
+mesmas sugestões declarativas, agora consultadas pelo módulo canônico.
+
 ### Entregue — Incremento 05.13
 
 | Prioridade | Entrega | Resultado | Evidência |

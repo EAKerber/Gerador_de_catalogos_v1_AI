@@ -1498,7 +1498,13 @@
       return component ? { width: component.frame.width, height: component.frame.height } : { width: 0, height: 0 };
     }
 
-    getSuggestedFrame(sourceFrame, parentId = this.state.editor.editingContextId) {
+    getProbablePlacementFrame(type, sourceFrame, parentId = this.state.editor.editingContextId) {
+      return window.CatalogComponentPlacements?.probableFrame?.(this, type, sourceFrame, parentId) || null;
+    }
+
+    getSuggestedFrame(sourceFrame, parentId = this.state.editor.editingContextId, type = null) {
+      const preferred = type ? this.getProbablePlacementFrame(type, sourceFrame, parentId) : null;
+      if (preferred) return preferred;
       const parent = parentId ? this.findComponent(parentId)?.component : null;
       const size = this.getContainerSize(parentId);
       const page = this.getPage();
@@ -1558,7 +1564,7 @@
       const compatibleSlots = parentId ? this.getSlotDefinitions(parentId).filter(item => item.accepts.includes(type)) : [];
       const slot = options.slotName ? this.getSlotDefinitions(parentId).find(item => item.name === options.slotName) : this.getPreferredSlot(parentId, type);
       if (compatibleSlots.length && !slot) throw new Error("Todos os slots compatíveis estão ocupados. Remova uma peça, aumente a capacidade ou arraste para criar um override livre.");
-      const frame = slot ? { ...definition.defaultFrame, x: 0, y: 0 } : this.getSuggestedFrame(definition.defaultFrame, parentId);
+      const frame = slot ? { ...definition.defaultFrame, x: 0, y: 0 } : this.getSuggestedFrame(definition.defaultFrame, parentId, type);
       if (parentId !== previousContextId && parentId) this.state.editor.editingContextId = parentId;
       return this.addComponent(type, frame, { ...options, parentId, slotName: slot?.name || null });
     }

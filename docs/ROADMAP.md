@@ -481,6 +481,16 @@ governança e adiciona um gate contra reabertura documental acidental.
 Não entram neste incremento: locks persistentes, multipágina, colaboração,
 contextualização por IA, novos tipos e reescrita do store.
 
+## Incremento 05.25 — Consolidação interna do posicionamento inicial
+
+Em validação:
+
+- mover o cálculo de posições prováveis para o registro declarativo;
+- fazer o store canônico consultar o registro durante a inserção;
+- retirar a substituição tardia de métodos do protótipo;
+- preservar comportamento, histórico, Authoring Kit e schema `1.16.0`;
+- validar Node, build e quatro shards Chromium antes da integração.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
