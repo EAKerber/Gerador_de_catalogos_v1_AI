@@ -20,6 +20,8 @@ global.CatalogEditorIcon = name => `<svg data-icon="${name}"></svg>`;
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const StoreBeforeInstall = CatalogDocumentStore;
+const updateBeforeInstall = CatalogDocumentStore.prototype.updateComponent;
 const clone = value => JSON.parse(JSON.stringify(value));
 const findIn = (children, id) => {
   for (const component of children || []) {
@@ -34,6 +36,8 @@ CatalogTextAlignmentContract.install();
 CatalogTextScaleContract.install();
 const installation = CatalogTextOverflowContract.install();
 assert(installation.registryInstalled && installation.storeInstalled, "O contrato de overflow não foi instalado.");
+assert(CatalogDocumentStore === StoreBeforeInstall, "O contrato de overflow voltou a substituir a classe da store em runtime.");
+assert(CatalogDocumentStore.prototype.updateComponent === updateBeforeInstall, "O contrato de overflow voltou a substituir métodos da store em runtime.");
 
 const overflowField = CATALOG_COMPONENT_REGISTRY.text.contentFields.find(field => field.path === "overflow");
 assert(overflowField, "O campo de overflow não está publicado.");
@@ -83,6 +87,10 @@ const migratedLegacy = new CatalogDocumentStore(legacy);
 assert(migratedLegacy.findComponent(footerTitle.id).component.props.overflow === "ellipsis", "O documento legado não preservou a aparência anterior com reticências.");
 assert(migratedLegacy.findComponent(footerTitle.id).component.props.overflowExplicit === false, "O fallback legado foi marcado como explícito.");
 assert(migratedLegacy.getState().schemaVersion === "1.16.0", "O overflow exigiu mudança de schema.");
+
+const analyzed = store.analyzeDocument(legacy);
+const analyzedTitle = findIn(analyzed.document.pages[0].children, footerTitle.id);
+assert(analyzed.ok && analyzedTitle.props.overflow === "ellipsis", "A análise de importação não aplicou o fallback legado antes do commit.");
 
 imported.updateComponent(text.id, { props: { overflow: "desconhecido" } });
 assert(CATALOG_COMPONENT_REGISTRY.text.render(imported.findComponent(text.id).component).includes('data-text-overflow="wrap"'), "Overflow inválido não usou fallback wrap.");

@@ -36,6 +36,9 @@ mesmas sugestões declarativas, agora consultadas pelo módulo canônico.
 O Incremento 05.26 continua o saneamento pelo alinhamento textual: migração
 legada, importação e marcação de escolha explícita passam a pertencer ao store
 canônico, sem substituição tardia da classe.
+O Incremento 05.27 aplica o mesmo limite arquitetural às políticas de overflow:
+normalização legada e escolha explícita passam ao store canônico, preservando
+`wrap`, `ellipsis`, `clip` e a aparência histórica do rodapé.
 
 ### Entregue — Incremento 05.13
 
