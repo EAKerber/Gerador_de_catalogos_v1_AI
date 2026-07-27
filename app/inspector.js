@@ -448,6 +448,9 @@
     }
 
     renderBatch(components) {
+      const selectionKey = components.map(component => component.id).join(",");
+      if (this.batchPresentationSelectionKey && this.batchPresentationSelectionKey !== selectionKey) this.batchPresentationDraft = null;
+      this.batchPresentationSelectionKey = selectionKey;
       const records = components.map(component => this.store.findComponent(component.id)).filter(Boolean);
       const contextLabel = records[0]?.parent?.name || this.store.getPage().name;
       const cards = Array.from(new Map(components.map(component => this.store.getProductCard(component.id)).filter(Boolean).map(card => [card.id, card])).values());
@@ -458,6 +461,14 @@
       const density = this.commonValue(cards, card => card.presentation?.density || "standard");
       const mode = this.commonValue(cards, card => card.presentation?.mode || "standard");
       const presetId = this.commonValue(cards, card => card.presentation?.presetId || "product-standard");
+      const presentationDraft = this.batchPresentationDraft || {};
+      const presentationPreview = this.store.getPresentationBatchPreview(components.map(component => component.id), presentationDraft);
+      const presentationValue = (path, current) => Object.hasOwn(presentationDraft, path) ? presentationDraft[path] : current;
+      const presentationPreviewText = !Object.keys(presentationDraft).length
+        ? "Escolha uma apresentação para ver o efeito antes de confirmar."
+        : !presentationPreview.changedCount
+          ? "Os cards já usam esta apresentação."
+          : `${presentationPreview.changedCount} card(s) serão atualizados em uma única ação${presentationPreview.expandsCount ? `; ${presentationPreview.expandsCount} pode(m) exigir mais altura` : ""}${presentationPreview.maximumMinimumHeightDelta ? ` (variação máxima de mínimo: ${presentationPreview.maximumMinimumHeightDelta} px)` : ""}.`;
       const accentColor = this.commonValue(accentEligible, component => component.style?.accentColor || "brand.primary");
       const textColor = this.commonValue(textEligible, component => component.style?.textColor || "text.primary");
       const frameValues = Object.fromEntries(["x", "y", "width", "height"].map(path => [path, this.commonValue(components, component => Math.round(component.frame[path]))]));
@@ -560,11 +571,13 @@
           </section>
           ${cards.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Apresentação dos cards</h3><span>${cards.length} elegível(is)</span></div>
+            <p class="inspector-note" data-batch-presentation-preview>${escapeHtml(presentationPreviewText)}</p>
             <div class="inspector-grid">
-              <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-presentation="presetId">${mixedOption(presetId)}${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presetId === preset.id ? "selected" : ""}>${escapeHtml(preset.label)}</option>`).join("")}</select></div>
-              <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(mode)}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${mode === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
-              <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(density)}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${density === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-presentation="presetId">${mixedOption(presentationValue("presetId", presetId))}${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presentationValue("presetId", presetId) === preset.id ? "selected" : ""}>${escapeHtml(preset.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(presentationValue("mode", mode))}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("mode", mode) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(presentationValue("density", density))}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("density", density) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             </div>
+            <div class="inspector-actions inspector-actions--grid"><button type="button" class="inspector-action--primary" data-batch-presentation-apply ${presentationPreview.changedCount ? "" : "disabled"}>Aplicar apresentação</button><button type="button" data-batch-presentation-reset ${Object.keys(presentationDraft).length ? "" : "disabled"}>Descartar rascunho</button></div>
           </section>` : ""}
           ${tables.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Esquema das tabelas</h3><span>${tables.length} elegível(is)</span></div>
@@ -770,12 +783,14 @@
       }
       if (selectedIds.length > 1 && target.matches("[data-batch-presentation]")) {
         const path = target.dataset.batchPresentation;
+        this.batchPresentationDraft ||= {};
         if (path === "presetId") {
           const preset = window.CatalogPresentations?.PRESETS?.[target.value];
-          this.store.setPresentationBatch(selectedIds, { presetId: target.value, mode: preset?.mode, density: preset?.density });
+          Object.assign(this.batchPresentationDraft, { presetId: target.value, mode: preset?.mode, density: preset?.density, responsiveState: preset?.density === "compact" ? "compact" : "auto" });
         } else {
-          this.store.setPresentationBatch(selectedIds, { [path]: target.value, ...(path === "density" ? { responsiveState: target.value === "compact" ? "compact" : "auto" } : {}) });
+          Object.assign(this.batchPresentationDraft, { [path]: target.value, ...(path === "density" ? { responsiveState: target.value === "compact" ? "compact" : "auto" } : {}) });
         }
+        this.render();
         return;
       }
       if (selectedIds.length > 1 && target.matches("[data-batch-style]")) {
@@ -957,6 +972,15 @@
         }
         else if (event.target.closest("[data-batch-table-schema-apply]")) {
           this.store.applyTableSchema(selectedIds, this.root.querySelector("[data-batch-table-schema]")?.value);
+        }
+        else if (event.target.closest("[data-batch-presentation-apply]")) {
+          const draft = this.batchPresentationDraft || {};
+          if (Object.keys(draft).length) this.store.setPresentationBatch(selectedIds, draft);
+          this.batchPresentationDraft = null;
+        }
+        else if (event.target.closest("[data-batch-presentation-reset]")) {
+          this.batchPresentationDraft = null;
+          this.render();
         }
         else if (event.target.closest("[data-batch-duplicate]")) this.store.duplicateComponents(selectedIds);
         else if (event.target.closest("[data-batch-delete]")) this.store.deleteComponents(selectedIds);
