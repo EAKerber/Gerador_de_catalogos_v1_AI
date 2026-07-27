@@ -505,7 +505,7 @@ Concluído:
 
 ## Incremento 05.27 — Consolidação interna do overflow textual
 
-Em validação:
+Concluído e integrado em `development` pela PR #9:
 
 - mover normalização de overflow legado para o store canônico;
 - marcar escolhas explícitas em `updateComponent`, sem interceptor tardio;
@@ -515,6 +515,19 @@ Em validação:
 - proibir por teste a substituição da classe ou de seus métodos;
 - preservar schema `1.16.0`, 16 tipos, 45 capacidades e kit `1.6.0`;
 - validar Node, build e quatro shards Chromium antes da integração.
+
+## Incremento 05.28 — Estabilização do fluxo Git
+
+Em validação:
+
+- iniciar cada incremento numa worktree limpa derivada do
+  `origin/development` integrado;
+- substituir descoberta repetitiva de checkout/transporte por um pré-voo único;
+- distinguir credencial Git local ausente de falha de rede, divergência remota
+  e indisponibilidade do conector;
+- selecionar `direct-git`, `github-connector` ou `blocked` por evidência;
+- preservar worktrees históricos sem torná-los base de novos incrementos;
+- manter `main` intocada e a CI completa como gate de integração.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

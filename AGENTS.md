@@ -20,6 +20,8 @@ Para diagnosticar GitHub Actions:
 
 Para publicar quando o push Git autenticado não estiver disponível:
 
+0. execute `npm run git:preflight -- --json` no commit limpo e siga o transporte
+   declarado; não repita descoberta de worktrees, SSH ou `gh`;
 1. use objetos Git pelo conector apenas numa branch de agente;
 2. preserve a ordem e as mensagens dos commits;
 3. transfira arquivos grandes sem truncamento;
