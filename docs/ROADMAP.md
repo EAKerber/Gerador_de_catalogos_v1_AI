@@ -564,6 +564,17 @@ Em validação:
 - aplicar a seleção inteira numa única ação reversível;
 - preservar schema `1.16.0`, 16 tipos e 45 capacidades.
 
+## Incremento 05.33 — Reordenação acessível em Camadas
+
+Em validação:
+
+- expor a operação existente de reordenação diretamente em Camadas;
+- mover irmãos acima ou abaixo somente dentro do mesmo grupo/slot;
+- oferecer controles acessíveis por mouse e teclado;
+- desabilitar ações nos limites do grupo;
+- preservar ordem serializada, reflow e uma ação reversível;
+- manter reparenting, cruzamento de slots e drag-and-drop fora do recorte.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de

@@ -404,7 +404,7 @@ body[data-document-dirty="true"] #saveButton::after { content: ""; display: inli
 .palette-group__items { display: grid; gap: 7px; }
 
 .layer-node { min-width: 0; }
-.layer-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; align-items: center; gap: 3px; padding-left: calc(var(--layer-depth) * 13px); }
+.layer-row { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto auto; align-items: center; gap: 3px; padding-left: calc(var(--layer-depth) * 13px); }
 .layer-row .layer-item { grid-template-columns: 22px minmax(0, 1fr) auto; }
 .layer-toggle,
 .layer-toggle-spacer { width: 20px; height: 26px; }
@@ -414,6 +414,11 @@ body[data-document-dirty="true"] #saveButton::after { content: ""; display: inli
 .layer-toggle[aria-expanded="false"] span { transform: rotate(0deg); }
 .layer-item__slot { max-width: 72px; padding: 2px 5px; overflow: hidden; border-radius: 999px; color: var(--color-ink-600); background: var(--color-neutral-100); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .layer-item[data-active-context="true"] { outline: 2px solid var(--color-brand-500); outline-offset: -2px; }
+.layer-order-actions { display: grid; grid-template-columns: repeat(2, 20px); gap: 2px; }
+.layer-order-actions button { display: grid; width: 20px; height: 26px; padding: 0; place-items: center; border: 1px solid transparent; border-radius: 5px; color: var(--color-ink-600); background: transparent; font-size: 12px; }
+.layer-order-actions button:hover:not(:disabled),
+.layer-order-actions button:focus-visible { border-color: var(--color-brand-100); color: var(--color-brand-700); background: var(--color-brand-50); }
+.layer-order-actions button:disabled { opacity: .25; cursor: not-allowed; }
 .layer-enter { display: grid; width: 26px; height: 26px; place-items: center; border: 1px solid transparent; border-radius: 5px; color: var(--color-ink-600); background: transparent; }
 .layer-enter:hover { border-color: var(--color-brand-100); color: var(--color-brand-700); background: var(--color-brand-50); }
 .layer-children { display: grid; gap: 3px; }

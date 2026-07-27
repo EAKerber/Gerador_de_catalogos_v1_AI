@@ -97,6 +97,11 @@
       });
 
       this.layers.addEventListener("click", event => {
+        const reorder = event.target.closest("[data-reorder-layer]");
+        if (reorder) {
+          this.store.reorderComponent(reorder.dataset.reorderLayer, Number(reorder.dataset.reorderDirection));
+          return;
+        }
         const enter = event.target.closest("[data-enter-container]");
         if (enter) {
           this.store.setEditingContext(enter.dataset.enterContainer);
