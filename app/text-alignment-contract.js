@@ -51,39 +51,7 @@
   }
 
   function installStoreContract() {
-    const BaseStore = window.CatalogDocumentStore;
-    if (!BaseStore || BaseStore.__textAlignmentContractVersion === CONTRACT_VERSION) return Boolean(BaseStore);
-
-    class TextAlignmentDocumentStore extends BaseStore {
-      constructor(initialState) {
-        super(normalizeLegacyFooterAlignment(initialState));
-      }
-
-      analyzeDocument(document) {
-        const analysis = super.analyzeDocument(normalizeLegacyFooterAlignment(document));
-        if (analysis?.document) analysis.document = normalizeLegacyFooterAlignment(analysis.document);
-        return analysis;
-      }
-
-      replaceDocument(document, options = {}) {
-        return super.replaceDocument(normalizeLegacyFooterAlignment(document), options);
-      }
-
-      updateComponent(componentId, patch = {}) {
-        const component = this.findComponent(componentId)?.component;
-        if (component?.type !== "text" || !patch.props || !hasOwn(patch.props, "align")) {
-          return super.updateComponent(componentId, patch);
-        }
-        return super.updateComponent(componentId, {
-          ...patch,
-          props: { ...patch.props, alignExplicit: true }
-        });
-      }
-    }
-
-    Object.defineProperty(TextAlignmentDocumentStore, "__textAlignmentContractVersion", { value: CONTRACT_VERSION });
-    window.CatalogDocumentStore = TextAlignmentDocumentStore;
-    return true;
+    return window.CatalogDocumentStore?.__textAlignmentContractVersion === CONTRACT_VERSION;
   }
 
   function installStyles() {

@@ -33,6 +33,9 @@ generalização, interface e confiabilidade, não novas medições integrais.
 O Incremento 05.25 inicia essa consolidação removendo a substituição tardia dos
 métodos de posicionamento inicial do store. Cabeçalho e rodapé preservam as
 mesmas sugestões declarativas, agora consultadas pelo módulo canônico.
+O Incremento 05.26 continua o saneamento pelo alinhamento textual: migração
+legada, importação e marcação de escolha explícita passam a pertencer ao store
+canônico, sem substituição tardia da classe.
 
 ### Entregue — Incremento 05.13
 
