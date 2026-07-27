@@ -28,6 +28,22 @@ let browser;
   await page.locator(`[data-layer-id="${ids[2]}"]`).click({ modifiers: ["Control"] });
   assert(await page.locator('[data-batch-frame-apply="height"]').count() === 1, "A seleção não expôs geometria numérica integrada.");
 
+  await page.evaluate(componentIds => CatalogEditor.store.transformComponents(componentIds, {
+    kind: "set",
+    values: { x: 53, y: 83, width: 103, height: 43 }
+  }), ids);
+  assert((await page.locator("[data-batch-grid-preview]").textContent()).includes("3 item(ns)"), "O preview não antecipou os três ajustes.");
+  const historyBeforeGrid = await page.evaluate(() => CatalogEditor.store.getHistoryState().undoCount);
+  await page.locator("[data-batch-grid-apply]").click();
+  const normalized = await page.evaluate(componentIds => ({
+    frames: componentIds.map(id => CatalogEditor.store.findComponent(id).component.frame),
+    history: CatalogEditor.store.getHistoryState()
+  }), ids);
+  assert(normalized.frames.every(frame => [frame.x, frame.y, frame.width, frame.height].every(value => value % 4 === 0)), "A interface não normalizou posições e dimensões à grade.");
+  assert(normalized.history.undoCount === historyBeforeGrid + 1 && normalized.history.undoLabel === "Normalizar seleção à grade", "A normalização não foi uma ação única.");
+  await page.keyboard.press("Control+z");
+  await page.keyboard.press("Control+z");
+
   await page.locator('[data-batch-equalize="width"]').click();
   await page.locator('[data-batch-frame-value="height"]').fill("72");
   await page.locator('[data-batch-frame-apply="height"]').click();

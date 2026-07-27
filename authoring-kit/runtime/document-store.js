@@ -117,6 +117,7 @@
       "component-presentation-updated": "Editar apresentação",
       "components-aligned": "Alinhar seleção",
       "components-distributed": "Distribuir seleção",
+      "components-grid-normalized": "Normalizar seleção à grade",
       "components-transformed": "Transformar seleção",
       "component-frames-bulk-applied": "Aplicar geometria da seleção",
       "components-spaced": "Ajustar espaçamento",
@@ -3224,6 +3225,73 @@
         selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
       });
       return plan.status !== "blocked";
+    }
+
+    getSelectionGridNormalization(componentIds, mode = "both") {
+      const selection = this.getBatchSelection(componentIds);
+      const allowed = new Set(["positions", "dimensions", "both"]);
+      if (!selection || !allowed.has(mode)) return null;
+      const unit = Math.max(1, Number(this.getPage()?.grid?.unit) || 4);
+      const positions = mode === "positions" || mode === "both";
+      const dimensions = mode === "dimensions" || mode === "both";
+      const requests = selection.records.map(record => {
+        const current = record.component.frame;
+        const frame = {};
+        if (positions) {
+          frame.x = Math.round(current.x / unit) * unit;
+          frame.y = Math.round(current.y / unit) * unit;
+        }
+        if (dimensions) {
+          frame.width = Math.max(unit, Math.round(current.width / unit) * unit);
+          frame.height = Math.max(unit, Math.round(current.height / unit) * unit);
+        }
+        return { componentId: record.component.id, frame, releaseAuthority: true };
+      });
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const plan = publicGeometryPlan(this.planGeometryTransaction(requests, {
+        change: { type: "components-grid-normalized", componentIds: componentIdsInOrder, mode, unit },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      }));
+      const directChanges = plan.changes.filter(change => change.direct);
+      return {
+        ...plan,
+        mode,
+        unit,
+        componentIds: componentIdsInOrder,
+        changedCount: directChanges.length,
+        derivedCount: plan.changes.filter(change => !change.direct).length,
+        maximumAdjustment: directChanges.reduce((maximum, change) => Math.max(
+          maximum,
+          Math.abs(change.after.x - change.before.x),
+          Math.abs(change.after.y - change.before.y),
+          Math.abs(change.after.width - change.before.width),
+          Math.abs(change.after.height - change.before.height)
+        ), 0)
+      };
+    }
+
+    normalizeSelectionToGrid(componentIds, mode = "both") {
+      const preview = this.getSelectionGridNormalization(componentIds, mode);
+      if (!preview || preview.status === "blocked" || preview.changedCount === 0) return preview;
+      const positions = mode === "positions" || mode === "both";
+      const dimensions = mode === "dimensions" || mode === "both";
+      const requests = preview.componentIds.map(componentId => {
+        const current = this.findComponent(componentId).component.frame;
+        const frame = {};
+        if (positions) {
+          frame.x = Math.round(current.x / preview.unit) * preview.unit;
+          frame.y = Math.round(current.y / preview.unit) * preview.unit;
+        }
+        if (dimensions) {
+          frame.width = Math.max(preview.unit, Math.round(current.width / preview.unit) * preview.unit);
+          frame.height = Math.max(preview.unit, Math.round(current.height / preview.unit) * preview.unit);
+        }
+        return { componentId, frame, releaseAuthority: true };
+      });
+      return this.applyGeometryTransaction(requests, {
+        change: { type: "components-grid-normalized", componentIds: preview.componentIds, mode, unit: preview.unit },
+        selection: { componentIds: preview.componentIds, primaryId: preview.componentIds.at(-1) }
+      });
     }
 
     transformComponents(componentIds, operation = {}) {

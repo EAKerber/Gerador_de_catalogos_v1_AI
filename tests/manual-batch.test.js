@@ -38,6 +38,22 @@ assert(store.getHistoryState().undoCount === beforeAlign + 1 && store.getHistory
 store.undo();
 assert(live(second).frame.y === 120 && live(third).frame.y === 170, "Desfazer não restaurou a geometria anterior ao alinhamento.");
 
+store.transformComponents(store.getSelectedIds(), { kind: "set", values: { x: 53, y: 83, width: 103, height: 43 } });
+const gridPreview = store.getSelectionGridNormalization(store.getSelectedIds(), "both");
+assert(gridPreview.status !== "blocked" && gridPreview.changedCount === 3 && gridPreview.maximumAdjustment <= 2, "O preview não antecipou a normalização pela grade de 4 px.");
+const historyBeforeGrid = store.getHistoryState().undoCount;
+const gridResult = store.normalizeSelectionToGrid(store.getSelectedIds(), "both");
+assert(gridResult.status !== "blocked", "A normalização válida foi bloqueada.");
+assert([first, second, third].every(component => {
+  const frame = live(component).frame;
+  return [frame.x, frame.y, frame.width, frame.height].every(value => value % 4 === 0);
+}), "Posições e dimensões não coincidem com a grade.");
+assert(store.getHistoryState().undoCount === historyBeforeGrid + 1 && store.getHistoryState().undoLabel === "Normalizar seleção à grade", "A normalização não gerou uma única entrada de histórico.");
+store.undo();
+assert([first, second, third].every(component => live(component).frame.x === 53 && live(component).frame.width === 103), "Desfazer não restaurou as caixas anteriores à normalização.");
+store.undo();
+assert(live(first).frame.x === 40 && live(second).frame.x === 190 && live(third).frame.x === 390, "O preparo da regressão não restaurou a geometria original.");
+
 assert(store.distributeComponents(store.getSelectedIds(), "horizontal"), "A distribuição horizontal foi recusada.");
 const centers = [first, second, third].map(component => live(component).frame.x + live(component).frame.width / 2);
 assert(Math.abs((centers[1] - centers[0]) - (centers[2] - centers[1])) < 0.001, "A distribuição não igualou a distância entre centros.");

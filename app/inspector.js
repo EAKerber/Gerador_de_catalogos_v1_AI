@@ -462,6 +462,14 @@
       const textColor = this.commonValue(textEligible, component => component.style?.textColor || "text.primary");
       const frameValues = Object.fromEntries(["x", "y", "width", "height"].map(path => [path, this.commonValue(components, component => Math.round(component.frame[path]))]));
       const geometryReport = this.store.getSelectionGeometryReport(components.map(component => component.id));
+      const gridNormalization = this.store.getSelectionGridNormalization(components.map(component => component.id), "both");
+      const gridNormalizationStatus = !gridNormalization
+        ? "Seleção incompatível."
+        : gridNormalization.status === "blocked"
+          ? "A normalização foi bloqueada pela geometria."
+          : gridNormalization.changedCount
+            ? `${gridNormalization.changedCount} item(ns), ajuste máximo de ${Math.round(gridNormalization.maximumAdjustment)} px${gridNormalization.derivedCount ? ` e ${gridNormalization.derivedCount} efeito(s) de reflow` : ""}.`
+            : `Os itens já coincidem com a grade de ${gridNormalization.unit} px.`;
       const mixedOption = value => value ? "" : '<option value="" selected disabled>Valores diferentes — escolher para aplicar</option>';
       const presets = Object.values(window.CatalogPresentations?.PRESETS || {});
       const separatorPresets = Object.values(window.CATALOG_SEPARATOR_PRESETS || {});
@@ -509,6 +517,18 @@
               <button type="button" data-batch-equalize="height">Igualar alturas</button>
             </div>
             <div class="batch-numeric-editor">
+              <div class="inspector-section__heading"><h4>Normalizar à grade</h4><span>preview sem alterar</span></div>
+              <p class="inspector-note" data-batch-grid-preview>${escapeHtml(gridNormalizationStatus)}</p>
+              <div class="inspector-field inspector-field--full">
+                <label>Normalizar</label>
+                <select data-batch-grid-mode>
+                  <option value="positions">Posições</option>
+                  <option value="dimensions">Dimensões</option>
+                  <option value="both" selected>Posições e dimensões</option>
+                </select>
+                <small>Usa a grade da página, respeita mínimos e confirma tudo em uma única ação.</small>
+              </div>
+              <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-grid-apply ${!gridNormalization?.changedCount || gridNormalization.status === "blocked" ? "disabled" : ""}>Normalizar seleção</button>
               <div class="inspector-section__heading"><h4>Valores exatos</h4><span>aplicar à seleção</span></div>
               <div class="batch-frame-grid">
                 ${["x", "y", "width", "height"].map(path => `<div class="batch-frame-field"><label>${path === "width" ? "Largura" : path === "height" ? "Altura" : path.toUpperCase()}</label><input type="number" step="1" value="${frameValues[path] ?? ""}" placeholder="Misto" data-batch-frame-value="${path}" /><button type="button" data-batch-frame-apply="${path}">Aplicar</button></div>`).join("")}
@@ -734,6 +754,20 @@
         }
         return;
       }
+      if (selectedIds.length > 1 && target.matches("[data-batch-grid-mode]")) {
+        const preview = this.store.getSelectionGridNormalization(selectedIds, target.value);
+        const status = this.root.querySelector("[data-batch-grid-preview]");
+        const button = this.root.querySelector("[data-batch-grid-apply]");
+        if (status) {
+          status.textContent = preview?.status === "blocked"
+            ? "A normalização foi bloqueada pela geometria."
+            : preview?.changedCount
+              ? `${preview.changedCount} item(ns), ajuste máximo de ${Math.round(preview.maximumAdjustment)} px${preview.derivedCount ? ` e ${preview.derivedCount} efeito(s) de reflow` : ""}.`
+              : `Os itens já coincidem com a grade de ${preview?.unit || 4} px.`;
+        }
+        if (button) button.disabled = !preview?.changedCount || preview.status === "blocked";
+        return;
+      }
       if (selectedIds.length > 1 && target.matches("[data-batch-presentation]")) {
         const path = target.dataset.batchPresentation;
         if (path === "presetId") {
@@ -884,6 +918,10 @@
         if (align) this.store.alignComponents(selectedIds, align.dataset.batchAlign);
         else if (distribute) this.store.distributeComponents(selectedIds, distribute.dataset.batchDistribute);
         else if (equalize) this.store.transformComponents(selectedIds, { kind: "equalize", path: equalize.dataset.batchEqualize });
+        else if (event.target.closest("[data-batch-grid-apply]")) {
+          const mode = this.root.querySelector("[data-batch-grid-mode]")?.value || "both";
+          this.store.normalizeSelectionToGrid(selectedIds, mode);
+        }
         else if (frameApply) {
           const path = frameApply.dataset.batchFrameApply;
           const value = this.root.querySelector(`[data-batch-frame-value="${path}"]`)?.value;
