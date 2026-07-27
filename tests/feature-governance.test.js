@@ -14,7 +14,7 @@ const capabilityIds = Object.keys(capabilities.capabilities).sort();
 const decisions = new Map(governance.capabilityDecisions.map(item => [item.id, item]));
 const allowedStatuses = new Set(["active", "maintain", "audit", "frozen", "paused"]);
 
-assert(governance.governanceFormat === "CatalogFeatureGovernance" && governance.editorIncrement === "05.24", "Formato ou incremento da governança inválido.");
+assert(governance.governanceFormat === "CatalogFeatureGovernance" && governance.editorIncrement === governance.v1State?.currentIncrement, "Formato ou incremento da governança inválido.");
 assert(manifest.editorIncrement === governance.editorIncrement, "Manifesto e governança divergem sobre o incremento atual.");
 assert(
   governance.v1State?.scope === "single-page"

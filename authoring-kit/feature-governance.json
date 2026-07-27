@@ -1,12 +1,12 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.24",
+  "editorIncrement": "05.25",
   "v1State": {
     "scope": "single-page",
     "status": "stable",
     "closedByIncrement": "05.23",
-    "currentIncrement": "05.24",
+    "currentIncrement": "05.25",
     "nextExpansion": "paused",
     "activeFocus": [
       "regression",
