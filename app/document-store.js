@@ -33,6 +33,29 @@
     return next;
   }
 
+  const footerDefaultOverflow = component => component?.slot?.name === "subtitle" ? "wrap" : "ellipsis";
+
+  function normalizeLegacyFooterOverflow(source) {
+    if (!source || typeof source !== "object" || Array.isArray(source)) return source;
+    const next = clone(source);
+    const visit = (component, parent = null) => {
+      if (!component || typeof component !== "object") return;
+      if (component.type === "text" && parent?.type === "footer-item") {
+        component.props ||= {};
+        const explicit = component.props.overflowExplicit === true;
+        if (!explicit) component.props.overflow = footerDefaultOverflow(component);
+        if (!hasOwn(component.props, "overflowExplicit")) component.props.overflowExplicit = false;
+      }
+      (component.children || []).forEach(child => visit(child, component));
+    };
+    (next.pages || []).forEach(page => (page.children || []).forEach(component => visit(component)));
+    return next;
+  }
+
+  function normalizeLegacyTextPresentation(source) {
+    return normalizeLegacyFooterOverflow(normalizeLegacyFooterAlignment(source));
+  }
+
   function documentSnapshot(state) {
     const snapshot = clone(state);
     delete snapshot.editor;
@@ -1269,7 +1292,7 @@
 
   class DocumentStore {
     constructor(initialState) {
-      this.state = migrateDocument(normalizeLegacyFooterAlignment(initialState || createBlankDocument()));
+      this.state = migrateDocument(normalizeLegacyTextPresentation(initialState || createBlankDocument()));
       this.listeners = new Set();
       this.bindingSyncDepth = 0;
       this.geometryResolutions = new Map();
@@ -1424,9 +1447,9 @@
     }
 
     analyzeDocument(document) {
-      const source = document === undefined ? document : normalizeLegacyFooterAlignment(document);
+      const source = document === undefined ? document : normalizeLegacyTextPresentation(document);
       const analysis = analyzeDocumentInput(source);
-      if (analysis?.document) analysis.document = normalizeLegacyFooterAlignment(analysis.document);
+      if (analysis?.document) analysis.document = normalizeLegacyTextPresentation(analysis.document);
       return analysis;
     }
 
@@ -2955,6 +2978,7 @@
       if (patch.props) {
         const props = { ...patch.props };
         if (component.type === "text" && hasOwn(props, "align")) props.alignExplicit = true;
+        if (component.type === "text" && hasOwn(props, "overflow")) props.overflowExplicit = true;
         if (component.type === "art") {
           for (const key of ["focalX", "focalY"]) {
             if (props[key] !== undefined) props[key] = Math.max(0, Math.min(100, Number(props[key]) || 0));
@@ -4136,7 +4160,7 @@
 
     replaceDocument(document, options = {}) {
       const localEditor = clone(this.state.editor || {});
-      const next = migrateDocument(normalizeLegacyFooterAlignment(document));
+      const next = migrateDocument(normalizeLegacyTextPresentation(document));
       if (options.preserveEditor !== false) {
         next.editor = {
           ...next.editor,
@@ -4202,6 +4226,7 @@
   }
 
   Object.defineProperty(DocumentStore, "__textAlignmentContractVersion", { value: "05.18.2" });
+  Object.defineProperty(DocumentStore, "__textOverflowContractVersion", { value: "05.18.4.1" });
 
   window.CatalogDocumentStore = DocumentStore;
   window.createBlankCatalogDocument = createBlankDocument;

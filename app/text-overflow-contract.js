@@ -49,39 +49,7 @@
   }
 
   function installStoreContract() {
-    const BaseStore = window.CatalogDocumentStore;
-    if (!BaseStore || BaseStore.__textOverflowContractVersion === CONTRACT_VERSION) return Boolean(BaseStore);
-
-    class TextOverflowDocumentStore extends BaseStore {
-      constructor(initialState) {
-        super(normalizeLegacyFooterOverflow(initialState));
-      }
-
-      analyzeDocument(document) {
-        const analysis = super.analyzeDocument(normalizeLegacyFooterOverflow(document));
-        if (analysis?.document) analysis.document = normalizeLegacyFooterOverflow(analysis.document);
-        return analysis;
-      }
-
-      replaceDocument(document, options = {}) {
-        return super.replaceDocument(normalizeLegacyFooterOverflow(document), options);
-      }
-
-      updateComponent(componentId, patch = {}) {
-        const component = this.findComponent(componentId)?.component;
-        if (component?.type !== "text" || !patch.props || !hasOwn(patch.props, "overflow")) {
-          return super.updateComponent(componentId, patch);
-        }
-        return super.updateComponent(componentId, {
-          ...patch,
-          props: { ...patch.props, overflowExplicit: true }
-        });
-      }
-    }
-
-    Object.defineProperty(TextOverflowDocumentStore, "__textOverflowContractVersion", { value: CONTRACT_VERSION });
-    window.CatalogDocumentStore = TextOverflowDocumentStore;
-    return true;
+    return window.CatalogDocumentStore?.__textOverflowContractVersion === CONTRACT_VERSION;
   }
 
   function installStyles() {
