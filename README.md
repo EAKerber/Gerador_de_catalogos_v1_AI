@@ -44,6 +44,7 @@ A pasta reúne as seguintes etapas evolutivas:
 - **Incremento 05.21 — navegação contextual:** breadcrumb resiliente, painéis redimensionáveis e Camadas recolhíveis com foco e estados distintos, sempre por regras determinísticas e sem IA.
 - **Incremento 05.22 — encerramento geométrico da V1:** pedidos de canvas, inspetor e multisseleção são planejados com reflow e autoridade numa cópia e aplicados em um único commit ou rejeitados sem mutação; locks persistentes permanecem em discovery.
 - **Incremento 05.23 — transação estrutural:** espaçamento em lote e separadores são planejados com frames, autoridade e estrutura numa cópia e aplicados numa única emissão/undo, ou rejeitados sem mutação.
+- **Incremento 05.24 — estado canônico da V1:** governança, manifesto, backlog e roadmap passam a concordar que a V1 single-page está estável; um gate Node impede que incrementos integrados voltem a aparecer como fila ativa.
 
 ## Abrir
 

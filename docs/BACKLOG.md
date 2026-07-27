@@ -2,24 +2,33 @@
 
 Registro consolidado das observações recebidas após o Incremento 04. As prioridades orientam a sequência, mas não substituem validação de interface. A direção canônica está em `PRODUCT-DEFINITION.md`; itens concluídos abaixo permanecem como histórico.
 
-## Fila operacional pós-Incremento 05.22
+## Estado operacional após o Incremento 05.23
 
-O núcleo geométrico 05.22 está integrado em `development`. A fila ativa da V1
-fica restrita a: transação estrutural de espaçamento/separadores, regressão
-final, documentação de limites e saneamento do backlog. As seções históricas
-abaixo preservam rastreabilidade, mas não comandam a próxima prioridade.
+A **V1 single-page estável** foi encerrada no Incremento 05.23 e integrada em
+`development`. O núcleo geométrico e a transação estrutural de
+espaçamento/separadores passaram pelos gates Node, schema, build e Chromium
+multirreferência. Expansões funcionais não são automaticamente reabertas por
+itens históricos: a governança canônica está em
+`authoring-kit/feature-governance.json`.
 
-### Em execução — Incremento 05.23
+### Concluído — Incremento 05.23
 
 | Prioridade | Recorte | Critério de saída |
 | --- | --- | --- |
 | P0 | Espaçamento/separadores transacionais | Planejamento isolado; frames, autoridade e criação/atualização de separadores aplicados numa única emissão e num único undo, ou nenhuma mutação. |
 | P0 | Regressão final | Node, schema, build, quatro shards Chromium e gates técnico/promocional verdes. |
-| P0 | Limites e backlog da V1 | Estados ativo, dívida, discovery, pausado, congelado e histórico publicados sem ambiguidade. |
+| P0 | Limites e backlog da V1 | Entregue: estados ativo, dívida, discovery, pausado, congelado e histórico publicados sem ambiguidade. |
 
 O benchmark comparável mais recente permanece o 05.17, com **157 ações,
-zero colisão e zero overflow**. Os incrementos 05.20–05.22 são gates de
+zero colisão e zero overflow**. Os incrementos 05.20–05.23 são gates de
 generalização, interface e confiabilidade, não novas medições integrais.
+
+### Foco permitido após o encerramento
+
+- regressão e correções de confiabilidade;
+- coerência entre runtime, Authoring Kit e documentação;
+- consolidação interna em recortes isolados;
+- discovery explícito antes de reabrir multipágina, colaboração ou frentes congeladas.
 
 ### Entregue — Incremento 05.13
 
@@ -73,22 +82,26 @@ O 05.15 encerra sem novo campo persistido: esquemas e receitas materializam colu
 
 O relatório comparável está em `REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.16.md`. A revisão posterior corrige a interpretação: geometria exata permanece central, mas deve cooperar com manipulação direta, relações e conjuntos em vez de depender de campos isolados.
 
-### Fila ativa — auditoria da biblioteca após o Incremento 05.17
+### Entregue — aprofundamento da biblioteca no Incremento 05.18
 
 A biblioteca possui dezesseis tipos e cobre bem estrutura de página, produto, dados, arte e legendas. A expansão passa por um gate subtrativo: primeiro aprofundar peças existentes, depois admitir somente componentes com intenção recorrente que não possa ser expressa com clareza por composição ou preset.
 
 | Prioridade | Lacuna confirmada | Decisão canônica | Critério de saída |
 | --- | --- | --- | --- |
-| P1 | Presets de produto semanticamente distintos, mas visualmente próximos | Tornar `standard`, `hero`, `technical`, `variants` e `data-only` organizações efetivamente diferentes, preservando a mesma subárvore e seus vínculos. | Trocar o modo altera proporção/prioridade dos slots de forma observável, reversível e geometricamente válida. |
-| P1 | Texto livre com pouca responsabilidade editorial | Manter um único átomo `text`; acrescentar alinhamento, escala discreta e política de overflow sem HTML/CSS arbitrário. | Texto oferece início/centro/fim, topo/meio/base, 80/100/120% e quebra/reticências/corte, com PDF equivalente. |
-| P1 | Escala interna de ícones depende principalmente da caixa externa | Expor escala discreta no átomo e na molécula de especificação, preservando tokens e grid. | Ícone muda de 80 a 120% sem alterar o frame nem escapar do componente. |
-| P1 | Cabeçalho intermediário exige composição manual | Reservar `section-heading`: kicker opcional, título, complemento e divisor; implementar somente depois da consolidação dos átomos. | Casos de seção/categoria deixam de depender de `catalog-header` ou montagem repetitiva. |
-| P1 | Dados técnicos simples são simulados como texto ou tabela | Reservar molécula `fact`: ícone opcional, rótulo, valor e unidade. | Dimensão, peso, material e compatibilidade ficam semanticamente legíveis sem tabela. |
+| P1 | Presets de produto semanticamente distintos, mas visualmente próximos | Entregue: `standard`, `hero`, `technical`, `variants` e `data-only` reorganizam os mesmos slots com prioridades distintas. | Testes de domínio, navegador e impressão preservam geometria válida e reversibilidade. |
+| P1 | Texto livre com pouca responsabilidade editorial | Entregue: alinhamento horizontal/vertical, escala 80/100/120% e quebra/reticências/corte sem HTML/CSS arbitrário. | Canvas, importação, histórico e PDF cobertos. |
+| P1 | Escala interna de ícones depende principalmente da caixa externa | Entregue no átomo e na especificação, preservando frame, tokens e grid. | Escalas 80/100/120% cobertas por persistência e navegador. |
+| P1 | Cabeçalho intermediário exige composição manual | Entregue como receita `section-heading`, sem criar tipo persistido. | Kicker opcional, título, complemento e divisor editáveis. |
+| P1 | Dados técnicos simples são simulados como texto ou tabela | Entregue como receita `fact`, sem criar tipo persistido. | Ícone opcional, rótulo, valor e unidade semanticamente identificáveis. |
 | P2 | Callout existe apenas como receita de baixo nível | Manter a receita atual durante 05.18; promover a componente apenas se edição/reuso continuarem custosos. | Evidência de repetição ou inconsistência antes de criar novo tipo. |
 | P2 | Iconografia concentrada na referência de ferragens | Ampliar de forma curada por significado: técnico, desempenho, comercial, contato e confiança; evitar biblioteca indiscriminada. | Cada novo ícone atende ao menos dois fluxos plausíveis e possui categoria, rótulo e SVG monocromático por token. |
 | P2 | Biblioteca expõe infraestrutura junto de escolhas editoriais | Manter `layout-container` e peças internas no modelo, mas mover sua descoberta inicial para **Estrutura avançada** ou contexto compatível. | Fluxo inicial prioriza página, produto, dados e comunicação sem remover poder avançado. |
 
-Não entram como novos tipos neste ciclo: preço, selo, chip, botão, QR code, caixa colorida, card de contato, aplicação ou variações paralelas de tabela. Esses resultados devem usar `text`, tokens, `specification`, `footer-item`, `legend-item`, `art`, receitas e presets até que uma intenção exclusiva seja demonstrada.
+Não entraram como novos tipos: preço, selo, chip, botão, QR code, caixa
+colorida, card de contato, aplicação ou variações paralelas de tabela. Preço e
+oferta foram posteriormente entregues como receitas compostas no 05.20; os
+demais resultados continuam usando componentes, tokens e presets canônicos até
+que uma intenção exclusiva seja demonstrada.
 
 ### Integração 05.20 — linguagem promocional e gate multirreferência
 
