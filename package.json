@@ -9,6 +9,7 @@
   "scripts": {
     "build": "node tools/build-authoring-kit.js",
     "git:preflight": "node tools/git-publication-preflight.js",
+    "git:publication-manifest": "node tools/git-connector-publication.js",
     "test:node": "node tools/run-catalog-tests.js --node",
     "test:browser": "node tools/run-catalog-tests.js --browser",
     "test": "node tools/run-catalog-tests.js --all",
