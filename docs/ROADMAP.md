@@ -566,7 +566,7 @@ Em validação:
 
 ## Incremento 05.33 — Reordenação acessível em Camadas
 
-Em validação:
+Concluído e integrado em `development` pela PR #15:
 
 - expor a operação existente de reordenação diretamente em Camadas;
 - mover irmãos acima ou abaixo somente dentro do mesmo grupo/slot;
@@ -574,6 +574,17 @@ Em validação:
 - desabilitar ações nos limites do grupo;
 - preservar ordem serializada, reflow e uma ação reversível;
 - manter reparenting, cruzamento de slots e drag-and-drop fora do recorte.
+
+## Incremento 05.34 — Publicação canônica pelo conector
+
+Em validação:
+
+- derivar a lista completa de publicação diretamente do commit local;
+- normalizar respostas diretas e aninhadas do conector;
+- validar contagem, caminhos, modos e SHAs antes da montagem da árvore;
+- reconstruir a entrada canônica no máximo uma vez;
+- bloquear qualquer ref remota após uma segunda divergência;
+- preservar comparação exata da árvore, PR draft, CI e squash como gates.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

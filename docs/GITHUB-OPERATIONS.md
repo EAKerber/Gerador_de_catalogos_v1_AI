@@ -82,16 +82,31 @@ de worktrees ou tentativas SSH depois que esse relatório identificar o caminho.
 Quando o commit já está validado localmente e o push HTTPS não possui
 credencial, o conector pode publicar objetos Git:
 
-1. criar/reutilizar blobs;
-2. criar a árvore sobre o base correto;
-3. verificar que o SHA da árvore remota coincide com a árvore local;
-4. criar commits com pais, ordem e mensagens equivalentes;
-5. atualizar somente a branch de agente;
-6. abrir PR draft para `development`.
+1. executar `npm run --silent git:publication-manifest` e usar exclusivamente
+   o JSON da lista canônica derivada de `HEAD`;
+2. criar/reutilizar blobs e normalizar cada retorno com
+   `tools/git-connector-publication.js`, independentemente de o SHA vir no
+   resultado direto ou aninhado;
+3. validar contagem, caminhos, modos e SHAs antes de montar a árvore;
+4. se houver divergência, descartar a lista produzida e reconstruí-la uma única
+   vez a partir do manifesto canônico; uma segunda divergência bloqueia o fluxo;
+5. criar a árvore sobre o base correto;
+6. verificar que o SHA da árvore remota coincide com `tree` no manifesto local;
+7. criar commits com pais, ordem e mensagens equivalentes;
+8. atualizar somente a branch de agente;
+9. abrir PR draft para `development`.
 
 Arquivos grandes devem ser tratados como risco de transporte. Conteúdo
 truncado não pode ser publicado. A ref só pode ser atualizada depois da
 comparação integral da árvore.
+
+O módulo versionado consolida os fallbacks comprovados nas publicações 05.31 e
+05.33. Ele evita que uma enumeração parcial seja aceita como entrada, normaliza
+as formas conhecidas de resposta do conector e expõe a decisão
+`continue`/`rebuild-once`/`block`. A credencial do conector não é exposta ao
+processo Node, portanto a criação dos objetos continua sendo orquestrada pelo
+agente; entrada, validação e política de retomada não devem ser reimplementadas
+na execução.
 
 ## Critério de bloqueio real
 
