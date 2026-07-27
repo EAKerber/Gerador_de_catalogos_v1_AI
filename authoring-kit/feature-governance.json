@@ -1,7 +1,19 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.17",
+  "editorIncrement": "05.24",
+  "v1State": {
+    "scope": "single-page",
+    "status": "stable",
+    "closedByIncrement": "05.23",
+    "currentIncrement": "05.24",
+    "nextExpansion": "paused",
+    "activeFocus": [
+      "regression",
+      "documentation-consistency",
+      "internal-consolidation"
+    ]
+  },
   "statusVocabulary": {
     "active": "Evolução permitida dentro do foco atual de usabilidade, fidelidade e confiabilidade.",
     "maintain": "Contrato preservado e corrigido quando necessário, sem expansão funcional.",

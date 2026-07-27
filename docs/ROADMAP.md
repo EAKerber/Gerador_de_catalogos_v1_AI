@@ -463,9 +463,9 @@ de multisseleção. A CI integrada aprovou Node, build, schema e os quatro shard
 Chromium. A arquitetura V2 continuará como migração interna incremental sob os
 mesmos gates.
 
-## Incremento 05.23 — Transação estrutural e fechamento da V1
+## Incremento 05.23 — Transação estrutural e fechamento da V1 ✅
 
-Em execução:
+Concluído e integrado em `development` pela PR #5:
 
 - planejar espaçamento e separadores numa cópia isolada;
 - validar frames, mínimos, limites, reflow, autoridade e alterações estruturais;
@@ -473,6 +473,10 @@ Em execução:
 - preservar 16 tipos, 45 capacidades e `CatalogDocument 1.16.0`;
 - executar a regressão integral técnico/promocional;
 - publicar limites da V1 e reduzir o backlog operacional.
+
+A V1 single-page fica estável após aprovação de Node, schema, build e quatro
+shards Chromium. O Incremento 05.24 consolida esse estado nos artefatos de
+governança e adiciona um gate contra reabertura documental acidental.
 
 Não entram neste incremento: locks persistentes, multipágina, colaboração,
 contextualização por IA, novos tipos e reescrita do store.
