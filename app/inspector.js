@@ -605,8 +605,8 @@
         this.restoreTaskState(component, definition);
       }
       const contextLabel = record.parent ? record.parent.name : this.store.getPage().name;
-      const minimum = this.store.getContentMinimum(component);
       const minimumProfile = this.store.getMinimumProfile(component);
+      const minimum = minimumProfile.calculated;
       const geometryResolution = this.store.getLastGeometryResolution(component.id);
       const geometryAdjusted = geometryResolution && ["x", "y", "width", "height"].some(key => geometryResolution.requested[key] !== geometryResolution.resolved[key]);
       const contentSection = definition.contentFields?.length ? `
@@ -636,6 +636,7 @@
           </div>
           <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
           <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
+          ${definition.container ? `<button type="button" class="inspector-action--wide" data-fit-content-height>Ajustar altura ao conteúdo · ${Math.ceil(minimum.height)} px</button>` : ""}
           <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
         </div>
       </section>`;
@@ -950,7 +951,11 @@
             const status = document.getElementById("documentStatus");
             if (status) status.textContent = error.message;
           }
-        } else if (event.target.closest("[data-delete-component]")) {
+      } else if (event.target.closest("[data-fit-content-height]")) {
+        this.store.fitComponentHeightToContent(component.id);
+        const status = document.getElementById("documentStatus");
+        if (status) status.textContent = "Altura ajustada ao conteúdo em uma única ação.";
+      } else if (event.target.closest("[data-delete-component]")) {
         this.store.deleteComponent(component.id);
       } else if (event.target.closest("[data-duplicate-component]")) {
         this.store.duplicateComponent(component.id);
