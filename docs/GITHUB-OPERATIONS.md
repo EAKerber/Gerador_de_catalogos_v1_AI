@@ -53,6 +53,26 @@ Evidência obrigatória no relatório:
 
 ## Publicação sem push autenticado
 
+### Pré-voo único
+
+Depois de criar o commit limpo e antes de publicá-lo, execute:
+
+```bash
+npm run git:preflight
+```
+
+O comando verifica, numa única passagem, raiz, branch `agent/*`, árvore limpa,
+base `origin/development`, ancestralidade, leitura remota e autenticação de push
+com `--dry-run`. A saída declara um transporte:
+
+- `direct-git`: o push local está autenticado;
+- `github-connector`: leitura Git funciona, mas a credencial local está ausente;
+- `blocked`: rede, divergência, base ou estado local impedem publicação segura.
+
+Use `npm run git:preflight -- --json` para saída legível por máquina e
+`npm run git:preflight -- --local-only` em testes sem rede. Não repita descoberta
+de worktrees ou tentativas SSH depois que esse relatório identificar o caminho.
+
 Quando o commit já está validado localmente e o push HTTPS não possui
 credencial, o conector pode publicar objetos Git:
 
@@ -79,6 +99,10 @@ O fluxo só é bloqueado quando:
 
 Na ausência desses sinais, o agente deve continuar pelo caminho disponível e
 registrar qual capacidade substituiu a CLI.
+
+Credenciais do conector não são reutilizáveis pelo executável `git`. Portanto,
+`transport=github-connector` é um diagnóstico de separação de autenticação, não
+uma falha do repositório nem uma solicitação automática de nova autorização.
 
 ## Aplicação ao incidente da PR #4
 
