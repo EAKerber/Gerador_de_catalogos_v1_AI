@@ -144,7 +144,7 @@ Esta revisão separa capacidades já existentes de lacunas, oportunidades e risc
 | Entregue 05.21 | Breadcrumb resiliente | Raiz, pai e contexto atual permanecem visíveis; ancestrais intermediários usam menu acessível. | Manter como projeção do contexto único do store. |
 | Parcial 05.21 | Camadas como instrumento de seleção | Subárvores recolhíveis, revelação/rolagem, contexto, seleção, ancestrais e descendentes possuem estados distintos. | Busca, intervalo, reordenação e reparenting continuam adiados até haver evidência de ganho superior ao custo. |
 | Discovery | Trava geométrica persistente | A auditoria 05.22 confirmou alto acoplamento com mínimos, slots, auto-layout e lote, enquanto a reconstrução 05.17 terminou válida sem constraints persistentes. | Não implementar na V1. Testar primeiro proteção direta efêmera, posição independente, snapshots e undo; promover locks somente com falha observada dessas alternativas e migração de schema justificada. |
-| Incompleto | Alinhamento por grade | Snap por eixo e alinhamento/distribuição em lote existem, mas falta um comando explícito para normalizar uma seleção à grade e antecipar deslocamentos. | Após a base transacional: preview, “alinhar posições”, “alinhar dimensões” e “normalizar ambos”; respeitar mínimos, autoridade local e coordenadas locais; uma única transação reversível. |
+| Em validação 05.31 | Alinhamento por grade | Snap por eixo e alinhamento/distribuição em lote existem; o 05.31 acrescenta preview e normalização explícita da seleção. | Posições, dimensões ou ambos; respeitar mínimos, autoridade local e coordenadas locais; uma única transação reversível. |
 
 #### Discovery — contextualização inteligente dinâmica
 

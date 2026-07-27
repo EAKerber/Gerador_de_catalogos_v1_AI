@@ -543,7 +543,7 @@ Concluído e integrado em `development` pela PR #11:
 
 ## Incremento 05.30 — Altura alcançável após remoção estrutural
 
-Em validação:
+Concluído e integrado em `development` pela PR #12:
 
 - remover a reserva compacta de especificações quando o último item desse tipo
   não existe;
@@ -552,6 +552,17 @@ Em validação:
 - oferecer ajuste explícito ao conteúdo em uma única ação reversível;
 - preservar a tabela integralmente dentro do card reduzido;
 - repetir a medição do fluxo Git após a correção de frescor remoto do 05.29.
+
+## Incremento 05.31 — Normalização transacional à grade
+
+Em validação:
+
+- antecipar quantos itens serão alterados, o maior ajuste e efeitos derivados;
+- normalizar posições, dimensões ou ambos pela grade da página;
+- respeitar mínimos, limites, autoridade local e coordenadas do contexto;
+- bloquear conflitos antes do commit;
+- aplicar a seleção inteira numa única ação reversível;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
