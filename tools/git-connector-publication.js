@@ -45,7 +45,7 @@ function collectShaCandidates(value, output = []) {
   for (const key of ["sha", "oid", "blob_sha", "tree_sha"]) {
     if (Object.hasOwn(value, key)) collectShaCandidates(value[key], output);
   }
-  for (const key of ["result", "data", "structuredContent", "content"]) {
+  for (const key of ["result", "data", "structuredContent", "content", "commit", "object"]) {
     if (Object.hasOwn(value, key)) collectShaCandidates(value[key], output);
   }
   return output;
@@ -58,6 +58,32 @@ function normalizeConnectorSha(response, expectedSha = null) {
   if (candidates.length === 1) return candidates[0];
   if (candidates.length === 0) throw new Error("Connector response does not contain a Git SHA.");
   throw new Error(`Connector response contains ambiguous Git SHAs: ${candidates.join(", ")}`);
+}
+
+function collectBranchCandidates(value, output = []) {
+  if (!value || typeof value !== "object") return output;
+  if (Array.isArray(value)) {
+    for (const item of value) collectBranchCandidates(item, output);
+    return output;
+  }
+  for (const key of ["branch", "branch_name", "name", "ref"]) {
+    if (typeof value[key] !== "string") continue;
+    const candidate = value[key].replace(/^refs\/heads\//, "");
+    if (candidate) output.push(candidate);
+  }
+  for (const key of ["result", "data", "structuredContent", "content"]) {
+    if (Object.hasOwn(value, key)) collectBranchCandidates(value[key], output);
+  }
+  return output;
+}
+
+function normalizeConnectorBranch(response, expectedBranch = null) {
+  const candidates = [...new Set(collectBranchCandidates(response))];
+  const expected = expectedBranch ? String(expectedBranch).replace(/^refs\/heads\//, "") : null;
+  if (expected && candidates.includes(expected)) return expected;
+  if (candidates.length === 1) return candidates[0];
+  if (candidates.length === 0) throw new Error("Connector response does not contain a Git branch name.");
+  throw new Error(`Connector response contains ambiguous Git branch names: ${candidates.join(", ")}`);
 }
 
 function validatePublishedEntries(manifest, publishedEntries) {
@@ -99,10 +125,22 @@ function decideTreeAttempt(validation, previousAttempts = 0) {
   return { action: "block", reason: "canonical-entries-diverged-after-rebuild" };
 }
 
-function decideWriteConfirmation({ acknowledgement, readback, expectedSha }) {
+function decideWriteConfirmation({
+  acknowledgement,
+  readback,
+  expectedSha,
+  acknowledgementIdentity = "sha",
+  expectedBranch = null
+}) {
   const expected = String(expectedSha || "").toLowerCase();
   if (!/^[0-9a-f]{40}$/.test(expected)) {
     throw new Error("Expected Git SHA must contain exactly 40 hexadecimal characters.");
+  }
+  if (!["sha", "branch-name"].includes(acknowledgementIdentity)) {
+    throw new Error(`Unsupported acknowledgement identity: ${acknowledgementIdentity}`);
+  }
+  if (acknowledgementIdentity === "branch-name" && !expectedBranch) {
+    throw new Error("Expected branch is required for branch-name acknowledgements.");
   }
 
   let confirmed;
@@ -132,7 +170,9 @@ function decideWriteConfirmation({ acknowledgement, readback, expectedSha }) {
 
   let acknowledged;
   try {
-    acknowledged = normalizeConnectorSha(acknowledgement, expected);
+    acknowledged = acknowledgementIdentity === "branch-name"
+      ? normalizeConnectorBranch(acknowledgement, expectedBranch)
+      : normalizeConnectorSha(acknowledgement, expected);
   } catch (error) {
     return {
       action: "continue",
@@ -141,17 +181,22 @@ function decideWriteConfirmation({ acknowledgement, readback, expectedSha }) {
       expectedSha: expected,
       confirmedSha: confirmed,
       acknowledgementSha: null,
+      acknowledgementBranch: null,
       detail: error.message
     };
   }
-  if (acknowledged !== expected) {
+  const expectedAcknowledgement = acknowledgementIdentity === "branch-name"
+    ? String(expectedBranch).replace(/^refs\/heads\//, "")
+    : expected;
+  if (acknowledged !== expectedAcknowledgement) {
     return {
       action: "continue",
       reason: "readback-confirmed",
       incident: "acknowledgement-inconsistente",
       expectedSha: expected,
       confirmedSha: confirmed,
-      acknowledgementSha: acknowledged
+      acknowledgementSha: acknowledgementIdentity === "sha" ? acknowledged : null,
+      acknowledgementBranch: acknowledgementIdentity === "branch-name" ? acknowledged : null
     };
   }
   return {
@@ -160,7 +205,8 @@ function decideWriteConfirmation({ acknowledgement, readback, expectedSha }) {
     incident: null,
     expectedSha: expected,
     confirmedSha: confirmed,
-    acknowledgementSha: acknowledged
+    acknowledgementSha: acknowledgementIdentity === "sha" ? acknowledged : null,
+    acknowledgementBranch: acknowledgementIdentity === "branch-name" ? acknowledged : null
   };
 }
 
@@ -177,10 +223,12 @@ if (require.main === module) {
 
 module.exports = {
   buildCanonicalManifest,
+  collectBranchCandidates,
   collectShaCandidates,
   decideWriteConfirmation,
   decideTreeAttempt,
   formatManifest,
+  normalizeConnectorBranch,
   normalizeConnectorSha,
   runGit,
   validatePublishedEntries

@@ -105,7 +105,8 @@ comparação integral da árvore.
 O retorno imediato de uma escrita é um acknowledgement, não a autoridade final
 do fluxo. Depois de criar blob, árvore, commit, branch ou PR:
 
-1. normalize e valide toda identidade presente na resposta;
+1. normalize e valide a identidade própria da operação presente na resposta:
+   SHA para objetos Git, nome/ref para criação de branch e base/head para PR;
 2. faça uma leitura independente do objeto ou referência criada;
 3. compare o estado lido com SHA, base, head e árvore esperados;
 4. prossiga quando a leitura confirmar o estado, mesmo que o acknowledgement
@@ -127,6 +128,12 @@ Registre as ocorrências em categorias distintas:
 
 Uma resposta incompleta nunca autoriza repetição cega da escrita: primeiro leia
 o estado remoto para evitar objetos, branches ou PRs duplicados.
+
+`create_branch` não promete um SHA no acknowledgement normalizado. Quando ele
+confirma o nome/ref solicitado, essa resposta é completa para a operação; o SHA
+continua sendo comprovado exclusivamente pelo readback da referência. Nome
+ausente ou divergente continua sendo classificado como incidente, e SHA
+divergente ou não verificável no readback continua bloqueando a publicação.
 
 O módulo versionado consolida os fallbacks comprovados nas publicações 05.31 e
 05.33. Ele evita que uma enumeração parcial seja aceita como entrada, normaliza
