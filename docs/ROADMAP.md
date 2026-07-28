@@ -577,7 +577,7 @@ Concluído e integrado em `development` pela PR #15:
 
 ## Incremento 05.34 — Publicação canônica pelo conector
 
-Em validação:
+Concluído e integrado em `development` pela PR #16:
 
 - derivar a lista completa de publicação diretamente do commit local;
 - normalizar respostas diretas e aninhadas do conector;
@@ -585,6 +585,17 @@ Em validação:
 - reconstruir a entrada canônica no máximo uma vez;
 - bloquear qualquer ref remota após uma segunda divergência;
 - preservar comparação exata da árvore, PR draft, CI e squash como gates.
+
+## Incremento 05.35 — Rótulos contextuais do editor
+
+Em validação:
+
+- impedir que a seleção revele recursivamente todos os rótulos descendentes;
+- preservar o rótulo da seleção primária;
+- manter descendentes destacados e, dentro do contexto editável, revelar
+  somente o filho em hover ou foco;
+- usar projeção compacta sem interseção entre rótulos;
+- preservar impressão, schema, tipos e capacidades.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
