@@ -4,8 +4,6 @@
   const CONTRACT_VERSION = "05.18.9";
   const CAPTION_BAND_HEIGHT = 24;
   const GALLERY_ITEM_MINIMUM = 44;
-  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
-
   const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   const slotChildren = (component, slotName) => (component?.children || []).filter(child => child.slot?.name === slotName);
 
@@ -177,88 +175,14 @@
     return true;
   }
 
-  function documentSnapshot(state) {
-    const snapshot = clone(state);
-    delete snapshot.editor;
-    delete snapshot.updatedAt;
-    return snapshot;
-  }
-
   function installStoreContract() {
-    const BaseStore = window.CatalogDocumentStore;
-    if (!BaseStore || BaseStore.__variantsContractVersion === CONTRACT_VERSION) return Boolean(BaseStore);
-
-    class VariantsDocumentStore extends BaseStore {
-      constructor(initialState) {
-        super(initialState);
-        this.__variantsPendingCardIds = new Set();
-        this.refreshAllVariantsCards();
-        const snapshot = documentSnapshot(this.state);
-        const signature = JSON.stringify(snapshot);
-        this.lastHistorySnapshot = snapshot;
-        this.lastHistorySignature = signature;
-        this.savedSignature = signature;
-        this.dirty = false;
-      }
-
-      variantsCardFor(componentId) {
-        const record = this.findComponent(componentId);
-        return record?.path?.slice().reverse().find(component => component.type === "product-card" && isVariants(component)) || null;
-      }
-
-      allVariantsCards() {
-        const cards = [];
-        const visit = component => {
-          if (isVariants(component)) cards.push(component);
-          (component.children || []).forEach(visit);
-        };
-        (this.state?.pages || []).forEach(page => (page.children || []).forEach(visit));
-        return cards;
-      }
-
-      refreshVariantsCard(cardOrId) {
-        const card = typeof cardOrId === "string" ? this.findComponent(cardOrId)?.component : cardOrId;
-        if (!isVariants(card)) return false;
-        this.ensureContainerMinimum(card, this.getParentId(card.id));
-        this.reflowComponentTree(card, { derived: true });
-        return true;
-      }
-
-      refreshAllVariantsCards() {
-        this.allVariantsCards().forEach(card => this.refreshVariantsCard(card));
-      }
-
-      deleteComponent(componentId) {
-        const card = this.variantsCardFor(componentId);
-        if (card) this.__variantsPendingCardIds.add(card.id);
-        return super.deleteComponent(componentId);
-      }
-
-      emit(change, options = {}) {
-        const candidateIds = new Set(this.__variantsPendingCardIds || []);
-        this.__variantsPendingCardIds?.clear();
-        [change?.componentId, change?.cardId, change?.parentId, this.state?.editor?.selectedComponentId].filter(Boolean).forEach(id => candidateIds.add(id));
-        (change?.componentIds || []).forEach(id => candidateIds.add(id));
-
-        const refreshAll = new Set(["document-replaced", "document-imported", "document-compiled", "package-imported"]).has(change?.type);
-        if (refreshAll) this.refreshAllVariantsCards();
-        else {
-          const cards = new Map();
-          candidateIds.forEach(id => {
-            const direct = this.findComponent(id)?.component;
-            if (isVariants(direct)) cards.set(direct.id, direct);
-            const ancestor = this.variantsCardFor(id);
-            if (ancestor) cards.set(ancestor.id, ancestor);
-          });
-          cards.forEach(card => this.refreshVariantsCard(card));
-        }
-        return super.emit(change, options);
-      }
-    }
-
-    Object.defineProperty(VariantsDocumentStore, "__variantsContractVersion", { value: CONTRACT_VERSION });
-    window.CatalogDocumentStore = VariantsDocumentStore;
-    return true;
+    const Store = window.CatalogDocumentStore;
+    return Boolean(
+      Store?.__variantsContractVersion === CONTRACT_VERSION
+      && Store.prototype?.variantsCardFor
+      && Store.prototype?.refreshVariantsCard
+      && Store.prototype?.refreshAllVariantsCards
+    );
   }
 
   function inspect(component) {

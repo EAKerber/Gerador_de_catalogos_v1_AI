@@ -8,5 +8,6 @@ const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "product
 if (app !== kit) throw new Error("O contrato variants divergiu entre app e AuthoringKit.");
 if (!app.includes('CONTRACT_VERSION = "05.18.9"')) throw new Error("Versão do contrato variants inesperada.");
 if (!app.includes("CAPTION_BAND_HEIGHT = 24")) throw new Error("A política de legenda individual não está explícita.");
-if (!app.includes("installStoreContract")) throw new Error("O contrato variants não sincroniza mudanças da store.");
+if (!app.includes("installStoreContract")) throw new Error("O contrato variants não valida a integração com a store.");
+if (app.includes("class VariantsDocumentStore")) throw new Error("O contrato variants voltou a substituir a store em runtime.");
 console.log("✓ Contrato variants é idêntico no editor e no AuthoringKit.");

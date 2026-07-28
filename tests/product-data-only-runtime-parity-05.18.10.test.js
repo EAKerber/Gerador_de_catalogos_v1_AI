@@ -8,5 +8,6 @@ const kit = fs.readFileSync(path.join(root, "authoring-kit", "runtime", "product
 if (app !== kit) throw new Error("O contrato data-only divergiu entre app e AuthoringKit.");
 if (!app.includes('CONTRACT_VERSION = "05.18.10"')) throw new Error("Versão do contrato data-only inesperada.");
 if (!app.includes("0.65")) throw new Error("A prioridade compacta de informações não está explícita.");
-if (!app.includes("installStoreContract")) throw new Error("O contrato data-only não sincroniza mudanças da store.");
+if (!app.includes("installStoreContract")) throw new Error("O contrato data-only não valida a integração com a store.");
+if (app.includes("class DataOnlyDocumentStore")) throw new Error("O contrato data-only voltou a substituir a store em runtime.");
 console.log("✓ Contrato data-only é idêntico no editor e no AuthoringKit.");
