@@ -99,6 +99,71 @@ function decideTreeAttempt(validation, previousAttempts = 0) {
   return { action: "block", reason: "canonical-entries-diverged-after-rebuild" };
 }
 
+function decideWriteConfirmation({ acknowledgement, readback, expectedSha }) {
+  const expected = String(expectedSha || "").toLowerCase();
+  if (!/^[0-9a-f]{40}$/.test(expected)) {
+    throw new Error("Expected Git SHA must contain exactly 40 hexadecimal characters.");
+  }
+
+  let confirmed;
+  try {
+    confirmed = normalizeConnectorSha(readback, expected);
+  } catch (error) {
+    return {
+      action: "block",
+      reason: "readback-unverifiable",
+      incident: "conteudo-remoto-nao-verificavel",
+      expectedSha: expected,
+      confirmedSha: null,
+      acknowledgementSha: null,
+      detail: error.message
+    };
+  }
+  if (confirmed !== expected) {
+    return {
+      action: "block",
+      reason: "readback-diverged",
+      incident: "conteudo-remoto-incorreto",
+      expectedSha: expected,
+      confirmedSha: confirmed,
+      acknowledgementSha: null
+    };
+  }
+
+  let acknowledged;
+  try {
+    acknowledged = normalizeConnectorSha(acknowledgement, expected);
+  } catch (error) {
+    return {
+      action: "continue",
+      reason: "readback-confirmed",
+      incident: "acknowledgement-incompleto",
+      expectedSha: expected,
+      confirmedSha: confirmed,
+      acknowledgementSha: null,
+      detail: error.message
+    };
+  }
+  if (acknowledged !== expected) {
+    return {
+      action: "continue",
+      reason: "readback-confirmed",
+      incident: "acknowledgement-inconsistente",
+      expectedSha: expected,
+      confirmedSha: confirmed,
+      acknowledgementSha: acknowledged
+    };
+  }
+  return {
+    action: "continue",
+    reason: "acknowledgement-and-readback-confirmed",
+    incident: null,
+    expectedSha: expected,
+    confirmedSha: confirmed,
+    acknowledgementSha: acknowledged
+  };
+}
+
 function formatManifest(manifest) {
   return JSON.stringify(manifest, null, 2);
 }
@@ -113,6 +178,7 @@ if (require.main === module) {
 module.exports = {
   buildCanonicalManifest,
   collectShaCandidates,
+  decideWriteConfirmation,
   decideTreeAttempt,
   formatManifest,
   normalizeConnectorSha,

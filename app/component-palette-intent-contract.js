@@ -123,7 +123,7 @@
     else root.prepend(navigation);
   }
 
-  function enhancePalette(renderer) {
+  function enhance(renderer) {
     const root = renderer.paletteRoot;
     const registry = window.CATALOG_COMPONENT_REGISTRY || {};
     const regularItems = Array.from(root.querySelectorAll(".palette-item[data-component-type]"))
@@ -162,17 +162,9 @@
   function install() {
     const Renderer = window.CatalogEditorRenderer;
     if (!Renderer?.prototype?.renderPalette) return false;
-    if (Renderer.__intentPaletteContractVersion === CONTRACT_VERSION) return true;
     ensureStylesheet();
-    const original = Renderer.prototype.renderPalette;
-    Renderer.prototype.renderPalette = function renderPaletteByIntent(state) {
-      const result = original.call(this, state);
-      enhancePalette(this);
-      return result;
-    };
-    Object.defineProperty(Renderer, "__intentPaletteContractVersion", { value: CONTRACT_VERSION });
     return true;
   }
 
-  window.CatalogComponentPaletteIntentContract = Object.freeze({ VERSION: CONTRACT_VERSION, install, plan, isAdvancedType });
+  window.CatalogComponentPaletteIntentContract = Object.freeze({ VERSION: CONTRACT_VERSION, install, plan, isAdvancedType, enhance });
 })();

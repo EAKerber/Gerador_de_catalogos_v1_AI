@@ -47,6 +47,9 @@ O Incremento 05.37 consolida também a estabilização dos modos `variants` e
 `data-only` nessa passagem canônica. Os contratos tardios preservam geometria,
 inspeção e compatibilidade, mas não substituem mais a classe, `emit` ou
 `deleteComponent`.
+O Incremento 05.38 transfere a chamada da projeção da biblioteca por intenção
+ao renderer canônico. O contrato continua declarando plano, grupos, busca e
+estilos, mas não substitui mais `renderPalette` durante a inicialização.
 
 ### Entregue — Incremento 05.13
 

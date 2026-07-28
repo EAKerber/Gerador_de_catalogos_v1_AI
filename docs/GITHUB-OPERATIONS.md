@@ -100,6 +100,34 @@ Arquivos grandes devem ser tratados como risco de transporte. Conteúdo
 truncado não pode ser publicado. A ref só pode ser atualizada depois da
 comparação integral da árvore.
 
+### Confirmação por leitura após escritas
+
+O retorno imediato de uma escrita é um acknowledgement, não a autoridade final
+do fluxo. Depois de criar blob, árvore, commit, branch ou PR:
+
+1. normalize e valide toda identidade presente na resposta;
+2. faça uma leitura independente do objeto ou referência criada;
+3. compare o estado lido com SHA, base, head e árvore esperados;
+4. prossiga quando a leitura confirmar o estado, mesmo que o acknowledgement
+   tenha omitido campos;
+5. bloqueie quando a leitura divergir ou não puder comprovar a identidade.
+
+Registre as ocorrências em categorias distintas:
+
+- `acknowledgement-incompleto`: a escrita ocorreu, mas a resposta não contém
+  identidade suficiente;
+- `acknowledgement-inconsistente`: a resposta identifica outro objeto, mas a
+  leitura independente confirma o estado esperado;
+- `conteudo-remoto-incorreto`: um objeto foi criado com bytes ou SHA divergentes;
+- `conteudo-remoto-nao-verificavel`: a leitura independente não fornece
+  identidade suficiente para continuar;
+- `enumeracao-parcial`: uma leitura de conjunto omitiu entradas;
+- `orquestracao-local`: a falha ocorreu antes da chamada externa e não pertence
+  à série do conector.
+
+Uma resposta incompleta nunca autoriza repetição cega da escrita: primeiro leia
+o estado remoto para evitar objetos, branches ou PRs duplicados.
+
 O módulo versionado consolida os fallbacks comprovados nas publicações 05.31 e
 05.33. Ele evita que uma enumeração parcial seja aceita como entrada, normaliza
 as formas conhecidas de resposta do conector e expõe a decisão

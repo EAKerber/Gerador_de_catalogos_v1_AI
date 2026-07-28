@@ -588,7 +588,7 @@ Concluído e integrado em `development` pela PR #16:
 
 ## Incremento 05.35 — Rótulos contextuais do editor
 
-Em validação:
+Concluído e integrado em `development` pela PR #17:
 
 - impedir que a seleção revele recursivamente todos os rótulos descendentes;
 - preservar o rótulo da seleção primária;
@@ -596,6 +596,33 @@ Em validação:
   somente o filho em hover ou foco;
 - usar projeção compacta sem interseção entre rótulos;
 - preservar impressão, schema, tipos e capacidades.
+
+## Incremento 05.36 — Store canônico de reflow e histórico
+
+Concluído e integrado em `development` pela PR #18:
+
+- transferir convergência de reflow, baseline e restauração do histórico ao
+  store canônico;
+- preservar reflow manual, dirty state, undo/redo e importação;
+- impedir que o contrato tardio substitua classe ou `emit`.
+
+## Incremento 05.37 — Store canônico das apresentações adaptativas
+
+Concluído e integrado em `development` pela PR #19:
+
+- estabilizar `variants` e `data-only` na passagem canônica;
+- preservar geometria e inspeção nos contratos de apresentação;
+- impedir substituições tardias de classe, `emit` e `deleteComponent`.
+
+## Incremento 05.38 — Renderer canônico da biblioteca por intenção
+
+Em validação:
+
+- chamar a projeção declarativa da biblioteca pelo renderer canônico;
+- preservar plano, busca, teclado, grupos e contexto;
+- reduzir a instalação tardia a verificação e estilos;
+- proibir por teste a substituição de `renderPalette`;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
