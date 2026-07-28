@@ -50,6 +50,9 @@ inspeção e compatibilidade, mas não substituem mais a classe, `emit` ou
 O Incremento 05.38 transfere a chamada da projeção da biblioteca por intenção
 ao renderer canônico. O contrato continua declarando plano, grupos, busca e
 estilos, mas não substitui mais `renderPalette` durante a inicialização.
+O Incremento 05.39 transfere intenção editorial e posicionamento provável ao
+gerador canônico do manifesto de capacidades. Os contratos continuam donos das
+projeções declarativas, mas não substituem mais `buildCapabilitiesManifest`.
 
 ### Entregue — Incremento 05.13
 

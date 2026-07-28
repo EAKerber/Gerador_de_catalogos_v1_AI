@@ -616,12 +616,22 @@ Concluído e integrado em `development` pela PR #19:
 
 ## Incremento 05.38 — Renderer canônico da biblioteca por intenção
 
-Em validação:
+Concluído e integrado em `development` pela PR #20:
 
 - chamar a projeção declarativa da biblioteca pelo renderer canônico;
 - preservar plano, busca, teclado, grupos e contexto;
 - reduzir a instalação tardia a verificação e estilos;
 - proibir por teste a substituição de `renderPalette`;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.39 — Manifesto de capacidades canônico
+
+Em validação:
+
+- chamar intenção editorial e posicionamento provável pelo gerador canônico;
+- preservar cinco grupos, dois hints e a projeção individual dos 16 tipos;
+- reduzir os contratos tardios a validação e enriquecimento declarativo;
+- provar identidade do método, reinstalação idempotente e ordem inversa;
 - preservar schema `1.16.0`, 16 tipos e 45 capacidades.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
