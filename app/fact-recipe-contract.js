@@ -60,22 +60,10 @@
 
   function install() {
     const current = window.CatalogSectionRecipes;
-    const currentRegistry = window.CATALOG_SECTION_RECIPES;
-    if (!current?.list || !current?.get || !currentRegistry) return false;
-    if (current.__factRecipeContractVersion === CONTRACT_VERSION) return true;
+    if (!current?.list || !current?.get || !current?.register) return false;
     const existing = current.get("fact");
     if (existing && existing.version !== RECIPE_VERSION) throw new Error("A receita fact já existe com contrato incompatível.");
-
-    const merged = Object.freeze({ ...currentRegistry, fact: factRecipe });
-    const api = {
-      VERSION: RECIPE_VERSION,
-      list() { return Object.values(merged).map(clone); },
-      get(recipeId) { return merged[recipeId] ? clone(merged[recipeId]) : null; }
-    };
-    Object.defineProperty(api, "__factRecipeContractVersion", { value: CONTRACT_VERSION });
-    window.CATALOG_SECTION_RECIPES = merged;
-    window.CatalogSectionRecipes = Object.freeze(api);
-    return true;
+    return current.register(factRecipe, { order: 600 });
   }
 
   window.CatalogFactRecipeContract = Object.freeze({

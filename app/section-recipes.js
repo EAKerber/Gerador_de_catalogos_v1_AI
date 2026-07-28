@@ -146,7 +146,7 @@
     ]
   });
 
-  const recipes = Object.freeze({
+  const recipes = {
     "page-catalog-base": Object.freeze({
       id: "page-catalog-base",
       version: VERSION,
@@ -203,16 +203,64 @@
       focusRole: "grid",
       component: heroGridStrip
     })
-  });
+  };
+
+  const recipeOrder = new Map(Object.keys(recipes).map((recipeId, index) => [recipeId, index]));
+  let nextOrder = recipeOrder.size;
+
+  function compareVersions(left, right) {
+    const parts = value => String(value || "0").split(".").map(part => Number(part) || 0);
+    const a = parts(left);
+    const b = parts(right);
+    for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+      if ((a[index] || 0) !== (b[index] || 0)) return (a[index] || 0) - (b[index] || 0);
+    }
+    return 0;
+  }
+
+  function registryVersion() {
+    return Object.values(recipes).reduce(
+      (highest, recipe) => compareVersions(recipe.version, highest) > 0 ? recipe.version : highest,
+      VERSION
+    );
+  }
 
   function list() {
-    return Object.values(recipes).map(clone);
+    return Object.values(recipes)
+      .sort((left, right) => (recipeOrder.get(left.id) || 0) - (recipeOrder.get(right.id) || 0))
+      .map(clone);
   }
 
   function get(recipeId) {
     return recipes[recipeId] ? clone(recipes[recipeId]) : null;
   }
 
+  function register(recipe, options = {}) {
+    if (!recipe?.id || !recipe?.version || !recipe?.component) {
+      throw new Error("Receita inválida: id, version e component são obrigatórios.");
+    }
+    const current = recipes[recipe.id];
+    if (current && current.version !== recipe.version && options.replace !== true) {
+      throw new Error(`A receita ${recipe.id} já existe com contrato incompatível.`);
+    }
+    if (current && current.version === recipe.version && JSON.stringify(current) !== JSON.stringify(recipe)) {
+      throw new Error(`A receita ${recipe.id}@${recipe.version} possui definições divergentes.`);
+    }
+    if (!recipeOrder.has(recipe.id)) {
+      recipeOrder.set(recipe.id, Number.isFinite(options.order) ? Number(options.order) : nextOrder);
+      nextOrder += 1;
+    }
+    if (!current || JSON.stringify(current) !== JSON.stringify(recipe)) {
+      recipes[recipe.id] = Object.freeze(recipe);
+    }
+    return true;
+  }
+
   window.CATALOG_SECTION_RECIPES = recipes;
-  window.CatalogSectionRecipes = { VERSION, list, get };
+  window.CatalogSectionRecipes = Object.freeze({
+    get VERSION() { return registryVersion(); },
+    list,
+    get,
+    register
+  });
 })();

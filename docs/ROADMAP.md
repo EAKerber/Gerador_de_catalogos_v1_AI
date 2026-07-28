@@ -636,13 +636,23 @@ Concluído e integrado em `development` pela PR #21:
 
 ## Incremento 05.40 — Confirmação determinística de referências Git
 
-Em validação:
+Concluído e integrado em `development` pela PR #22:
 
 - distinguir acknowledgements de objetos Git, branches e PRs;
 - validar nome/ref no retorno de `create_branch`;
 - manter o SHA como autoridade obrigatória no readback da referência;
 - eliminar o falso incidente recorrente sem relaxar bloqueios de divergência;
 - preservar integralmente o escopo funcional da V1.
+
+## Incremento 05.41 — Registro canônico de receitas
+
+Em validação:
+
+- manter uma única identidade para `CatalogSectionRecipes` e seu registro;
+- registrar as nove receitas sem substituições tardias;
+- preservar versões, ordem pública, clones independentes e manifestos;
+- provar instalação e reinstalação em qualquer ordem;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
