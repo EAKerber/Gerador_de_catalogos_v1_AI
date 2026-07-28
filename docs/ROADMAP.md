@@ -592,7 +592,8 @@ Em validação:
 
 - impedir que a seleção revele recursivamente todos os rótulos descendentes;
 - preservar o rótulo da seleção primária;
-- manter descendentes destacados e revelar somente o filho em hover ou foco;
+- manter descendentes destacados e, dentro do contexto editável, revelar
+  somente o filho em hover ou foco;
 - usar projeção compacta sem interseção entre rótulos;
 - preservar impressão, schema, tipos e capacidades.
 

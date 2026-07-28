@@ -33,6 +33,12 @@ const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
     "O rótulo da seleção primária desapareceu."
   );
 
+  await page.evaluate(footerId => CatalogEditor.store.setEditingContext(footerId), ids.footer);
+  assert.strictEqual(
+    await page.locator(`[data-component-id="${ids.item}"]`).getAttribute("data-direct-editable"),
+    "true",
+    "Entrar no rodapé não tornou o filho diretamente editável."
+  );
   await page.locator(`[data-component-id="${ids.item}"]`).hover();
   assert.strictEqual(await visibleLabels().count(), 2, "Hover não revelou exatamente o filho em foco.");
   assert.strictEqual(
