@@ -555,7 +555,7 @@ Concluído e integrado em `development` pela PR #12:
 
 ## Incremento 05.31 — Normalização transacional à grade
 
-Em validação:
+Concluído e integrado em `development` pela PR #13:
 
 - antecipar quantos itens serão alterados, o maior ajuste e efeitos derivados;
 - normalizar posições, dimensões ou ambos pela grade da página;
@@ -646,13 +646,37 @@ Concluído e integrado em `development` pela PR #22:
 
 ## Incremento 05.41 — Registro canônico de receitas
 
-Em validação:
+Concluído e integrado em `development` pela PR #23:
 
 - manter uma única identidade para `CatalogSectionRecipes` e seu registro;
 - registrar as nove receitas sem substituições tardias;
 - preservar versões, ordem pública, clones independentes e manifestos;
 - provar instalação e reinstalação em qualquer ordem;
 - preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.42 — Handover e prioridade da triagem histórica
+
+Concluído e integrado em `development` pela PR #24:
+
+- publicar o estado canônico após o 05.41;
+- permitir sugestão proativa, mas não integração automática, de uma promoção
+  coerente para `main`;
+- elevar `agent/developer-b-05.18` a P1 operacional e documental;
+- proibir o merge integral da branch histórica;
+- definir inventário, classificação, curadoria, encerramento da PR #1 e poda
+  segura como sequência obrigatória.
+
+## Incremento 05.43 — Inventário e classificação histórica
+
+Concluído e integrado em `development` pela PR #25:
+
+- congelar branch, merge-base e base canônica por SHA;
+- inventariar os 231 caminhos alterados e seus 489 commits exclusivos;
+- registrar tamanho, blob, último commit, equivalência e dependências;
+- classificar cada caminho como Aproveitar, Registro histórico ou Descartar;
+- separar testes visuais, evidências de CI e baselines canônicas;
+- corrigir estados documentais superados sem alterar o runtime;
+- manter PR #1, exclusão da branch e promoção para `main` fora do recorte.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

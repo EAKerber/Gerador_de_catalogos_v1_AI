@@ -53,6 +53,24 @@ estilos, mas não substitui mais `renderPalette` durante a inicialização.
 O Incremento 05.39 transfere intenção editorial e posicionamento provável ao
 gerador canônico do manifesto de capacidades. Os contratos continuam donos das
 projeções declarativas, mas não substituem mais `buildCapabilitiesManifest`.
+O Incremento 05.40 torna a confirmação remota específica por tipo de
+acknowledgement e mantém o SHA obrigatório no readback independente.
+O Incremento 05.41 consolida as nove receitas num único registro canônico,
+independente da ordem de instalação.
+O Incremento 05.42 publica o handover e eleva a revisão da branch histórica
+Developer B a P1. O 05.43 materializa o inventário: 231 caminhos e 489 commits
+exclusivos, sem arquivo novo a migrar, com 40 documentos preservados somente
+por índice e 191 cópias históricas classificadas para descarte.
+
+### Triagem histórica — Incremento 05.43
+
+| Prioridade | Recorte | Estado |
+| --- | --- | --- |
+| P1 | Congelar `agent/developer-b-05.18@deec36a` e seu merge-base | Concluído no 05.43. |
+| P1 | Inventariar paths, blobs, tamanhos, último commit e equivalência | 231/231 classificados. |
+| P1 | Separar conclusão histórica de implementação canônica | 40 registros no índice; zero arquivo novo a copiar. |
+| P1 | Formalizar política de evidência visual | Concluído; nenhuma captura histórica promovida. |
+| P1 | Encerrar PR #1 e excluir a branch histórica | Aguardando integração do relatório e aprovação explícita do usuário. |
 
 ### Entregue — Incremento 05.13
 
