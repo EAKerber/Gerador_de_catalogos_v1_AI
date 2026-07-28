@@ -668,7 +668,7 @@ Concluído e integrado em `development` pela PR #24:
 
 ## Incremento 05.43 — Inventário e classificação histórica
 
-Em validação:
+Concluído e integrado em `development` pela PR #25:
 
 - congelar branch, merge-base e base canônica por SHA;
 - inventariar os 231 caminhos alterados e seus 489 commits exclusivos;

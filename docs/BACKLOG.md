@@ -66,7 +66,7 @@ por índice e 191 cópias históricas classificadas para descarte.
 
 | Prioridade | Recorte | Estado |
 | --- | --- | --- |
-| P1 | Congelar `agent/developer-b-05.18@deec36a` e seu merge-base | Concluído na branch de validação. |
+| P1 | Congelar `agent/developer-b-05.18@deec36a` e seu merge-base | Concluído no 05.43. |
 | P1 | Inventariar paths, blobs, tamanhos, último commit e equivalência | 231/231 classificados. |
 | P1 | Separar conclusão histórica de implementação canônica | 40 registros no índice; zero arquivo novo a copiar. |
 | P1 | Formalizar política de evidência visual | Concluído; nenhuma captura histórica promovida. |
