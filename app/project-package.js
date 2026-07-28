@@ -213,7 +213,7 @@
 
   function buildCapabilitiesManifest(document = null) {
     const templates = (document?.collections || []).find(collection => collection.id === "templates")?.items || [];
-    return {
+    let manifest = {
       manifestType: "CatalogCapabilities",
       manifestVersion: CAPABILITIES_VERSION,
       editor: { name: "Catálogo V1", increment: "05.20", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
@@ -296,6 +296,9 @@
         distinctProductModes: true
       }
     };
+    manifest = window.CatalogComponentIntentManifestContract?.enhance?.(manifest) || manifest;
+    manifest = window.CatalogComponentPlacementManifestContract?.enhance?.(manifest) || manifest;
+    return manifest;
   }
 
   function slug(value, fallback = "catalogo") {
