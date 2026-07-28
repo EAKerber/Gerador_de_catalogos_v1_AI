@@ -180,21 +180,11 @@
 
   function install() {
     const current = window.CatalogSectionRecipes;
-    const currentRegistry = window.CATALOG_SECTION_RECIPES;
-    if (!current?.list || !current?.get || !currentRegistry) return false;
-    if (current.__calloutRecipeContractVersion === CONTRACT_VERSION) return true;
+    if (!current?.list || !current?.get || !current?.register) return false;
     const source = current.get("section-tip-callout");
     if (!source) throw new Error("A receita section-tip-callout não está disponível para auditoria.");
     const callout = improvedRecipe(source);
-    const merged = Object.freeze({ ...currentRegistry, "section-tip-callout": callout });
-    const api = {
-      VERSION: RECIPE_VERSION,
-      list() { return Object.values(merged).map(clone); },
-      get(recipeId) { return merged[recipeId] ? clone(merged[recipeId]) : null; }
-    };
-    Object.defineProperty(api, "__calloutRecipeContractVersion", { value: CONTRACT_VERSION });
-    window.CATALOG_SECTION_RECIPES = merged;
-    window.CatalogSectionRecipes = Object.freeze(api);
+    current.register(callout, { replace: true });
     const registryInstalled = window.CATALOG_COMPONENT_REGISTRY ? patchRegistry() : true;
     return registryInstalled && installStyles();
   }

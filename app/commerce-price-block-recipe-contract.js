@@ -75,22 +75,10 @@
 
   function install() {
     const current = window.CatalogSectionRecipes;
-    const currentRegistry = window.CATALOG_SECTION_RECIPES;
-    if (!current?.list || !current?.get || !currentRegistry) return false;
-    if (current.__commercePriceBlockRecipeContractVersion === CONTRACT_VERSION) return true;
+    if (!current?.list || !current?.get || !current?.register) return false;
     const existing = current.get("commerce-price-block");
     if (existing && existing.version !== RECIPE_VERSION) throw new Error("A receita commerce-price-block já existe com contrato incompatível.");
-
-    const merged = Object.freeze({ ...currentRegistry, "commerce-price-block": priceBlockRecipe });
-    const api = {
-      VERSION: RECIPE_VERSION,
-      list() { return Object.values(merged).map(clone); },
-      get(recipeId) { return merged[recipeId] ? clone(merged[recipeId]) : null; }
-    };
-    Object.defineProperty(api, "__commercePriceBlockRecipeContractVersion", { value: CONTRACT_VERSION });
-    window.CATALOG_SECTION_RECIPES = merged;
-    window.CatalogSectionRecipes = Object.freeze(api);
-    return true;
+    return current.register(priceBlockRecipe, { order: 700 });
   }
 
   window.CatalogCommercePriceBlockRecipeContract = Object.freeze({
