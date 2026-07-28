@@ -4,8 +4,6 @@
   const CONTRACT_VERSION = "05.18.10";
   const CAPTION_BAND_HEIGHT = 24;
   const GALLERY_ITEM_MINIMUM = 44;
-  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
-
   const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   const slotChildren = (component, slotName) => (component?.children || []).filter(child => child.slot?.name === slotName);
 
@@ -180,88 +178,14 @@
     return true;
   }
 
-  function documentSnapshot(state) {
-    const snapshot = clone(state);
-    delete snapshot.editor;
-    delete snapshot.updatedAt;
-    return snapshot;
-  }
-
   function installStoreContract() {
-    const BaseStore = window.CatalogDocumentStore;
-    if (!BaseStore || BaseStore.__dataOnlyContractVersion === CONTRACT_VERSION) return Boolean(BaseStore);
-
-    class DataOnlyDocumentStore extends BaseStore {
-      constructor(initialState) {
-        super(initialState);
-        this.__dataOnlyPendingCardIds = new Set();
-        this.refreshAllDataOnlyCards();
-        const snapshot = documentSnapshot(this.state);
-        const signature = JSON.stringify(snapshot);
-        this.lastHistorySnapshot = snapshot;
-        this.lastHistorySignature = signature;
-        this.savedSignature = signature;
-        this.dirty = false;
-      }
-
-      dataOnlyCardFor(componentId) {
-        const record = this.findComponent(componentId);
-        return record?.path?.slice().reverse().find(component => component.type === "product-card" && isDataOnly(component)) || null;
-      }
-
-      allDataOnlyCards() {
-        const cards = [];
-        const visit = component => {
-          if (isDataOnly(component)) cards.push(component);
-          (component.children || []).forEach(visit);
-        };
-        (this.state?.pages || []).forEach(page => (page.children || []).forEach(visit));
-        return cards;
-      }
-
-      refreshDataOnlyCard(cardOrId) {
-        const card = typeof cardOrId === "string" ? this.findComponent(cardOrId)?.component : cardOrId;
-        if (!isDataOnly(card)) return false;
-        this.ensureContainerMinimum(card, this.getParentId(card.id));
-        this.reflowComponentTree(card, { derived: true });
-        return true;
-      }
-
-      refreshAllDataOnlyCards() {
-        this.allDataOnlyCards().forEach(card => this.refreshDataOnlyCard(card));
-      }
-
-      deleteComponent(componentId) {
-        const card = this.dataOnlyCardFor(componentId);
-        if (card) this.__dataOnlyPendingCardIds.add(card.id);
-        return super.deleteComponent(componentId);
-      }
-
-      emit(change, options = {}) {
-        const candidateIds = new Set(this.__dataOnlyPendingCardIds || []);
-        this.__dataOnlyPendingCardIds?.clear();
-        [change?.componentId, change?.cardId, change?.parentId, this.state?.editor?.selectedComponentId].filter(Boolean).forEach(id => candidateIds.add(id));
-        (change?.componentIds || []).forEach(id => candidateIds.add(id));
-
-        const refreshAll = new Set(["document-replaced", "document-imported", "document-compiled", "package-imported"]).has(change?.type);
-        if (refreshAll) this.refreshAllDataOnlyCards();
-        else {
-          const cards = new Map();
-          candidateIds.forEach(id => {
-            const direct = this.findComponent(id)?.component;
-            if (isDataOnly(direct)) cards.set(direct.id, direct);
-            const ancestor = this.dataOnlyCardFor(id);
-            if (ancestor) cards.set(ancestor.id, ancestor);
-          });
-          cards.forEach(card => this.refreshDataOnlyCard(card));
-        }
-        return super.emit(change, options);
-      }
-    }
-
-    Object.defineProperty(DataOnlyDocumentStore, "__dataOnlyContractVersion", { value: CONTRACT_VERSION });
-    window.CatalogDocumentStore = DataOnlyDocumentStore;
-    return true;
+    const Store = window.CatalogDocumentStore;
+    return Boolean(
+      Store?.__dataOnlyContractVersion === CONTRACT_VERSION
+      && Store.prototype?.dataOnlyCardFor
+      && Store.prototype?.refreshDataOnlyCard
+      && Store.prototype?.refreshAllDataOnlyCards
+    );
   }
 
   function inspect(component) {

@@ -7,6 +7,7 @@
   const HISTORY_COALESCE_MS = 700;
   const PRODUCT_FIELDS = ["title", "specOne", "specTwo", "code", "package", "price", "assetId"];
   const TABLE_BINDING_FIELDS = Object.freeze(["code", "package", "price"]);
+  const ADAPTIVE_PRODUCT_MODES = Object.freeze(["variants", "data-only"]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
   const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
@@ -1349,6 +1350,7 @@
     }
 
     stabilizeManagedReflow() {
+      const presentations = this.refreshAllAdaptiveProductCards();
       let roots = 0;
       let passes = 0;
       (this.state?.pages || []).forEach(page => {
@@ -1358,7 +1360,7 @@
           if (this.reflowComponentTree(component.id, { derived: true })) passes += 1;
         });
       });
-      return { roots, passes };
+      return { roots, passes, presentations };
     }
 
     getLastReflowStability() {
@@ -1586,6 +1588,73 @@
 
     getParentId(componentId) {
       return this.findComponent(componentId)?.parent?.id || null;
+    }
+
+    isAdaptiveProductCard(component, modes = ADAPTIVE_PRODUCT_MODES) {
+      return component?.type === "product-card" && modes.includes(component.presentation?.mode);
+    }
+
+    adaptiveProductCardFor(componentId, modes = ADAPTIVE_PRODUCT_MODES) {
+      const record = this.findComponent(componentId);
+      return record?.path?.slice().reverse().find(component => this.isAdaptiveProductCard(component, modes)) || null;
+    }
+
+    allAdaptiveProductCards(modes = ADAPTIVE_PRODUCT_MODES) {
+      const cards = [];
+      const visit = component => {
+        if (this.isAdaptiveProductCard(component, modes)) cards.push(component);
+        (component.children || []).forEach(visit);
+      };
+      (this.state?.pages || []).forEach(page => (page.children || []).forEach(visit));
+      return cards;
+    }
+
+    refreshAdaptiveProductCard(cardOrId, modes = ADAPTIVE_PRODUCT_MODES) {
+      const card = typeof cardOrId === "string" ? this.findComponent(cardOrId)?.component : cardOrId;
+      if (!this.isAdaptiveProductCard(card, modes)) return false;
+      this.ensureContainerMinimum(card, this.getParentId(card.id));
+      this.reflowComponentTree(card, { derived: true });
+      return true;
+    }
+
+    refreshAllAdaptiveProductCards(modes = ADAPTIVE_PRODUCT_MODES) {
+      let refreshed = 0;
+      this.allAdaptiveProductCards(modes).forEach(card => {
+        if (this.refreshAdaptiveProductCard(card, modes)) refreshed += 1;
+      });
+      return refreshed;
+    }
+
+    variantsCardFor(componentId) {
+      return this.adaptiveProductCardFor(componentId, ["variants"]);
+    }
+
+    allVariantsCards() {
+      return this.allAdaptiveProductCards(["variants"]);
+    }
+
+    refreshVariantsCard(cardOrId) {
+      return this.refreshAdaptiveProductCard(cardOrId, ["variants"]);
+    }
+
+    refreshAllVariantsCards() {
+      return this.refreshAllAdaptiveProductCards(["variants"]);
+    }
+
+    dataOnlyCardFor(componentId) {
+      return this.adaptiveProductCardFor(componentId, ["data-only"]);
+    }
+
+    allDataOnlyCards() {
+      return this.allAdaptiveProductCards(["data-only"]);
+    }
+
+    refreshDataOnlyCard(cardOrId) {
+      return this.refreshAdaptiveProductCard(cardOrId, ["data-only"]);
+    }
+
+    refreshAllDataOnlyCards() {
+      return this.refreshAllAdaptiveProductCards(["data-only"]);
     }
 
     getContainerSize(contextId) {
@@ -4395,6 +4464,8 @@
   Object.defineProperty(DocumentStore, "__textAlignmentContractVersion", { value: "05.18.2" });
   Object.defineProperty(DocumentStore, "__textOverflowContractVersion", { value: "05.18.4.1" });
   Object.defineProperty(DocumentStore, "__reflowHistoryStabilityContractVersion", { value: "05.18.audit.4" });
+  Object.defineProperty(DocumentStore, "__variantsContractVersion", { value: "05.18.9" });
+  Object.defineProperty(DocumentStore, "__dataOnlyContractVersion", { value: "05.18.10" });
 
   window.CatalogDocumentStore = DocumentStore;
   window.createBlankCatalogDocument = createBlankDocument;

@@ -43,6 +43,10 @@ O Incremento 05.36 transfere a convergência de reflow, a sincronização do
 baseline e a restauração estável do histórico para o store canônico. O contrato
 de compatibilidade deixa de substituir a classe; as subclasses de apresentações
 permanecem como recortes posteriores.
+O Incremento 05.37 consolida também a estabilização dos modos `variants` e
+`data-only` nessa passagem canônica. Os contratos tardios preservam geometria,
+inspeção e compatibilidade, mas não substituem mais a classe, `emit` ou
+`deleteComponent`.
 
 ### Entregue — Incremento 05.13
 
