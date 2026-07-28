@@ -39,6 +39,10 @@ canônico, sem substituição tardia da classe.
 O Incremento 05.27 aplica o mesmo limite arquitetural às políticas de overflow:
 normalização legada e escolha explícita passam ao store canônico, preservando
 `wrap`, `ellipsis`, `clip` e a aparência histórica do rodapé.
+O Incremento 05.36 transfere a convergência de reflow, a sincronização do
+baseline e a restauração estável do histórico para o store canônico. O contrato
+de compatibilidade deixa de substituir a classe; as subclasses de apresentações
+permanecem como recortes posteriores.
 
 ### Entregue — Incremento 05.13
 

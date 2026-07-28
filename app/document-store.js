@@ -1302,8 +1302,13 @@
       this.historyUndo = [];
       this.historyRedo = [];
       this.historySuspended = false;
-      this.lastHistorySnapshot = documentSnapshot(this.state);
-      this.lastHistorySignature = snapshotSignature(this.lastHistorySnapshot);
+      this.__reflowStabilityInternal = true;
+      try {
+        this.__lastReflowStability = this.stabilizeManagedReflow();
+      } finally {
+        this.__reflowStabilityInternal = false;
+      }
+      this.synchronizeHistoryBaseline();
       this.savedSignature = this.lastHistorySignature;
       this.dirty = false;
     }
@@ -1324,8 +1329,40 @@
         : [];
       const ephemeral = options.ephemeral === true || EPHEMERAL_CHANGE_TYPES.has(change?.type);
       if (!ephemeral) this.state.updatedAt = new Date().toISOString();
+      if (!ephemeral && !this.historySuspended) {
+        this.__reflowStabilityInternal = true;
+        try {
+          this.__lastReflowStability = this.stabilizeManagedReflow();
+        } finally {
+          this.__reflowStabilityInternal = false;
+        }
+      }
       if (!ephemeral && !this.historySuspended) this.captureHistory(change);
       this.listeners.forEach(listener => listener(this.getState(), change));
+    }
+
+    synchronizeHistoryBaseline() {
+      const snapshot = documentSnapshot(this.state);
+      this.lastHistorySnapshot = snapshot;
+      this.lastHistorySignature = snapshotSignature(snapshot);
+      return snapshot;
+    }
+
+    stabilizeManagedReflow() {
+      let roots = 0;
+      let passes = 0;
+      (this.state?.pages || []).forEach(page => {
+        (page.children || []).forEach(component => {
+          if (!this.isContainer(component.id) || component.reflow?.mode === "manual") return;
+          roots += 1;
+          if (this.reflowComponentTree(component.id, { derived: true })) passes += 1;
+        });
+      });
+      return { roots, passes };
+    }
+
+    getLastReflowStability() {
+      return this.__lastReflowStability ? { ...this.__lastReflowStability } : null;
     }
 
     captureHistory(change) {
@@ -1373,6 +1410,13 @@
       }
       if (editingContextId && this.isContainer(editingContextId)) this.state.editor.editingContextId = editingContextId;
       this.state.updatedAt = new Date().toISOString();
+      this.__reflowStabilityInternal = true;
+      try {
+        this.__lastReflowStability = this.stabilizeManagedReflow();
+      } finally {
+        this.__reflowStabilityInternal = false;
+      }
+      this.synchronizeHistoryBaseline();
     }
 
     undo() {
@@ -1525,10 +1569,14 @@
       return reflowMinimum(component, proposedFrame || component.frame) || this.getContentMinimum(component, proposedFrame);
     }
 
-    reflowComponentTree(componentOrId) {
+    reflowComponentTree(componentOrId, options = {}) {
       const component = typeof componentOrId === "string" ? this.findComponent(componentOrId)?.component : componentOrId;
       if (!component) return false;
-      return reflowTree(component);
+      const result = reflowTree(component);
+      if (result && options.derived !== true && !this.__reflowStabilityInternal && !this.historySuspended) {
+        this.synchronizeHistoryBaseline();
+      }
+      return result;
     }
 
     getContextPath(contextId = this.state.editor.editingContextId) {
@@ -4346,6 +4394,7 @@
 
   Object.defineProperty(DocumentStore, "__textAlignmentContractVersion", { value: "05.18.2" });
   Object.defineProperty(DocumentStore, "__textOverflowContractVersion", { value: "05.18.4.1" });
+  Object.defineProperty(DocumentStore, "__reflowHistoryStabilityContractVersion", { value: "05.18.audit.4" });
 
   window.CatalogDocumentStore = DocumentStore;
   window.createBlankCatalogDocument = createBlankDocument;
