@@ -162,6 +162,7 @@
               </article>`).join("")}
           </div>
         </section>`).join("");
+      window.CatalogComponentPaletteIntentContract?.enhance?.(this);
     }
 
     renderSlots(component) {

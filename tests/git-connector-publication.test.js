@@ -6,6 +6,7 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const {
   buildCanonicalManifest,
+  decideWriteConfirmation,
   decideTreeAttempt,
   normalizeConnectorSha,
   validatePublishedEntries
@@ -60,4 +61,43 @@ wrongSha[0] = { ...wrongSha[0], result: { sha: "0".repeat(40) } };
 const mismatch = validatePublishedEntries(manifest, wrongSha);
 assert(!mismatch.ok && mismatch.mismatched.length === 1, "A connector SHA mismatch was not blocked.");
 
-console.log("✓ Publicação pelo conector usa manifesto canônico, normaliza retornos, refaz uma vez e bloqueia divergências.");
+const confirmed = decideWriteConfirmation({
+  acknowledgement: { result: { sha } },
+  readback: { result: { sha } },
+  expectedSha: sha
+});
+assert(confirmed.action === "continue" && confirmed.incident === null, "Acknowledgement e readback válidos não continuaram.");
+
+const incompleteAcknowledgement = decideWriteConfirmation({
+  acknowledgement: { result: {} },
+  readback: { result: { sha } },
+  expectedSha: sha
+});
+assert(incompleteAcknowledgement.action === "continue", "Readback válido deveria suprir acknowledgement incompleto.");
+assert(incompleteAcknowledgement.incident === "acknowledgement-incompleto", "Acknowledgement incompleto não foi classificado.");
+
+const inconsistentAcknowledgement = decideWriteConfirmation({
+  acknowledgement: { result: { sha: "0".repeat(40) } },
+  readback: { result: { sha } },
+  expectedSha: sha
+});
+assert(inconsistentAcknowledgement.action === "continue", "Readback válido deveria impedir repetição cega da escrita.");
+assert(inconsistentAcknowledgement.incident === "acknowledgement-inconsistente", "Acknowledgement divergente não foi separado do conteúdo remoto.");
+
+const divergentReadback = decideWriteConfirmation({
+  acknowledgement: { result: { sha } },
+  readback: { result: { sha: "0".repeat(40) } },
+  expectedSha: sha
+});
+assert(divergentReadback.action === "block", "Readback divergente não bloqueou a publicação.");
+assert(divergentReadback.incident === "conteudo-remoto-incorreto", "Conteúdo remoto divergente não foi classificado.");
+
+const missingReadback = decideWriteConfirmation({
+  acknowledgement: { result: { sha } },
+  readback: { result: {} },
+  expectedSha: sha
+});
+assert(missingReadback.action === "block", "Ausência de identidade no readback não bloqueou a publicação.");
+assert(missingReadback.incident === "conteudo-remoto-nao-verificavel", "Readback não verificável não foi classificado.");
+
+console.log("✓ Publicação usa manifesto canônico, confirma escritas por readback e bloqueia identidade remota divergente.");
