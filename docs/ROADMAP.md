@@ -626,13 +626,23 @@ Concluído e integrado em `development` pela PR #20:
 
 ## Incremento 05.39 — Manifesto de capacidades canônico
 
-Em validação:
+Concluído e integrado em `development` pela PR #21:
 
 - chamar intenção editorial e posicionamento provável pelo gerador canônico;
 - preservar cinco grupos, dois hints e a projeção individual dos 16 tipos;
 - reduzir os contratos tardios a validação e enriquecimento declarativo;
 - provar identidade do método, reinstalação idempotente e ordem inversa;
 - preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.40 — Confirmação determinística de referências Git
+
+Em validação:
+
+- distinguir acknowledgements de objetos Git, branches e PRs;
+- validar nome/ref no retorno de `create_branch`;
+- manter o SHA como autoridade obrigatória no readback da referência;
+- eliminar o falso incidente recorrente sem relaxar bloqueios de divergência;
+- preservar integralmente o escopo funcional da V1.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

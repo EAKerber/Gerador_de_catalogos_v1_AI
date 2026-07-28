@@ -6,8 +6,10 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const {
   buildCanonicalManifest,
+  collectBranchCandidates,
   decideWriteConfirmation,
   decideTreeAttempt,
+  normalizeConnectorBranch,
   normalizeConnectorSha,
   validatePublishedEntries
 } = require("../tools/git-connector-publication.js");
@@ -40,6 +42,12 @@ const sha = manifest.entries[0].sha;
 assert(normalizeConnectorSha({ result: { sha } }) === sha, "Flat connector response was not normalized.");
 assert(normalizeConnectorSha({ structuredContent: { result: { oid: sha } } }) === sha, "Nested connector response was not normalized.");
 assert(normalizeConnectorSha([{ data: { blob_sha: sha } }]) === sha, "Array connector response was not normalized.");
+assert(normalizeConnectorSha({ structuredContent: { commit: { sha } } }) === sha, "Commit readback response was not normalized.");
+assert(normalizeConnectorSha({ result: { object: { sha } } }) === sha, "Ref object readback response was not normalized.");
+const branch = "agent/confirmacao-ref-05.40";
+assert(normalizeConnectorBranch({ result: { name: branch } }) === branch, "Branch name acknowledgement was not normalized.");
+assert(normalizeConnectorBranch({ structuredContent: { result: { ref: `refs/heads/${branch}` } } }) === branch, "Full branch ref was not normalized.");
+assert(collectBranchCandidates({ result: { branch_name: branch } })[0] === branch, "Branch candidates were not collected.");
 
 const complete = manifest.entries.map(entry => ({
   path: entry.path,
@@ -75,6 +83,38 @@ const incompleteAcknowledgement = decideWriteConfirmation({
 });
 assert(incompleteAcknowledgement.action === "continue", "Readback válido deveria suprir acknowledgement incompleto.");
 assert(incompleteAcknowledgement.incident === "acknowledgement-incompleto", "Acknowledgement incompleto não foi classificado.");
+
+const branchAcknowledgement = decideWriteConfirmation({
+  acknowledgement: { structuredContent: { branch } },
+  readback: { structuredContent: { commit: { sha } } },
+  expectedSha: sha,
+  acknowledgementIdentity: "branch-name",
+  expectedBranch: branch
+});
+assert(branchAcknowledgement.action === "continue", "Branch confirmada pelo nome e readback deveria continuar.");
+assert(branchAcknowledgement.incident === null, "Nome de branch válido não deve ser classificado como acknowledgement incompleto.");
+assert(branchAcknowledgement.acknowledgementBranch === branch, "A branch confirmada não foi preservada na decisão.");
+assert(branchAcknowledgement.acknowledgementSha === null, "A confirmação de branch não deve inventar SHA no acknowledgement.");
+
+const wrongBranchAcknowledgement = decideWriteConfirmation({
+  acknowledgement: { result: { name: "agent/outra-branch" } },
+  readback: { result: { sha } },
+  expectedSha: sha,
+  acknowledgementIdentity: "branch-name",
+  expectedBranch: branch
+});
+assert(wrongBranchAcknowledgement.action === "continue", "Readback válido deveria impedir repetição cega após nome divergente.");
+assert(wrongBranchAcknowledgement.incident === "acknowledgement-inconsistente", "Nome de branch divergente não foi classificado.");
+assert(wrongBranchAcknowledgement.acknowledgementBranch === "agent/outra-branch", "A divergência de branch não foi preservada.");
+
+const missingBranchAcknowledgement = decideWriteConfirmation({
+  acknowledgement: { result: {} },
+  readback: { result: { sha } },
+  expectedSha: sha,
+  acknowledgementIdentity: "branch-name",
+  expectedBranch: branch
+});
+assert(missingBranchAcknowledgement.incident === "acknowledgement-incompleto", "Ausência do nome da branch não foi classificada.");
 
 const inconsistentAcknowledgement = decideWriteConfirmation({
   acknowledgement: { result: { sha: "0".repeat(40) } },
