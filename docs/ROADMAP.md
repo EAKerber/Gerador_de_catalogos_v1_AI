@@ -680,7 +680,7 @@ Concluído e integrado em `development` pela PR #25:
 
 ## Incremento 05.44 — Checkpoint final de consolidação da V1
 
-Em validação:
+Concluído e integrado em `development` pela PR #26:
 
 - registrar a PR #1 fechada e a poda das 25 branches `agent/*`;
 - confirmar somente `main` e `development` no remoto;

@@ -27,7 +27,9 @@ assert(readiness.includes("autorização explícita do usuário"), "A promoção
 assert(readiness.includes("não foi promovida a baseline canônica"), "O benchmark promocional foi tratado como baseline.");
 assert(increment.includes("nenhum runtime, schema ou manifesto alterado"), "O limite documental do 05.44 está ausente.");
 assert(roadmap.includes("Incremento 05.44 — Checkpoint final de consolidação da V1"), "O Roadmap não registra o 05.44.");
+assert(roadmap.includes("Concluído e integrado em `development` pela PR #26"), "O Roadmap mantém o 05.44 em estado transitório.");
 assert(backlog.includes("Poda e encerramento histórico") && backlog.includes("Concluído após o 05.43"), "O Backlog ainda não publica o estado pós-poda.");
+assert(backlog.includes("Concluído no 05.44") && !backlog.includes("05.44 em validação"), "O Backlog mantém o checkpoint em validação.");
 assert(!backlog.includes("Encerrar PR #1 e excluir a branch histórica | Aguardando"), "O Backlog mantém a poda concluída como pendência.");
 assert(/decisão explícita, não uma\s+lacuna da suíte/.test(policy), "A política não distingue ausência deliberada de baseline.");
 

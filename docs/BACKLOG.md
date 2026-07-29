@@ -62,8 +62,8 @@ Developer B a P1. O 05.43 materializa o inventário: 231 caminhos e 489 commits
 exclusivos, sem arquivo novo a migrar, com 40 documentos preservados somente
 por índice e 191 cópias históricas classificadas para descarte.
 Após aprovação explícita, a PR #1 foi fechada sem merge e as 25 branches
-`agent/*` foram removidas. O 05.44 registra esse estado, repete os gates e
-prepara a decisão de promoção sem mover `main`.
+`agent/*` foram removidas. O 05.44 registrou esse estado, repetiu os gates e
+preparou a decisão de promoção sem mover `main`.
 
 ### Triagem histórica — Incremento 05.43
 
@@ -74,7 +74,7 @@ prepara a decisão de promoção sem mover `main`.
 | P1 | Separar conclusão histórica de implementação canônica | 40 registros no índice; zero arquivo novo a copiar. |
 | P1 | Formalizar política de evidência visual | Concluído; nenhuma captura histórica promovida. |
 | P1 | Poda e encerramento histórico | Concluído após o 05.43: PR #1 fechada sem merge; 25 branches `agent/*` removidas; somente `main` e `development` preservadas. |
-| P1 | Checkpoint de promoção | 05.44 em validação: delta, gates, riscos e rollback documentados; promoção ainda exige autorização explícita. |
+| P1 | Checkpoint de promoção | Concluído no 05.44: delta, gates, riscos e rollback documentados; promoção ainda exige autorização explícita. |
 
 ### Entregue — Incremento 05.13
 
