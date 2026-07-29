@@ -93,3 +93,8 @@ uma regressão.
 Nenhuma captura de `agent/developer-b-05.18` foi promovida durante a auditoria
 05.43. As 16 capturas exclusivas eram quatro imagens repetidas em quatro runs e
 o protocolo original declarava ausência de baseline pixel a pixel aprovada.
+
+O checkpoint 05.44 confirma essa ausência como **decisão explícita, não uma
+lacuna da suíte**. A referência técnica versionada continua protegida por
+contratos semânticos, invariantes geométricas, Chromium e PDF; a referência
+promocional continua benchmark pós-V1 e não golden image.

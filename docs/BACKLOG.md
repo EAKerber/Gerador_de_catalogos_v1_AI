@@ -61,6 +61,9 @@ O Incremento 05.42 publica o handover e eleva a revisão da branch histórica
 Developer B a P1. O 05.43 materializa o inventário: 231 caminhos e 489 commits
 exclusivos, sem arquivo novo a migrar, com 40 documentos preservados somente
 por índice e 191 cópias históricas classificadas para descarte.
+Após aprovação explícita, a PR #1 foi fechada sem merge e as 25 branches
+`agent/*` foram removidas. O 05.44 registrou esse estado, repetiu os gates e
+preparou a decisão de promoção sem mover `main`.
 
 ### Triagem histórica — Incremento 05.43
 
@@ -70,7 +73,8 @@ por índice e 191 cópias históricas classificadas para descarte.
 | P1 | Inventariar paths, blobs, tamanhos, último commit e equivalência | 231/231 classificados. |
 | P1 | Separar conclusão histórica de implementação canônica | 40 registros no índice; zero arquivo novo a copiar. |
 | P1 | Formalizar política de evidência visual | Concluído; nenhuma captura histórica promovida. |
-| P1 | Encerrar PR #1 e excluir a branch histórica | Aguardando integração do relatório e aprovação explícita do usuário. |
+| P1 | Poda e encerramento histórico | Concluído após o 05.43: PR #1 fechada sem merge; 25 branches `agent/*` removidas; somente `main` e `development` preservadas. |
+| P1 | Checkpoint de promoção | Concluído no 05.44: delta, gates, riscos e rollback documentados; promoção ainda exige autorização explícita. |
 
 ### Entregue — Incremento 05.13
 

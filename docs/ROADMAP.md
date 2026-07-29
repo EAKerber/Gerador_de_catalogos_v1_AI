@@ -678,6 +678,22 @@ Concluído e integrado em `development` pela PR #25:
 - corrigir estados documentais superados sem alterar o runtime;
 - manter PR #1, exclusão da branch e promoção para `main` fora do recorte.
 
+## Incremento 05.44 — Checkpoint final de consolidação da V1
+
+Concluído e integrado em `development` pela PR #26:
+
+- registrar a PR #1 fechada e a poda das 25 branches `agent/*`;
+- confirmar somente `main` e `development` no remoto;
+- documentar o delta linear de 38 commits, sem divergência de `main`;
+- vincular por hash a referência técnica canônica da V1;
+- manter a referência promocional como benchmark pós-V1, sem promovê-la a
+  baseline;
+- executar Node, schema, build e quatro shards Chromium;
+- publicar riscos, bloqueios e rollback para uma promoção explícita posterior.
+
+O incremento não move `main`, não altera runtime/schema/manifestos e não reabre
+locks, multipágina, colaboração, IA ou frentes congeladas.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
