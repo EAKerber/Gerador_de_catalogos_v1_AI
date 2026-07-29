@@ -160,6 +160,80 @@ Credenciais do conector não são reutilizáveis pelo executável `git`. Portant
 `transport=github-connector` é um diagnóstico de separação de autenticação, não
 uma falha do repositório nem uma solicitação automática de nova autorização.
 
+## Decisões ad hoc e contornos recorrentes
+
+O procedimento determinístico controla como uma alteração é comprovada e
+integrada; não determina quais mudanças são aceitáveis por mérito. Uma decisão,
+um fix ou um contorno ad hoc escolhido pelo usuário continua válido quando:
+
+- possui objetivo e escopo registrados;
+- usa uma branch curta e uma PR quando alterar o repositório;
+- recebe gates proporcionais ao risco; e
+- não contradiz uma restrição explícita ainda vigente.
+
+Não classifique automaticamente como bloqueada uma correção porque ela não
+estava no incremento planejado, porque outro item está em discovery ou porque
+um handover recomendava outra ordem. *Discovery* sinaliza ausência de decisão
+canônica, não proibição. O agente deve explicitar o impacto e pedir decisão
+somente quando a mudança ampliar escopo, alterar arquitetura, tocar `main` ou
+contradizer uma restrição registrada.
+
+Em contrapartida, um contorno que se repete deve deixar de depender de memória
+de conversa: após recorrência comprovada, registre uma regra operacional,
+automatize a verificação quando ela for segura e mantenha uma saída explícita
+para exceções ad hoc. Assim, a automação evita retrabalho sem substituir a
+decisão humana.
+
+## Ciclo de vida e poda de branches `agent/*`
+
+`agent/*` é um namespace temporário. A criação de uma branch desse tipo não
+cria direito de retenção permanente: depois de integrada ou encerrada, ela deve
+ser considerada para poda na própria etapa ou na próxima rotina de higiene.
+
+### Autorização destrutiva mínima formal
+
+A autorização recorrente mínima permite duas ações remotas elegíveis:
+
+1. remover refs `refs/heads/agent/*`; e
+2. fechar sem merge PRs cuja `head` seja `agent/*` e cuja base não seja `main`.
+
+Ela não autoriza alterar, apagar, zerar, renomear, force-push, fechar ou mover
+`main`, sob nenhuma circunstância. Também não autoriza apagar tags, releases,
+ambientes, issues, assets, repositório ou qualquer ref fora desse namespace.
+`development` continua excluída de mutações de ref; uma PR que a tenha como
+base pode ser fechada apenas se obedecer aos critérios abaixo.
+
+O encerramento não é um atalho para limpar PRs ativas. Ele só é elegível quando
+o readback comprovar que a PR está integrada, foi substituída por outra PR ou
+branch identificada, ou foi explicitamente marcada como abandonada. PRs cujo
+`head` não seja `agent/*`, PRs de terceiros e qualquer PR que envolva `main`
+ficam preservadas e exigem autorização pontual. A permissão técnica mínima é
+`Contents: write` para as refs e `Pull requests: write` para os encerramentos,
+ambas restritas a este repositório.
+
+### Algoritmo obrigatório
+
+1. ler do remoto todas as branches e PRs; o remoto, e não um checkout antigo,
+   é a fonte de verdade;
+2. construir e apresentar a lista fechada de PRs e branches candidatas
+   `agent/*`, com base, head e motivo de encerramento quando aplicável;
+3. excluir literalmente `main` de qualquer encerramento e excluir `main` e
+   `development` de qualquer mutação de ref; rejeitar qualquer head que não
+   comece por `agent/`;
+4. fechar somente as PRs que atendem à autorização recorrente e têm motivo
+   verificável: integrada, substituída ou explicitamente abandonada;
+5. para cada branch candidata, confirmar que não possui PR aberta e que está
+   integrada no destino ou foi explicitamente abandonada;
+6. apagar somente as refs elegíveis da lista apresentada;
+7. reler as refs e PRs, registrar encerradas, removidas, preservadas e a razão
+   de cada preservação.
+
+A falha parcial deve interromper apenas as exclusões restantes e produzir
+readback; ela não justifica tentativa cega, força em ref protegida ou ampliação
+da autorização. A rotina não é uma condição para novos fixes: uma branch
+temporária pendente de poda pode ser preservada e o trabalho ad hoc pode
+prosseguir normalmente.
+
 ## Aplicação ao incidente da PR #4
 
 O fallback foi validado na execução `Catalog Integration #90`
