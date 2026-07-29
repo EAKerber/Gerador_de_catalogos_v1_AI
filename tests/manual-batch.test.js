@@ -15,6 +15,7 @@ global.CatalogEditorIcon = () => "";
   "app/layout-engine.js",
   "app/component-registry.js",
   "app/collection-registry.js",
+  "app/manual-entry.js",
   "app/document-store.js"
 ].forEach(file => vm.runInThisContext(fs.readFileSync(path.join(root, file), "utf8"), { filename: file }));
 
@@ -37,9 +38,44 @@ assert(store.getHistoryState().undoCount === beforeAlign + 1 && store.getHistory
 store.undo();
 assert(live(second).frame.y === 120 && live(third).frame.y === 170, "Desfazer não restaurou a geometria anterior ao alinhamento.");
 
+store.transformComponents(store.getSelectedIds(), { kind: "set", values: { x: 53, y: 83, width: 103, height: 43 } });
+const gridPreview = store.getSelectionGridNormalization(store.getSelectedIds(), "both");
+assert(gridPreview.status !== "blocked" && gridPreview.changedCount === 3 && gridPreview.maximumAdjustment <= 2, "O preview não antecipou a normalização pela grade de 4 px.");
+const historyBeforeGrid = store.getHistoryState().undoCount;
+const gridResult = store.normalizeSelectionToGrid(store.getSelectedIds(), "both");
+assert(gridResult.status !== "blocked", "A normalização válida foi bloqueada.");
+assert([first, second, third].every(component => {
+  const frame = live(component).frame;
+  return [frame.x, frame.y, frame.width, frame.height].every(value => value % 4 === 0);
+}), "Posições e dimensões não coincidem com a grade.");
+assert(store.getHistoryState().undoCount === historyBeforeGrid + 1 && store.getHistoryState().undoLabel === "Normalizar seleção à grade", "A normalização não gerou uma única entrada de histórico.");
+store.undo();
+assert([first, second, third].every(component => live(component).frame.x === 53 && live(component).frame.width === 103), "Desfazer não restaurou as caixas anteriores à normalização.");
+store.undo();
+assert(live(first).frame.x === 40 && live(second).frame.x === 190 && live(third).frame.x === 390, "O preparo da regressão não restaurou a geometria original.");
+
 assert(store.distributeComponents(store.getSelectedIds(), "horizontal"), "A distribuição horizontal foi recusada.");
 const centers = [first, second, third].map(component => live(component).frame.x + live(component).frame.width / 2);
 assert(Math.abs((centers[1] - centers[0]) - (centers[2] - centers[1])) < 0.001, "A distribuição não igualou a distância entre centros.");
+
+const historyBeforeTransform = store.getHistoryState().undoCount;
+assert(store.transformComponents(store.getSelectedIds(), { kind: "equalize", path: "width", referenceId: second.id }), "Igualar larguras foi recusado.");
+assert([first, second, third].every(component => live(component).frame.width === live(second).frame.width), "A equalização não usou a largura da referência.");
+assert(store.getHistoryState().undoCount === historyBeforeTransform + 1, "A equalização criou mais de uma entrada de histórico.");
+assert(store.transformComponents(store.getSelectedIds(), { kind: "delta", values: { x: 12, y: -8 } }), "O deslocamento conjunto foi recusado.");
+assert(live(first).frame.x === 52 && live(first).frame.y === 72, "O delta não foi aplicado aos dois eixos.");
+assert(store.transformComponents(store.getSelectedIds(), { kind: "set", path: "height", value: 64 }), "A altura exata em lote foi recusada.");
+assert([first, second, third].every(component => live(component).frame.height === 64), "A altura exata não foi aplicada ao conjunto.");
+store.undo();
+assert([first, second, third].every(component => live(component).frame.height === 40), "Desfazer não restaurou a altura do conjunto.");
+
+const frameList = CatalogManualEntry.parseFrames(["ID\tX\tY\tLARGURA\tALTURA", `${first.id}\t24\t32\t110\t50`, `${second.id}\t146\t32\t120\t50`, `${third.id}\t278\t32\t130\t50`].join("\n"));
+const historyBeforeFrames = store.getHistoryState().undoCount;
+const framed = store.applyComponentFramesBulk(frameList.rows);
+assert(framed.map(component => component.frame.x).join(",") === "24,146,278" && framed.every(component => component.frame.height === 50), "A grade de caixas não aplicou geometrias distintas atomicamente.");
+assert(store.getHistoryState().undoCount === historyBeforeFrames + 1 && store.getHistoryState().undoLabel === "Aplicar geometria da seleção", "A grade de caixas não gerou uma entrada única.");
+store.undo();
+assert(live(first).frame.x === 52 && live(first).frame.height === 40, "Desfazer não restaurou o conjunto anterior à grade de caixas.");
 
 const historyBeforeStyle = store.getHistoryState().undoCount;
 const styled = store.setStyleBatch(store.getSelectedIds(), { textColor: "brand.secondary" });
@@ -66,6 +102,9 @@ store.setSelection(cards[0].id);
 store.setSelection(cards[1].id, { toggle: true });
 store.setSelection(cards[2].id, { toggle: true });
 const historyBeforePresentation = store.getHistoryState().undoCount;
+const presentationPreview = store.getPresentationBatchPreview(store.getSelectedIds(), { presetId: "product-technical", mode: "technical", density: "compact", responsiveState: "compact" });
+assert(presentationPreview.changedCount === 3 && presentationPreview.items.every(item => item.after.mode === "technical"), "O preview de apresentação não descreveu os três cards sem alterar o documento.");
+assert(cards.every(card => live(card).presentation.mode === "standard"), "O preview de apresentação alterou o documento antes da confirmação.");
 const presented = store.setPresentationBatch(store.getSelectedIds(), { density: "compact", responsiveState: "compact" });
 assert(presented.length === 3 && presented.every(card => card.presentation.density === "compact"), "A densidade não foi aplicada a todos os cards.");
 assert(store.getHistoryState().undoCount === historyBeforePresentation + 1 && store.getHistoryState().undoLabel === "Editar apresentação da seleção", "A apresentação em lote não foi uma ação única.");

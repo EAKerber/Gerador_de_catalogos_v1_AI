@@ -3,7 +3,7 @@
 
   const PACKAGE_FORMAT = "CatalogProjectPackage";
   const PACKAGE_VERSION = "1.0.0";
-  const AUTHORING_KIT_VERSION = "1.5.3";
+  const AUTHORING_KIT_VERSION = "1.6.0";
   const CAPABILITIES_VERSION = "1.0.0";
   const MAX_PACKAGE_SIZE = 100 * 1024 * 1024;
   const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
@@ -213,10 +213,10 @@
 
   function buildCapabilitiesManifest(document = null) {
     const templates = (document?.collections || []).find(collection => collection.id === "templates")?.items || [];
-    return {
+    let manifest = {
       manifestType: "CatalogCapabilities",
       manifestVersion: CAPABILITIES_VERSION,
-      editor: { name: "Catálogo V1", increment: "05.14", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
+      editor: { name: "Catálogo V1", increment: "05.20", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
       document: { pagePreset: "A4", logicalSize: { width: 794, height: 1123, unit: "px" }, editorSessionRequired: false },
       components: Object.entries(window.CATALOG_COMPONENT_REGISTRY || {}).sort(([a], [b]) => a.localeCompare(b)).map(serializeComponentDefinition),
       templates: templates.map(template => ({
@@ -238,6 +238,7 @@
         contexts: clone(recipe.contexts || []),
         focusRole: recipe.focusRole || null
       })),
+      tableSchemas: window.CatalogTableSchemas?.list?.() || [],
       separatorPresets: Object.values(window.CATALOG_SEPARATOR_PRESETS || {}).map(preset => clone(preset)),
       presentations: {
         manifestVersion: window.CatalogPresentations?.VERSION || "1.0.0",
@@ -271,20 +272,33 @@
         catalogSourceDirectImport: true,
         manualBulkProductEntry: true,
         manualBulkTableEntry: true,
+        reusableTableSchemas: true,
+        batchTableSchemas: true,
         manualProductCardBatch: true,
+        heroGridStripComposition: true,
         multiSelection: true,
         batchAlignment: true,
+        batchGeometry: true,
+        batchFrameMap: true,
+        selectionGeometryDiagnostics: true,
         batchPresentation: true,
         oneClickInsertion: true,
         officialSectionRecipes: true,
         contextualInsertActions: true,
         contextualTableRows: true,
         contextualArtGallery: true,
+        bulkCollectionEditing: true,
         batchSpacing: true,
         batchSeparators: true,
-        progressiveInspectorVocabulary: ["content", "layout", "visual", "advanced"]
+        progressiveInspectorVocabulary: ["content", "layout", "visual", "advanced"],
+        editorialTextControls: true,
+        internalIconScale: true,
+        distinctProductModes: true
       }
     };
+    manifest = window.CatalogComponentIntentManifestContract?.enhance?.(manifest) || manifest;
+    manifest = window.CatalogComponentPlacementManifestContract?.enhance?.(manifest) || manifest;
+    return manifest;
   }
 
   function slug(value, fallback = "catalogo") {
@@ -510,7 +524,7 @@
         packageFormat: PACKAGE_FORMAT,
         packageVersion: PACKAGE_VERSION,
         createdAt: new Date().toISOString(),
-        generator: { name: "Catálogo V1", increment: "05.14", schemaVersion: document.schemaVersion },
+        generator: { name: "Catálogo V1", increment: "05.20", schemaVersion: document.schemaVersion },
         project: { id: document.id, title: document.title },
         policy: { assetMode: "assisted", publicationGate: target },
         document: { path: DOCUMENT_PATH, schemaVersion: document.schemaVersion },

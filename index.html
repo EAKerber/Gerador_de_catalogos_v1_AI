@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+  <link rel="icon" href="data:," />
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Editor visual incremental para catálogos A4 da Top Mobili." />
@@ -13,6 +14,7 @@
   <script defer src="app/tokens.js"></script>
   <script defer src="app/catalog-source.js"></script>
   <script defer src="app/manual-entry.js"></script>
+  <script defer src="app/table-schema-registry.js"></script>
   <script defer src="app/catalog-generation-plan.js"></script>
   <script defer src="app/presentation-registry.js"></script>
   <script defer src="app/catalog-icons.js"></script>
@@ -22,6 +24,7 @@
   <script defer src="app/section-recipes.js"></script>
   <script defer src="app/collection-registry.js"></script>
   <script defer src="app/document-store.js"></script>
+  <script defer src="app/reflow-history-stability-contract.js"></script>
   <script defer src="app/catalog-validator.js"></script>
   <script defer src="app/catalog-compiler.js"></script>
   <script defer src="app/asset-storage.js"></script>
@@ -30,11 +33,29 @@
   <script defer src="app/document-importer.js"></script>
   <script defer src="app/asset-library.js"></script>
   <script defer src="app/product-catalog.js"></script>
+  <script defer src="app/context-navigation.js"></script>
   <script defer src="app/renderer.js"></script>
   <script defer src="app/inspector.js"></script>
   <script defer src="app/interactions.js"></script>
   <script defer src="app/workspace-layout.js"></script>
   <script defer src="app/print-export.js"></script>
+  <script defer src="app/component-intent-registry.js"></script>
+  <script defer src="app/component-intent-manifest-contract.js"></script>
+  <script defer src="app/component-placement-registry.js"></script>
+  <script defer src="app/component-placement-manifest-contract.js"></script>
+  <script defer src="app/component-palette-intent-contract.js"></script>
+  <script defer src="app/component-initial-placement-contract.js"></script>
+  <script defer src="app/fact-recipe-contract.js"></script>
+  <script defer src="app/commerce-price-block-recipe-contract.js"></script>
+  <script defer src="app/commerce-offer-unit-recipe-contract.js"></script>
+  <script defer src="app/callout-recipe-contract.js"></script>
+  <script defer src="app/text-alignment-contract.js"></script>
+  <script defer src="app/text-scale-contract.js"></script>
+  <script defer src="app/text-overflow-contract.js"></script>
+  <script defer src="app/product-hero-contract.js"></script>
+  <script defer src="app/product-technical-contract.js"></script>
+  <script defer src="app/product-variants-contract.js"></script>
+  <script defer src="app/product-data-only-contract.js"></script>
   <script defer src="app/main.js"></script>
 </head>
 <body>
@@ -43,7 +64,7 @@
       <span class="brand-mark" aria-hidden="true">TM</span>
       <div>
         <strong>Catálogo V1</strong>
-        <span>Editor A4 · Incremento 05.14</span>
+        <span>Editor A4 · Incremento 05.20</span>
       </div>
     </div>
 
@@ -148,6 +169,7 @@
           </section>
         </div>
       </div>
+      <div class="panel-resize-handle" data-resize-panel="left" role="separator" aria-label="Redimensionar painel esquerdo" aria-orientation="vertical" tabindex="0"></div>
     </aside>
 
     <section class="workspace" aria-label="Área de edição">
@@ -185,6 +207,7 @@
         </div>
       </div>
       </div>
+      <div class="panel-resize-handle" data-resize-panel="right" role="separator" aria-label="Redimensionar painel direito" aria-orientation="vertical" tabindex="0"></div>
     </aside>
   </main>
 
@@ -227,15 +250,22 @@
         <button type="button" data-close-asset-library aria-label="Fechar biblioteca">×</button>
       </header>
       <div class="asset-library-dialog__body">
-        <section class="asset-library-existing" aria-label="Artes disponíveis">
+        <section class="asset-library-existing" aria-labelledby="assetLibraryExistingTitle">
+          <div class="asset-library-section-heading">
+            <span aria-hidden="true">1</span>
+            <div><strong id="assetLibraryExistingTitle">Escolha uma arte do projeto</strong><small>Selecione uma miniatura para aplicar sem criar uma cópia.</small></div>
+          </div>
           <div id="assetLibraryEmpty" class="asset-library-empty">
             <strong>Nenhuma arte cadastrada</strong>
             <span>Adicione o primeiro SVG, PNG, JPG ou WebP pelo computador.</span>
           </div>
           <div id="assetLibraryGrid" class="asset-library-grid"></div>
         </section>
-        <section id="assetDropzone" class="asset-dropzone" data-drag-active="false" aria-label="Adicionar arquivos">
-          <strong>Adicionar do computador</strong>
+        <section id="assetDropzone" class="asset-dropzone" data-drag-active="false" aria-labelledby="assetLibraryUploadTitle">
+          <div class="asset-library-section-heading asset-library-section-heading--center">
+            <span aria-hidden="true">2</span>
+            <div><strong id="assetLibraryUploadTitle">Ou adicione do computador</strong></div>
+          </div>
           <span>Arraste arquivos aqui ou escolha no dispositivo · SVG, PNG, JPG e WebP · até 25 MB</span>
           <label class="asset-upload-button">Escolher arquivos<input id="assetFileInput" type="file" accept=".svg,.png,.jpg,.jpeg,.webp,image/svg+xml,image/png,image/jpeg,image/webp" multiple /></label>
         </section>

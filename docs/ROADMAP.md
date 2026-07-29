@@ -367,7 +367,7 @@ Critérios de aceite:
 
 Entregue com autoridade local durável, reintegração explícita, seleção entre contextos, geometria solicitada/resolvida e preflight de impressão. O recálculo deixa de reativar exceções descendentes; `reflow.mode` permanece apenas para leitura compatível. A estabilização visual específica de galeria, dica e legenda foi mantida no 05.15 para ser tratada junto das receitas, sem misturar novamente autoridade estrutural e presets. `CatalogDocument` permanece em `1.16.0` e o kit passa a `1.5.3`.
 
-## Incremento 05.15 — Comandos compostos e esquemas reutilizáveis
+## Incremento 05.15 — Comandos compostos e receitas focais ✅
 
 Critérios de aceite:
 
@@ -377,6 +377,8 @@ Critérios de aceite:
 - organizar seleção como hero + grade + faixa final sem criar modelo paralelo;
 - consolidar duplicação e separadores em superfícies progressivas;
 - garantir uma transação reversível por comando.
+
+Entregue: destino contextual para `+`/arraste com override por `Shift`, variação semântica em uma transação, dica responsiva a 236 px, galeria compacta de cinco imagens, contraste de legendas, quatro esquemas reutilizáveis, aplicação em lote e organização hero + grade + faixa. Os comandos materializam o modelo existente e permanecem reversíveis; `CatalogDocument` continua em `1.16.0` e o kit passa a `1.5.5`.
 
 ## Incremento 05.16 — Interface orientada à tarefa e nova medição
 
@@ -388,7 +390,315 @@ Critérios de aceite:
 - medir ações, correções, trocas de contexto, tentativas sem efeito e validade final;
 - demonstrar zero ação silenciosa e zero colisão/overflow produzidos por receitas oficiais.
 
+Concluído: memória de aba/disclosures por tipo durante a sessão, diagnóstico explícito para inserções sem resultado, correção geométrica da receita hero + grade + faixa e reconstrução integral comparável. O benchmark caiu de 267 para 223 ações; tabelas caíram de 82 para 56 e overflows de dois para zero. O próximo ciclo deve atacar seleção contextual, ações geométricas de grupo e coleções de galeria/legenda até a mesma composição terminar sem colisões.
+
+## Incremento 05.17 — Geometria orientada por intenção
+
+Critérios de aceite:
+
+- preservar geometria exata como capacidade central;
+- fundir seleção e transição de contexto em uma ação;
+- reunir manipulação relacional e numérica na multisseleção;
+- equalizar dimensões, aplicar valores exatos e deslocar por delta em transações reversíveis;
+- manter mínimos, autoridade local e geometria solicitada/resolvida;
+- adiar constraints persistentes até que relações efêmeras demonstrem insuficiência.
+
+Checkpoints 1–3 concluídos: seleção atômica, relações, valores exatos, deltas, diagnóstico, coleções em lote e grade de caixas heterogêneas. O `SIGSEGV` foi isolado em uma cópia Chromium truncada. No runtime íntegro, o benchmark integral caiu de 223 para 157 ações e terminou com zero colisão/overflow. Preview anterior ao commit e constraints persistentes continuam adiados por falta de evidência de necessidade.
+
+## Incremento 05.18 — Profundidade da biblioteca e linguagem editorial
+
+Critérios de aceite:
+
+- manter os dezesseis tipos atuais durante o primeiro checkpoint e aprofundar os átomos existentes antes de ampliar o registro;
+- oferecer composição tipográfica previsível com alinhamento, escala discreta e overflow explícito;
+- oferecer escala interna de ícone sem depender de redimensionar a caixa externa;
+- tornar os modos de `product-card` visual e geometricamente distintos usando a mesma estrutura canônica;
+- preservar tokens, histórico, mínimos, PDF e documentos 1.16.0;
+- reservar `section-heading` e `fact` como únicas candidatas imediatas, sujeitas a teste de intenção após a consolidação;
+- reorganizar futuramente a descoberta por intenção, mantendo peças internas e `layout-container` disponíveis no caminho avançado.
+
+O incremento não reabre expansão multimídia, publicação, colaboração ou touch/mobile. Também não introduz editor rico, CSS arbitrário nem famílias redundantes de preço, selo, botão, QR code ou tabela.
+
+## Incremento 05.20 — Linguagem promocional e integração multirreferência
+
+Critérios de aceite:
+
+- preservar os dezesseis tipos e o schema 1.16.0;
+- representar ofertas comerciais repetidas como receitas nativas editáveis, não como tabela;
+- tratar personagem, calendário, ilustração e desenho técnico como assets;
+- manter valores de preço completos em tela e impressão;
+- validar catálogos técnico e promocional em Chromium;
+- preservar PDF A4, pacote portátil, reimportação, histórico e hashes de assets;
+- carregar contratos obrigatórios de forma estática e bloquear inicialização parcial;
+- executar a suíte integral por um workflow somente leitura e reproduzível;
+- integrar por branch limpa e PR draft antes de qualquer merge em `development`.
+
+O incremento foi integrado em `development` com os gates Node, build e Chromium aprovados.
+
+## Incremento 05.21 — Navegação contextual e painéis
+
+Entregue:
+
+- breadcrumb resiliente com ancestrais condensados;
+- painéis laterais redimensionáveis preservando a área útil;
+- Camadas recolhíveis, com foco, revelação e estados distintos;
+- contextualização formalmente restrita a regras determinísticas, sem IA;
+- schema `1.16.0` preservado.
+
+Busca, reordenação, reparenting e orientação contextual mais sofisticada permanecem adiados.
+
+## Incremento 05.22 — Encerramento geométrico da V1
+
+Concluído e integrado em `development` pela PR #4:
+
+- corrigir atomicidade e observabilidade das mutações geométricas existentes;
+- simular clamp, mínimos, slots, auto-layout e reflow antes do commit;
+- aplicar frame, derivados e autoridade numa única ação ou não aplicar nada;
+- preservar o schema `1.16.0`;
+- não implementar locks persistentes na V1;
+- não reescrever a aplicação do zero.
+
+O checkpoint cobre canvas, frame avançado do inspetor e comandos geométricos
+de multisseleção. A CI integrada aprovou Node, build, schema e os quatro shards
+Chromium. A arquitetura V2 continuará como migração interna incremental sob os
+mesmos gates.
+
+## Incremento 05.23 — Transação estrutural e fechamento da V1 ✅
+
+Concluído e integrado em `development` pela PR #5:
+
+- planejar espaçamento e separadores numa cópia isolada;
+- validar frames, mínimos, limites, reflow, autoridade e alterações estruturais;
+- aplicar o estado planejado numa única emissão e num único undo, ou não aplicar;
+- preservar 16 tipos, 45 capacidades e `CatalogDocument 1.16.0`;
+- executar a regressão integral técnico/promocional;
+- publicar limites da V1 e reduzir o backlog operacional.
+
+A V1 single-page fica estável após aprovação de Node, schema, build e quatro
+shards Chromium. O Incremento 05.24 consolida esse estado nos artefatos de
+governança e adiciona um gate contra reabertura documental acidental.
+
+Não entram neste incremento: locks persistentes, multipágina, colaboração,
+contextualização por IA, novos tipos e reescrita do store.
+
+## Incremento 05.25 — Consolidação interna do posicionamento inicial
+
+Concluído:
+
+- mover o cálculo de posições prováveis para o registro declarativo;
+- fazer o store canônico consultar o registro durante a inserção;
+- retirar a substituição tardia de métodos do protótipo;
+- preservar comportamento, histórico, Authoring Kit e schema `1.16.0`;
+- validar Node, build e quatro shards Chromium antes da integração.
+
+## Incremento 05.26 — Consolidação interna do alinhamento textual
+
+Concluído:
+
+- mover normalização de alinhamento legado para o store canônico;
+- marcar escolhas explícitas em `updateComponent`, sem interceptor tardio;
+- preservar importação, análise, histórico e aparência do rodapé;
+- reduzir o contrato de runtime a registro, estilos e verificação;
+- proibir por teste a substituição da classe ou de seus métodos;
+- preservar schema `1.16.0`, 16 tipos, 45 capacidades e kit `1.6.0`;
+- validar Node, build e quatro shards Chromium antes da integração.
+
+## Incremento 05.27 — Consolidação interna do overflow textual
+
+Concluído e integrado em `development` pela PR #9:
+
+- mover normalização de overflow legado para o store canônico;
+- marcar escolhas explícitas em `updateComponent`, sem interceptor tardio;
+- preservar `wrap`, `ellipsis`, `clip`, importação, análise, histórico e
+  aparência do rodapé;
+- reduzir o contrato de runtime a registro, estilos e verificação;
+- proibir por teste a substituição da classe ou de seus métodos;
+- preservar schema `1.16.0`, 16 tipos, 45 capacidades e kit `1.6.0`;
+- validar Node, build e quatro shards Chromium antes da integração.
+
+## Incremento 05.28 — Estabilização do fluxo Git
+
+Concluído e integrado em `development` pela PR #10:
+
+- iniciar cada incremento numa worktree limpa derivada do
+  `origin/development` integrado;
+- substituir descoberta repetitiva de checkout/transporte por um pré-voo único;
+- distinguir credencial Git local ausente de falha de rede, divergência remota
+  e indisponibilidade do conector;
+- selecionar `direct-git`, `github-connector` ou `blocked` por evidência;
+- preservar worktrees históricos sem torná-los base de novos incrementos;
+- manter `main` intocada e a CI completa como gate de integração.
+
+## Incremento 05.29 — Fluxo direto de placeholders
+
+Concluído e integrado em `development` pela PR #11:
+
+- preservar o placeholder inteiro como entrada direta para a biblioteca;
+- explicitar a sequência biblioteca do projeto → computador;
+- transformar cada miniatura existente em uma única ação acessível;
+- provar seleção por mouse, reuso por teclado, upload, persistência e reload;
+- preservar IndexedDB, `assetId`, schema `1.16.0`, 16 tipos e 45 capacidades;
+- bloquear publicação quando `origin/development` local estiver obsoleta;
+- medir o ganho operacional do pré-voo Git estabilizado no 05.28.
+
+## Incremento 05.30 — Altura alcançável após remoção estrutural
+
+Concluído e integrado em `development` pela PR #12:
+
+- remover a reserva compacta de especificações quando o último item desse tipo
+  não existe;
+- somar a galeria ao mínimo somente quando ela está presente;
+- antecipar no painel a altura alcançável pelo reflow;
+- oferecer ajuste explícito ao conteúdo em uma única ação reversível;
+- preservar a tabela integralmente dentro do card reduzido;
+- repetir a medição do fluxo Git após a correção de frescor remoto do 05.29.
+
+## Incremento 05.31 — Normalização transacional à grade
+
+Concluído e integrado em `development` pela PR #13:
+
+- antecipar quantos itens serão alterados, o maior ajuste e efeitos derivados;
+- normalizar posições, dimensões ou ambos pela grade da página;
+- respeitar mínimos, limites, autoridade local e coordenadas do contexto;
+- bloquear conflitos antes do commit;
+- aplicar a seleção inteira numa única ação reversível;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.33 — Reordenação acessível em Camadas
+
+Concluído e integrado em `development` pela PR #15:
+
+- expor a operação existente de reordenação diretamente em Camadas;
+- mover irmãos acima ou abaixo somente dentro do mesmo grupo/slot;
+- oferecer controles acessíveis por mouse e teclado;
+- desabilitar ações nos limites do grupo;
+- preservar ordem serializada, reflow e uma ação reversível;
+- manter reparenting, cruzamento de slots e drag-and-drop fora do recorte.
+
+## Incremento 05.34 — Publicação canônica pelo conector
+
+Concluído e integrado em `development` pela PR #16:
+
+- derivar a lista completa de publicação diretamente do commit local;
+- normalizar respostas diretas e aninhadas do conector;
+- validar contagem, caminhos, modos e SHAs antes da montagem da árvore;
+- reconstruir a entrada canônica no máximo uma vez;
+- bloquear qualquer ref remota após uma segunda divergência;
+- preservar comparação exata da árvore, PR draft, CI e squash como gates.
+
+## Incremento 05.35 — Rótulos contextuais do editor
+
+Concluído e integrado em `development` pela PR #17:
+
+- impedir que a seleção revele recursivamente todos os rótulos descendentes;
+- preservar o rótulo da seleção primária;
+- manter descendentes destacados e, dentro do contexto editável, revelar
+  somente o filho em hover ou foco;
+- usar projeção compacta sem interseção entre rótulos;
+- preservar impressão, schema, tipos e capacidades.
+
+## Incremento 05.36 — Store canônico de reflow e histórico
+
+Concluído e integrado em `development` pela PR #18:
+
+- transferir convergência de reflow, baseline e restauração do histórico ao
+  store canônico;
+- preservar reflow manual, dirty state, undo/redo e importação;
+- impedir que o contrato tardio substitua classe ou `emit`.
+
+## Incremento 05.37 — Store canônico das apresentações adaptativas
+
+Concluído e integrado em `development` pela PR #19:
+
+- estabilizar `variants` e `data-only` na passagem canônica;
+- preservar geometria e inspeção nos contratos de apresentação;
+- impedir substituições tardias de classe, `emit` e `deleteComponent`.
+
+## Incremento 05.38 — Renderer canônico da biblioteca por intenção
+
+Concluído e integrado em `development` pela PR #20:
+
+- chamar a projeção declarativa da biblioteca pelo renderer canônico;
+- preservar plano, busca, teclado, grupos e contexto;
+- reduzir a instalação tardia a verificação e estilos;
+- proibir por teste a substituição de `renderPalette`;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.39 — Manifesto de capacidades canônico
+
+Concluído e integrado em `development` pela PR #21:
+
+- chamar intenção editorial e posicionamento provável pelo gerador canônico;
+- preservar cinco grupos, dois hints e a projeção individual dos 16 tipos;
+- reduzir os contratos tardios a validação e enriquecimento declarativo;
+- provar identidade do método, reinstalação idempotente e ordem inversa;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.40 — Confirmação determinística de referências Git
+
+Concluído e integrado em `development` pela PR #22:
+
+- distinguir acknowledgements de objetos Git, branches e PRs;
+- validar nome/ref no retorno de `create_branch`;
+- manter o SHA como autoridade obrigatória no readback da referência;
+- eliminar o falso incidente recorrente sem relaxar bloqueios de divergência;
+- preservar integralmente o escopo funcional da V1.
+
+## Incremento 05.41 — Registro canônico de receitas
+
+Concluído e integrado em `development` pela PR #23:
+
+- manter uma única identidade para `CatalogSectionRecipes` e seu registro;
+- registrar as nove receitas sem substituições tardias;
+- preservar versões, ordem pública, clones independentes e manifestos;
+- provar instalação e reinstalação em qualquer ordem;
+- preservar schema `1.16.0`, 16 tipos e 45 capacidades.
+
+## Incremento 05.42 — Handover e prioridade da triagem histórica
+
+Concluído e integrado em `development` pela PR #24:
+
+- publicar o estado canônico após o 05.41;
+- permitir sugestão proativa, mas não integração automática, de uma promoção
+  coerente para `main`;
+- elevar `agent/developer-b-05.18` a P1 operacional e documental;
+- proibir o merge integral da branch histórica;
+- definir inventário, classificação, curadoria, encerramento da PR #1 e poda
+  segura como sequência obrigatória.
+
+## Incremento 05.43 — Inventário e classificação histórica
+
+Concluído e integrado em `development` pela PR #25:
+
+- congelar branch, merge-base e base canônica por SHA;
+- inventariar os 231 caminhos alterados e seus 489 commits exclusivos;
+- registrar tamanho, blob, último commit, equivalência e dependências;
+- classificar cada caminho como Aproveitar, Registro histórico ou Descartar;
+- separar testes visuais, evidências de CI e baselines canônicas;
+- corrigir estados documentais superados sem alterar o runtime;
+- manter PR #1, exclusão da branch e promoção para `main` fora do recorte.
+
+## Incremento 05.44 — Checkpoint final de consolidação da V1
+
+Concluído e integrado em `development` pela PR #26:
+
+- registrar a PR #1 fechada e a poda das 25 branches `agent/*`;
+- confirmar somente `main` e `development` no remoto;
+- documentar o delta linear de 38 commits, sem divergência de `main`;
+- vincular por hash a referência técnica canônica da V1;
+- manter a referência promocional como benchmark pós-V1, sem promovê-la a
+  baseline;
+- executar Node, schema, build e quatro shards Chromium;
+- publicar riscos, bloqueios e rollback para uma promoção explícita posterior.
+
+O incremento não move `main`, não altera runtime/schema/manifestos e não reabre
+locks, multipágina, colaboração, IA ou frentes congeladas.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
+
+Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
+retomada. Os gates 05.14–05.16 já foram vencidos e não são mais a dependência
+operacional desta frente.
 
 Critérios de aceite:
 

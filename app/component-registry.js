@@ -9,6 +9,8 @@
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
+  const discreteScale = value => [80, 100, 120].includes(Number(value)) ? Number(value) : 100;
+
   const slotChildren = (component, slotName) => (component.children || []).filter(child => child.slot?.name === slotName);
   const hasSlot = (component, slotName, type = null) => slotChildren(component, slotName).some(child => !type || child.type === type);
 
@@ -95,11 +97,15 @@
   }
 
   function textRender(component) {
-    return `<div class="component-text"><p>${escapeHtml(component.props.content)}</p></div>`;
+    const props = component.props || {};
+    const align = ["start", "center", "end"].includes(props.align) ? props.align : "start";
+    const verticalAlign = ["start", "center", "end"].includes(props.verticalAlign) ? props.verticalAlign : "center";
+    const overflow = ["wrap", "ellipsis", "clip"].includes(props.overflow) ? props.overflow : "wrap";
+    return `<div class="component-text" data-text-align="${align}" data-text-vertical="${verticalAlign}" data-text-overflow="${overflow}" style="--text-content-scale:${discreteScale(props.scale) / 100}"><p>${escapeHtml(props.content)}</p></div>`;
   }
 
   function iconRender(component) {
-    return `<div class="component-icon">${icon(component.props.icon || "shield-star", "component-icon__svg")}<span>${escapeHtml(component.props.label || "")}</span></div>`;
+    return `<div class="component-icon" style="--icon-content-scale:${discreteScale(component.props?.iconScale) / 100}">${icon(component.props.icon || "shield-star", "component-icon__svg")}<span>${escapeHtml(component.props.label || "")}</span></div>`;
   }
 
   function titleSymbolRender(component) {
@@ -112,7 +118,7 @@
 
   function specificationRender(component) {
     return `
-      <div class="component-specification">
+      <div class="component-specification" style="--icon-content-scale:${discreteScale(component.props?.iconScale) / 100}">
         ${icon(component.props.icon || "shield-star", "component-specification__icon")}
         <span>${escapeHtml(component.props.label)}</span>
       </div>`;
@@ -189,7 +195,21 @@
     const table = (component.children || []).find(child => child.slot?.name === "table" && child.type === "data-table");
     if (!table) return 0;
     const metrics = tableMetrics(table, component.presentation?.density || table.props?.density);
-    return metrics.header + dataTableRowCount(table) * metrics.row;
+    const intrinsic = tableMetrics(table);
+    const rows = dataTableRowCount(table);
+    return Math.max(Number(table.constraints?.minHeight) || 0, metrics.header + rows * metrics.row, intrinsic.header + rows * intrinsic.row);
+  }
+
+  function artSlotMinimumHeight(component) {
+    const gallery = (component.children || []).find(child => child.slot?.name === "art" && child.type === "art-gallery");
+    if (!gallery) return 0;
+    const count = Math.max(1, (gallery.children || []).filter(child => child.type === "art").length);
+    const columns = Math.max(1, Math.min(Number(gallery.layout?.columns) || 3, count));
+    const rows = Math.ceil(count / columns);
+    const padding = Math.max(0, Number(gallery.layout?.padding) || 4);
+    const gap = Math.max(0, Number(gallery.layout?.gap) || 6);
+    const childMinimum = Math.max(44, ...(gallery.children || []).filter(child => child.type === "art").map(child => Number(child.constraints?.minHeight) || 44));
+    return padding * 2 + rows * childMinimum + Math.max(0, rows - 1) * gap;
   }
 
   function headerContentLeft(component) {
@@ -199,34 +219,40 @@
   function cardGeometry(component) {
     const compact = cardIsCompact(component);
     const dense = component.presentation?.density === "compact";
+    const mode = ["hero", "technical", "variants", "data-only"].includes(component.presentation?.mode) ? component.presentation.mode : "standard";
     const titlePresent = hasSlot(component, "title");
     const artPresent = hasSlot(component, "art");
     const specificationsPresent = hasSlot(component, "specifications");
     const tableHeight = tableSlotHeight(component);
+    const artMinimumHeight = artSlotMinimumHeight(component);
     const tablePresent = tableHeight > 0;
     const edge = dense ? 8 : 12;
-    const contentTop = titlePresent ? (dense ? 48 : 60) : edge;
+    const titleHeight = titlePresent ? (mode === "hero" ? (dense ? 38 : 44) : mode === "technical" ? (dense ? 30 : 34) : (dense ? 32 : 38)) : 0;
+    const titleGap = dense ? 8 : 10;
+    const contentTop = titlePresent ? edge + titleHeight + titleGap : edge;
     const contentBottom = tablePresent ? component.frame.height - tableHeight - edge : component.frame.height - edge;
     const contentHeight = Math.max(60, contentBottom - contentTop);
     const fullWidth = Math.max(100, component.frame.width - edge * 2);
     let art = { x: edge, y: contentTop, width: fullWidth, height: contentHeight };
     let specifications = { x: edge, y: contentTop, width: fullWidth, height: contentHeight };
 
-    if (compact && artPresent && specificationsPresent) {
+    if ((compact || mode === "variants") && artPresent && specificationsPresent) {
       const specsHeight = dense ? 42 : 60;
       const between = dense ? 6 : 14;
-      const artHeight = Math.max(dense ? 60 : 72, Math.min(dense ? 92 : 84, contentHeight - specsHeight - between));
+      const artHeight = Math.max(dense ? 60 : 72, artMinimumHeight, Math.min(dense ? 92 : 84, contentHeight - specsHeight - between));
       art = { x: edge, y: contentTop, width: fullWidth, height: artHeight };
       specifications = { x: edge, y: contentTop + artHeight + between, width: fullWidth, height: Math.max(specsHeight, contentBottom - contentTop - artHeight - between) };
     } else if (!compact && artPresent && specificationsPresent) {
-      const artWidth = Math.max(100, Math.round((component.frame.width - 34) * 0.6));
-      art = { x: 12, y: contentTop, width: artWidth, height: contentHeight };
+      const availableWidth = Math.max(192, fullWidth - 10);
+      const ratio = mode === "hero" ? .68 : mode === "technical" ? .42 : mode === "data-only" ? .34 : .6;
+      const artWidth = Math.max(100, Math.min(availableWidth - 82, Math.round(availableWidth * ratio)));
+      art = { x: edge, y: contentTop, width: artWidth, height: contentHeight };
       const specificationsX = art.x + art.width + 10;
-      specifications = { x: specificationsX, y: contentTop, width: Math.max(82, component.frame.width - specificationsX - 12), height: contentHeight };
+      specifications = { x: specificationsX, y: contentTop, width: Math.max(82, component.frame.width - specificationsX - edge), height: contentHeight };
     }
 
     return {
-      title: { x: edge, y: edge, width: Math.max(120, component.frame.width - edge * 2), height: dense ? 32 : 38 },
+      title: { x: edge, y: edge, width: Math.max(120, component.frame.width - edge * 2), height: titleHeight || (dense ? 32 : 38) },
       art,
       specifications,
       table: { x: edge, y: Math.max(contentTop, component.frame.height - tableHeight - edge), width: Math.max(120, component.frame.width - edge * 2), height: Math.max(32, tableHeight) }
@@ -301,15 +327,33 @@
   }];
 
   function footerItemTextFrame(component, slotName) {
+    const width = Math.max(1, Number(component?.frame?.width) || 80);
+    const height = Math.max(1, Number(component?.frame?.height) || 64);
     const iconPresent = hasSlot(component, "icon");
     const titlePresent = hasSlot(component, "title");
     const subtitlePresent = hasSlot(component, "subtitle");
-    const top = iconPresent ? 31 : 3;
-    const available = Math.max(34, component.frame.height - top - 3);
-    const bothTexts = titlePresent && subtitlePresent;
-    const height = bothTexts ? Math.max(34, Math.floor(available / 2)) : available;
-    const y = slotName === "subtitle" && titlePresent ? top + height : top;
-    return { x: 4, y, width: Math.max(80, component.frame.width - 8), height };
+    const insetX = Math.min(4, Math.floor(width / 2));
+    const top = Math.min(iconPresent ? 31 : 3, height);
+    const bottomInset = Math.min(3, Math.max(0, height - top));
+    const available = Math.max(0, height - top - bottomInset);
+    const innerWidth = Math.max(1, width - insetX * 2);
+
+    if (titlePresent && subtitlePresent) {
+      const gap = available >= 30 ? 2 : available >= 12 ? 1 : 0;
+      const usable = Math.max(0, available - gap);
+      const titleHeight = usable >= 28
+        ? Math.max(14, Math.min(usable - 14, Math.round(usable * .52)))
+        : Math.ceil(usable / 2);
+      const subtitleHeight = Math.max(0, usable - titleHeight);
+      return slotName === "title"
+        ? { x: insetX, y: top, width: innerWidth, height: titleHeight }
+        : { x: insetX, y: top + titleHeight + gap, width: innerWidth, height: subtitleHeight };
+    }
+
+    const present = slotName === "title" ? titlePresent : subtitlePresent;
+    return present
+      ? { x: insetX, y: top, width: innerWidth, height: available }
+      : { x: insetX, y: top, width: innerWidth, height: 0 };
   }
 
   const footerItemSlots = [{
@@ -518,8 +562,12 @@
         const compact = component.presentation?.responsiveState === "compact" || (component.presentation?.responsiveState !== "wide" && Number(proposedFrame?.width || component.frame.width) < 320);
         const tableHeight = tableSlotHeight(component);
         const dense = component.presentation?.density === "compact";
-        if (compact && dense) return { width: 220, height: 170 + tableHeight };
-        return { width: 220, height: compact ? 210 + tableHeight : Math.max(220, 174 + tableHeight) };
+        const galleryHeight = artSlotMinimumHeight(component);
+        const specificationsPresent = hasSlot(component, "specifications");
+        if (compact && dense && !specificationsPresent) return { width: 220, height: 48 + galleryHeight + 6 + tableHeight + 8 };
+        const galleryExtra = Math.max(0, galleryHeight - (dense ? 92 : 84));
+        if (compact && dense) return { width: 220, height: 170 + tableHeight + galleryExtra };
+        return { width: 220, height: compact ? 210 + tableHeight + galleryExtra : Math.max(220, 174 + tableHeight) };
       },
       responsiveRules: [
         { label: "Compacto", maxWidth: 319, description: "Arte em largura total e especificações em grade de duas colunas." },
@@ -626,11 +674,12 @@
       gridUnit: 1,
       minSize: { width: 24, height: 24 },
       defaultFrame: { width: 56, height: 56 },
-      defaultProps: { icon: "shield-star", label: "" },
+      defaultProps: { icon: "shield-star", label: "", iconScale: 100 },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.caption" },
       contentFields: [
         { path: "icon", label: "Ícone", type: "icon-select", full: true },
-        { path: "label", label: "Legenda", type: "text", full: true }
+        { path: "label", label: "Legenda", type: "text", full: true },
+        { path: "iconScale", label: "Escala do ícone", type: "select", options: [{ value: 100, label: "100% · padrão" }, { value: 80, label: "80% · discreto" }, { value: 120, label: "120% · destaque" }] }
       ],
       styleFields: ["surface", "border", "radius", "accentColor", "vectorColor", "textColor", "typography"],
       render: iconRender
@@ -643,9 +692,15 @@
       gridUnit: 2,
       minSize: { width: 80, height: 34 },
       defaultFrame: { width: 260, height: 80 },
-      defaultProps: { content: "Digite o conteúdo do texto no painel lateral." },
+      defaultProps: { content: "Digite o conteúdo do texto no painel lateral.", align: "start", verticalAlign: "center", scale: 100, overflow: "wrap" },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.body" },
-      contentFields: [{ path: "content", label: "Conteúdo", type: "textarea", full: true }],
+      contentFields: [
+        { path: "content", label: "Conteúdo", type: "textarea", full: true },
+        { path: "align", label: "Alinhamento", type: "select", options: [{ value: "start", label: "Início" }, { value: "center", label: "Centro" }, { value: "end", label: "Fim" }] },
+        { path: "verticalAlign", label: "Alinhamento vertical", type: "select", options: [{ value: "center", label: "Meio" }, { value: "start", label: "Topo" }, { value: "end", label: "Base" }] },
+        { path: "scale", label: "Escala tipográfica", type: "select", options: [{ value: 100, label: "100% · padrão" }, { value: 80, label: "80% · discreta" }, { value: 120, label: "120% · destaque" }] },
+        { path: "overflow", label: "Excedente", type: "select", options: [{ value: "wrap", label: "Quebrar linhas" }, { value: "ellipsis", label: "Uma linha com reticências" }, { value: "clip", label: "Cortar na caixa" }] }
+      ],
       styleFields: ["surface", "border", "radius", "textColor", "typography"],
       render: textRender
     },
@@ -674,11 +729,12 @@
       gridUnit: 1,
       minSize: { width: 82, height: 28 },
       defaultFrame: { width: 130, height: 38 },
-      defaultProps: { icon: "shield-star", label: "Alta resistência" },
+      defaultProps: { icon: "shield-star", label: "Alta resistência", iconScale: 100 },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.label" },
       contentFields: [
         { path: "icon", label: "Ícone", type: "icon-select", full: true },
-        { path: "label", label: "Especificação", type: "text", full: true }
+        { path: "label", label: "Especificação", type: "text", full: true },
+        { path: "iconScale", label: "Escala do ícone", type: "select", options: [{ value: 100, label: "100% · padrão" }, { value: 80, label: "80% · discreto" }, { value: 120, label: "120% · destaque" }] }
       ],
       styleFields: ["surface", "border", "radius", "accentColor", "vectorColor", "textColor", "typography"],
       render: specificationRender

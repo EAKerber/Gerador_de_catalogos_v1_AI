@@ -1,7 +1,19 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.14",
+  "editorIncrement": "05.27",
+  "v1State": {
+    "scope": "single-page",
+    "status": "stable",
+    "closedByIncrement": "05.23",
+    "currentIncrement": "05.27",
+    "nextExpansion": "paused",
+    "activeFocus": [
+      "regression",
+      "documentation-consistency",
+      "internal-consolidation"
+    ]
+  },
   "statusVocabulary": {
     "active": "Evolução permitida dentro do foco atual de usabilidade, fidelidade e confiabilidade.",
     "maintain": "Contrato preservado e corrigido quando necessário, sem expansão funcional.",
@@ -69,18 +81,28 @@
     { "id": "catalogSourceDirectImport", "status": "active", "reason": "Fluxo principal de geração data-first." },
     { "id": "manualBulkProductEntry", "status": "active", "reason": "Maior ganho observado na criação manual." },
     { "id": "manualBulkTableEntry", "status": "active", "reason": "Base para esquema e dados em operações separadas." },
+    { "id": "reusableTableSchemas", "status": "active", "reason": "Reduz configuração repetida sem criar um segundo modelo de tabela." },
+    { "id": "batchTableSchemas", "status": "active", "reason": "Aplica a mesma intenção estrutural a várias tabelas em uma transação reversível." },
     { "id": "manualProductCardBatch", "status": "active", "reason": "Operação composta de alto valor comprovado." },
+    { "id": "heroGridStripComposition", "status": "active", "reason": "Materializa uma organização frequente com componentes canônicos e editáveis." },
     { "id": "multiSelection", "status": "active", "reason": "Base para ações de grupo." },
     { "id": "batchAlignment", "status": "active", "reason": "Intenção distinta de organização de irmãos." },
+    { "id": "batchGeometry", "status": "active", "reason": "Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos." },
+    { "id": "batchFrameMap", "status": "active", "reason": "Aplica caixas heterogêneas em uma transação e elimina estados intermediários do ajuste campo a campo." },
+    { "id": "selectionGeometryDiagnostics", "status": "active", "reason": "Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação." },
     { "id": "batchPresentation", "status": "audit", "reason": "Consolidar com modos, presets e densidade sem duplicar superfícies." },
     { "id": "oneClickInsertion", "status": "active", "reason": "O botão contextual demonstrou ganho geral de usabilidade." },
     { "id": "officialSectionRecipes", "status": "active", "reason": "Receitas devem evoluir para comandos compostos compartilhados." },
     { "id": "contextualInsertActions", "status": "active", "reason": "Expressam intenção de posicionamento sem exigir drag." },
     { "id": "contextualTableRows", "status": "active", "reason": "Ação contextual clara, frequente e reversível." },
     { "id": "contextualArtGallery", "status": "maintain", "reason": "Manter a operação existente sem expandir mídia." },
+    { "id": "bulkCollectionEditing", "status": "active", "reason": "Reduz a repetição manual em galerias e legendas sem criar entidades paralelas." },
     { "id": "batchSpacing", "status": "active", "reason": "Intenção frequente e adequada a comando de grupo." },
     { "id": "batchSeparators", "status": "audit", "reason": "Candidato a ser opção da ação de espaçamento, não capacidade paralela." },
-    { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." }
+    { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." },
+    { "id": "editorialTextControls", "status": "active", "reason": "Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário." },
+    { "id": "internalIconScale", "status": "active", "reason": "Separa escala visual interna da geometria externa do componente." },
+    { "id": "distinctProductModes", "status": "active", "reason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card." }
   ],
   "interactionDecisions": [
     {

@@ -6,9 +6,10 @@ const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwri
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser;
 
 (async () => {
-  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -59,7 +60,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 
   await page.locator(`[data-component-id="${state.cardId}"] > [data-enter-container]`).click();
   await page.locator(`[data-component-id="${state.tableId}"]`).click();
-  await page.locator(".table-bulk-entry > summary").click();
+  await page.locator('details.table-bulk-entry:has([data-table-bulk-text]) > summary').click();
   await page.locator("[data-table-bulk-text]").fill("Código\tEmbalagem\tPreço\n1042\tPCT 100\tR$ 1,69\n1145\tPCT 100\tR$ 1,90\n1144\tPCT 100\tR$ 1,90\n1111\tPCT 100\tR$ 1,90\n1371\tPCT 100\tR$ 1,90");
   await page.locator("[data-table-bulk-apply]").click();
   const tableState = await page.evaluate(tableId => ({
@@ -80,4 +81,8 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   if (process.env.CATALOG_SCREENSHOT) await page.screenshot({ path: process.env.CATALOG_SCREENSHOT, fullPage: true });
   await browser.close();
   console.log("✓ Construção manual: sete produtos e sete cards em cinco ações, tabela em lote e desfazer transacional validados.");
-})().catch(error => { console.error(error); process.exitCode = 1; });
+})().catch(async error => {
+  console.error(error);
+  if (browser) await browser.close().catch(() => {});
+  process.exitCode = 1;
+});

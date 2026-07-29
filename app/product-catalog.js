@@ -29,6 +29,7 @@
       this.selectedProductIds = new Set();
       this.activeSubcatalogId = "all";
       this.cardColumns = 3;
+      this.cardOrganization = "grid";
       this.feedback = "Cadastre produtos para vincular conteúdo aos cards sem reconstruir a página.";
       this.root?.addEventListener("submit", event => this.handleSubmit(event));
       this.root?.addEventListener("change", event => this.handleChange(event));
@@ -132,8 +133,9 @@
         <section class="product-batch-actions" aria-label="Ações para produtos selecionados">
           <div class="product-batch-actions__heading"><strong>${selectedIds.length} selecionado(s)</strong><span>Uma ação cria, organiza e vincula os cards.</span></div>
           <div class="product-batch-actions__selection"><button type="button" data-products-select-visible>Selecionar visíveis</button><button type="button" data-products-clear-selection ${selectedIds.length ? "" : "disabled"}>Limpar</button></div>
+          <label>Organização<select data-product-card-organization><option value="grid" ${this.cardOrganization === "grid" ? "selected" : ""}>Grade simples</option><option value="hero-grid-strip" ${this.cardOrganization === "hero-grid-strip" ? "selected" : ""}>Hero + grade + faixa</option></select></label>
           <label>Colunas da grade<select data-product-card-columns><option value="2" ${this.cardColumns === 2 ? "selected" : ""}>2 colunas</option><option value="3" ${this.cardColumns === 3 ? "selected" : ""}>3 colunas</option><option value="4" ${this.cardColumns === 4 ? "selected" : ""}>4 colunas</option></select></label>
-          <button type="button" class="product-primary-button" data-products-create-cards ${selectedIds.length ? "" : "disabled"}>Criar cards da seleção</button>
+          <button type="button" class="product-primary-button" data-products-create-cards ${selectedIds.length ? "" : "disabled"}>Criar composição da seleção</button>
         </section>
         <p class="product-catalog__feedback" role="status">${escapeHtml(this.feedback)}</p>
         <div class="product-list" data-product-list>
@@ -183,6 +185,8 @@
         this.render();
       } else if (event.target.matches("[data-product-card-columns]")) {
         this.cardColumns = Number(event.target.value) || 3;
+      } else if (event.target.matches("[data-product-card-organization]")) {
+        this.cardOrganization = event.target.value === "hero-grid-strip" ? "hero-grid-strip" : "grid";
       }
     }
 
@@ -257,8 +261,13 @@
         const ids = Array.from(this.selectedProductIds).filter(productId => this.store.getProduct(productId));
         if (!ids.length) return;
         try {
-          const result = this.store.createCardsForProducts(ids, { columns: this.cardColumns, density: "compact" });
-          this.feedback = `${result.cards.length} card(s) criado(s), vinculados e organizados em ${this.cardColumns} coluna(s).`;
+          if (this.cardOrganization === "hero-grid-strip") {
+            const result = this.store.createHeroGridStripForProducts(ids, { columns: this.cardColumns });
+            this.feedback = `${1 + result.cards.length} card(s) organizados em destaque, grade de ${this.cardColumns} coluna(s) e faixa complementar.`;
+          } else {
+            const result = this.store.createCardsForProducts(ids, { columns: this.cardColumns, density: "compact" });
+            this.feedback = `${result.cards.length} card(s) criado(s), vinculados e organizados em ${this.cardColumns} coluna(s).`;
+          }
         } catch (error) {
           this.feedback = `Não foi possível criar os cards: ${error.message}`;
         }

@@ -1,7 +1,7 @@
 {
   "guideFormat": "CatalogFeatureGuide",
   "guideVersion": "1.0.0",
-  "editorIncrement": "05.14",
+  "editorIncrement": "05.17",
   "entries": [
     {
       "id": "start.semantic-source",
@@ -45,14 +45,14 @@
     {
       "id": "content.cards-from-products",
       "intention": "Criar e vincular cards para uma seleção de produtos",
-      "access": "Produtos → selecionar → Criar cards",
+      "access": "Produtos → selecionar → escolher organização → Criar composição",
       "preconditions": ["Produtos existentes", "Contêiner de destino com espaço"],
       "result": "Cards vinculados e organizados em uma única transação",
-      "example": "Materializar sete cards no conteúdo principal",
+      "example": "Materializar um hero, seis cards em grade e uma faixa complementar",
       "limits": ["Capacidade e gate geométrico continuam obrigatórios"],
-      "capabilityIds": ["manualProductCardBatch", "undoRedo"],
+      "capabilityIds": ["manualProductCardBatch", "heroGridStripComposition", "undoRedo"],
       "componentTypes": ["product-card", "layout-container"],
-      "recipeIds": [],
+      "recipeIds": ["section-hero-grid-strip"],
       "contracts": ["component.binding.productId", "CatalogDocument.collections.products"]
     },
     {
@@ -61,9 +61,9 @@
       "access": "Selecionar tabela → Conteúdo; ou + para nova linha",
       "preconditions": ["Tabela selecionada"],
       "result": "Colunas semânticas, múltiplas linhas e valores editáveis",
-      "example": "Adicionar coluna Medida e colar duas linhas comerciais",
+      "example": "Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais",
       "limits": ["Regras condicionais avançadas permanecem fora desta versão"],
-      "capabilityIds": ["semanticTables", "contextualTableRows", "manualBulkTableEntry"],
+      "capabilityIds": ["semanticTables", "contextualTableRows", "manualBulkTableEntry", "reusableTableSchemas", "batchTableSchemas"],
       "componentTypes": ["data-table"],
       "recipeIds": [],
       "contracts": ["component.props.columns", "collection.tableRows"]
@@ -112,13 +112,39 @@
       "intention": "Refinar vários elementos irmãos de uma vez",
       "access": "Shift/Ctrl/Cmd+clique → Layout/Visual",
       "preconditions": ["Itens no mesmo contexto e com o mesmo pai"],
-      "result": "Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação",
-      "example": "Distribuir três cards e inserir divisórias verticais",
+      "result": "Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação",
+      "example": "Igualar três cards, deslocar o conjunto e inserir divisórias verticais",
       "limits": ["Seleção cruzando pais é rejeitada"],
-      "capabilityIds": ["multiSelection", "batchAlignment", "batchSpacing", "batchSeparators", "batchPresentation"],
+      "capabilityIds": ["multiSelection", "batchAlignment", "batchGeometry", "batchFrameMap", "selectionGeometryDiagnostics", "batchSpacing", "batchSeparators", "batchPresentation"],
       "componentTypes": ["separator"],
       "recipeIds": [],
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]
+    },
+    {
+      "id": "visual.editorial-depth",
+      "intention": "Ajustar hierarquia visual sem desmontar componentes",
+      "access": "Texto, Ícone, Especificação ou Card → Conteúdo/Visual",
+      "preconditions": ["Componente compatível selecionado"],
+      "result": "Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo",
+      "example": "Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa",
+      "limits": ["Escalas são discretas", "Texto não aceita HTML", "Modo não remove conteúdo da subárvore"],
+      "capabilityIds": ["editorialTextControls", "internalIconScale", "distinctProductModes"],
+      "componentTypes": ["text", "icon", "specification", "product-card"],
+      "recipeIds": [],
+      "contracts": ["component.props.align", "component.props.iconScale", "component.presentation.mode"]
+    },
+    {
+      "id": "content.bulk-collections",
+      "intention": "Criar imagens legendadas e legendas cromáticas sem repetir formulários",
+      "access": "Galeria ou Tabela → Conteúdo → Editar coleção",
+      "preconditions": ["Uma linha por item", "Assets opcionais já cadastrados"],
+      "result": "Itens canônicos são sincronizados ou acrescentados em uma transação reversível",
+      "example": "Colar Cromado, Preto e Branco como três imagens com legenda; criar a faixa cromática correspondente",
+      "limits": ["A colagem não importa arquivos binários", "Até 24 imagens e 40 legendas por operação"],
+      "capabilityIds": ["contextualArtGallery", "semanticColorLegends", "optionalLegendMaterialization", "bulkCollectionEditing"],
+      "componentTypes": ["art-gallery", "art", "data-table", "legend-panel", "legend-group", "legend-item"],
+      "recipeIds": ["section-packaging-legend"],
+      "contracts": ["art.props.caption", "collections.colorLegends", "component.props.legendKey"]
     },
     {
       "id": "reuse.saved-component",

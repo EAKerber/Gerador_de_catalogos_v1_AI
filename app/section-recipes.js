@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.3.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const node = (id, type, frame, options = {}) => ({
     id,
@@ -68,15 +68,85 @@
     name: "Chamada de dica",
     props: { label: "DICA" },
     style: { surface: "surface.paper", border: "border.default", radius: "radius.medium", accentColor: "brand.primary" },
-    layout: { mode: "free", padding: 0, gap: 8, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 260, mode: "column" } },
+    layout: { mode: "row", padding: 10, gap: 8, columns: 2, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 180, mode: "column" } },
     children: [
-      node("recipe-tip-icon", "icon", { x: 14, y: 24, width: 58, height: 58 }, { props: { icon: "bulb", label: "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", typography: "type.caption" } }),
-      node("recipe-tip-title", "text", { x: 82, y: 14, width: 232, height: 36 }, { props: { content: "DICA DO CATÁLOGO" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" } }),
-      node("recipe-tip-body", "text", { x: 82, y: 50, width: 232, height: 56 }, { props: { content: "Edite esta chamada com uma orientação útil para o cliente." }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.body" } })
+      node("recipe-tip-icon", "icon", { x: 10, y: 10, width: 54, height: 100 }, { props: { icon: "bulb", label: "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", typography: "type.caption" }, layoutItem: { managed: true, grow: 0, span: 1 } }),
+      node("recipe-tip-copy", "layout-container", { x: 72, y: 10, width: 248, height: 100 }, {
+        name: "Textos da dica",
+        props: { label: "CONTEÚDO DA DICA" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "column", padding: 0, gap: 4, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 120, mode: "column" } },
+        layoutItem: { managed: true, grow: 1, span: 1 },
+        children: [
+          node("recipe-tip-title", "text", { x: 0, y: 0, width: 248, height: 36 }, { props: { content: "DICA DO CATÁLOGO" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" }, layoutItem: { managed: true, grow: 0, span: 1 } }),
+          node("recipe-tip-body", "text", { x: 0, y: 40, width: 248, height: 60 }, { props: { content: "Edite esta chamada com uma orientação útil para o cliente." }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.body" }, layoutItem: { managed: true, grow: 1, span: 1 } })
+        ]
+      })
     ]
   });
 
-  const recipes = Object.freeze({
+  const sectionHeading = node("recipe-section-heading-root", "layout-container", { x: 0, y: 0, width: 620, height: 124 }, {
+    name: "Título de seção",
+    props: { label: "TÍTULO DE SEÇÃO", recipeRole: "section-heading" },
+    style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary" },
+    layout: { mode: "column", padding: 0, gap: 4, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 320, mode: "column" } },
+    children: [
+      node("recipe-section-heading-kicker", "text", { x: 0, y: 0, width: 620, height: 34 }, {
+        name: "Sobretítulo opcional",
+        props: { content: "LINHA DE PRODUTOS", align: "start", verticalAlign: "center", scale: 80, overflow: "ellipsis", recipeRole: "kicker" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "brand.primary", typography: "type.label" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      }),
+      node("recipe-section-heading-title", "text", { x: 0, y: 38, width: 620, height: 34 }, {
+        name: "Título da seção",
+        props: { content: "TÍTULO DA SEÇÃO", align: "start", verticalAlign: "center", scale: 120, overflow: "ellipsis", recipeRole: "title" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.card-title" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      }),
+      node("recipe-section-heading-support", "text", { x: 0, y: 76, width: 620, height: 34 }, {
+        name: "Complemento da seção",
+        props: { content: "Complemento editorial opcional para contextualizar os itens abaixo.", align: "start", verticalAlign: "center", scale: 80, overflow: "wrap", recipeRole: "support" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.muted", typography: "type.body" },
+        layoutItem: { managed: true, grow: 1, span: 1 }
+      }),
+      node("recipe-section-heading-rule", "separator", { x: 0, y: 114, width: 620, height: 8 }, {
+        name: "Divisor da seção",
+        props: { orientation: "horizontal", cap: "round", marker: "none", thickness: 2, presetId: "subtle", recipeRole: "divider" },
+        style: { accentColor: "brand.primary" },
+        layoutItem: { managed: true, grow: 0, span: 1 }
+      })
+    ]
+  });
+
+  const heroGridStrip = node("recipe-hero-grid-strip-root", "layout-container", { x: 0, y: 0, width: 746, height: 900 }, {
+    name: "Hero, grade e faixa",
+    props: { label: "HERO + GRADE + FAIXA", recipeRole: "product-composition" },
+    style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+    layout: { mode: "free", padding: 0, gap: 12, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "column" } },
+    children: [
+      node("recipe-hero-region", "layout-container", { x: 0, y: 0, width: 746, height: 280 }, {
+        name: "Produto em destaque",
+        props: { label: "PRODUTO EM DESTAQUE", recipeRole: "hero" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "grid", padding: 0, gap: 0, columns: 1, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
+      }),
+      node("recipe-grid-region", "layout-container", { x: 0, y: 292, width: 746, height: 476 }, {
+        name: "Grade de produtos",
+        props: { label: "GRADE DE PRODUTOS", recipeRole: "grid" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "grid", padding: 0, gap: 12, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: false, breakpoint: 300, mode: "grid" } }
+      }),
+      node("recipe-strip-region", "layout-container", { x: 0, y: 780, width: 746, height: 120 }, {
+        name: "Faixa complementar",
+        props: { label: "FAIXA COMPLEMENTAR", recipeRole: "strip" },
+        style: { surface: "surface.paper", border: "border.none", radius: "radius.none" },
+        layout: { mode: "row", padding: 0, gap: 8, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: true, breakpoint: 360, mode: "column" } },
+        children: clone(applicationStrip.children)
+      })
+    ]
+  });
+
+  const recipes = {
     "page-catalog-base": Object.freeze({
       id: "page-catalog-base",
       version: VERSION,
@@ -113,17 +183,84 @@
       icon: "bulb",
       contexts: ["page", "layout-container"],
       component: tipCallout
+    }),
+    "section-heading": Object.freeze({
+      id: "section-heading",
+      version: VERSION,
+      label: "Título de seção",
+      description: "Sobretítulo opcional, título, complemento e divisor em uma composição editável.",
+      icon: "text",
+      contexts: ["page", "layout-container"],
+      component: sectionHeading
+    }),
+    "section-hero-grid-strip": Object.freeze({
+      id: "section-hero-grid-strip",
+      version: VERSION,
+      label: "Hero + grade + faixa",
+      description: "Um destaque, uma grade de produtos e uma faixa complementar editável.",
+      icon: "page",
+      contexts: ["page", "layout-container"],
+      focusRole: "grid",
+      component: heroGridStrip
     })
-  });
+  };
+
+  const recipeOrder = new Map(Object.keys(recipes).map((recipeId, index) => [recipeId, index]));
+  let nextOrder = recipeOrder.size;
+
+  function compareVersions(left, right) {
+    const parts = value => String(value || "0").split(".").map(part => Number(part) || 0);
+    const a = parts(left);
+    const b = parts(right);
+    for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+      if ((a[index] || 0) !== (b[index] || 0)) return (a[index] || 0) - (b[index] || 0);
+    }
+    return 0;
+  }
+
+  function registryVersion() {
+    return Object.values(recipes).reduce(
+      (highest, recipe) => compareVersions(recipe.version, highest) > 0 ? recipe.version : highest,
+      VERSION
+    );
+  }
 
   function list() {
-    return Object.values(recipes).map(clone);
+    return Object.values(recipes)
+      .sort((left, right) => (recipeOrder.get(left.id) || 0) - (recipeOrder.get(right.id) || 0))
+      .map(clone);
   }
 
   function get(recipeId) {
     return recipes[recipeId] ? clone(recipes[recipeId]) : null;
   }
 
+  function register(recipe, options = {}) {
+    if (!recipe?.id || !recipe?.version || !recipe?.component) {
+      throw new Error("Receita inválida: id, version e component são obrigatórios.");
+    }
+    const current = recipes[recipe.id];
+    if (current && current.version !== recipe.version && options.replace !== true) {
+      throw new Error(`A receita ${recipe.id} já existe com contrato incompatível.`);
+    }
+    if (current && current.version === recipe.version && JSON.stringify(current) !== JSON.stringify(recipe)) {
+      throw new Error(`A receita ${recipe.id}@${recipe.version} possui definições divergentes.`);
+    }
+    if (!recipeOrder.has(recipe.id)) {
+      recipeOrder.set(recipe.id, Number.isFinite(options.order) ? Number(options.order) : nextOrder);
+      nextOrder += 1;
+    }
+    if (!current || JSON.stringify(current) !== JSON.stringify(recipe)) {
+      recipes[recipe.id] = Object.freeze(recipe);
+    }
+    return true;
+  }
+
   window.CATALOG_SECTION_RECIPES = recipes;
-  window.CatalogSectionRecipes = { VERSION, list, get };
+  window.CatalogSectionRecipes = Object.freeze({
+    get VERSION() { return registryVersion(); },
+    list,
+    get,
+    register
+  });
 })();

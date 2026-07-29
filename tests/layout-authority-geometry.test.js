@@ -28,4 +28,9 @@ assert(geometry.reasons.includes("minimum-or-content"), "A resolução não expl
 store.setEditingContext(area.id);
 store.selectComponentInContext(area.id);
 assert(store.getState().editor.editingContextId === null && store.getState().editor.selectedComponentId === area.id, "A seleção por camadas não transitou para o contexto do componente.");
+const sibling = store.addComponent("text", { x: 180, y: 0 }, { parentId: area.id });
+store.selectComponentInContext(text.id);
+assert(store.getState().editor.editingContextId === area.id && store.getState().editor.selectedComponentId === text.id, "A seleção não entrou no contexto do descendente atomicamente.");
+store.selectComponentInContext(sibling.id);
+assert(store.getState().editor.editingContextId === area.id && store.getState().editor.selectedComponentId === sibling.id, "A alternância entre irmãos não preservou o contexto e o foco.");
 console.log("✓ Autoridade local, geometria resolvida e seleção entre contextos validadas.");

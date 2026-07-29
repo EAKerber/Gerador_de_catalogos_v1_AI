@@ -1,0 +1,1706 @@
+{
+  "audit": "Incremento 05.17 — reconstrução manual com coleções e geometria por intenção",
+  "date": "2026-07-19T23:33:55.823Z",
+  "historicalBaselineActions": 319,
+  "previousComparableActions": 267,
+  "actions": {
+    "click": 99,
+    "fill": 34,
+    "selection": 11,
+    "drag": 0,
+    "keypress": 12,
+    "download": 1,
+    "contextSwitches": 20,
+    "focusChanges": 45,
+    "corrections": 3,
+    "noEffectAttempts": 1,
+    "total": 157
+  },
+  "reductions": {
+    "fromHistoricalBaseline": {
+      "absolute": 162,
+      "percentage": 50.8
+    },
+    "fromPreviousComparable": {
+      "absolute": 110,
+      "percentage": 41.2
+    }
+  },
+  "result": {
+    "schemaVersion": "1.16.0",
+    "products": 7,
+    "components": 94,
+    "cards": 7,
+    "tableRows": 16,
+    "galleries": [
+      3,
+      5
+    ],
+    "legends": 8,
+    "report": {
+      "ok": true,
+      "target": "draft",
+      "validatorVersion": "1.0.0",
+      "summary": {
+        "pages": 1,
+        "components": 94,
+        "products": 7,
+        "tableRows": 16,
+        "collisions": 0,
+        "overflows": 0,
+        "missingReferences": 0
+      },
+      "issues": [
+        {
+          "severity": "info",
+          "code": "VALIDATION_READY",
+          "message": "Documento estrutural, referencial, editorial e visualmente válido."
+        }
+      ]
+    },
+    "viewport": {
+      "width": 1366,
+      "height": 768
+    },
+    "zoom": 0.7,
+    "frames": [
+      {
+        "id": "product-card-mrsfmff3-6ym6e",
+        "frame": {
+          "x": 0,
+          "y": 0,
+          "width": 746,
+          "height": 222
+        }
+      },
+      {
+        "id": "product-card-mrsfmfgn-aq4h2",
+        "frame": {
+          "x": 0,
+          "y": 234,
+          "width": 240,
+          "height": 246
+        }
+      },
+      {
+        "id": "product-card-mrsfmfi1-vw33u",
+        "frame": {
+          "x": 252,
+          "y": 234,
+          "width": 240,
+          "height": 246
+        }
+      },
+      {
+        "id": "product-card-mrsfmfjk-3e48i",
+        "frame": {
+          "x": 504,
+          "y": 234,
+          "width": 242,
+          "height": 246
+        }
+      },
+      {
+        "id": "product-card-mrsfmflx-ufef1",
+        "frame": {
+          "x": 0,
+          "y": 492,
+          "width": 240,
+          "height": 286
+        }
+      },
+      {
+        "id": "product-card-mrsfmfnr-y9ial",
+        "frame": {
+          "x": 252,
+          "y": 492,
+          "width": 240,
+          "height": 286
+        }
+      },
+      {
+        "id": "product-card-mrsfmfpp-96zh5",
+        "frame": {
+          "x": 504,
+          "y": 492,
+          "width": 242,
+          "height": 280
+        }
+      }
+    ]
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "actionLog": [
+    {
+      "index": 1,
+      "kind": "click",
+      "label": "Inserir Página de catálogo",
+      "surface": "components",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 2,
+      "kind": "click",
+      "label": "Abrir painel products",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 3,
+      "kind": "click",
+      "label": "Abrir Entrada rápida",
+      "surface": "products",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 4,
+      "kind": "fill",
+      "label": "Colar sete produtos",
+      "surface": "products",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 5,
+      "kind": "click",
+      "label": "Adicionar produtos da tabela",
+      "surface": "products",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 6,
+      "kind": "click",
+      "label": "Criar cards da seleção",
+      "surface": "products",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 7,
+      "kind": "click",
+      "label": "Abrir painel components",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 8,
+      "kind": "click",
+      "label": "Adicionar painel de legenda",
+      "surface": "components",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 9,
+      "kind": "click",
+      "label": "Adicionar chamada de dica",
+      "surface": "components",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 10,
+      "kind": "click",
+      "label": "Abrir painel layers",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 11,
+      "kind": "click",
+      "label": "Selecionar painel de legenda recém-criado",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 12,
+      "kind": "click",
+      "label": "Abrir inspetor content",
+      "surface": "inspector",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 13,
+      "kind": "fill",
+      "label": "Editar título da legenda",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 14,
+      "kind": "click",
+      "label": "Tabelas de medida: selecionar primeiro card",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 15,
+      "kind": "click",
+      "label": "Tabelas de medida: adicionar card 3 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 16,
+      "kind": "click",
+      "label": "Tabelas de medida: adicionar card 5 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 17,
+      "kind": "selection",
+      "label": "Tabelas de medida: escolher esquema",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 18,
+      "kind": "click",
+      "label": "Tabelas de medida: aplicar esquema",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 19,
+      "kind": "click",
+      "label": "Tabelas de variações: selecionar primeiro card",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 20,
+      "kind": "click",
+      "label": "Tabelas de variações: adicionar card 4 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 21,
+      "kind": "click",
+      "label": "Tabelas de variações: adicionar card 6 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 22,
+      "kind": "selection",
+      "label": "Tabelas de variações: escolher esquema",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 23,
+      "kind": "click",
+      "label": "Tabelas de variações: aplicar esquema",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 24,
+      "kind": "click",
+      "label": "Selecionar tabela 7 para esquema unitário",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 25,
+      "kind": "selection",
+      "label": "Tabela 7: escolher valor unitário",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 26,
+      "kind": "click",
+      "label": "Tabela 7: aplicar valor unitário",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 27,
+      "kind": "click",
+      "label": "Selecionar tabela 1",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 28,
+      "kind": "click",
+      "label": "Abrir configuração das exceções de rótulo",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 29,
+      "kind": "fill",
+      "label": "Tabela 1: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 30,
+      "kind": "keypress",
+      "label": "Tabela 1: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 31,
+      "kind": "click",
+      "label": "Abrir colagem de linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 32,
+      "kind": "fill",
+      "label": "Tabela 1: colar 1 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 33,
+      "kind": "click",
+      "label": "Tabela 1: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 34,
+      "kind": "click",
+      "label": "Selecionar tabela 2",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 35,
+      "kind": "fill",
+      "label": "Tabela 2: rótulo COR",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 36,
+      "kind": "keypress",
+      "label": "Tabela 2: rótulo COR: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 37,
+      "kind": "fill",
+      "label": "Tabela 2: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 38,
+      "kind": "keypress",
+      "label": "Tabela 2: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 39,
+      "kind": "fill",
+      "label": "Tabela 2: colar 2 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 40,
+      "kind": "click",
+      "label": "Tabela 2: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 41,
+      "kind": "click",
+      "label": "Selecionar tabela 3",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 42,
+      "kind": "fill",
+      "label": "Tabela 3: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 43,
+      "kind": "keypress",
+      "label": "Tabela 3: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 44,
+      "kind": "fill",
+      "label": "Tabela 3: colar 2 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 45,
+      "kind": "click",
+      "label": "Tabela 3: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 46,
+      "kind": "click",
+      "label": "Selecionar tabela 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 47,
+      "kind": "fill",
+      "label": "Tabela 4: rótulo COR",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 48,
+      "kind": "keypress",
+      "label": "Tabela 4: rótulo COR: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 49,
+      "kind": "fill",
+      "label": "Tabela 4: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 50,
+      "kind": "keypress",
+      "label": "Tabela 4: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 51,
+      "kind": "fill",
+      "label": "Tabela 4: colar 3 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 52,
+      "kind": "click",
+      "label": "Tabela 4: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 53,
+      "kind": "click",
+      "label": "Selecionar tabela 5",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 54,
+      "kind": "fill",
+      "label": "Tabela 5: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 55,
+      "kind": "keypress",
+      "label": "Tabela 5: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 56,
+      "kind": "fill",
+      "label": "Tabela 5: colar 1 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 57,
+      "kind": "click",
+      "label": "Tabela 5: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 58,
+      "kind": "click",
+      "label": "Selecionar tabela 6",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 59,
+      "kind": "fill",
+      "label": "Tabela 6: rótulo MODELO",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 60,
+      "kind": "keypress",
+      "label": "Tabela 6: rótulo MODELO: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 61,
+      "kind": "fill",
+      "label": "Tabela 6: rótulo VALOR À VISTA",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 62,
+      "kind": "keypress",
+      "label": "Tabela 6: rótulo VALOR À VISTA: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 63,
+      "kind": "fill",
+      "label": "Tabela 6: colar 2 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 64,
+      "kind": "click",
+      "label": "Tabela 6: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 65,
+      "kind": "click",
+      "label": "Selecionar tabela 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 66,
+      "kind": "fill",
+      "label": "Tabela 7: rótulo COR",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 67,
+      "kind": "keypress",
+      "label": "Tabela 7: rótulo COR: confirmar",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 68,
+      "kind": "fill",
+      "label": "Tabela 7: colar 5 linha(s)",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 69,
+      "kind": "click",
+      "label": "Tabela 7: aplicar linhas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 70,
+      "kind": "click",
+      "label": "Abrir editor de legenda cromática",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 71,
+      "kind": "click",
+      "label": "Abrir criação de legendas em lote",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 72,
+      "kind": "fill",
+      "label": "Legenda: colar oito definições",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 73,
+      "kind": "click",
+      "label": "Materializar oito legendas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 74,
+      "kind": "click",
+      "label": "Selecionar grupo de embalagens",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 75,
+      "kind": "selection",
+      "label": "Legenda: organizar em grade",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 76,
+      "kind": "fill",
+      "label": "Legenda: quatro colunas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 77,
+      "kind": "click",
+      "label": "Selecionar tabela 03 para vínculos cromáticos",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 78,
+      "kind": "selection",
+      "label": "Vincular cor à célula table-row-mrsfmh6a-i6unc",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 79,
+      "kind": "selection",
+      "label": "Vincular cor à célula table-row-mrsfmh6a-f83mt",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 80,
+      "kind": "click",
+      "label": "Selecionar arte do card 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 81,
+      "kind": "click",
+      "label": "Abrir painel components",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 82,
+      "kind": "click",
+      "label": "Card 4: converter arte em galeria",
+      "surface": "components",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 83,
+      "kind": "click",
+      "label": "Abrir painel layers",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 84,
+      "kind": "click",
+      "label": "Selecionar galeria do card 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 85,
+      "kind": "click",
+      "label": "Abrir inspetor content",
+      "surface": "inspector",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 86,
+      "kind": "click",
+      "label": "Card 4: abrir coleção de imagens",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 87,
+      "kind": "fill",
+      "label": "Card 4: colar 3 legendas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 88,
+      "kind": "click",
+      "label": "Card 4: sincronizar galeria",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 89,
+      "kind": "click",
+      "label": "Voltar da galeria 04 ao conteúdo principal",
+      "surface": "breadcrumb",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 90,
+      "kind": "click",
+      "label": "Selecionar arte do card 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 91,
+      "kind": "click",
+      "label": "Abrir painel components",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 92,
+      "kind": "click",
+      "label": "Card 7: converter arte em galeria",
+      "surface": "components",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 93,
+      "kind": "click",
+      "label": "Abrir painel layers",
+      "surface": "left-panel",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 94,
+      "kind": "click",
+      "label": "Selecionar galeria do card 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 95,
+      "kind": "fill",
+      "label": "Card 7: colar 5 legendas",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 96,
+      "kind": "click",
+      "label": "Card 7: sincronizar galeria",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 97,
+      "kind": "click",
+      "label": "Voltar da galeria 07 ao conteúdo principal",
+      "surface": "breadcrumb",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 98,
+      "kind": "click",
+      "label": "Selecionar especificações do card 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 99,
+      "kind": "click",
+      "label": "Adicionar segunda especificação do card 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 100,
+      "kind": "click",
+      "label": "Remover especificações do card 4",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 101,
+      "kind": "click",
+      "label": "Selecionar especificações do card 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 102,
+      "kind": "click",
+      "label": "Adicionar segunda especificação do card 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 103,
+      "kind": "click",
+      "label": "Remover especificações do card 7",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 104,
+      "kind": "click",
+      "label": "Selecionar card 01",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 105,
+      "kind": "click",
+      "label": "Abrir inspetor content",
+      "surface": "inspector",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 106,
+      "kind": "selection",
+      "label": "Card 01: preset de destaque",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 107,
+      "kind": "selection",
+      "label": "Card 01: forçar layout amplo",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 108,
+      "kind": "click",
+      "label": "Selecionar card 4",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 109,
+      "kind": "selection",
+      "label": "Card 4: preset de variações",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 110,
+      "kind": "click",
+      "label": "Selecionar card 7",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 111,
+      "kind": "selection",
+      "label": "Card 7: preset de variações",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 112,
+      "kind": "click",
+      "label": "Selecionar conteúdo principal",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 113,
+      "kind": "click",
+      "label": "Mostrar posição, tamanho e mínimos",
+      "surface": "inspector",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 114,
+      "kind": "fill",
+      "label": "Conteúdo principal: x = 0",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 115,
+      "kind": "fill",
+      "label": "Conteúdo principal: y = 110",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 116,
+      "kind": "fill",
+      "label": "Conteúdo principal: width = 746",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 117,
+      "kind": "fill",
+      "label": "Conteúdo principal: height = 910",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 118,
+      "kind": "selection",
+      "label": "Conteúdo principal: layout livre",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 119,
+      "kind": "click",
+      "label": "Voltar ao contêiner da página",
+      "surface": "breadcrumb",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 120,
+      "kind": "click",
+      "label": "Selecionar estrutura da página",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 121,
+      "kind": "fill",
+      "label": "estrutura da página: y = 0",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 122,
+      "kind": "keypress",
+      "label": "estrutura da página: confirmar y",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 123,
+      "kind": "fill",
+      "label": "estrutura da página: height = 1120",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 124,
+      "kind": "keypress",
+      "label": "estrutura da página: confirmar height",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 125,
+      "kind": "click",
+      "label": "Selecionar regiões da página",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 126,
+      "kind": "click",
+      "label": "Adicionar conteúdo à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 127,
+      "kind": "click",
+      "label": "Adicionar rodapé à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 128,
+      "kind": "click",
+      "label": "Abrir grade geométrica de regiões da página",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 129,
+      "kind": "fill",
+      "label": "Colar geometria de regiões da página",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 130,
+      "kind": "click",
+      "label": "Aplicar geometria de regiões da página",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 131,
+      "kind": "click",
+      "label": "Selecionar sete cards",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 132,
+      "kind": "click",
+      "label": "Adicionar card 2 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 133,
+      "kind": "click",
+      "label": "Adicionar card 3 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 134,
+      "kind": "click",
+      "label": "Adicionar card 4 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 135,
+      "kind": "click",
+      "label": "Adicionar card 5 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 136,
+      "kind": "click",
+      "label": "Adicionar card 6 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 137,
+      "kind": "click",
+      "label": "Adicionar card 7 à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 138,
+      "kind": "click",
+      "label": "Abrir grade geométrica de sete cards",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 139,
+      "kind": "fill",
+      "label": "Colar geometria de sete cards",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 140,
+      "kind": "click",
+      "label": "Aplicar geometria de sete cards",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 141,
+      "kind": "click",
+      "label": "Selecionar faixa de legenda e dica",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 142,
+      "kind": "click",
+      "label": "Adicionar chamada de dica à seleção",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 143,
+      "kind": "click",
+      "label": "Abrir grade geométrica de faixa de legenda e dica",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 144,
+      "kind": "fill",
+      "label": "Colar geometria de faixa de legenda e dica",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 145,
+      "kind": "click",
+      "label": "Aplicar geometria de faixa de legenda e dica",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 146,
+      "kind": "click",
+      "label": "Selecionar título da dica",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 147,
+      "kind": "fill",
+      "label": "Editar título da dica",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 148,
+      "kind": "click",
+      "label": "Selecionar corpo da dica",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": true,
+      "noEffect": true
+    },
+    {
+      "index": 149,
+      "kind": "click",
+      "label": "Entrar no contêiner pai para Selecionar corpo da dica",
+      "surface": "layers",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": true,
+      "noEffect": false
+    },
+    {
+      "index": 150,
+      "kind": "click",
+      "label": "Repetir: Selecionar corpo da dica",
+      "surface": "layers",
+      "contextSwitch": false,
+      "focusChange": true,
+      "correction": true,
+      "noEffect": false
+    },
+    {
+      "index": 151,
+      "kind": "fill",
+      "label": "Editar corpo da dica",
+      "surface": "inspector",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 152,
+      "kind": "click",
+      "label": "Abrir menu Exportar",
+      "surface": "toolbar",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 153,
+      "kind": "click",
+      "label": "Exportar Documento JSON",
+      "surface": "toolbar",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 154,
+      "kind": "download",
+      "label": "Salvar Documento JSON",
+      "surface": "browser",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 155,
+      "kind": "click",
+      "label": "Recolher painel esquerdo",
+      "surface": "chrome",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 156,
+      "kind": "click",
+      "label": "Recolher painel direito",
+      "surface": "chrome",
+      "contextSwitch": true,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    },
+    {
+      "index": 157,
+      "kind": "click",
+      "label": "Abrir Imprimir / PDF",
+      "surface": "toolbar",
+      "contextSwitch": false,
+      "focusChange": false,
+      "correction": false,
+      "noEffect": false
+    }
+  ]
+}

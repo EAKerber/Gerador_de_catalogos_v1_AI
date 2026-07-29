@@ -6,8 +6,56 @@
   const HISTORY_LIMIT = 100;
   const HISTORY_COALESCE_MS = 700;
   const PRODUCT_FIELDS = ["title", "specOne", "specTwo", "code", "package", "price", "assetId"];
+  const TABLE_BINDING_FIELDS = Object.freeze(["code", "package", "price"]);
+  const ADAPTIVE_PRODUCT_MODES = Object.freeze(["variants", "data-only"]);
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const EPHEMERAL_CHANGE_TYPES = new Set(["init", "selection", "editing-context", "editor-setting", "document-saved", "history-undo", "history-redo"]);
+  const GEOMETRY_PLAN_DRAFT = Symbol("geometry-plan-draft");
+  const SPACING_PLAN_DRAFT = Symbol("spacing-plan-draft");
+  const GEOMETRY_EPSILON = 1;
+  const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value || {}, key);
+
+  function normalizeLegacyFooterAlignment(source) {
+    if (!source || typeof source !== "object" || Array.isArray(source)) return source;
+    const next = clone(source);
+    const visit = (component, parent = null) => {
+      if (!component || typeof component !== "object") return;
+      if (component.type === "text" && parent?.type === "footer-item") {
+        component.props ||= {};
+        const explicit = component.props.alignExplicit === true;
+        if (!explicit && (!hasOwn(component.props, "align") || component.props.align === "start")) {
+          component.props.align = "center";
+        }
+        if (!hasOwn(component.props, "alignExplicit")) component.props.alignExplicit = false;
+      }
+      (component.children || []).forEach(child => visit(child, component));
+    };
+    (next.pages || []).forEach(page => (page.children || []).forEach(component => visit(component)));
+    return next;
+  }
+
+  const footerDefaultOverflow = component => component?.slot?.name === "subtitle" ? "wrap" : "ellipsis";
+
+  function normalizeLegacyFooterOverflow(source) {
+    if (!source || typeof source !== "object" || Array.isArray(source)) return source;
+    const next = clone(source);
+    const visit = (component, parent = null) => {
+      if (!component || typeof component !== "object") return;
+      if (component.type === "text" && parent?.type === "footer-item") {
+        component.props ||= {};
+        const explicit = component.props.overflowExplicit === true;
+        if (!explicit) component.props.overflow = footerDefaultOverflow(component);
+        if (!hasOwn(component.props, "overflowExplicit")) component.props.overflowExplicit = false;
+      }
+      (component.children || []).forEach(child => visit(child, component));
+    };
+    (next.pages || []).forEach(page => (page.children || []).forEach(component => visit(component)));
+    return next;
+  }
+
+  function normalizeLegacyTextPresentation(source) {
+    return normalizeLegacyFooterOverflow(normalizeLegacyFooterAlignment(source));
+  }
 
   function documentSnapshot(state) {
     const snapshot = clone(state);
@@ -37,11 +85,13 @@
       "component-updated": "Editar componente",
       "component-deleted": "Excluir componente",
       "component-duplicated": "Duplicar componente",
+      "component-reordered": "Reordenar camada",
       "component-duplicated-series": "Distribuir cópias",
       "component-template-saved": "Salvar componente",
       "component-template-inserted": "Inserir componente salvo",
       "section-recipe-inserted": "Inserir estrutura pronta",
       "art-converted-to-gallery": "Criar galeria da arte",
+      "gallery-items-bulk-applied": "Editar galeria em lote",
       "component-template-removed": "Excluir componente salvo",
       "product-created": "Adicionar produto",
       "product-bulk-created": "Adicionar produtos em lote",
@@ -54,17 +104,24 @@
       "product-unbound": "Desvincular produto",
       "product-template-applied": "Aplicar apresentação",
       "product-cards-created": "Criar cards da seleção",
+      "hero-grid-strip-created": "Criar hero, grade e faixa",
       "table-row-added": "Adicionar linha",
       "table-rows-replaced": "Colar linhas da tabela",
+      "table-schema-applied": "Aplicar esquema da tabela",
+      "table-schema-batch-applied": "Aplicar esquema às tabelas",
       "table-row-updated": "Editar linha",
       "table-row-removed": "Excluir linha",
       "table-columns-updated": "Editar colunas da tabela",
       "color-legend-upserted": "Editar legenda semântica",
       "legend-materialized": "Materializar legenda",
+      "color-legends-bulk-applied": "Criar legendas em lote",
       "color-legend-removed": "Excluir legenda semântica",
       "component-presentation-updated": "Editar apresentação",
       "components-aligned": "Alinhar seleção",
       "components-distributed": "Distribuir seleção",
+      "components-grid-normalized": "Normalizar seleção à grade",
+      "components-transformed": "Transformar seleção",
+      "component-frames-bulk-applied": "Aplicar geometria da seleção",
       "components-spaced": "Ajustar espaçamento",
       "components-presentation-updated": "Editar apresentação da seleção",
       "components-style-updated": "Editar estilo da seleção",
@@ -658,6 +715,14 @@
     const managed = occupants.filter(child => child.slot?.managed !== false);
     if (!managed.length) return;
     const minimumFor = child => window.CatalogLayoutEngine?.itemMinimum?.(child, child.frame) || { width: child.constraints?.minWidth || 1, height: child.constraints?.minHeight || 1 };
+    const refreshNestedSlots = () => {
+      managed.forEach(child => {
+        const childDefinition = definitionFor(child.type);
+        if (!childDefinition?.container) return;
+        layoutAllSlots(child);
+        if (childDefinition.container.autoLayout) window.CatalogLayoutEngine?.applyAutoLayout(child);
+      });
+    };
 
     const slotLayout = typeof slot.layout === "function" ? slot.layout(parent) : slot.layout;
     if (slotLayout === "column") {
@@ -677,6 +742,7 @@
         };
         y += height + gap;
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -697,6 +763,7 @@
         };
         x += width + gap;
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -724,6 +791,7 @@
           height: Math.max(minimumFor(child).height, Math.round(sharedHeight))
         };
       });
+      refreshNestedSlots();
       return;
     }
 
@@ -735,6 +803,7 @@
         height: Math.max(minimumFor(child).height, Math.round(frame.height))
       };
     });
+    refreshNestedSlots();
   }
 
   function layoutAllSlots(parent) {
@@ -786,6 +855,171 @@
     preview.frame = { ...preview.frame, ...(proposedFrame || {}) };
     for (let pass = 0; pass < 4; pass += 1) reflowPass(preview, true, new Set());
     return window.CatalogLayoutEngine?.contentMinimum(preview, preview.frame);
+  }
+
+  function frameEquals(left, right) {
+    return ["x", "y", "width", "height"].every(key => Number(left?.[key]) === Number(right?.[key]));
+  }
+
+  function publicGeometryPlan(plan) {
+    return {
+      status: plan.status,
+      requested: clone(plan.requested),
+      resolved: clone(plan.resolved),
+      changes: clone(plan.changes),
+      authorityChanges: clone(plan.authorityChanges),
+      reasons: clone(plan.reasons),
+      conflicts: clone(plan.conflicts)
+    };
+  }
+
+  function publicSpacingPlan(plan) {
+    return {
+      status: plan.status,
+      requested: clone(plan.requested),
+      resolved: clone(plan.resolved),
+      changes: clone(plan.changes),
+      structuralChanges: clone(plan.structuralChanges),
+      authorityChanges: clone(plan.authorityChanges),
+      reasons: clone(plan.reasons),
+      conflicts: clone(plan.conflicts)
+    };
+  }
+
+  function geometrySnapshot(store) {
+    const entries = new Map();
+    const visit = (children, parentId = null, ancestors = []) => (children || []).forEach(component => {
+      const path = [...ancestors, component.id];
+      entries.set(component.id, {
+        component,
+        parentId,
+        path,
+        frame: { ...component.frame },
+        slotManaged: component.slot?.name ? component.slot.managed !== false : null,
+        layoutManaged: component.layoutItem ? component.layoutItem.managed !== false : null
+      });
+      visit(component.children, component.id, path);
+    });
+    visit(store.getPage()?.children || []);
+    return entries;
+  }
+
+  function geometryAffectedIds(before, after, requestedIds) {
+    const affected = new Set(requestedIds);
+    const addPath = entry => (entry?.path || []).forEach(componentId => affected.add(componentId));
+    const addDescendants = (entries, rootId) => entries.forEach(entry => {
+      if (entry.path.includes(rootId)) affected.add(entry.component.id);
+    });
+
+    new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+      const previous = before.get(componentId);
+      const next = after.get(componentId);
+      if (!previous || !next
+        || !frameEquals(previous.frame, next.frame)
+        || previous.slotManaged !== next.slotManaged
+        || previous.layoutManaged !== next.layoutManaged) {
+        affected.add(componentId);
+        addPath(previous);
+        addPath(next);
+      }
+    });
+    requestedIds.forEach(componentId => {
+      addPath(before.get(componentId));
+      addPath(after.get(componentId));
+      addDescendants(before, componentId);
+      addDescendants(after, componentId);
+    });
+    return affected;
+  }
+
+  function geometryConflicts(store, componentIds) {
+    const entries = geometrySnapshot(store);
+    const conflicts = new Map();
+    const add = (componentId, code, magnitude, details = {}) => {
+      const normalizedMagnitude = Number.isFinite(Number(magnitude)) ? Math.max(0, Number(magnitude)) : Number.MAX_SAFE_INTEGER;
+      conflicts.set(`${componentId}:${code}`, { componentId, code, magnitude: normalizedMagnitude, ...details });
+    };
+
+    componentIds.forEach(componentId => {
+      const entry = entries.get(componentId);
+      if (!entry) {
+        add(componentId, "component-missing", Number.MAX_SAFE_INTEGER);
+        return;
+      }
+      const frame = entry.frame;
+      if (!["x", "y", "width", "height"].every(key => Number.isFinite(Number(frame[key])))
+        || Number(frame.width) <= 0
+        || Number(frame.height) <= 0) {
+        add(componentId, "invalid-frame", Number.MAX_SAFE_INTEGER, { frame: { ...frame } });
+        return;
+      }
+
+      const size = entry.parentId
+        ? { width: entries.get(entry.parentId)?.frame.width || 0, height: entries.get(entry.parentId)?.frame.height || 0 }
+        : store.getPage().size;
+      const overflow = {
+        left: Math.max(0, -Number(frame.x)),
+        top: Math.max(0, -Number(frame.y)),
+        right: Math.max(0, Number(frame.x) + Number(frame.width) - Number(size.width)),
+        bottom: Math.max(0, Number(frame.y) + Number(frame.height) - Number(size.height))
+      };
+      const overflowMagnitude = Math.max(...Object.values(overflow));
+      if (overflowMagnitude > GEOMETRY_EPSILON) add(componentId, "bounds", overflowMagnitude, { overflow });
+
+      const minimum = store.getReflowMinimum(entry.component, frame);
+      const shortage = {
+        width: Math.max(0, Number(minimum?.width) - Number(frame.width)),
+        height: Math.max(0, Number(minimum?.height) - Number(frame.height))
+      };
+      const minimumMagnitude = Math.max(shortage.width, shortage.height);
+      if (minimumMagnitude > GEOMETRY_EPSILON) add(componentId, "minimum-or-content", minimumMagnitude, { minimum: { ...minimum }, shortage });
+    });
+    return conflicts;
+  }
+
+  function worsenedGeometryConflicts(before, after) {
+    return [...after.entries()]
+      .filter(([key, conflict]) => conflict.magnitude > (before.get(key)?.magnitude || 0) + GEOMETRY_EPSILON)
+      .map(([, conflict]) => conflict);
+  }
+
+  function synchronizeGeometryState(targetStore, draftStore) {
+    const target = geometrySnapshot(targetStore);
+    const draft = geometrySnapshot(draftStore);
+    draft.forEach((entry, componentId) => {
+      const current = target.get(componentId)?.component;
+      if (!current) return;
+      if (!frameEquals(current.frame, entry.component.frame)) Object.assign(current.frame, clone(entry.component.frame));
+      if (JSON.stringify(current.slot) !== JSON.stringify(entry.component.slot)) current.slot = entry.component.slot ? clone(entry.component.slot) : null;
+      if (JSON.stringify(current.layoutItem) !== JSON.stringify(entry.component.layoutItem)) current.layoutItem = entry.component.layoutItem ? clone(entry.component.layoutItem) : null;
+      if (JSON.stringify(current.props) !== JSON.stringify(entry.component.props)) current.props = clone(entry.component.props);
+    });
+  }
+
+  function synchronizeComponentChildren(targetChildren, draftChildren) {
+    const currentById = new Map((targetChildren || []).map(component => [component.id, component]));
+    const synchronized = (draftChildren || []).map(draftComponent => {
+      const current = currentById.get(draftComponent.id);
+      if (!current) return clone(draftComponent);
+      Object.keys(current).forEach(key => {
+        if (key !== "children" && !Object.hasOwn(draftComponent, key)) delete current[key];
+      });
+      Object.entries(draftComponent).forEach(([key, value]) => {
+        if (key !== "children") current[key] = clone(value);
+      });
+      current.children = synchronizeComponentChildren(current.children || [], draftComponent.children || []);
+      return current;
+    });
+    targetChildren.splice(0, targetChildren.length, ...synchronized);
+    return targetChildren;
+  }
+
+  function synchronizeStructuralState(targetStore, draftStore) {
+    const targetPage = targetStore.getPage();
+    const draftPage = draftStore.getPage();
+    synchronizeComponentChildren(targetPage.children, draftPage.children);
+    targetStore.state.editor.selectedComponentIds = draftStore.state.editor.selectedComponentIds.slice();
+    targetStore.state.editor.selectedComponentId = draftStore.state.editor.selectedComponentId;
   }
 
   function hydrateDefaultChildren(parent) {
@@ -1061,15 +1295,21 @@
 
   class DocumentStore {
     constructor(initialState) {
-      this.state = migrateDocument(initialState || createBlankDocument());
+      this.state = migrateDocument(normalizeLegacyTextPresentation(initialState || createBlankDocument()));
       this.listeners = new Set();
       this.bindingSyncDepth = 0;
       this.geometryResolutions = new Map();
+      this.lastGeometryTransaction = null;
       this.historyUndo = [];
       this.historyRedo = [];
       this.historySuspended = false;
-      this.lastHistorySnapshot = documentSnapshot(this.state);
-      this.lastHistorySignature = snapshotSignature(this.lastHistorySnapshot);
+      this.__reflowStabilityInternal = true;
+      try {
+        this.__lastReflowStability = this.stabilizeManagedReflow();
+      } finally {
+        this.__reflowStabilityInternal = false;
+      }
+      this.synchronizeHistoryBaseline();
       this.savedSignature = this.lastHistorySignature;
       this.dirty = false;
     }
@@ -1090,8 +1330,41 @@
         : [];
       const ephemeral = options.ephemeral === true || EPHEMERAL_CHANGE_TYPES.has(change?.type);
       if (!ephemeral) this.state.updatedAt = new Date().toISOString();
+      if (!ephemeral && !this.historySuspended) {
+        this.__reflowStabilityInternal = true;
+        try {
+          this.__lastReflowStability = this.stabilizeManagedReflow();
+        } finally {
+          this.__reflowStabilityInternal = false;
+        }
+      }
       if (!ephemeral && !this.historySuspended) this.captureHistory(change);
       this.listeners.forEach(listener => listener(this.getState(), change));
+    }
+
+    synchronizeHistoryBaseline() {
+      const snapshot = documentSnapshot(this.state);
+      this.lastHistorySnapshot = snapshot;
+      this.lastHistorySignature = snapshotSignature(snapshot);
+      return snapshot;
+    }
+
+    stabilizeManagedReflow() {
+      const presentations = this.refreshAllAdaptiveProductCards();
+      let roots = 0;
+      let passes = 0;
+      (this.state?.pages || []).forEach(page => {
+        (page.children || []).forEach(component => {
+          if (!this.isContainer(component.id) || component.reflow?.mode === "manual") return;
+          roots += 1;
+          if (this.reflowComponentTree(component.id, { derived: true })) passes += 1;
+        });
+      });
+      return { roots, passes, presentations };
+    }
+
+    getLastReflowStability() {
+      return this.__lastReflowStability ? { ...this.__lastReflowStability } : null;
     }
 
     captureHistory(change) {
@@ -1139,6 +1412,13 @@
       }
       if (editingContextId && this.isContainer(editingContextId)) this.state.editor.editingContextId = editingContextId;
       this.state.updatedAt = new Date().toISOString();
+      this.__reflowStabilityInternal = true;
+      try {
+        this.__lastReflowStability = this.stabilizeManagedReflow();
+      } finally {
+        this.__reflowStabilityInternal = false;
+      }
+      this.synchronizeHistoryBaseline();
     }
 
     undo() {
@@ -1215,7 +1495,10 @@
     }
 
     analyzeDocument(document) {
-      return analyzeDocumentInput(document === undefined ? document : clone(document));
+      const source = document === undefined ? document : normalizeLegacyTextPresentation(document);
+      const analysis = analyzeDocumentInput(source);
+      if (analysis?.document) analysis.document = normalizeLegacyTextPresentation(analysis.document);
+      return analysis;
     }
 
     getState() { return this.state; }
@@ -1248,6 +1531,10 @@
 
     getLastGeometryResolution(componentId) {
       return this.geometryResolutions.get(componentId) || null;
+    }
+
+    getLastGeometryTransaction() {
+      return this.lastGeometryTransaction ? clone(this.lastGeometryTransaction) : null;
     }
 
     getEditingContext() {
@@ -1284,10 +1571,14 @@
       return reflowMinimum(component, proposedFrame || component.frame) || this.getContentMinimum(component, proposedFrame);
     }
 
-    reflowComponentTree(componentOrId) {
+    reflowComponentTree(componentOrId, options = {}) {
       const component = typeof componentOrId === "string" ? this.findComponent(componentOrId)?.component : componentOrId;
       if (!component) return false;
-      return reflowTree(component);
+      const result = reflowTree(component);
+      if (result && options.derived !== true && !this.__reflowStabilityInternal && !this.historySuspended) {
+        this.synchronizeHistoryBaseline();
+      }
+      return result;
     }
 
     getContextPath(contextId = this.state.editor.editingContextId) {
@@ -1299,13 +1590,86 @@
       return this.findComponent(componentId)?.parent?.id || null;
     }
 
+    isAdaptiveProductCard(component, modes = ADAPTIVE_PRODUCT_MODES) {
+      return component?.type === "product-card" && modes.includes(component.presentation?.mode);
+    }
+
+    adaptiveProductCardFor(componentId, modes = ADAPTIVE_PRODUCT_MODES) {
+      const record = this.findComponent(componentId);
+      return record?.path?.slice().reverse().find(component => this.isAdaptiveProductCard(component, modes)) || null;
+    }
+
+    allAdaptiveProductCards(modes = ADAPTIVE_PRODUCT_MODES) {
+      const cards = [];
+      const visit = component => {
+        if (this.isAdaptiveProductCard(component, modes)) cards.push(component);
+        (component.children || []).forEach(visit);
+      };
+      (this.state?.pages || []).forEach(page => (page.children || []).forEach(visit));
+      return cards;
+    }
+
+    refreshAdaptiveProductCard(cardOrId, modes = ADAPTIVE_PRODUCT_MODES) {
+      const card = typeof cardOrId === "string" ? this.findComponent(cardOrId)?.component : cardOrId;
+      if (!this.isAdaptiveProductCard(card, modes)) return false;
+      this.ensureContainerMinimum(card, this.getParentId(card.id));
+      this.reflowComponentTree(card, { derived: true });
+      return true;
+    }
+
+    refreshAllAdaptiveProductCards(modes = ADAPTIVE_PRODUCT_MODES) {
+      let refreshed = 0;
+      this.allAdaptiveProductCards(modes).forEach(card => {
+        if (this.refreshAdaptiveProductCard(card, modes)) refreshed += 1;
+      });
+      return refreshed;
+    }
+
+    variantsCardFor(componentId) {
+      return this.adaptiveProductCardFor(componentId, ["variants"]);
+    }
+
+    allVariantsCards() {
+      return this.allAdaptiveProductCards(["variants"]);
+    }
+
+    refreshVariantsCard(cardOrId) {
+      return this.refreshAdaptiveProductCard(cardOrId, ["variants"]);
+    }
+
+    refreshAllVariantsCards() {
+      return this.refreshAllAdaptiveProductCards(["variants"]);
+    }
+
+    dataOnlyCardFor(componentId) {
+      return this.adaptiveProductCardFor(componentId, ["data-only"]);
+    }
+
+    allDataOnlyCards() {
+      return this.allAdaptiveProductCards(["data-only"]);
+    }
+
+    refreshDataOnlyCard(cardOrId) {
+      return this.refreshAdaptiveProductCard(cardOrId, ["data-only"]);
+    }
+
+    refreshAllDataOnlyCards() {
+      return this.refreshAllAdaptiveProductCards(["data-only"]);
+    }
+
     getContainerSize(contextId) {
       if (!contextId) return { width: this.getPage().size.width, height: this.getPage().size.height };
       const component = this.findComponent(contextId)?.component;
       return component ? { width: component.frame.width, height: component.frame.height } : { width: 0, height: 0 };
     }
 
-    getSuggestedFrame(sourceFrame, parentId = this.state.editor.editingContextId) {
+    getProbablePlacementFrame(type, sourceFrame, parentId = this.state.editor.editingContextId) {
+      return window.CatalogComponentPlacements?.probableFrame?.(this, type, sourceFrame, parentId) || null;
+    }
+
+    getSuggestedFrame(sourceFrame, parentId = this.state.editor.editingContextId, type = null) {
+      const preferred = type ? this.getProbablePlacementFrame(type, sourceFrame, parentId) : null;
+      if (preferred) return preferred;
       const parent = parentId ? this.findComponent(parentId)?.component : null;
       const size = this.getContainerSize(parentId);
       const page = this.getPage();
@@ -1348,14 +1712,25 @@
       return slots.find(slot => this.getSlotUsage(parentId, slot.name) < slot.capacity) || null;
     }
 
+    getContextualInsertionTarget(type, options = {}) {
+      if (options.parentId !== undefined) return options.parentId;
+      const currentContextId = this.state.editor.editingContextId;
+      if (options.preferCurrentContext === true) return currentContextId;
+      const selected = this.getSelected();
+      if (selected && this.isContainer(selected.id) && this.isTypeAllowed(type, selected.id)) return selected.id;
+      return currentContextId;
+    }
+
     insertComponent(type, options = {}) {
       const definition = definitionFor(type);
-      const parentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+      const previousContextId = this.state.editor.editingContextId;
+      const parentId = this.getContextualInsertionTarget(type, options);
       if (!definition || !this.isTypeAllowed(type, parentId)) return null;
       const compatibleSlots = parentId ? this.getSlotDefinitions(parentId).filter(item => item.accepts.includes(type)) : [];
       const slot = options.slotName ? this.getSlotDefinitions(parentId).find(item => item.name === options.slotName) : this.getPreferredSlot(parentId, type);
       if (compatibleSlots.length && !slot) throw new Error("Todos os slots compatíveis estão ocupados. Remova uma peça, aumente a capacidade ou arraste para criar um override livre.");
-      const frame = slot ? { ...definition.defaultFrame, x: 0, y: 0 } : this.getSuggestedFrame(definition.defaultFrame, parentId);
+      const frame = slot ? { ...definition.defaultFrame, x: 0, y: 0 } : this.getSuggestedFrame(definition.defaultFrame, parentId, type);
+      if (parentId !== previousContextId && parentId) this.state.editor.editingContextId = parentId;
       return this.addComponent(type, frame, { ...options, parentId, slotName: slot?.name || null });
     }
 
@@ -1373,13 +1748,24 @@
       if (selected.length !== 1) return [];
       const component = selected[0];
       const record = this.findComponent(component.id);
-      if (component.type === "data-table") return [{
-        id: "add-table-row",
-        componentId: component.id,
-        label: "Linha da tabela",
-        description: "Acrescenta uma linha editável com as colunas atuais.",
-        icon: "card"
-      }];
+      if (component.type === "data-table") {
+        const card = this.getProductCard(component.id);
+        const actions = [{
+          id: "add-table-row",
+          componentId: component.id,
+          label: "Linha da tabela",
+          description: "Acrescenta uma linha visual com as colunas atuais.",
+          icon: "card"
+        }];
+        if (card?.binding?.productId) actions.push({
+          id: "add-table-variant",
+          componentId: component.id,
+          label: "Variação do produto",
+          description: "Cria a entidade de variação, sua linha vinculada e uma imagem legendada.",
+          icon: "layers"
+        });
+        return actions;
+      }
       if (component.type === "legend-panel") return [{
         id: "add-legend-group",
         componentId: component.id,
@@ -1420,6 +1806,20 @@
           column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""
         ]));
         return this.addTableRow(component.id, values);
+      }
+      if (actionId === "add-table-variant") {
+        const table = this.findComponent(componentId)?.component;
+        const card = table?.type === "data-table" ? this.getProductCard(table.id) : null;
+        const productId = card?.binding?.productId;
+        if (!productId) return null;
+        const product = this.getProduct(productId);
+        const index = (product.metadata?.variants || []).length + 1;
+        const rows = this.getTableRows(table);
+        const sourceValues = rows[rows.length - 1]?.metadata?.values || product.metadata?.values || {};
+        return this.addProductVariant(productId, {
+          label: `Variação ${index}`,
+          commercialValues: { ...sourceValues, code: "0000", price: "R$ 0,00" }
+        }, { materializeVisual: true, materializeRow: true });
       }
       if (actionId === "add-gallery-art" || actionId === "convert-art-gallery") return this.addArtVariation(componentId);
       if (actionId === "add-legend-group") return this.createLegendGroup(componentId);
@@ -1490,6 +1890,50 @@
         this.state.editor.selectedComponentId = variation.id;
         this.state.editor.selectedComponentIds = [variation.id];
         return gallery;
+      });
+    }
+
+    applyGalleryItemsBulk(galleryId, entries = [], options = {}) {
+      const gallery = this.findComponent(galleryId)?.component;
+      if (gallery?.type !== "art-gallery") throw new Error("Selecione uma galeria para editar suas variações.");
+      const mode = options.mode === "append" ? "append" : "replace";
+      const valid = entries.slice(0, 24).map((entry, index) => ({
+        caption: String(entry?.caption || `Variação ${index + 1}`).trim(),
+        assetId: entry?.assetId && this.getAsset(entry.assetId) ? entry.assetId : null
+      })).filter(entry => entry.caption || entry.assetId);
+      if (!valid.length) throw new Error("Informe ao menos uma legenda de imagem.");
+      return this.runCompoundChange({ type: "gallery-items-bulk-applied", componentId: galleryId, mode, count: valid.length }, () => {
+        const existing = (gallery.children || []).filter(child => child.type === "art");
+        const target = mode === "append" ? existing.length + valid.length : valid.length;
+        while (existing.length < target) {
+          const index = existing.length;
+          const item = createNode("art", { x: 0, y: 0, width: 120, height: 100 }, {
+            constraints: { minWidth: 44, minHeight: 44 },
+            props: { label: `VARIAÇÃO ${index + 1}`, hint: "Escolha a imagem", role: "product", caption: `Variação ${index + 1}`, captionPosition: "below", galleryItem: true },
+            layoutItem: { managed: true, grow: 1, span: 1 }
+          });
+          gallery.children.push(item);
+          existing.push(item);
+        }
+        if (mode === "replace" && existing.length > target) {
+          const removed = new Set(existing.slice(target).map(item => item.id));
+          gallery.children = gallery.children.filter(child => !removed.has(child.id));
+          existing.splice(target);
+        }
+        const offset = mode === "append" ? existing.length - valid.length : 0;
+        valid.forEach((entry, index) => {
+          const item = existing[offset + index];
+          item.props = { ...(item.props || {}), label: entry.caption.toUpperCase(), caption: entry.caption, captionPosition: "below", galleryItem: true };
+          if (entry.assetId) item.props.assetId = entry.assetId;
+        });
+        gallery.structureInitialized = true;
+        this.ensureContainerMinimum(gallery, this.getParentId(gallery.id));
+        reflowTree(gallery);
+        const record = this.findComponent(gallery.id);
+        if (record?.parent && usesAutoReflow(record.parent)) reflowTree(record.parent);
+        this.state.editor.selectedComponentId = gallery.id;
+        this.state.editor.selectedComponentIds = [gallery.id];
+        return existing;
       });
     }
 
@@ -1895,13 +2339,60 @@
           if (table) {
             this.updateComponent(table.id, { props: { density } });
             this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
-            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace" });
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
           }
           return card;
         });
         this.state.editor.editingContextId = area.id;
         this.state.editor.selectedComponentId = cards[cards.length - 1]?.id || area.id;
         return { area, cards };
+      });
+    }
+
+    createHeroGridStripForProducts(productIds = [], options = {}) {
+      const products = Array.from(new Set((productIds || []).map(String))).map(productId => this.getProduct(productId)).filter(Boolean);
+      if (!products.length) return { composition: null, hero: null, cards: [], strip: null };
+      const columns = Math.max(2, Math.min(4, Math.round(Number(options.columns) || 3)));
+      return this.runCompoundChange({ type: "hero-grid-strip-created", count: products.length, columns }, () => {
+        const requestedParentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+        const parentId = requestedParentId && this.isTypeAllowed("layout-container", requestedParentId) ? requestedParentId : null;
+        const template = this.getInsertableTemplate("section-hero-grid-strip");
+        const frame = this.getSuggestedFrame(template.metadata.component.frame, parentId);
+        const composition = this.addComponentFromTemplate("section-hero-grid-strip", frame, { parentId });
+        let heroRegion = null;
+        let gridRegion = null;
+        let strip = null;
+        visitSubtree(composition, component => {
+          if (component.props?.recipeRole === "hero") heroRegion = component;
+          if (component.props?.recipeRole === "grid") gridRegion = component;
+          if (component.props?.recipeRole === "strip") strip = component;
+        });
+        if (!heroRegion || !gridRegion || !strip) throw new Error("A receita hero + grade + faixa está incompleta.");
+        gridRegion.layout.columns = columns;
+
+        const createBoundCard = (product, parent, presentation) => {
+          const card = this.addComponent("product-card", { x: 0, y: 0, width: parent.frame.width, height: presentation.mode === "hero" ? 280 : 220 }, { parentId: parent.id });
+          this.bindProduct(card.id, product.id);
+          this.setComponentPresentation(card.id, presentation);
+          const table = cardDataTable(card);
+          if (table) {
+            this.updateComponent(table.id, { props: { density: presentation.density } });
+            this.updateTableColumns(table.id, product.metadata?.tableColumns || table.props?.columns);
+            this.replaceTableRowsBulk(table.id, product.metadata?.commercialRows || [{ values: product.metadata?.values || {} }], { mode: "replace", bindingSync: true });
+          }
+          return card;
+        };
+
+        const hero = createBoundCard(products[0], heroRegion, { presetId: "product-hero", mode: "hero", density: "comfortable", responsiveState: "auto" });
+        const cards = products.slice(1).map(product => createBoundCard(product, gridRegion, { presetId: "product-standard", mode: "standard", density: "compact", responsiveState: "compact" }));
+        this.ensureContainerMinimum(heroRegion, composition.id);
+        this.ensureContainerMinimum(gridRegion, composition.id);
+        reflowTree(heroRegion);
+        reflowTree(gridRegion);
+        this.state.editor.editingContextId = gridRegion.id;
+        this.state.editor.selectedComponentId = cards[cards.length - 1]?.id || hero.id;
+        this.state.editor.selectedComponentIds = [this.state.editor.selectedComponentId];
+        return { composition, hero, cards, strip };
       });
     }
 
@@ -2227,7 +2718,8 @@
       const template = this.getInsertableTemplate(templateId);
       const type = template?.metadata?.rootType || template?.metadata?.component?.type;
       if (!template || !type) return null;
-      const parentId = options.parentId !== undefined ? options.parentId : this.state.editor.editingContextId;
+      const previousContextId = this.state.editor.editingContextId;
+      const parentId = this.getContextualInsertionTarget(type, options);
       const contexts = template.metadata?.contexts;
       const contextType = parentId ? this.findComponent(parentId)?.component?.type : "page";
       if (Array.isArray(contexts) && !contexts.includes(contextType)) return null;
@@ -2235,6 +2727,7 @@
       const slot = options.slotName ? this.getSlotDefinitions(parentId).find(item => item.name === options.slotName) : this.getPreferredSlot(parentId, type);
       if (compatibleSlots.length && !slot) throw new Error("Todos os slots compatíveis estão ocupados. Remova uma peça ou arraste para criar um override livre.");
       const frame = slot ? { ...template.metadata.component.frame, x: 0, y: 0 } : this.getSuggestedFrame(template.metadata.component.frame, parentId);
+      if (parentId !== previousContextId && parentId) this.state.editor.editingContextId = parentId;
       return this.addComponentFromTemplate(templateId, frame, { ...options, parentId, slotName: slot?.name || null });
     }
 
@@ -2268,8 +2761,23 @@
       const record = this.findComponent(componentId);
       if (!record) return false;
       const parentId = record.parent?.id || null;
-      if (this.state.editor.editingContextId !== parentId) this.state.editor.editingContextId = parentId;
-      this.setSelection(componentId, options);
+      const previousContextId = this.state.editor.editingContextId;
+      this.state.editor.editingContextId = parentId;
+      if (options.additive === true || options.toggle === true) {
+        this.setSelection(componentId, options);
+        return true;
+      }
+      this.state.editor.selectedComponentId = componentId;
+      this.state.editor.selectedComponentIds = [componentId];
+      this.emit({
+        type: "selection",
+        componentId,
+        componentIds: [componentId],
+        source: "layers",
+        contextChanged: previousContextId !== parentId,
+        previousContextId,
+        editingContextId: parentId
+      });
       return true;
     }
 
@@ -2343,6 +2851,172 @@
         width: Math.max(component.frame.width, minimum.width),
         height: Math.max(component.frame.height, minimum.height)
       }, component, parentId);
+    }
+
+    createGeometryDraftStore() {
+      const draft = new this.constructor(clone(this.state));
+      draft.listeners.clear();
+      draft.historyUndo = [];
+      draft.historyRedo = [];
+      draft.historySuspended = true;
+      draft.geometryResolutions = new Map();
+      draft.lastGeometryTransaction = null;
+      return draft;
+    }
+
+    planGeometryTransaction(requests = [], options = {}) {
+      const source = Array.isArray(requests) ? requests.slice(0, 40) : [];
+      const requestedIds = new Set();
+      const invalid = Array.isArray(requests) && requests.length > 40
+        ? [{ componentId: null, code: "too-many-requests", maximum: 40, received: requests.length }]
+        : [];
+      const normalized = source.map(request => {
+        const componentId = String(request?.componentId || "");
+        const component = this.findComponent(componentId)?.component;
+        const framePatch = request?.frame && typeof request.frame === "object" ? request.frame : null;
+        const keys = framePatch ? Object.keys(framePatch).filter(key => ["x", "y", "width", "height"].includes(key)) : [];
+        if (!component || !keys.length || keys.some(key => !Number.isFinite(Number(framePatch[key]))) || requestedIds.has(componentId)) {
+          invalid.push({
+            componentId: componentId || null,
+            code: !component ? "component-missing" : requestedIds.has(componentId) ? "duplicate-request" : "invalid-frame"
+          });
+          return null;
+        }
+        requestedIds.add(componentId);
+        return {
+          componentId,
+          frame: {
+            ...component.frame,
+            ...Object.fromEntries(keys.map(key => [key, Number(framePatch[key])]))
+          },
+          releaseAuthority: request.releaseAuthority === true
+        };
+      }).filter(Boolean);
+
+      const blocked = conflicts => ({
+        status: "blocked",
+        requested: normalized.map(request => ({ componentId: request.componentId, frame: { ...request.frame } })),
+        resolved: normalized.map(request => ({ componentId: request.componentId, frame: { ...this.findComponent(request.componentId).component.frame } })),
+        changes: [],
+        authorityChanges: [],
+        reasons: [...new Set(conflicts.map(conflict => conflict.code))],
+        conflicts
+      });
+      if (!normalized.length || invalid.length) return blocked(invalid.length ? invalid : [{ componentId: null, code: "empty-request" }]);
+
+      const before = geometrySnapshot(this);
+      const draft = this.createGeometryDraftStore();
+      normalized.forEach(request => {
+        if (request.releaseAuthority) {
+          draft.markSlotFree(request.componentId);
+          draft.markLayoutFree(request.componentId);
+        }
+        draft.updateComponent(request.componentId, { frame: request.frame });
+      });
+
+      if (options.selection?.componentIds) {
+        draft.state.editor.selectedComponentIds = options.selection.componentIds.slice();
+        draft.state.editor.selectedComponentId = options.selection.primaryId || options.selection.componentIds.at(-1) || null;
+      }
+      draft.emit(options.change || { type: "geometry-transaction-planned", componentIds: normalized.map(request => request.componentId) }, { ephemeral: true });
+      (draft.getPage()?.children || []).forEach(component => {
+        if (definitionFor(component.type)?.container && component.reflow?.mode !== "manual") draft.reflowComponentTree(component, { derived: true });
+      });
+
+      const after = geometrySnapshot(draft);
+      const directIds = new Set(normalized.map(request => request.componentId));
+      const changes = [];
+      const authorityChanges = [];
+      new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+        const previous = before.get(componentId);
+        const next = after.get(componentId);
+        if (!previous || !next) return;
+        if (!frameEquals(previous.frame, next.frame)) {
+          changes.push({
+            componentId,
+            direct: directIds.has(componentId),
+            before: { ...previous.frame },
+            after: { ...next.frame }
+          });
+        }
+        if (previous.slotManaged !== next.slotManaged || previous.layoutManaged !== next.layoutManaged) {
+          authorityChanges.push({
+            componentId,
+            before: { slotManaged: previous.slotManaged, layoutManaged: previous.layoutManaged },
+            after: { slotManaged: next.slotManaged, layoutManaged: next.layoutManaged }
+          });
+        }
+      });
+
+      const affectedIds = geometryAffectedIds(before, after, directIds);
+      const conflicts = worsenedGeometryConflicts(
+        geometryConflicts(this, affectedIds),
+        geometryConflicts(draft, affectedIds)
+      );
+      const resolved = normalized.map(request => ({
+        componentId: request.componentId,
+        frame: { ...after.get(request.componentId).frame }
+      }));
+      const reasons = [];
+      normalized.forEach(request => {
+        const resolution = draft.getLastGeometryResolution(request.componentId);
+        reasons.push(...(resolution?.reasons || []));
+      });
+      if (changes.some(change => !change.direct)) reasons.push("derived-reflow");
+      if (authorityChanges.length) reasons.push("layout-authority-released");
+      if (conflicts.length) reasons.push(...conflicts.map(conflict => conflict.code));
+
+      const plan = {
+        status: conflicts.length
+          ? "blocked"
+          : resolved.some((entry, index) => !frameEquals(entry.frame, normalized[index].frame)) || changes.some(change => !change.direct)
+            ? "adjusted"
+            : "applied",
+        requested: normalized.map(request => ({ componentId: request.componentId, frame: { ...request.frame } })),
+        resolved,
+        changes,
+        authorityChanges,
+        reasons: [...new Set(reasons)],
+        conflicts
+      };
+      Object.defineProperty(plan, GEOMETRY_PLAN_DRAFT, { value: draft });
+      return plan;
+    }
+
+    applyGeometryTransaction(requests = [], options = {}) {
+      const plan = this.planGeometryTransaction(requests, options);
+      const report = publicGeometryPlan(plan);
+      this.lastGeometryTransaction = report;
+      if (plan.status === "blocked") return report;
+
+      const draft = plan[GEOMETRY_PLAN_DRAFT];
+      synchronizeGeometryState(this, draft);
+      if (options.selection?.componentIds) {
+        this.state.editor.selectedComponentIds = options.selection.componentIds.slice();
+        this.state.editor.selectedComponentId = options.selection.primaryId || options.selection.componentIds.at(-1) || null;
+      }
+      plan.requested.forEach((request, index) => {
+        this.geometryResolutions.set(request.componentId, {
+          requested: { ...request.frame },
+          resolved: { ...plan.resolved[index].frame },
+          reasons: report.reasons.slice(),
+          status: report.status
+        });
+      });
+      const change = options.change || { type: "components-transformed", componentIds: plan.requested.map(request => request.componentId) };
+      this.emit({ ...change, geometryTransaction: report });
+      return report;
+    }
+
+    updateComponentGeometry(componentId, frame, options = {}) {
+      return this.applyGeometryTransaction([{
+        componentId,
+        frame,
+        releaseAuthority: options.releaseAuthority !== false
+      }], {
+        change: options.change || { type: "component-updated", componentId, patch: { frame: clone(frame) } },
+        selection: options.selection
+      });
     }
 
     addComponent(type, frame, options = {}) {
@@ -2422,6 +3096,8 @@
       if (patch.constraints) Object.assign(component.constraints, patch.constraints);
       if (patch.props) {
         const props = { ...patch.props };
+        if (component.type === "text" && hasOwn(props, "align")) props.alignExplicit = true;
+        if (component.type === "text" && hasOwn(props, "overflow")) props.overflowExplicit = true;
         if (component.type === "art") {
           for (const key of ["focalX", "focalY"]) {
             if (props[key] !== undefined) props[key] = Math.max(0, Math.min(100, Number(props[key]) || 0));
@@ -2614,52 +3290,185 @@
       const allowed = new Set(["left", "center", "right", "top", "middle", "bottom"]);
       const selection = this.getBatchSelection(componentIds);
       if (!selection || !allowed.has(alignment)) return false;
-      return this.runCompoundChange({ type: "components-aligned", componentIds: selection.records.map(record => record.component.id), alignment }, () => {
-        this.releaseBatchLayout(selection.records);
-        const components = selection.records.map(record => record.component);
-        const left = Math.min(...components.map(component => component.frame.x));
-        const right = Math.max(...components.map(component => component.frame.x + component.frame.width));
-        const top = Math.min(...components.map(component => component.frame.y));
-        const bottom = Math.max(...components.map(component => component.frame.y + component.frame.height));
-        components.forEach(component => {
-          const frame = {};
-          if (alignment === "left") frame.x = left;
-          if (alignment === "center") frame.x = left + (right - left - component.frame.width) / 2;
-          if (alignment === "right") frame.x = right - component.frame.width;
-          if (alignment === "top") frame.y = top;
-          if (alignment === "middle") frame.y = top + (bottom - top - component.frame.height) / 2;
-          if (alignment === "bottom") frame.y = bottom - component.frame.height;
-          this.updateComponent(component.id, { frame });
-        });
-        this.state.editor.selectedComponentIds = components.map(component => component.id);
-        this.state.editor.selectedComponentId = components[components.length - 1].id;
-        return true;
+      const components = selection.records.map(record => record.component);
+      const left = Math.min(...components.map(component => component.frame.x));
+      const right = Math.max(...components.map(component => component.frame.x + component.frame.width));
+      const top = Math.min(...components.map(component => component.frame.y));
+      const bottom = Math.max(...components.map(component => component.frame.y + component.frame.height));
+      const requests = components.map(component => {
+        const frame = {};
+        if (alignment === "left") frame.x = left;
+        if (alignment === "center") frame.x = left + (right - left - component.frame.width) / 2;
+        if (alignment === "right") frame.x = right - component.frame.width;
+        if (alignment === "top") frame.y = top;
+        if (alignment === "middle") frame.y = top + (bottom - top - component.frame.height) / 2;
+        if (alignment === "bottom") frame.y = bottom - component.frame.height;
+        return { componentId: component.id, frame, releaseAuthority: true };
       });
+      const componentIdsInOrder = components.map(component => component.id);
+      const plan = this.applyGeometryTransaction(requests, {
+        change: { type: "components-aligned", componentIds: componentIdsInOrder, alignment },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      });
+      return plan.status !== "blocked";
     }
 
     distributeComponents(componentIds, axis) {
       const selection = this.getBatchSelection(componentIds, 3);
       if (!selection || !["horizontal", "vertical"].includes(axis)) return false;
-      return this.runCompoundChange({ type: "components-distributed", componentIds: selection.records.map(record => record.component.id), axis }, () => {
-        this.releaseBatchLayout(selection.records);
-        const horizontal = axis === "horizontal";
-        const components = selection.records.map(record => record.component).sort((left, right) => {
-          const leftCenter = left.frame[horizontal ? "x" : "y"] + left.frame[horizontal ? "width" : "height"] / 2;
-          const rightCenter = right.frame[horizontal ? "x" : "y"] + right.frame[horizontal ? "width" : "height"] / 2;
-          return leftCenter - rightCenter;
-        });
-        const position = horizontal ? "x" : "y";
-        const size = horizontal ? "width" : "height";
-        const firstCenter = components[0].frame[position] + components[0].frame[size] / 2;
-        const lastCenter = components[components.length - 1].frame[position] + components[components.length - 1].frame[size] / 2;
-        const step = (lastCenter - firstCenter) / (components.length - 1);
-        components.slice(1, -1).forEach((component, index) => {
-          this.updateComponent(component.id, { frame: { [position]: firstCenter + step * (index + 1) - component.frame[size] / 2 } });
-        });
-        this.state.editor.selectedComponentIds = selection.records.map(record => record.component.id);
-        this.state.editor.selectedComponentId = this.state.editor.selectedComponentIds[this.state.editor.selectedComponentIds.length - 1];
-        return true;
+      const horizontal = axis === "horizontal";
+      const components = selection.records.map(record => record.component).sort((left, right) => {
+        const leftCenter = left.frame[horizontal ? "x" : "y"] + left.frame[horizontal ? "width" : "height"] / 2;
+        const rightCenter = right.frame[horizontal ? "x" : "y"] + right.frame[horizontal ? "width" : "height"] / 2;
+        return leftCenter - rightCenter;
       });
+      const position = horizontal ? "x" : "y";
+      const size = horizontal ? "width" : "height";
+      const firstCenter = components[0].frame[position] + components[0].frame[size] / 2;
+      const lastCenter = components[components.length - 1].frame[position] + components[components.length - 1].frame[size] / 2;
+      const step = (lastCenter - firstCenter) / (components.length - 1);
+      const placementById = new Map(components.map((component, index) => [
+        component.id,
+        index === 0 || index === components.length - 1
+          ? component.frame[position]
+          : firstCenter + step * index - component.frame[size] / 2
+      ]));
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const plan = this.applyGeometryTransaction(selection.records.map(record => ({
+        componentId: record.component.id,
+        frame: { [position]: placementById.get(record.component.id) },
+        releaseAuthority: true
+      })), {
+        change: { type: "components-distributed", componentIds: componentIdsInOrder, axis },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      });
+      return plan.status !== "blocked";
+    }
+
+    getSelectionGridNormalization(componentIds, mode = "both") {
+      const selection = this.getBatchSelection(componentIds);
+      const allowed = new Set(["positions", "dimensions", "both"]);
+      if (!selection || !allowed.has(mode)) return null;
+      const unit = Math.max(1, Number(this.getPage()?.grid?.unit) || 4);
+      const positions = mode === "positions" || mode === "both";
+      const dimensions = mode === "dimensions" || mode === "both";
+      const requests = selection.records.map(record => {
+        const current = record.component.frame;
+        const frame = {};
+        if (positions) {
+          frame.x = Math.round(current.x / unit) * unit;
+          frame.y = Math.round(current.y / unit) * unit;
+        }
+        if (dimensions) {
+          frame.width = Math.max(unit, Math.round(current.width / unit) * unit);
+          frame.height = Math.max(unit, Math.round(current.height / unit) * unit);
+        }
+        return { componentId: record.component.id, frame, releaseAuthority: true };
+      });
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const plan = publicGeometryPlan(this.planGeometryTransaction(requests, {
+        change: { type: "components-grid-normalized", componentIds: componentIdsInOrder, mode, unit },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      }));
+      const directChanges = plan.changes.filter(change => change.direct);
+      return {
+        ...plan,
+        mode,
+        unit,
+        componentIds: componentIdsInOrder,
+        changedCount: directChanges.length,
+        derivedCount: plan.changes.filter(change => !change.direct).length,
+        maximumAdjustment: directChanges.reduce((maximum, change) => Math.max(
+          maximum,
+          Math.abs(change.after.x - change.before.x),
+          Math.abs(change.after.y - change.before.y),
+          Math.abs(change.after.width - change.before.width),
+          Math.abs(change.after.height - change.before.height)
+        ), 0)
+      };
+    }
+
+    normalizeSelectionToGrid(componentIds, mode = "both") {
+      const preview = this.getSelectionGridNormalization(componentIds, mode);
+      if (!preview || preview.status === "blocked" || preview.changedCount === 0) return preview;
+      const positions = mode === "positions" || mode === "both";
+      const dimensions = mode === "dimensions" || mode === "both";
+      const requests = preview.componentIds.map(componentId => {
+        const current = this.findComponent(componentId).component.frame;
+        const frame = {};
+        if (positions) {
+          frame.x = Math.round(current.x / preview.unit) * preview.unit;
+          frame.y = Math.round(current.y / preview.unit) * preview.unit;
+        }
+        if (dimensions) {
+          frame.width = Math.max(preview.unit, Math.round(current.width / preview.unit) * preview.unit);
+          frame.height = Math.max(preview.unit, Math.round(current.height / preview.unit) * preview.unit);
+        }
+        return { componentId, frame, releaseAuthority: true };
+      });
+      return this.applyGeometryTransaction(requests, {
+        change: { type: "components-grid-normalized", componentIds: preview.componentIds, mode, unit: preview.unit },
+        selection: { componentIds: preview.componentIds, primaryId: preview.componentIds.at(-1) }
+      });
+    }
+
+    transformComponents(componentIds, operation = {}) {
+      const selection = this.getBatchSelection(componentIds);
+      if (!selection) return false;
+      const allowedPaths = new Set(["x", "y", "width", "height"]);
+      const values = operation.values && typeof operation.values === "object"
+        ? Object.fromEntries(Object.entries(operation.values).filter(([key, value]) => allowedPaths.has(key) && Number.isFinite(Number(value))).map(([key, value]) => [key, Number(value)]))
+        : null;
+      const path = allowedPaths.has(operation.path) ? operation.path : null;
+      const kind = String(operation.kind || "set");
+      if ((!path && !Object.keys(values || {}).length) || !["set", "delta", "equalize"].includes(kind)) return false;
+      const requested = Number(operation.value);
+      if (!values && kind !== "equalize" && !Number.isFinite(requested)) return false;
+      const referenceId = selection.records.some(record => record.component.id === operation.referenceId)
+        ? operation.referenceId
+        : this.state.editor.selectedComponentId;
+      const reference = selection.records.find(record => record.component.id === referenceId)?.component || selection.records[selection.records.length - 1].component;
+      const componentIdsInOrder = selection.records.map(record => record.component.id);
+      const operationReport = { kind, path, values, value: kind === "equalize" ? reference.frame[path] : requested, referenceId: reference.id };
+      const requests = selection.records.map(record => {
+        const frame = values
+          ? Object.fromEntries(Object.entries(values).map(([key, value]) => [key, kind === "delta" ? record.component.frame[key] + value : value]))
+          : { [path]: kind === "delta" ? record.component.frame[path] + requested : kind === "equalize" ? reference.frame[path] : requested };
+        return { componentId: record.component.id, frame, releaseAuthority: true };
+      });
+      const plan = this.applyGeometryTransaction(requests, {
+        change: { type: "components-transformed", componentIds: componentIdsInOrder, operation: operationReport },
+        selection: { componentIds: componentIdsInOrder, primaryId: reference.id }
+      });
+      return plan.status !== "blocked";
+    }
+
+    applyComponentFramesBulk(entries = []) {
+      const valid = entries.slice(0, 40).filter(entry => entry?.id && [entry.x, entry.y, entry.width, entry.height].every(value => Number.isFinite(Number(value))));
+      const selection = this.getBatchSelection(valid.map(entry => entry.id), 1);
+      if (!selection || selection.records.length !== valid.length) throw new Error("A lista deve conter exatamente componentes irmãos da seleção atual.");
+      const selectedIds = new Set(this.getSelectedIds());
+      if (valid.some(entry => !selectedIds.has(entry.id)) || selectedIds.size !== valid.length) throw new Error("A geometria só pode ser aplicada ao conjunto atualmente selecionado.");
+      const byId = new Map(valid.map(entry => [entry.id, entry]));
+      const componentIdsInOrder = valid.map(entry => entry.id);
+      const plan = this.applyGeometryTransaction(selection.records.map(record => {
+        const frame = byId.get(record.component.id);
+        return {
+          componentId: record.component.id,
+          frame: { x: Number(frame.x), y: Number(frame.y), width: Number(frame.width), height: Number(frame.height) },
+          releaseAuthority: true
+        };
+      }), {
+        change: { type: "component-frames-bulk-applied", componentIds: componentIdsInOrder },
+        selection: { componentIds: componentIdsInOrder, primaryId: componentIdsInOrder.at(-1) }
+      });
+      if (plan.status === "blocked") {
+        const error = new Error("A geometria solicitada não possui uma solução estrutural válida.");
+        error.code = "GEOMETRY_TRANSACTION_BLOCKED";
+        error.geometryTransaction = plan;
+        throw error;
+      }
+      return componentIdsInOrder.map(componentId => this.findComponent(componentId).component);
     }
 
     inferSpacingAxis(records, requested = "auto") {
@@ -2718,50 +3527,170 @@
       return created;
     }
 
-    spaceComponents(componentIds, options = {}) {
+    applySpacingMutation(componentIds, options = {}) {
       const selection = this.getBatchSelection(componentIds, 2);
-      if (!selection) return false;
+      if (!selection) throw new Error("Selecione ao menos dois componentes irmãos.");
       const gap = Math.max(0, Math.min(1000, Number(options.gap) || 0));
       const axis = this.inferSpacingAxis(selection.records, options.axis);
       const addSeparators = options.separators === true;
       const threshold = Math.max(1, Number(definitionFor("separator")?.minThickness) || 2) * 3;
       if (addSeparators && gap <= threshold) throw new Error(`Use espaçamento maior que ${threshold} px para adicionar separadores.`);
-      return this.runCompoundChange({ type: "components-spaced", componentIds: selection.records.map(record => record.component.id), axis, gap, separators: addSeparators }, () => {
-        const parent = selection.records[0].parent || null;
-        const mode = parent ? (window.CatalogLayoutEngine?.effectiveMode(parent) || parent.layout?.mode) : "free";
-        const managed = parent?.children?.filter(child => !child.slot?.name && child.layoutItem?.managed !== false && child.layoutItem?.overlay !== true) || [];
-        const selectedSet = new Set(selection.records.map(record => record.component.id));
-        const allManaged = Boolean(parent
-          && definitionFor(parent.type)?.container?.autoLayout
-          && ((axis === "horizontal" && mode === "row") || (axis === "vertical" && mode === "column"))
-          && managed.length === selection.records.length
-          && managed.every(component => selectedSet.has(component.id)));
-        let components;
-        if (allManaged) {
-          parent.layout.gap = gap;
-          parent.layout.distribution = "fill";
-          reflowTree(parent);
-          components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
-        } else {
-          this.releaseBatchLayout(selection.records);
-          components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
-          const position = axis === "horizontal" ? "x" : "y";
-          const size = axis === "horizontal" ? "width" : "height";
-          const limit = this.getContainerSize(selection.parentId)[size];
-          let cursor = components[0].frame[position];
-          const placements = components.map((component, index) => {
-            const value = index ? cursor : component.frame[position];
-            cursor = value + component.frame[size] + gap;
-            return value;
-          });
-          if (cursor - gap > limit) throw new Error("O espaçamento solicitado ultrapassa o contexto atual.");
-          components.slice(1).forEach((component, index) => this.updateComponent(component.id, { frame: { [position]: placements[index + 1] } }));
-        }
-        const separators = addSeparators ? this.addSeparatorsForComponents(selection, components, axis, options.separatorPresetId, allManaged) : [];
-        this.state.editor.selectedComponentIds = components.map(component => component.id);
-        this.state.editor.selectedComponentId = components[components.length - 1].id;
-        return { components, separators, axis, gap };
+      const parent = selection.records[0].parent || null;
+      const mode = parent ? (window.CatalogLayoutEngine?.effectiveMode(parent) || parent.layout?.mode) : "free";
+      const managed = parent?.children?.filter(child => !child.slot?.name && child.layoutItem?.managed !== false && child.layoutItem?.overlay !== true) || [];
+      const selectedSet = new Set(selection.records.map(record => record.component.id));
+      const allManaged = Boolean(parent
+        && definitionFor(parent.type)?.container?.autoLayout
+        && ((axis === "horizontal" && mode === "row") || (axis === "vertical" && mode === "column"))
+        && managed.length === selection.records.length
+        && managed.every(component => selectedSet.has(component.id)));
+      let components;
+      if (allManaged) {
+        parent.layout.gap = gap;
+        parent.layout.distribution = "fill";
+        reflowTree(parent);
+        components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
+      } else {
+        this.releaseBatchLayout(selection.records);
+        components = selection.records.map(record => record.component).sort((left, right) => axis === "horizontal" ? left.frame.x - right.frame.x : left.frame.y - right.frame.y);
+        const position = axis === "horizontal" ? "x" : "y";
+        const size = axis === "horizontal" ? "width" : "height";
+        const limit = this.getContainerSize(selection.parentId)[size];
+        let cursor = components[0].frame[position];
+        const placements = components.map((component, index) => {
+          const value = index ? cursor : component.frame[position];
+          cursor = value + component.frame[size] + gap;
+          return value;
+        });
+        if (cursor - gap > limit) throw new Error("O espaçamento solicitado ultrapassa o contexto atual.");
+        components.slice(1).forEach((component, index) => this.updateComponent(component.id, { frame: { [position]: placements[index + 1] } }));
+      }
+      const separators = addSeparators ? this.addSeparatorsForComponents(selection, components, axis, options.separatorPresetId, allManaged) : [];
+      this.state.editor.selectedComponentIds = components.map(component => component.id);
+      this.state.editor.selectedComponentId = components[components.length - 1].id;
+      return { components, separators, axis, gap };
+    }
+
+    planSpacingTransaction(componentIds, options = {}) {
+      const requestedIds = Array.isArray(componentIds) ? [...new Set(componentIds.map(String))] : [];
+      const blocked = (code, message, conflicts = []) => ({
+        status: "blocked",
+        requested: { componentIds: requestedIds, options: clone(options) },
+        resolved: null,
+        changes: [],
+        structuralChanges: [],
+        authorityChanges: [],
+        reasons: [code],
+        conflicts: conflicts.length ? conflicts : [{ componentId: null, code, message }]
       });
+      if (requestedIds.length < 2) return blocked("invalid-selection", "Selecione ao menos dois componentes irmãos.");
+
+      const before = geometrySnapshot(this);
+      const draft = this.createGeometryDraftStore();
+      let result;
+      try {
+        result = draft.applySpacingMutation(requestedIds, options);
+      } catch (error) {
+        return blocked(error.message.includes("ultrapassa") ? "bounds" : "invalid-spacing", error.message);
+      }
+      const after = geometrySnapshot(draft);
+      const directIds = new Set(requestedIds);
+      const changes = [];
+      const authorityChanges = [];
+      new Set([...before.keys(), ...after.keys()]).forEach(componentId => {
+        const previous = before.get(componentId);
+        const next = after.get(componentId);
+        if (previous && next && !frameEquals(previous.frame, next.frame)) {
+          changes.push({ componentId, direct: directIds.has(componentId), before: { ...previous.frame }, after: { ...next.frame } });
+        }
+        if (previous && next && (previous.slotManaged !== next.slotManaged || previous.layoutManaged !== next.layoutManaged)) {
+          authorityChanges.push({
+            componentId,
+            before: { slotManaged: previous.slotManaged, layoutManaged: previous.layoutManaged },
+            after: { slotManaged: next.slotManaged, layoutManaged: next.layoutManaged }
+          });
+        }
+      });
+      const structuralChanges = [];
+      after.forEach((entry, componentId) => {
+        const previous = before.get(componentId);
+        if (!previous) {
+          structuralChanges.push({ type: "component-added", componentId, parentId: entry.parentId, componentType: entry.component.type });
+          return;
+        }
+        if (entry.component.type === "separator" && JSON.stringify(previous.component.props) !== JSON.stringify(entry.component.props)) {
+          structuralChanges.push({ type: "component-updated", componentId, parentId: entry.parentId, componentType: entry.component.type, field: "props" });
+        }
+        if (JSON.stringify(previous.component.layout) !== JSON.stringify(entry.component.layout)) {
+          structuralChanges.push({ type: "component-updated", componentId, parentId: entry.parentId, componentType: entry.component.type, field: "layout" });
+        }
+      });
+      before.forEach((entry, componentId) => {
+        if (!after.has(componentId)) structuralChanges.push({ type: "component-removed", componentId, parentId: entry.parentId, componentType: entry.component.type });
+      });
+      const affectedIds = geometryAffectedIds(before, after, directIds);
+      structuralChanges.forEach(change => {
+        affectedIds.add(change.componentId);
+        if (change.parentId) affectedIds.add(change.parentId);
+      });
+      const previousAffectedIds = new Set([...affectedIds].filter(componentId => before.has(componentId)));
+      const conflicts = worsenedGeometryConflicts(geometryConflicts(this, previousAffectedIds), geometryConflicts(draft, affectedIds));
+      const plan = {
+        status: conflicts.length ? "blocked" : changes.some(change => !change.direct) ? "adjusted" : "applied",
+        requested: { componentIds: requestedIds, options: clone(options) },
+        resolved: {
+          componentIds: result.components.map(component => component.id),
+          frames: result.components.map(component => ({ componentId: component.id, frame: { ...component.frame } })),
+          separatorIds: result.separators.map(separator => separator.id),
+          axis: result.axis,
+          gap: result.gap
+        },
+        changes,
+        structuralChanges,
+        authorityChanges,
+        reasons: [...new Set([
+          ...(changes.some(change => !change.direct) ? ["derived-reflow"] : []),
+          ...(authorityChanges.length ? ["layout-authority-released"] : []),
+          ...(structuralChanges.length ? ["structural-change"] : []),
+          ...conflicts.map(conflict => conflict.code)
+        ])],
+        conflicts
+      };
+      Object.defineProperty(plan, SPACING_PLAN_DRAFT, { value: draft });
+      return plan;
+    }
+
+    applySpacingTransaction(componentIds, options = {}) {
+      const plan = this.planSpacingTransaction(componentIds, options);
+      const report = publicSpacingPlan(plan);
+      if (plan.status === "blocked") {
+        const error = new Error(plan.conflicts[0]?.message || "O espaçamento solicitado não possui uma solução estrutural válida.");
+        error.code = "SPACING_TRANSACTION_BLOCKED";
+        error.spacingTransaction = report;
+        throw error;
+      }
+      const draft = plan[SPACING_PLAN_DRAFT];
+      synchronizeStructuralState(this, draft);
+      this.emit({
+        type: "components-spaced",
+        componentIds: report.resolved.componentIds,
+        axis: report.resolved.axis,
+        gap: report.resolved.gap,
+        separators: options.separators === true,
+        spacingTransaction: report
+      });
+      return {
+        components: report.resolved.componentIds.map(componentId => this.findComponent(componentId).component),
+        separators: report.resolved.separatorIds.map(componentId => this.findComponent(componentId).component),
+        axis: report.resolved.axis,
+        gap: report.resolved.gap,
+        transaction: report
+      };
+    }
+
+    spaceComponents(componentIds, options = {}) {
+      if (!this.getBatchSelection(componentIds, 2)) return false;
+      return this.applySpacingTransaction(componentIds, options);
     }
 
     setPresentationBatch(componentIds, patch = {}) {
@@ -2773,6 +3702,39 @@
         this.state.editor.selectedComponentId = cards[cards.length - 1].id;
         return cards;
       });
+    }
+
+    getPresentationBatchPreview(componentIds, patch = {}) {
+      const cards = Array.from(new Map((componentIds || []).map(componentId => this.getProductCard(componentId)).filter(Boolean).map(card => [card.id, card])).values());
+      const requested = clone(patch || {});
+      const items = cards.map(card => {
+        const before = window.CatalogPresentations?.normalizePresentation?.(card.presentation, card.type) || clone(card.presentation || {});
+        const after = window.CatalogPresentations?.normalizePresentation?.({ ...before, ...requested }, card.type) || { ...before, ...requested };
+        const currentMinimum = this.getReflowMinimum(card, card.frame);
+        const preview = clone(card);
+        preview.presentation = after;
+        const nextMinimum = this.getReflowMinimum(preview, preview.frame);
+        return {
+          componentId: card.id,
+          changed: JSON.stringify(before) !== JSON.stringify(after),
+          before,
+          after,
+          minimum: {
+            before: clone(currentMinimum),
+            after: clone(nextMinimum),
+            heightDelta: Math.round(Number(nextMinimum?.height || 0) - Number(currentMinimum?.height || 0))
+          }
+        };
+      });
+      const changed = items.filter(item => item.changed);
+      return {
+        componentIds: cards.map(card => card.id),
+        requested,
+        changedCount: changed.length,
+        maximumMinimumHeightDelta: changed.reduce((maximum, item) => Math.max(maximum, Math.abs(item.minimum.heightDelta)), 0),
+        expandsCount: changed.filter(item => item.minimum.heightDelta > 0).length,
+        items
+      };
     }
 
     setStyleBatch(componentIds, patch = {}) {
@@ -2960,13 +3922,27 @@
     replaceTableRowsBulk(componentId, entries = [], options = {}) {
       const mode = options.mode === "append" ? "append" : "replace";
       return this.runCompoundChange({ type: "table-rows-replaced", componentId, mode, count: entries.length }, () => {
-        const component = this.findComponent(componentId)?.component;
+        const record = this.findComponent(componentId);
+        const component = record?.component;
         if (!component || component.type !== "data-table") throw new Error("O componente selecionado não é uma tabela.");
         const normalizedEntries = (Array.isArray(entries) ? entries : []).filter(Boolean);
         const currentIds = component.props?.rowIds?.slice() || [];
         const available = Math.max(0, 12 - (mode === "append" ? currentIds.length : 0));
         const limited = normalizedEntries.slice(0, available);
         if (!limited.length) throw new Error("Nenhuma linha válida foi fornecida.");
+
+        if (mode === "replace" && options.bindingSync !== true && !this.bindingSyncDepth) {
+          const card = productCardForRecord(record);
+          const table = cardDataTable(card);
+          const values = limited[0]?.values || limited[0] || {};
+          if (card?.binding?.productId && table?.id === component.id) {
+            card.binding = normalizeProductBinding(card.binding);
+            TABLE_BINDING_FIELDS.forEach(field => {
+              if (Object.hasOwn(values, field)) card.binding.overrides[field] = true;
+            });
+          }
+        }
+
         const nextIds = mode === "append" ? currentIds.slice() : [];
         limited.forEach((entry, index) => {
           const values = entry.values || entry;
@@ -3101,6 +4077,54 @@
       return component?.type === "data-table" ? tableColumns(component.props?.columns) : [];
     }
 
+    getTableSchemas() {
+      return window.CatalogTableSchemas?.list?.() || [];
+    }
+
+    getTablesForComponents(componentIds = []) {
+      const tables = [];
+      const seen = new Set();
+      (Array.isArray(componentIds) ? componentIds : [componentIds]).forEach(componentId => {
+        const component = typeof componentId === "string" ? this.findComponent(componentId)?.component : componentId;
+        if (!component) return;
+        visitSubtree(component, child => {
+          if (child.type !== "data-table" || seen.has(child.id)) return;
+          seen.add(child.id);
+          tables.push(child);
+        });
+      });
+      return tables;
+    }
+
+    applyTableSchema(componentIds, schemaId) {
+      const schema = window.CatalogTableSchemas?.get?.(schemaId);
+      const tables = this.getTablesForComponents(componentIds);
+      if (!schema || !tables.length) return [];
+      const changeType = tables.length > 1 ? "table-schema-batch-applied" : "table-schema-applied";
+      return this.runCompoundChange({ type: changeType, schemaId, componentIds: tables.map(table => table.id) }, () => {
+        const previousEditor = clone(this.state.editor);
+        tables.forEach(table => {
+          const previousColumns = this.getTableColumns(table);
+          const previousRows = this.getTableRows(table).map(row => ({
+            row,
+            values: { ...(row.metadata?.values || {}) },
+            legendKeys: { ...(row.metadata?.legendKeys || {}) }
+          }));
+          this.updateTableColumns(table.id, schema.columns);
+          previousRows.forEach(({ row, values, legendKeys }) => {
+            const valueByRole = Object.fromEntries(previousColumns.map(column => [column.role, values[column.key] ?? ""]));
+            const legendByRole = Object.fromEntries(previousColumns.map(column => [column.role, legendKeys[column.key] || null]));
+            row.metadata.values = Object.fromEntries(schema.columns.map(column => [column.key, values[column.key] ?? valueByRole[column.role] ?? ""]));
+            row.metadata.legendKeys = Object.fromEntries(schema.columns.map(column => [column.key, legendKeys[column.key] || legendByRole[column.role]]).filter(([, value]) => value));
+          });
+          table.props.tableSchemaId = schema.id;
+          this.refreshTableLayout(table.id);
+        });
+        this.state.editor = previousEditor;
+        return tables;
+      });
+    }
+
     getColorLegends() {
       return this.getCollection("colorLegends")?.items || [];
     }
@@ -3142,6 +4166,24 @@
       });
       this.emit({ type: "color-legend-upserted", legendId: item.id, legendKey: item.metadata.key });
       return item;
+    }
+
+    upsertColorLegendsBulk(entries = [], options = {}) {
+      const valid = entries.slice(0, 40).filter(entry => String(entry?.label || "").trim());
+      if (!valid.length) throw new Error("Informe ao menos uma legenda válida.");
+      return this.runCompoundChange({ type: "color-legends-bulk-applied", count: valid.length, materialize: options.materialize === true }, () => {
+        const previousEditor = clone(this.state.editor);
+        const items = valid.map((entry, index) => this.upsertColorLegend({
+          label: String(entry.label).trim(),
+          textLabel: String(entry.label).trim(),
+          token: String(entry.token || "surface.neutral"),
+          groupLabel: String(entry.groupLabel || "Geral"),
+          order: index
+        }, { insideCompound: true, materialize: false }));
+        if (options.materialize === true) items.forEach(item => this.materializeLegendDefinition(item.metadata.key, { groupLabel: item.metadata.groupLabel }));
+        this.state.editor = previousEditor;
+        return items;
+      });
     }
 
     getLegendPanels() {
@@ -3241,12 +4283,29 @@
       if (!component) return null;
       const definition = definitionFor(component.type);
       const source = component.constraints?.minimums || {};
+      const technical = { width: definition.minSize.width, height: definition.minSize.height, ...(source.technical || {}) };
+      const reachable = this.getReflowMinimum(component, {
+        ...component.frame,
+        height: technical.height
+      });
       return {
-        technical: { width: definition.minSize.width, height: definition.minSize.height, ...(source.technical || {}) },
+        technical,
         recommended: { width: definition.recommendedSize?.width || definition.defaultFrame.width, height: definition.recommendedSize?.height || definition.defaultFrame.height, ...(source.recommended || {}) },
         custom: source.custom ? { ...source.custom } : null,
-        calculated: this.getContentMinimum(component)
+        calculated: reachable
       };
+    }
+
+    fitComponentHeightToContent(componentId) {
+      const component = this.findComponent(componentId)?.component;
+      if (!component) return null;
+      const profile = this.getMinimumProfile(component);
+      return this.updateComponent(component.id, {
+        frame: {
+          ...component.frame,
+          height: profile.calculated.height
+        }
+      });
     }
 
     setRecommendedMinimum(componentId, patch = {}) {
@@ -3268,6 +4327,18 @@
 
     getPublicationReport(target = "draft") {
       return window.CatalogDocumentValidator?.validate?.(this.getExportDocument(), { target }) || { ok: true, target, issues: [] };
+    }
+
+    getSelectionGeometryReport(componentIds = this.getSelectedIds()) {
+      const selected = new Set(componentIds || []);
+      const geometryCodes = new Set(["COMPONENT_COLLISION", "PAGE_OVERFLOW", "CHILD_OVERFLOW"]);
+      const report = this.getPublicationReport("draft");
+      const issues = (report.issues || []).filter(issue => {
+        if (!geometryCodes.has(issue.code)) return false;
+        const ids = [issue.componentId, issue.sourceId, issue.targetId, ...(issue.componentIds || [])].filter(Boolean);
+        return ids.some(componentId => selected.has(componentId));
+      });
+      return { ok: issues.length === 0, componentIds: [...selected], issues };
     }
 
     getAsset(assetId) {
@@ -3325,7 +4396,7 @@
 
     replaceDocument(document, options = {}) {
       const localEditor = clone(this.state.editor || {});
-      const next = migrateDocument(document);
+      const next = migrateDocument(normalizeLegacyTextPresentation(document));
       if (options.preserveEditor !== false) {
         next.editor = {
           ...next.editor,
@@ -3389,6 +4460,12 @@
       return document;
     }
   }
+
+  Object.defineProperty(DocumentStore, "__textAlignmentContractVersion", { value: "05.18.2" });
+  Object.defineProperty(DocumentStore, "__textOverflowContractVersion", { value: "05.18.4.1" });
+  Object.defineProperty(DocumentStore, "__reflowHistoryStabilityContractVersion", { value: "05.18.audit.4" });
+  Object.defineProperty(DocumentStore, "__variantsContractVersion", { value: "05.18.9" });
+  Object.defineProperty(DocumentStore, "__dataOnlyContractVersion", { value: "05.18.10" });
 
   window.CatalogDocumentStore = DocumentStore;
   window.createBlankCatalogDocument = createBlankDocument;

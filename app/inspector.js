@@ -15,11 +15,18 @@
       this.root = document.getElementById("inspectorRoot");
       this.activeTab = "content";
       this.lastComponentId = null;
+      this.lastComponentType = null;
       this.showAllProperties = false;
       this.tableColumnsOpen = false;
       this.tableBulkOpen = false;
       this.tableBulkFeedback = "";
       this.legendEditorOpen = false;
+      this.galleryBulkOpen = false;
+      this.galleryBulkFeedback = "";
+      this.legendBulkOpen = false;
+      this.legendBulkFeedback = "";
+      this.skipNextRender = false;
+      this.taskStateByType = new Map();
       this.root.addEventListener("change", event => this.handleChange(event));
       this.root.addEventListener("click", event => this.handleClick(event));
       this.root.addEventListener("toggle", event => this.handleDisclosureToggle(event), true);
@@ -46,7 +53,8 @@
       }
       if (field.type === "select") {
         const options = (field.options || []).map(option => `<option value="${escapeHtml(option.value)}" ${option.value === value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
-        return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}">${options}</select></div>`;
+        const valueType = (field.options || []).length && field.options.every(option => typeof option.value === "number") ? "number" : "text";
+        return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}" data-prop-type="${valueType}">${options}</select></div>`;
       }
       if (field.type === "token-select") {
         return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}">${this.options(field.tokenGroup, value)}</select></div>`;
@@ -228,10 +236,27 @@
         </section>`;
     }
 
+    renderGallerySection(component) {
+      if (component.type !== "art-gallery") return "";
+      const items = (component.children || []).filter(child => child.type === "art");
+      return `
+        <section class="inspector-section inspector-section--gallery">
+          <div class="inspector-section__heading"><h3 class="inspector-section__title">Imagens e legendas</h3><span>${items.length} variação(ões)</span></div>
+          <p class="inspector-note">Uma linha cria uma imagem canônica com legenda própria. A segunda coluna opcional aceita um <code>assetId</code> já existente.</p>
+          <details class="table-bulk-entry gallery-bulk-entry" ${this.galleryBulkOpen ? "open" : ""}>
+            <summary>Editar coleção <span>Legenda ⇥ assetId</span></summary>
+            <textarea rows="6" data-gallery-bulk-text placeholder="Cromado&#9;asset-opcional&#10;Preto&#10;Branco">${escapeHtml(items.map(item => `${item.props?.caption || item.props?.label || "Variação"}\t${item.props?.assetId || ""}`).join("\n"))}</textarea>
+            <div class="table-bulk-entry__actions"><select aria-label="Modo da coleção" data-gallery-bulk-mode><option value="replace">Sincronizar coleção</option><option value="append">Adicionar ao final</option></select><button type="button" data-gallery-bulk-apply>Aplicar imagens</button></div>
+            ${this.galleryBulkFeedback ? `<small role="status">${escapeHtml(this.galleryBulkFeedback)}</small>` : ""}
+          </details>
+        </section>`;
+    }
+
     renderTableRowsSection(component) {
       if (component.type !== "data-table") return "";
       const rows = this.store.getTableRows(component);
       const columns = this.store.getTableColumns(component);
+      const schemas = this.store.getTableSchemas();
       const legends = this.store.getColorLegends();
       const legendOptions = selected => `<option value="">Sem legenda</option>${selected && !legends.some(legend => legend.metadata?.key === selected) ? `<option value="${escapeHtml(selected)}" selected>Legenda ausente · ${escapeHtml(selected)}</option>` : ""}${legends.map(legend => `<option value="${escapeHtml(legend.metadata?.key)}" ${legend.metadata?.key === selected ? "selected" : ""}>${escapeHtml(legend.metadata?.textLabel || legend.label)}</option>`).join("")}`;
       return `
@@ -239,6 +264,10 @@
           <div class="inspector-section__heading">
             <h3 class="inspector-section__title">Tabela semântica</h3>
             <span>${columns.length} coluna(s) · ${rows.length} linha(s)</span>
+          </div>
+          <div class="inspector-grid table-schema-apply">
+            <div class="inspector-field inspector-field--full"><label>Esquema reutilizável</label><select data-table-schema>${schemas.map(schema => `<option value="${escapeHtml(schema.id)}" ${component.props?.tableSchemaId === schema.id ? "selected" : ""}>${escapeHtml(schema.label)} · ${escapeHtml(schema.description)}</option>`).join("")}</select></div>
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-table-schema-apply>Aplicar esquema</button>
           </div>
           <details class="table-bulk-entry" ${this.tableBulkOpen ? "open" : ""}>
             <summary>Colar várias linhas <span>Excel, Sheets, TSV ou CSV</span></summary>
@@ -289,6 +318,13 @@
             </div>
             <label class="inspector-switch inspector-switch--wide"><input type="checkbox" data-new-legend-materialize checked /><span aria-hidden="true"></span><strong>Adicionar ao painel de legenda</strong></label>
             <button type="button" class="table-row-editor__add" data-color-legend-add>+ Criar legenda</button>
+            <details class="table-bulk-entry legend-bulk-entry" ${this.legendBulkOpen ? "open" : ""}>
+              <summary>Criar várias legendas <span>Nome ⇥ token ⇥ grupo</span></summary>
+              <textarea rows="6" data-legend-bulk-text placeholder="CX 1000&#9;pack.1000&#9;Embalagens&#10;CX 500&#9;pack.500&#9;Embalagens"></textarea>
+              <label class="inspector-switch inspector-switch--wide"><input type="checkbox" data-legend-bulk-materialize checked /><span aria-hidden="true"></span><strong>Adicionar ao painel de legenda</strong></label>
+              <button type="button" class="table-row-editor__add" data-legend-bulk-apply>Aplicar lista</button>
+              ${this.legendBulkFeedback ? `<small role="status">${escapeHtml(this.legendBulkFeedback)}</small>` : ""}
+            </details>
           </details>
           <p class="inspector-note">As linhas pertencem a <code>${escapeHtml(component.props.collectionId || "tableRows")}</code>. A tabela guarda colunas, ordem dos IDs e vínculos semânticos; valores continuam na coleção.</p>
         </section>`;
@@ -367,17 +403,84 @@
       return items.every(item => getter(item) === first) ? first : "";
     }
 
+    taskStateKey(component) {
+      return component?.type || "unknown";
+    }
+
+    rememberTaskState(component = this.store.getSelected()) {
+      if (!component) return;
+      this.taskStateByType.set(this.taskStateKey(component), {
+        activeTab: this.activeTab,
+        showAllProperties: this.showAllProperties,
+        tableColumnsOpen: this.tableColumnsOpen,
+        tableBulkOpen: this.tableBulkOpen,
+        legendEditorOpen: this.legendEditorOpen,
+        galleryBulkOpen: this.galleryBulkOpen,
+        legendBulkOpen: this.legendBulkOpen
+      });
+    }
+
+    captureRenderedTaskState() {
+      if (!this.lastComponentType || !this.lastComponentId) return;
+      this.taskStateByType.set(this.lastComponentType, {
+        activeTab: this.activeTab,
+        showAllProperties: this.showAllProperties,
+        tableColumnsOpen: this.root.querySelector(".table-column-editor")?.open === true,
+        tableBulkOpen: this.root.querySelector(".table-bulk-entry:not(.gallery-bulk-entry):not(.legend-bulk-entry)")?.open === true,
+        legendEditorOpen: this.root.querySelector(".semantic-legend-editor")?.open === true,
+        galleryBulkOpen: this.root.querySelector(".gallery-bulk-entry")?.open === true,
+        legendBulkOpen: this.root.querySelector(".legend-bulk-entry")?.open === true
+      });
+    }
+
+    restoreTaskState(component, definition) {
+      const saved = this.taskStateByType.get(this.taskStateKey(component));
+      this.activeTab = saved?.activeTab || (definition.container ? "structure" : "content");
+      this.showAllProperties = saved?.showAllProperties === true;
+      this.tableColumnsOpen = saved?.tableColumnsOpen === true;
+      this.tableBulkOpen = saved?.tableBulkOpen === true;
+      this.legendEditorOpen = saved?.legendEditorOpen === true;
+      this.galleryBulkOpen = saved?.galleryBulkOpen === true;
+      this.legendBulkOpen = saved?.legendBulkOpen === true;
+      this.tableBulkFeedback = "";
+      this.galleryBulkFeedback = "";
+      this.legendBulkFeedback = "";
+    }
+
     renderBatch(components) {
+      const selectionKey = components.map(component => component.id).join(",");
+      if (this.batchPresentationSelectionKey && this.batchPresentationSelectionKey !== selectionKey) this.batchPresentationDraft = null;
+      this.batchPresentationSelectionKey = selectionKey;
       const records = components.map(component => this.store.findComponent(component.id)).filter(Boolean);
       const contextLabel = records[0]?.parent?.name || this.store.getPage().name;
       const cards = Array.from(new Map(components.map(component => this.store.getProductCard(component.id)).filter(Boolean).map(card => [card.id, card])).values());
+      const tables = this.store.getTablesForComponents(components);
+      const tableSchemas = this.store.getTableSchemas();
       const accentEligible = components.filter(component => window.CATALOG_COMPONENT_REGISTRY[component.type]?.styleFields?.includes("accentColor"));
       const textEligible = components.filter(component => window.CATALOG_COMPONENT_REGISTRY[component.type]?.styleFields?.includes("textColor"));
       const density = this.commonValue(cards, card => card.presentation?.density || "standard");
       const mode = this.commonValue(cards, card => card.presentation?.mode || "standard");
       const presetId = this.commonValue(cards, card => card.presentation?.presetId || "product-standard");
+      const presentationDraft = this.batchPresentationDraft || {};
+      const presentationPreview = this.store.getPresentationBatchPreview(components.map(component => component.id), presentationDraft);
+      const presentationValue = (path, current) => Object.hasOwn(presentationDraft, path) ? presentationDraft[path] : current;
+      const presentationPreviewText = !Object.keys(presentationDraft).length
+        ? "Escolha uma apresentação para ver o efeito antes de confirmar."
+        : !presentationPreview.changedCount
+          ? "Os cards já usam esta apresentação."
+          : `${presentationPreview.changedCount} card(s) serão atualizados em uma única ação${presentationPreview.expandsCount ? `; ${presentationPreview.expandsCount} pode(m) exigir mais altura` : ""}${presentationPreview.maximumMinimumHeightDelta ? ` (variação máxima de mínimo: ${presentationPreview.maximumMinimumHeightDelta} px)` : ""}.`;
       const accentColor = this.commonValue(accentEligible, component => component.style?.accentColor || "brand.primary");
       const textColor = this.commonValue(textEligible, component => component.style?.textColor || "text.primary");
+      const frameValues = Object.fromEntries(["x", "y", "width", "height"].map(path => [path, this.commonValue(components, component => Math.round(component.frame[path]))]));
+      const geometryReport = this.store.getSelectionGeometryReport(components.map(component => component.id));
+      const gridNormalization = this.store.getSelectionGridNormalization(components.map(component => component.id), "both");
+      const gridNormalizationStatus = !gridNormalization
+        ? "Seleção incompatível."
+        : gridNormalization.status === "blocked"
+          ? "A normalização foi bloqueada pela geometria."
+          : gridNormalization.changedCount
+            ? `${gridNormalization.changedCount} item(ns), ajuste máximo de ${Math.round(gridNormalization.maximumAdjustment)} px${gridNormalization.derivedCount ? ` e ${gridNormalization.derivedCount} efeito(s) de reflow` : ""}.`
+            : `Os itens já coincidem com a grade de ${gridNormalization.unit} px.`;
       const mixedOption = value => value ? "" : '<option value="" selected disabled>Valores diferentes — escolher para aplicar</option>';
       const presets = Object.values(window.CatalogPresentations?.PRESETS || {});
       const separatorPresets = Object.values(window.CATALOG_SEPARATOR_PRESETS || {});
@@ -389,7 +492,9 @@
 
       this.root.dataset.hasSelection = "true";
       this.root.dataset.multiSelection = "true";
+      this.captureRenderedTaskState();
       this.lastComponentId = null;
+      this.lastComponentType = null;
       this.root.innerHTML = `
         <header class="inspector-header inspector-header--batch">
           <div class="inspector-header__top">
@@ -404,8 +509,10 @@
         </header>
         <div class="inspector-tab-panel batch-inspector">
           <section class="inspector-section">
-            <h3 class="inspector-section__title">Organizar conjunto</h3>
-            <p class="inspector-note">Alinhamento usa a caixa atual da seleção. Itens em slot ou auto-layout passam a override manual.</p>
+            <h3 class="inspector-section__title">Geometria do conjunto</h3>
+            <p class="inspector-note">Precisão direta, relacional e numérica na mesma seleção. Itens gerenciados passam a posição independente; uma ação desfaz o comando inteiro.</p>
+            <div class="batch-geometry-status" data-geometry-state="${geometryReport.ok ? "valid" : "warning"}"><strong>${geometryReport.ok ? "Seleção sem conflitos detectados" : `${geometryReport.issues.length} conflito(s) geométrico(s)`}</strong><span>${geometryReport.ok ? "Nenhuma colisão ou extrapolação vinculada à seleção." : "Revise colisões e conteúdo fora dos limites antes de exportar."}</span></div>
+            <div class="inspector-section__heading"><h4>Relações</h4><span>alinhar e distribuir</span></div>
             <div class="batch-command-grid" aria-label="Alinhamento da seleção">
               <button type="button" data-batch-align="left" title="Alinhar à esquerda">← Esquerda</button>
               <button type="button" data-batch-align="center" title="Centralizar horizontalmente">↔ Centro</button>
@@ -417,6 +524,38 @@
             <div class="inspector-actions inspector-actions--grid">
               <button type="button" data-batch-distribute="horizontal" ${components.length < 3 ? "disabled" : ""}>Distribuir ↔</button>
               <button type="button" data-batch-distribute="vertical" ${components.length < 3 ? "disabled" : ""}>Distribuir ↕</button>
+              <button type="button" data-batch-equalize="width">Igualar larguras</button>
+              <button type="button" data-batch-equalize="height">Igualar alturas</button>
+            </div>
+            <div class="batch-numeric-editor">
+              <div class="inspector-section__heading"><h4>Normalizar à grade</h4><span>preview sem alterar</span></div>
+              <p class="inspector-note" data-batch-grid-preview>${escapeHtml(gridNormalizationStatus)}</p>
+              <div class="inspector-field inspector-field--full">
+                <label>Normalizar</label>
+                <select data-batch-grid-mode>
+                  <option value="positions">Posições</option>
+                  <option value="dimensions">Dimensões</option>
+                  <option value="both" selected>Posições e dimensões</option>
+                </select>
+                <small>Usa a grade da página, respeita mínimos e confirma tudo em uma única ação.</small>
+              </div>
+              <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-grid-apply ${!gridNormalization?.changedCount || gridNormalization.status === "blocked" ? "disabled" : ""}>Normalizar seleção</button>
+              <div class="inspector-section__heading"><h4>Valores exatos</h4><span>aplicar à seleção</span></div>
+              <div class="batch-frame-grid">
+                ${["x", "y", "width", "height"].map(path => `<div class="batch-frame-field"><label>${path === "width" ? "Largura" : path === "height" ? "Altura" : path.toUpperCase()}</label><input type="number" step="1" value="${frameValues[path] ?? ""}" placeholder="Misto" data-batch-frame-value="${path}" /><button type="button" data-batch-frame-apply="${path}">Aplicar</button></div>`).join("")}
+              </div>
+              <div class="inspector-section__heading"><h4>Deslocamento</h4><span>delta relativo</span></div>
+              <div class="inspector-grid">
+                <div class="inspector-field"><label>Delta X</label><input type="number" step="1" value="0" data-batch-delta="x" /></div>
+                <div class="inspector-field"><label>Delta Y</label><input type="number" step="1" value="0" data-batch-delta="y" /></div>
+              </div>
+              <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-delta-apply>Aplicar deslocamento</button>
+              <details class="table-bulk-entry batch-frame-list">
+                <summary>Editar cada caixa <span>ID ⇥ X ⇥ Y ⇥ largura ⇥ altura</span></summary>
+                <p>Edite a grade predefinida. Todas as caixas são confirmadas juntas, evitando estados geométricos intermediários.</p>
+                <textarea rows="${Math.min(10, components.length + 1)}" data-batch-frames-text>${escapeHtml(["ID\tX\tY\tLARGURA\tALTURA", ...components.map(component => [component.id, Math.round(component.frame.x), Math.round(component.frame.y), Math.round(component.frame.width), Math.round(component.frame.height)].join("\t"))].join("\n"))}</textarea>
+                <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-frames-apply>Aplicar todas as caixas</button>
+              </details>
             </div>
             <div class="batch-spacing-editor">
               <div class="inspector-section__heading"><h4>Espaçamento definido</h4><span>2 ou mais irmãos</span></div>
@@ -432,11 +571,19 @@
           </section>
           ${cards.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Apresentação dos cards</h3><span>${cards.length} elegível(is)</span></div>
+            <p class="inspector-note" data-batch-presentation-preview>${escapeHtml(presentationPreviewText)}</p>
             <div class="inspector-grid">
-              <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-presentation="presetId">${mixedOption(presetId)}${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presetId === preset.id ? "selected" : ""}>${escapeHtml(preset.label)}</option>`).join("")}</select></div>
-              <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(mode)}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${mode === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
-              <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(density)}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${density === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-presentation="presetId">${mixedOption(presentationValue("presetId", presetId))}${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presentationValue("presetId", presetId) === preset.id ? "selected" : ""}>${escapeHtml(preset.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(presentationValue("mode", mode))}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("mode", mode) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(presentationValue("density", density))}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("density", density) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             </div>
+            <div class="inspector-actions inspector-actions--grid"><button type="button" class="inspector-action--primary" data-batch-presentation-apply ${presentationPreview.changedCount ? "" : "disabled"}>Aplicar apresentação</button><button type="button" data-batch-presentation-reset ${Object.keys(presentationDraft).length ? "" : "disabled"}>Descartar rascunho</button></div>
+          </section>` : ""}
+          ${tables.length ? `<section class="inspector-section">
+            <div class="inspector-section__heading"><h3 class="inspector-section__title">Esquema das tabelas</h3><span>${tables.length} elegível(is)</span></div>
+            <p class="inspector-note">Aplica a mesma estrutura de colunas em uma única transação, preservando valores pelo papel semântico.</p>
+            <div class="inspector-field inspector-field--full"><label>Esquema reutilizável</label><select data-batch-table-schema>${tableSchemas.map(schema => `<option value="${escapeHtml(schema.id)}">${escapeHtml(schema.label)} · ${escapeHtml(schema.description)}</option>`).join("")}</select></div>
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-table-schema-apply>Aplicar a ${tables.length} tabela(s)</button>
           </section>` : ""}
           ${accentEligible.length || textEligible.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Visual compartilhado</h3><span>somente elegíveis</span></div>
@@ -457,6 +604,10 @@
     }
 
     render() {
+      if (this.skipNextRender) {
+        this.skipNextRender = false;
+        return;
+      }
       const selectedComponents = this.store.getSelectedComponents();
       if (selectedComponents.length > 1) {
         this.renderBatch(selectedComponents);
@@ -467,7 +618,9 @@
       const record = this.store.getSelectedRecord();
       if (!component || !record) {
         this.root.dataset.hasSelection = "false";
+        this.captureRenderedTaskState();
         this.lastComponentId = null;
+        this.lastComponentType = null;
         this.root.innerHTML = `
           <div class="inspector-empty">
             <span class="inspector-empty__icon" aria-hidden="true">↖</span>
@@ -479,17 +632,14 @@
 
       const definition = window.CATALOG_COMPONENT_REGISTRY[component.type];
       if (this.lastComponentId !== component.id) {
+        this.captureRenderedTaskState();
         this.lastComponentId = component.id;
-        this.activeTab = definition.container ? "structure" : "content";
-        this.showAllProperties = false;
-        this.tableColumnsOpen = false;
-        this.tableBulkOpen = false;
-        this.tableBulkFeedback = "";
-        this.legendEditorOpen = false;
+        this.lastComponentType = component.type;
+        this.restoreTaskState(component, definition);
       }
       const contextLabel = record.parent ? record.parent.name : this.store.getPage().name;
-      const minimum = this.store.getContentMinimum(component);
       const minimumProfile = this.store.getMinimumProfile(component);
+      const minimum = minimumProfile.calculated;
       const geometryResolution = this.store.getLastGeometryResolution(component.id);
       const geometryAdjusted = geometryResolution && ["x", "y", "width", "height"].some(key => geometryResolution.requested[key] !== geometryResolution.resolved[key]);
       const contentSection = definition.contentFields?.length ? `
@@ -510,9 +660,23 @@
             <div class="inspector-field inspector-field--full"><label>Nome da camada</label><input type="text" value="${escapeHtml(component.name)}" data-component-name /></div>
           </div>
         </section>`;
+      const frameCommandSection = `
+      <section class="inspector-section inspector-section--frame-command">
+        <div class="inspector-section__heading"><h3 class="inspector-section__title">Posição e tamanho</h3><span>aplicação conjunta</span></div>
+        <div class="recommended-minimum-editor frame-command-editor">
+          <div class="inspector-grid">
+            ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
+          </div>
+          <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
+          <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
+          ${definition.container ? `<button type="button" class="inspector-action--wide" data-fit-content-height>Ajustar altura ao conteúdo · ${Math.ceil(minimum.height)} px</button>` : ""}
+          <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
+        </div>
+      </section>`;
       const geometrySection = `
         <section class="inspector-section">
           <h3 class="inspector-section__title">Posição e tamanho</h3>
+          <div class="inspector-section__heading"><h4>Ajuste imediato por campo</h4><span>compatibilidade</span></div>
           <div class="inspector-grid">
             ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-path="${key}" /></div>`).join("")}
           </div>
@@ -558,6 +722,7 @@
           <button type="button" role="tab" data-inspector-tab="structure" aria-selected="${String(this.activeTab === "structure")}"><span aria-hidden="true">▦</span> Layout</button>
           <button type="button" role="tab" data-inspector-tab="style" aria-selected="${String(this.activeTab === "style")}"><span aria-hidden="true">⌁</span> Visual</button>
         </nav>
+        ${frameCommandSection}
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure" ${this.activeTab === "structure" ? "" : "hidden"}>
           ${this.renderContainerSection(component, definition)}
           ${this.renderSlotSection(component, record)}
@@ -567,6 +732,7 @@
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="content" ${this.activeTab === "content" ? "" : "hidden"}>
           ${this.renderProductBindingSection(component)}
           ${this.renderAssetSection(component)}
+          ${this.renderGallerySection(component)}
           ${this.renderTableRowsSection(component)}
           ${contentSection}
         </div>
@@ -583,8 +749,11 @@
 
     handleDisclosureToggle(event) {
       if (event.target.matches(".table-column-editor")) this.tableColumnsOpen = event.target.open;
-      if (event.target.matches(".table-bulk-entry")) this.tableBulkOpen = event.target.open;
+      if (event.target.matches(".table-bulk-entry:not(.gallery-bulk-entry):not(.legend-bulk-entry)")) this.tableBulkOpen = event.target.open;
+      if (event.target.matches(".gallery-bulk-entry")) this.galleryBulkOpen = event.target.open;
+      if (event.target.matches(".legend-bulk-entry")) this.legendBulkOpen = event.target.open;
       if (event.target.matches(".semantic-legend-editor")) this.legendEditorOpen = event.target.open;
+      this.rememberTaskState();
     }
 
     handleChange(event) {
@@ -598,14 +767,30 @@
         }
         return;
       }
+      if (selectedIds.length > 1 && target.matches("[data-batch-grid-mode]")) {
+        const preview = this.store.getSelectionGridNormalization(selectedIds, target.value);
+        const status = this.root.querySelector("[data-batch-grid-preview]");
+        const button = this.root.querySelector("[data-batch-grid-apply]");
+        if (status) {
+          status.textContent = preview?.status === "blocked"
+            ? "A normalização foi bloqueada pela geometria."
+            : preview?.changedCount
+              ? `${preview.changedCount} item(ns), ajuste máximo de ${Math.round(preview.maximumAdjustment)} px${preview.derivedCount ? ` e ${preview.derivedCount} efeito(s) de reflow` : ""}.`
+              : `Os itens já coincidem com a grade de ${preview?.unit || 4} px.`;
+        }
+        if (button) button.disabled = !preview?.changedCount || preview.status === "blocked";
+        return;
+      }
       if (selectedIds.length > 1 && target.matches("[data-batch-presentation]")) {
         const path = target.dataset.batchPresentation;
+        this.batchPresentationDraft ||= {};
         if (path === "presetId") {
           const preset = window.CatalogPresentations?.PRESETS?.[target.value];
-          this.store.setPresentationBatch(selectedIds, { presetId: target.value, mode: preset?.mode, density: preset?.density });
+          Object.assign(this.batchPresentationDraft, { presetId: target.value, mode: preset?.mode, density: preset?.density, responsiveState: preset?.density === "compact" ? "compact" : "auto" });
         } else {
-          this.store.setPresentationBatch(selectedIds, { [path]: target.value, ...(path === "density" ? { responsiveState: target.value === "compact" ? "compact" : "auto" } : {}) });
+          Object.assign(this.batchPresentationDraft, { [path]: target.value, ...(path === "density" ? { responsiveState: target.value === "compact" ? "compact" : "auto" } : {}) });
         }
+        this.render();
         return;
       }
       if (selectedIds.length > 1 && target.matches("[data-batch-style]")) {
@@ -613,9 +798,38 @@
         return;
       }
       const component = this.store.getSelected();
+      if (target.matches("[data-frame-preset]")) {
+        const parentId = this.store.getParentId(component.id);
+        const size = this.store.getContainerSize(parentId);
+        const safe = parentId ? 0 : Math.max(0, Number(this.store.getPage().grid?.safeMargin) || 24);
+        const gap = Math.max(8, Number(component.constraints?.gridUnit) || 4) * 4;
+        const availableWidth = Math.max(1, size.width - safe * 2);
+        const technical = this.store.getMinimumProfile(component).technical;
+        const leftWidth = Math.max(Number(technical.width) || 1, Math.round((availableWidth - gap) * .28));
+        const mainX = safe + leftWidth + gap;
+        const frames = {
+          "safe-top": { ...component.frame, x: safe, y: safe },
+          "safe-bottom": { ...component.frame, y: Math.max(safe, size.height - safe - component.frame.height) },
+          "left-column": { ...component.frame, x: safe, width: leftWidth },
+          "main-column": { ...component.frame, x: mainX, width: Math.max(Number(technical.width) || 1, size.width - safe - mainX) },
+          "full-width": { ...component.frame, x: safe, width: availableWidth }
+        };
+        const frame = frames[target.value];
+        if (frame) Object.entries(frame).forEach(([key, value]) => {
+          const input = this.root.querySelector(`[data-frame-draft-path="${key}"]`);
+          if (input && Number.isFinite(Number(value))) input.value = Math.round(Number(value));
+        });
+        const status = document.getElementById("documentStatus");
+        if (status && frame) status.textContent = "Sugestão preenchida. Confirme para alterar o documento.";
+        return;
+      }
       if (target.matches("[data-table-row-path]")) {
         this.store.updateTableRow(component.id, target.dataset.tableRowId, { [target.dataset.tableRowPath]: target.value });
       } else if (target.matches("[data-table-column-path]")) {
+        // A label text field commits on blur. Re-rendering synchronously during that
+        // blur would replace the control the user is moving focus to (for example,
+        // the bulk-entry textarea) and discard the first interaction with it.
+        if (target.dataset.tableColumnPath === "label") this.skipNextRender = true;
         const columns = this.store.getTableColumns(component).map(column => column.key === target.dataset.tableColumnKey
           ? { ...column, [target.dataset.tableColumnPath]: target.dataset.tableColumnPath === "width" ? Number(target.value) : target.value }
           : column);
@@ -646,12 +860,9 @@
         const height = this.root.querySelector('[data-custom-minimum-path="height"]')?.value;
         this.store.setRecommendedMinimum(component.id, { enabled: true, width, height });
       } else if (target.matches("[data-frame-path]")) {
-        const record = this.store.getSelectedRecord();
         const key = target.dataset.framePath;
         const value = Number(target.value);
-        if (component.slot?.name) this.store.markSlotFree(component.id);
-        if (record?.parent && window.CATALOG_COMPONENT_REGISTRY[record.parent.type]?.container?.autoLayout) this.store.markLayoutFree(component.id);
-        this.update({ frame: { [key]: value } });
+        this.store.updateComponentGeometry(component.id, { [key]: value });
       } else if (target.matches("[data-constraint-path]")) {
         this.update({ constraints: { [target.dataset.constraintPath]: target.checked } });
       } else if (target.matches("[data-style-path]")) {
@@ -717,8 +928,35 @@
       if (selectedIds.length > 1) {
         const align = event.target.closest("[data-batch-align]");
         const distribute = event.target.closest("[data-batch-distribute]");
+        const equalize = event.target.closest("[data-batch-equalize]");
+        const frameApply = event.target.closest("[data-batch-frame-apply]");
         if (align) this.store.alignComponents(selectedIds, align.dataset.batchAlign);
         else if (distribute) this.store.distributeComponents(selectedIds, distribute.dataset.batchDistribute);
+        else if (equalize) this.store.transformComponents(selectedIds, { kind: "equalize", path: equalize.dataset.batchEqualize });
+        else if (event.target.closest("[data-batch-grid-apply]")) {
+          const mode = this.root.querySelector("[data-batch-grid-mode]")?.value || "both";
+          this.store.normalizeSelectionToGrid(selectedIds, mode);
+        }
+        else if (frameApply) {
+          const path = frameApply.dataset.batchFrameApply;
+          const value = this.root.querySelector(`[data-batch-frame-value="${path}"]`)?.value;
+          if (value !== "") this.store.transformComponents(selectedIds, { kind: "set", path, value });
+        }
+        else if (event.target.closest("[data-batch-delta-apply]")) {
+          const x = Number(this.root.querySelector('[data-batch-delta="x"]')?.value || 0);
+          const y = Number(this.root.querySelector('[data-batch-delta="y"]')?.value || 0);
+          if (x || y) this.store.transformComponents(selectedIds, { kind: "delta", values: { x, y } });
+        }
+        else if (event.target.closest("[data-batch-frames-apply]")) {
+          const parsed = window.CatalogManualEntry.parseFrames(this.root.querySelector("[data-batch-frames-text]")?.value || "");
+          try {
+            if (!parsed.rows.length) throw new Error(parsed.issues[0]?.message || "Nenhuma geometria válida foi encontrada.");
+            this.store.applyComponentFramesBulk(parsed.rows);
+          } catch (error) {
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = error.message;
+          }
+        }
         else if (event.target.closest("[data-batch-spacing-apply]")) {
           try {
             this.store.spaceComponents(selectedIds, {
@@ -732,6 +970,18 @@
             if (status) status.textContent = error.message;
           }
         }
+        else if (event.target.closest("[data-batch-table-schema-apply]")) {
+          this.store.applyTableSchema(selectedIds, this.root.querySelector("[data-batch-table-schema]")?.value);
+        }
+        else if (event.target.closest("[data-batch-presentation-apply]")) {
+          const draft = this.batchPresentationDraft || {};
+          if (Object.keys(draft).length) this.store.setPresentationBatch(selectedIds, draft);
+          this.batchPresentationDraft = null;
+        }
+        else if (event.target.closest("[data-batch-presentation-reset]")) {
+          this.batchPresentationDraft = null;
+          this.render();
+        }
         else if (event.target.closest("[data-batch-duplicate]")) this.store.duplicateComponents(selectedIds);
         else if (event.target.closest("[data-batch-delete]")) this.store.deleteComponents(selectedIds);
         else return;
@@ -742,10 +992,31 @@
       const tab = event.target.closest("[data-inspector-tab]");
       if (tab) {
         this.activeTab = tab.dataset.inspectorTab;
+        this.rememberTaskState(component);
         this.render();
       } else if (event.target.closest("[data-toggle-all-properties]")) {
         this.showAllProperties = !this.showAllProperties;
+        this.rememberTaskState(component);
         this.render();
+      } else if (event.target.closest("[data-frame-apply-all]")) {
+          try {
+            const entry = { id: component.id };
+            for (const key of ["x", "y", "width", "height"]) {
+              const value = Number(this.root.querySelector(`[data-frame-draft-path="${key}"]`)?.value);
+              if (!Number.isFinite(value)) throw new Error(`Informe um valor numérico para ${key}.`);
+              entry[key] = value;
+            }
+            this.store.applyComponentFramesBulk([entry]);
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = "Posição e tamanho aplicados em uma única ação.";
+          } catch (error) {
+            const status = document.getElementById("documentStatus");
+            if (status) status.textContent = error.message;
+          }
+      } else if (event.target.closest("[data-fit-content-height]")) {
+        this.store.fitComponentHeightToContent(component.id);
+        const status = document.getElementById("documentStatus");
+        if (status) status.textContent = "Altura ajustada ao conteúdo em uma única ação.";
       } else if (event.target.closest("[data-delete-component]")) {
         this.store.deleteComponent(component.id);
       } else if (event.target.closest("[data-duplicate-component]")) {
@@ -760,6 +1031,18 @@
           distance: this.root.querySelector("[data-duplicate-distance]")?.value,
           count: this.root.querySelector("[data-duplicate-count]")?.value
         });
+      } else if (event.target.closest("[data-gallery-bulk-apply]")) {
+        this.galleryBulkOpen = true;
+        const parsed = window.CatalogManualEntry.parseGallery(this.root.querySelector("[data-gallery-bulk-text]")?.value || "");
+        if (!parsed.rows.length) this.galleryBulkFeedback = parsed.issues[0]?.message || "Nenhuma variação válida foi encontrada.";
+        else {
+          try {
+            const items = this.store.applyGalleryItemsBulk(component.id, parsed.rows, { mode: this.root.querySelector("[data-gallery-bulk-mode]")?.value || "replace" });
+            const warning = parsed.issues.find(issue => issue.severity === "warning");
+            this.galleryBulkFeedback = `${items.length} imagem(ns) na galeria${warning ? `; ${warning.message}` : ""}.`;
+          } catch (error) { this.galleryBulkFeedback = error.message; }
+        }
+        this.render();
       } else if (event.target.closest("[data-table-bulk-apply]")) {
         this.tableBulkOpen = true;
         const text = this.root.querySelector("[data-table-bulk-text]")?.value || "";
@@ -778,6 +1061,8 @@
           this.tableBulkFeedback = error.message;
         }
         this.render();
+      } else if (event.target.closest("[data-table-schema-apply]")) {
+        this.store.applyTableSchema([component.id], this.root.querySelector("[data-table-schema]")?.value);
       } else if (event.target.closest("[data-table-row-add]")) {
         const values = Object.fromEntries(this.store.getTableColumns(component).map(column => [column.key, column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""]));
         this.store.addTableRow(component.id, values);
@@ -794,6 +1079,19 @@
         const groupLabel = this.root.querySelector("[data-new-legend-group]")?.value?.trim() || "Geral";
         const materialize = this.root.querySelector("[data-new-legend-materialize]")?.checked === true;
         if (label) this.store.upsertColorLegend({ label, token, textLabel: label, groupLabel }, { materialize, groupLabel });
+      } else if (event.target.closest("[data-legend-bulk-apply]")) {
+        this.legendEditorOpen = true;
+        this.legendBulkOpen = true;
+        const parsed = window.CatalogManualEntry.parseLegends(this.root.querySelector("[data-legend-bulk-text]")?.value || "");
+        if (!parsed.rows.length) this.legendBulkFeedback = parsed.issues[0]?.message || "Nenhuma legenda válida foi encontrada.";
+        else {
+          try {
+            const items = this.store.upsertColorLegendsBulk(parsed.rows, { materialize: this.root.querySelector("[data-legend-bulk-materialize]")?.checked === true });
+            const warning = parsed.issues.find(issue => issue.severity === "warning");
+            this.legendBulkFeedback = `${items.length} legenda(s) criada(s)${warning ? `; ${warning.message}` : ""}.`;
+          } catch (error) { this.legendBulkFeedback = error.message; }
+        }
+        this.render();
       } else if (event.target.closest("[data-color-legend-remove]")) {
         this.legendEditorOpen = true;
         this.store.removeColorLegend(event.target.closest("[data-color-legend-remove]").dataset.colorLegendRemove);

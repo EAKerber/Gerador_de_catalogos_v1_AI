@@ -6,7 +6,7 @@ A direção canônica do produto, o fluxo esperado para agentes, a política de 
 
 ## Entrega atual
 
-A pasta reúne vinte e sete etapas evolutivas:
+A pasta reúne as seguintes etapas evolutivas:
 
 - **Incremento 00 — fundação arquitetônica:** documento JSON versionado, registro de componentes, tokens e separação das camadas.
 - **Incremento 01 — editor base A4:** página vazia, drag and drop, seleção, inspetor, movimento, resize, grid, snap e exportação JSON.
@@ -36,6 +36,15 @@ A pasta reúne vinte e sete etapas evolutivas:
 - **Incremento 05.12 — auditoria manual e intenção contextual:** reconstrução integral da referência em Chromium real, log de 267 ações, matriz de 65% e evidências JSON/PNG/PDF que promovem as fricções mensuradas ao backlog.
 - **Incremento 05.13 — auditoria subtrativa e governança:** 35 capacidades classificadas, frentes externas congeladas, redundâncias mapeadas e autoridade Auto/Manual testada antes de qualquer remoção.
 - **Incremento 05.14 — confiabilidade estrutural:** autoridade local durável, reintegração explícita, geometria solicitada/resolvida, seleção entre contextos e preflight de PDF sem UI transitória.
+- **Incremento 05.15 — comandos compostos e receitas focais:** inserção no contêiner alvo com override por `Shift`, variação semântica, quatro esquemas de tabela aplicáveis em lote e composição hero + grade + faixa em uma ação reversível.
+- **Incremento 05.16 — continuidade e benchmark comparável:** abas e disclosures acompanham itens equivalentes; a reconstrução integral cai de 267 para 223 ações, tabelas de 82 para 56 e overflows de dois para zero.
+- **Incremento 05.17 — geometria orientada por intenção:** seleção contextual atômica, geometria relacional/numérica, grade de caixas heterogêneas, diagnóstico da seleção e editores de coleção; benchmark final em 157 ações sem colisão ou overflow.
+- **Incremento 05.18 — profundidade editorial:** texto ganha alinhamento, escala e overflow controlados; ícones ganham escala interna; modos de card passam a priorizar visualmente arte, especificações, galeria ou dados sem criar tipos paralelos.
+- **Incremento 05.20 — linguagem promocional:** receitas editáveis para preço e oferta, tokens promocionais, novos ícones semânticos e gates conjuntos para as referências técnica e promocional.
+- **Incremento 05.21 — navegação contextual:** breadcrumb resiliente, painéis redimensionáveis e Camadas recolhíveis com foco e estados distintos, sempre por regras determinísticas e sem IA.
+- **Incremento 05.22 — encerramento geométrico da V1:** pedidos de canvas, inspetor e multisseleção são planejados com reflow e autoridade numa cópia e aplicados em um único commit ou rejeitados sem mutação; locks persistentes permanecem em discovery.
+- **Incremento 05.23 — transação estrutural:** espaçamento em lote e separadores são planejados com frames, autoridade e estrutura numa cópia e aplicados numa única emissão/undo, ou rejeitados sem mutação.
+- **Incremento 05.24 — estado canônico da V1:** governança, manifesto, backlog e roadmap passam a concordar que a V1 single-page está estável; um gate Node impede que incrementos integrados voltem a aparecer como fila ativa.
 
 ## Abrir
 
@@ -520,21 +529,30 @@ node tests/publication-gates.test.js
 node tests/catalog-compiler.test.js
 node tests/manual-efficiency.test.js
 node tests/manual-batch.test.js
+node tests/collection-bulk-editing.test.js
 node tests/section-recipes.test.js
 node tests/contextual-actions-spacing.test.js
 node tests/ui-contract.test.js
 node tests/reference-coverage.test.js
 node tests/reference-manual-audit-contract.test.js
+node tests/reference-manual-audit-05.17-contract.test.js
+node tests/library-depth-05.18.test.js
 node tests/subtractive-layout-authority.test.js
 node tests/layout-authority-geometry.test.js
+node tests/contextual-insertion-target.test.js
+node tests/compound-table-variant.test.js
+node tests/focal-recipe-layout.test.js
+node tests/legend-token-contrast.test.js
 node tests/feature-governance.test.js
 python tests/validate-schema.py
 ```
 
 Os smoke tests reais `tests/browser-assets.test.js`, `tests/browser-repeatable.test.js`, `tests/browser-hierarchy.test.js`, `tests/browser-print.test.js`, `tests/browser-slot-span.test.js`, `tests/browser-reflow.test.js`, `tests/browser-print-fidelity.test.js`, `tests/browser-composition-dynamics.test.js`, `tests/browser-print-structure.test.js`, `tests/browser-reusable-components.test.js`, `tests/browser-product-catalog.test.js`, `tests/browser-history-import.test.js`, `tests/browser-project-package.test.js`, `tests/browser-catalog-compiler.test.js`, `tests/browser-manual-efficiency.test.js`, `tests/browser-manual-batch.test.js`, `tests/browser-section-recipes.test.js`, `tests/browser-contextual-actions-spacing.test.js`, `tests/browser-chrome-responsive.test.js` e `tests/browser-reference-manual-audit.test.js` usam Playwright e requerem um Chromium disponível em `CATALOG_CHROMIUM_EXECUTABLE`. `CATALOG_BASE_URL` pode apontar para servidor local ou para o `file://` absoluto do `index.html`.
 
+Antes de atribuir `SIGSEGV` ao editor, valide o executável com `file`, tamanho e `chromium --version`. Um ELF truncado pode conservar permissão de execução e ainda falhar antes de o Playwright abrir a página. Em sandboxes sem diretório pessoal gravável, defina `HOME` e `XDG_CACHE_HOME` para uma pasta temporária gravável, principalmente para o cache do Fontconfig.
+
 Os testes cobrem também variantes vinculadas a galerias/linhas, legendas hierárquicas, migração conservadora e schema `1.16.0`, além dos contratos estruturais, editoriais, geométricos, de pacote e de impressão anteriores.
 
 ## Limites intencionais
 
-Os Incrementos 05.6–05.11 reduziram subfluxos repetitivos; a auditoria 05.12 mediu o efeito integral em **267 ações**, 16,3% abaixo da linha de base de 319. A reconstrução ainda terminou com 8 colisões e 2 overflows, e tabelas/geometria consumiram 58,8% das ações. O 05.13 congela expansão multimídia, plataforma online, touch/mobile completo e workflow de publicação, além de pausar multipágina. O foco ativo é usabilidade, fidelidade e confiabilidade. Nenhuma opção foi removida: Auto/Manual, reajustes, duplicações, mínimos, apresentação e separadores entram em consolidação compatível. Um backend central de projetos não é objetivo do produto. JSON isolado não transporta bytes; para projetos com imagens, use o pacote ZIP. Evidências e decisões estão em `docs/REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.12.md`, `docs/SUBTRACTIVE-FEATURE-AUDIT-05.13.md` e `docs/BACKLOG.md`.
+Os Incrementos 05.6–05.17 reduziram a reconstrução integral de **319 para 157 ações**. Mapas de caixas e edição de coleções em lote retiraram 66 ações desde 05.16, e a composição termina sem colisão nem overflow. O 05.13 congela expansão multimídia, plataforma online, touch/mobile completo e workflow de publicação, além de pausar multipágina. O foco ativo é usabilidade, fidelidade e confiabilidade. Nenhuma opção foi removida: reajustes, duplicações, mínimos, apresentação, separadores e geometria exata entram em consolidação compatível. Um backend central de projetos não é objetivo do produto. JSON isolado não transporta bytes; para projetos com imagens, use o pacote ZIP. Evidências e decisões estão em `docs/REFERENCE-RECONSTRUCTION-USABILITY-AUDIT-05.17.md`, `docs/SUBTRACTIVE-FEATURE-AUDIT-05.13.md` e `docs/BACKLOG.md`.

@@ -27,8 +27,10 @@ function assert(condition, message) {
     return card.children.find(child => child.type === "art").id;
   });
 
-  await page.locator(`[data-component-id="${artId}"] [data-open-asset-library]`).click();
+  const placeholder = page.locator(`[data-component-id="${artId}"] [data-open-asset-library]`);
+  await placeholder.click();
   await page.locator("#assetLibraryDialog[open]").waitFor();
+  assert(await placeholder.getAttribute("aria-label") === "Escolher arte", "O placeholder não anuncia a ação direta de escolher arte.");
   const libraryOrder = await page.evaluate(() => {
     const grid = document.getElementById("assetLibraryGrid");
     const dropzone = document.getElementById("assetDropzone");
@@ -80,8 +82,10 @@ function assert(condition, message) {
     CatalogEditor.store.setEditingContext(null);
     return CatalogEditor.store.addComponent("art", { x: 410, y: 160, width: 220, height: 160 }, { props: { role: "logo" } }).id;
   });
-  await page.locator(`[data-component-id="${secondArtId}"] [data-open-asset-library]`).click();
-  await page.locator("#assetLibraryDialog[open] [data-use-asset]").click();
+  await page.locator(`[data-component-id="${secondArtId}"] [data-open-asset-library]`).press("Enter");
+  const reusableAsset = page.locator("#assetLibraryDialog[open] [data-use-asset]").first();
+  assert(await reusableAsset.evaluate(element => element.tagName === "BUTTON"), "A miniatura reutilizável não é um único botão acessível.");
+  await reusableAsset.press("Enter");
   await page.waitForFunction(id => CatalogEditor.store.findComponent(id)?.component.props.assetId, secondArtId);
   const reuse = await page.evaluate(assetId => ({ count: CatalogEditor.store.getCollection("assets").items.length, usage: CatalogEditor.store.getAssetUsage(assetId).length }), imported.assetId);
   assert(reuse.count === 1 && reuse.usage === 2, "O reuso criou outro asset ou não vinculou os dois componentes.");

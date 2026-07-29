@@ -1,4 +1,4 @@
-# CatalogAuthoringKit 1.5.3
+# CatalogAuthoringKit 1.6.0
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
 
@@ -92,13 +92,21 @@ Na interface, o botão `+` insere componentes, receitas e itens salvos no primei
 
 O botão `+` também expõe ações compatíveis com a seleção atual. Em uma tabela, ele adiciona uma linha sem exigir navegação pelo inspetor. Em uma arte, cria uma galeria editável preservando a imagem original e adicionando a primeira variação. Dentro da galeria, adiciona outra arte com legenda própria.
 
-Seleções irmãs no mesmo contexto podem receber espaçamento uniforme por eixo e separadores editáveis. `capabilities.json.separatorPresets` descreve os presets oficiais; o resultado continua composto por átomos `separator`, sem introduzir um formato paralelo. O inspetor organiza a edição em **Conteúdo**, **Layout** e **Visual**, deixando geometria e restrições técnicas sob divulgação avançada.
+Quando um contêiner compatível está selecionado, `+` insere dentro dele e abre esse contexto. No arraste, o destino padrão é o contêiner compatível mais profundo sob o ponteiro. Use `Shift` para ignorar o alvo interno e inserir sobre o contexto atualmente aberto. Em uma tabela vinculada a produto, **Variação do produto** cria em uma única ação a entidade semântica, a linha comercial ligada e uma imagem com legenda; não simule essa relação duplicando apenas a linha visual.
+
+Seleções irmãs no mesmo contexto podem receber alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento uniforme por eixo e separadores editáveis. `capabilities.json.separatorPresets` descreve os presets oficiais; o resultado continua composto por átomos `separator`, sem introduzir um formato paralelo. A precisão geométrica do conjunto é uma superfície central; mínimos, restrições e diagnóstico solicitado/resolvido continuam progressivos.
+
+## Linguagem editorial 1.6
+
+O átomo `text` mantém conteúdo simples e declarativo. `align`, `verticalAlign`, `scale` e `overflow` controlam composição sem HTML ou CSS arbitrário. Use somente os valores publicados no manifesto. `iconScale` controla a escala interna de `icon` e `specification` sem alterar seus frames.
+
+Os modos de `product-card` têm prioridade visual real: `standard` equilibra, `hero` amplia arte e título, `technical` amplia especificações, `variants` empilha galeria e informações e `data-only` maximiza a região informativa. Todos preservam a mesma subárvore, bindings, tabela e IDs.
 
 ## Variantes e legendas vinculadas
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.5.3
+## Limites 1.6.0
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

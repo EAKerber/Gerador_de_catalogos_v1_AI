@@ -1,15 +1,34 @@
-# Atlas de funcionalidades — Incremento 05.14
+# Atlas de funcionalidades — Incremento 05.18
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 35 capacidades de produto;
+- 45 capacidades de produto;
 - 16 tipos de componente;
-- 4 receitas oficiais;
-- 15 fluxos curados;
-- 27 ícones declarados.
-- governança: 20 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- 5 grupos de descoberta por intenção;
+- 2 posições iniciais prováveis;
+- 9 receitas oficiais;
+- 17 fluxos curados;
+- 35 ícones declarados.
+- governança: 30 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+
+## Grupos de componentes por intenção
+
+| Intenção | Camada | Tipos |
+| --- | --- | --- |
+| Página | primary | `catalog-footer`, `catalog-header` |
+| Produto | primary | `art`, `art-gallery`, `product-card`, `specification`, `title-symbol` |
+| Dados | primary | `data-table`, `legend-group`, `legend-item`, `legend-panel` |
+| Comunicação | primary | `footer-item`, `icon`, `separator`, `text` |
+| Estrutura avançada | advanced | `layout-container` |
+
+## Posições iniciais prováveis
+
+| Tipo | Âncora | Largura | Política de colisão |
+| --- | --- | --- | --- |
+| `catalog-header` | top | safe-area | move-inward |
+| `catalog-footer` | bottom | safe-area | move-inward |
 
 ## Fluxos por intenção
 
@@ -18,12 +37,14 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `start.semantic-source` | Gerar um catálogo a partir de produtos estruturados | Importar → CatalogSource JSON → analisar → gerar | Fonte normalizada, plano editorial e página materializada deterministicamente |
 | `start.page-structure` | Começar uma página manual sem montar a estrutura peça por peça | Componentes → Estruturas prontas → Página-base → + | Cabeçalho, área principal e rodapé editáveis, com foco no conteúdo |
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
-| `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → Criar cards | Cards vinculados e organizados em uma única transação |
+| `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
 | `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas, múltiplas linhas e valores editáveis |
 | `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset persistido por referência e reutilizável |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
-| `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação |
+| `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação |
+| `visual.editorial-depth` | Ajustar hierarquia visual sem desmontar componentes | Texto, Ícone, Especificação ou Card → Conteúdo/Visual | Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo |
+| `content.bulk-collections` | Criar imagens legendadas e legendas cromáticas sem repetir formulários | Galeria ou Tabela → Conteúdo → Editar coleção | Itens canônicos são sincronizados ou acrescentados em uma transação reversível |
 | `reuse.saved-component` | Reutilizar uma composição editada | Selecionar componente → Estrutura → Salvar em Meus componentes | Snapshot reutilizável com novos IDs a cada inserção |
 | `safety.history` | Reverter ou reaplicar uma mudança | Toolbar → Histórico; Ctrl/Cmd+Z e Ctrl/Cmd+Shift+Z ou Ctrl+Y | Estado anterior ou posterior restaurado atomicamente |
 | `inspect.progressive` | Ajustar do conteúdo à geometria sem receber tudo de uma vez | Inspetor → Conteúdo, Layout, Visual e Avançado | Controles priorizados pela intenção e propriedades técnicas sob divulgação |
@@ -73,14 +94,14 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 ## Criar e vincular cards para uma seleção de produtos
 
 - **ID:** `content.cards-from-products`
-- **Acesso:** Produtos → selecionar → Criar cards
+- **Acesso:** Produtos → selecionar → escolher organização → Criar composição
 - **Pré-condições:** Produtos existentes; Contêiner de destino com espaço
 - **Resultado:** Cards vinculados e organizados em uma única transação
-- **Exemplo:** Materializar sete cards no conteúdo principal
+- **Exemplo:** Materializar um hero, seis cards em grade e uma faixa complementar
 - **Limites:** Capacidade e gate geométrico continuam obrigatórios
-- **Capacidades:** `manualProductCardBatch`, `undoRedo`
+- **Capacidades:** `manualProductCardBatch`, `heroGridStripComposition`, `undoRedo`
 - **Componentes:** `product-card`, `layout-container`
-- **Receitas:** —
+- **Receitas:** `section-hero-grid-strip`
 - **Contratos:** `component.binding.productId`, `CatalogDocument.collections.products`
 
 ## Editar estrutura e dados de uma tabela
@@ -89,9 +110,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Acesso:** Selecionar tabela → Conteúdo; ou + para nova linha
 - **Pré-condições:** Tabela selecionada
 - **Resultado:** Colunas semânticas, múltiplas linhas e valores editáveis
-- **Exemplo:** Adicionar coluna Medida e colar duas linhas comerciais
+- **Exemplo:** Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais
 - **Limites:** Regras condicionais avançadas permanecem fora desta versão
-- **Capacidades:** `semanticTables`, `contextualTableRows`, `manualBulkTableEntry`
+- **Capacidades:** `semanticTables`, `contextualTableRows`, `manualBulkTableEntry`, `reusableTableSchemas`, `batchTableSchemas`
 - **Componentes:** `data-table`
 - **Receitas:** —
 - **Contratos:** `component.props.columns`, `collection.tableRows`
@@ -140,13 +161,39 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `layout.multi-selection`
 - **Acesso:** Shift/Ctrl/Cmd+clique → Layout/Visual
 - **Pré-condições:** Itens no mesmo contexto e com o mesmo pai
-- **Resultado:** Alinhamento, distribuição, espaçamento, apresentação ou separadores em uma transação
-- **Exemplo:** Distribuir três cards e inserir divisórias verticais
+- **Resultado:** Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação
+- **Exemplo:** Igualar três cards, deslocar o conjunto e inserir divisórias verticais
 - **Limites:** Seleção cruzando pais é rejeitada
-- **Capacidades:** `multiSelection`, `batchAlignment`, `batchSpacing`, `batchSeparators`, `batchPresentation`
+- **Capacidades:** `multiSelection`, `batchAlignment`, `batchGeometry`, `batchFrameMap`, `selectionGeometryDiagnostics`, `batchSpacing`, `batchSeparators`, `batchPresentation`
 - **Componentes:** `separator`
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
+
+## Ajustar hierarquia visual sem desmontar componentes
+
+- **ID:** `visual.editorial-depth`
+- **Acesso:** Texto, Ícone, Especificação ou Card → Conteúdo/Visual
+- **Pré-condições:** Componente compatível selecionado
+- **Resultado:** Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo
+- **Exemplo:** Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa
+- **Limites:** Escalas são discretas; Texto não aceita HTML; Modo não remove conteúdo da subárvore
+- **Capacidades:** `editorialTextControls`, `internalIconScale`, `distinctProductModes`
+- **Componentes:** `text`, `icon`, `specification`, `product-card`
+- **Receitas:** —
+- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.presentation.mode`
+
+## Criar imagens legendadas e legendas cromáticas sem repetir formulários
+
+- **ID:** `content.bulk-collections`
+- **Acesso:** Galeria ou Tabela → Conteúdo → Editar coleção
+- **Pré-condições:** Uma linha por item; Assets opcionais já cadastrados
+- **Resultado:** Itens canônicos são sincronizados ou acrescentados em uma transação reversível
+- **Exemplo:** Colar Cromado, Preto e Branco como três imagens com legenda; criar a faixa cromática correspondente
+- **Limites:** A colagem não importa arquivos binários; Até 24 imagens e 40 legendas por operação
+- **Capacidades:** `contextualArtGallery`, `semanticColorLegends`, `optionalLegendMaterialization`, `bulkCollectionEditing`
+- **Componentes:** `art-gallery`, `art`, `data-table`, `legend-panel`, `legend-group`, `legend-item`
+- **Receitas:** `section-packaging-legend`
+- **Contratos:** `art.props.caption`, `collections.colorLegends`, `component.props.legendKey`
 
 ## Reutilizar uma composição editada
 
@@ -253,37 +300,47 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `catalogSourceDirectImport` | `true` | **active** | Fluxo principal de geração data-first. | `CatalogCapabilities.capabilities.catalogSourceDirectImport` |
 | `manualBulkProductEntry` | `true` | **active** | Maior ganho observado na criação manual. | `CatalogCapabilities.capabilities.manualBulkProductEntry` |
 | `manualBulkTableEntry` | `true` | **active** | Base para esquema e dados em operações separadas. | `CatalogCapabilities.capabilities.manualBulkTableEntry` |
+| `reusableTableSchemas` | `true` | **active** | Reduz configuração repetida sem criar um segundo modelo de tabela. | `CatalogCapabilities.capabilities.reusableTableSchemas` |
+| `batchTableSchemas` | `true` | **active** | Aplica a mesma intenção estrutural a várias tabelas em uma transação reversível. | `CatalogCapabilities.capabilities.batchTableSchemas` |
 | `manualProductCardBatch` | `true` | **active** | Operação composta de alto valor comprovado. | `CatalogCapabilities.capabilities.manualProductCardBatch` |
+| `heroGridStripComposition` | `true` | **active** | Materializa uma organização frequente com componentes canônicos e editáveis. | `CatalogCapabilities.capabilities.heroGridStripComposition` |
 | `multiSelection` | `true` | **active** | Base para ações de grupo. | `CatalogCapabilities.capabilities.multiSelection` |
 | `batchAlignment` | `true` | **active** | Intenção distinta de organização de irmãos. | `CatalogCapabilities.capabilities.batchAlignment` |
+| `batchGeometry` | `true` | **active** | Valores exatos, deltas e equalização expressam precisão recorrente sobre conjuntos. | `CatalogCapabilities.capabilities.batchGeometry` |
+| `batchFrameMap` | `true` | **active** | Aplica caixas heterogêneas em uma transação e elimina estados intermediários do ajuste campo a campo. | `CatalogCapabilities.capabilities.batchFrameMap` |
+| `selectionGeometryDiagnostics` | `true` | **active** | Torna colisões e extrapolações visíveis no contexto da tarefa antes da exportação. | `CatalogCapabilities.capabilities.selectionGeometryDiagnostics` |
 | `batchPresentation` | `true` | **audit** | Consolidar com modos, presets e densidade sem duplicar superfícies. | `CatalogCapabilities.capabilities.batchPresentation` |
 | `oneClickInsertion` | `true` | **active** | O botão contextual demonstrou ganho geral de usabilidade. | `CatalogCapabilities.capabilities.oneClickInsertion` |
 | `officialSectionRecipes` | `true` | **active** | Receitas devem evoluir para comandos compostos compartilhados. | `CatalogCapabilities.capabilities.officialSectionRecipes` |
 | `contextualInsertActions` | `true` | **active** | Expressam intenção de posicionamento sem exigir drag. | `CatalogCapabilities.capabilities.contextualInsertActions` |
 | `contextualTableRows` | `true` | **active** | Ação contextual clara, frequente e reversível. | `CatalogCapabilities.capabilities.contextualTableRows` |
 | `contextualArtGallery` | `true` | **maintain** | Manter a operação existente sem expandir mídia. | `CatalogCapabilities.capabilities.contextualArtGallery` |
+| `bulkCollectionEditing` | `true` | **active** | Reduz a repetição manual em galerias e legendas sem criar entidades paralelas. | `CatalogCapabilities.capabilities.bulkCollectionEditing` |
 | `batchSpacing` | `true` | **active** | Intenção frequente e adequada a comando de grupo. | `CatalogCapabilities.capabilities.batchSpacing` |
 | `batchSeparators` | `true` | **audit** | Candidato a ser opção da ação de espaçamento, não capacidade paralela. | `CatalogCapabilities.capabilities.batchSeparators` |
 | `progressiveInspectorVocabulary` | `["content","layout","visual","advanced"]` | **active** | Precisa evoluir de abas por propriedade para continuidade de tarefa. | `CatalogCapabilities.capabilities.progressiveInspectorVocabulary` |
+| `editorialTextControls` | `true` | **active** | Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário. | `CatalogCapabilities.capabilities.editorialTextControls` |
+| `internalIconScale` | `true` | **active** | Separa escala visual interna da geometria externa do componente. | `CatalogCapabilities.capabilities.internalIconScale` |
+| `distinctProductModes` | `true` | **active** | Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card. | `CatalogCapabilities.capabilities.distinctProductModes` |
 
 ## Inventário de componentes
 
-| Tipo | Categoria | Contêiner | Mínimo técnico | Recomendado |
-| --- | --- | --- | --- | --- |
-| `art` — Arte / logo | Elementos | não | 80×60 | 210×160 |
-| `art-gallery` — Galeria de imagens | Estruturas | sim | 150×96 | 260×150 |
-| `catalog-footer` — Rodapé | Estruturas | sim | 500×80 | 746×100 |
-| `catalog-header` — Cabeçalho | Estruturas | sim | 420×110 | 730×150 |
-| `data-table` — Tabela de dados | Peças internas | não | 180×32 | 300×48 |
-| `footer-item` — Item do rodapé | Peças internas | sim | 80×64 | 112×96 |
-| `icon` — Ícone | Elementos | não | 24×24 | 56×56 |
-| `layout-container` — Área de composição | Estruturas | sim | 160×120 | 360×300 |
-| `legend-group` — Grupo de legenda | Peças internas | sim | 140×38 | 320×54 |
-| `legend-item` — Item de legenda | Peças internas | não | 72×24 | 96×30 |
-| `legend-panel` — Painel de legenda | Estruturas | sim | 180×54 | 360×92 |
-| `product-card` — Card de produto | Estruturas | sim | 220×190 | 270×220 |
-| `separator` — Linha separadora | Elementos | não | 8×8 | 220×8 |
-| `specification` — Especificação | Peças internas | não | 82×28 | 130×38 |
-| `text` — Texto | Elementos | não | 80×34 | 260×80 |
-| `title-symbol` — Título com símbolo | Peças internas | não | 140×32 | 260×38 |
+| Tipo | Intenção | Categoria legada | Posição inicial | Contêiner | Mínimo técnico | Recomendado |
+| --- | --- | --- | --- | --- | --- | --- |
+| `art` — Arte / logo | Produto | Elementos | genérica | não | 80×60 | 210×160 |
+| `art-gallery` — Galeria de imagens | Produto | Estruturas | genérica | sim | 150×96 | 260×150 |
+| `catalog-footer` — Rodapé | Página | Estruturas | bottom | sim | 500×80 | 746×100 |
+| `catalog-header` — Cabeçalho | Página | Estruturas | top | sim | 420×110 | 730×150 |
+| `data-table` — Tabela de dados | Dados | Peças internas | genérica | não | 180×32 | 300×48 |
+| `footer-item` — Item do rodapé | Comunicação | Peças internas | genérica | sim | 80×64 | 112×96 |
+| `icon` — Ícone | Comunicação | Elementos | genérica | não | 24×24 | 96×72 |
+| `layout-container` — Área de composição | Estrutura avançada | Estruturas | genérica | sim | 160×120 | 360×300 |
+| `legend-group` — Grupo de legenda | Dados | Peças internas | genérica | sim | 140×38 | 320×54 |
+| `legend-item` — Item de legenda | Dados | Peças internas | genérica | não | 72×24 | 96×30 |
+| `legend-panel` — Painel de legenda | Dados | Estruturas | genérica | sim | 180×54 | 360×92 |
+| `product-card` — Card de produto | Produto | Estruturas | genérica | sim | 220×190 | 270×220 |
+| `separator` — Linha separadora | Comunicação | Elementos | genérica | não | 8×8 | 220×8 |
+| `specification` — Especificação | Produto | Peças internas | genérica | não | 82×28 | 130×38 |
+| `text` — Texto | Comunicação | Elementos | genérica | não | 80×34 | 260×80 |
+| `title-symbol` — Título com símbolo | Produto | Peças internas | genérica | não | 140×32 | 260×38 |
 

@@ -1,0 +1,43 @@
+{
+  "profileVersion": "05.20.9",
+  "source": {
+    "label": "Referência promocional Pé para Móveis",
+    "sha256": "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1e38cffd02b4ab586",
+    "width": 1024,
+    "height": 1536,
+    "policy": "Perfil cromático e semântico pré-calculado; a imagem não integra o repositório."
+  },
+  "colorMetrics": {
+    "redPct": 16.175079,
+    "yellowPct": 3.620333,
+    "darkPct": 32.426961,
+    "saturatedPct": 30.778122,
+    "whitePct": 10.441907,
+    "largestRedComponentPct": 1.80486,
+    "largestYellowComponentPct": 1.282946,
+    "largestDarkComponentPct": 8.88888
+  },
+  "categoryThresholds": {
+    "redPctMin": 4.0,
+    "yellowPctMin": 0.7,
+    "darkPctMin": 8.0,
+    "saturatedPctMin": 7.5,
+    "whitePctMax": 75.0,
+    "largestRedComponentPctMin": 0.45,
+    "largestYellowComponentPctMin": 0.25,
+    "largestDarkComponentPctMin": 2.2
+  },
+  "structuralExpectations": {
+    "independentOfferUnitsMin": 4,
+    "priceContainersMin": 4,
+    "commercialRowsMin": 4,
+    "benefitUnitsMin": 4,
+    "calloutUnitsMin": 1,
+    "primaryOfferPresentation": "independent-repeated-offers"
+  },
+  "interpretation": {
+    "purpose": "Medir compatibilidade de categoria visual, não reprodução pixel a pixel.",
+    "artExemption": "Ausência de fotos, personagem e desenho final não invalida a auditoria; os pisos cromáticos são deliberadamente lenientes.",
+    "blocking": false
+  }
+}

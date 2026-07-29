@@ -50,14 +50,42 @@ const texts = [
   store.addComponent("text", { x: 150, y: 100, width: 90, height: 40 }),
   store.addComponent("text", { x: 310, y: 100, width: 100, height: 40 })
 ];
+let spacingEmissions = 0;
+const unsubscribeSpacing = store.subscribe((_state, change) => {
+  if (change.type !== "init") spacingEmissions += 1;
+});
 const spacingHistory = store.getHistoryState().undoCount;
+const beforeSpacingPlan = JSON.stringify(store.getExportDocument());
+const spacingPlan = store.planSpacingTransaction(texts.map(item => item.id), { axis: "horizontal", gap: 16, separators: true, separatorPresetId: "emphasis" });
+assert(spacingPlan.status !== "blocked", "O planejamento estrutural válido foi bloqueado.");
+assert(spacingPlan.structuralChanges.length === 2 && spacingPlan.structuralChanges.every(change => change.componentType === "separator"), "O plano não enumerou os dois separadores.");
+assert(JSON.stringify(store.getExportDocument()) === beforeSpacingPlan && spacingEmissions === 0, "Planejar espaçamento alterou ou notificou o documento real.");
 const spaced = store.spaceComponents(texts.map(item => item.id), { axis: "horizontal", gap: 16, separators: true, separatorPresetId: "emphasis" });
 assert(spaced.components[1].frame.x - (spaced.components[0].frame.x + spaced.components[0].frame.width) === 16, "O primeiro gap horizontal não foi aplicado.");
 assert(spaced.components[2].frame.x - (spaced.components[1].frame.x + spaced.components[1].frame.width) === 16, "O segundo gap horizontal não foi aplicado.");
 assert(spaced.separators.length === 2 && spaced.separators.every(item => item.props.orientation === "vertical" && item.props.thickness === 4), "Os separadores não seguiram eixo e preset.");
+assert(spaced.transaction.structuralChanges.length === 2 && spacingEmissions === 1, "O commit estrutural perdeu o relatório ou expôs estados intermediários.");
 assert(store.getHistoryState().undoCount === spacingHistory + 1 && store.getHistoryState().undoLabel === "Ajustar espaçamento", "Gap e linhas não foram uma única ação.");
+const existingSeparatorPlan = store.planSpacingTransaction(texts.map(item => item.id), { axis: "horizontal", gap: 16, separators: true, separatorPresetId: "solid-dot" });
+assert(existingSeparatorPlan.status !== "blocked", "A atualização planejada dos separadores existentes foi bloqueada.");
+assert(existingSeparatorPlan.structuralChanges.length === 2 && existingSeparatorPlan.structuralChanges.every(change => change.type === "component-updated" && change.field === "props"), "O plano não enumerou a atualização dos separadores existentes.");
 store.undo();
 assert(store.getPage().children.filter(item => item.type === "separator").length === 0, "Desfazer não removeu os separadores do lote.");
+const beforeBlockedSpacing = JSON.stringify(store.getExportDocument());
+const historyBeforeBlockedSpacing = store.getHistoryState().undoCount;
+const emissionsBeforeBlockedSpacing = spacingEmissions;
+const blockedSpacing = store.planSpacingTransaction(texts.map(item => item.id), { axis: "horizontal", gap: 500, separators: true });
+assert(blockedSpacing.status === "blocked" && blockedSpacing.reasons.includes("bounds"), "O plano impossível não foi bloqueado com causa observável.");
+assert(JSON.stringify(store.getExportDocument()) === beforeBlockedSpacing, "O plano bloqueado deixou mutação parcial.");
+try {
+  store.spaceComponents(texts.map(item => item.id), { axis: "horizontal", gap: 500, separators: true });
+  throw new Error("O commit impossível não foi bloqueado.");
+} catch (error) {
+  assert(error.code === "SPACING_TRANSACTION_BLOCKED", "O bloqueio não expôs o contrato transacional.");
+}
+assert(JSON.stringify(store.getExportDocument()) === beforeBlockedSpacing, "O commit bloqueado deixou mutação parcial.");
+assert(store.getHistoryState().undoCount === historyBeforeBlockedSpacing && spacingEmissions === emissionsBeforeBlockedSpacing, "O commit bloqueado criou histórico ou emissão.");
+unsubscribeSpacing();
 
 store.reset();
 const area = store.addComponent("layout-container", { x: 24, y: 24, width: 600, height: 160 }, { layout: { mode: "row", gap: 8, padding: 8, distribution: "fill" } });

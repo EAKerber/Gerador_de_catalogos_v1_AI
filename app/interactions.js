@@ -40,7 +40,10 @@
           event.preventDefault();
           event.stopPropagation();
           try {
-            this.store.performContextualAction(contextualAction.dataset.contextAction, contextualAction.dataset.contextComponentId);
+            this.requireActionResult(
+              this.store.performContextualAction(contextualAction.dataset.contextAction, contextualAction.dataset.contextComponentId),
+              "Esta ação contextual não pôde ser aplicada à seleção atual."
+            );
           } catch (error) {
             this.reportError(error);
           }
@@ -59,8 +62,9 @@
         event.preventDefault();
         event.stopPropagation();
         try {
-          if (template) this.store.insertComponentFromTemplate(template.dataset.insertTemplate);
-          else this.store.insertComponent(component.dataset.insertComponent);
+          const insertionOptions = { preferCurrentContext: event.shiftKey };
+          if (template) this.requireActionResult(this.store.insertComponentFromTemplate(template.dataset.insertTemplate, insertionOptions), "Esta estrutura não é compatível com o contexto atual.");
+          else this.requireActionResult(this.store.insertComponent(component.dataset.insertComponent, insertionOptions), "Este componente não pode ser inserido no contexto atual.");
         } catch (error) {
           this.reportError(error);
         }
@@ -71,8 +75,9 @@
         if (!item) return;
         event.preventDefault();
         try {
-          if (item.dataset.templateId) this.store.insertComponentFromTemplate(item.dataset.templateId);
-          else this.store.insertComponent(item.dataset.componentType);
+          const insertionOptions = { preferCurrentContext: event.shiftKey };
+          if (item.dataset.templateId) this.requireActionResult(this.store.insertComponentFromTemplate(item.dataset.templateId, insertionOptions), "Esta estrutura não é compatível com o contexto atual.");
+          else this.requireActionResult(this.store.insertComponent(item.dataset.componentType, insertionOptions), "Este componente não pode ser inserido no contexto atual.");
         } catch (error) {
           this.reportError(error);
         }
@@ -92,6 +97,11 @@
       });
 
       this.layers.addEventListener("click", event => {
+        const reorder = event.target.closest("[data-reorder-layer]");
+        if (reorder) {
+          this.store.reorderComponent(reorder.dataset.reorderLayer, Number(reorder.dataset.reorderDirection));
+          return;
+        }
         const enter = event.target.closest("[data-enter-container]");
         if (enter) {
           this.store.setEditingContext(enter.dataset.enterContainer);
@@ -132,6 +142,11 @@
       console.warn(error);
       const status = document.getElementById("documentStatus");
       if (status) status.textContent = error?.message || "Não foi possível concluir a inserção.";
+    }
+
+    requireActionResult(result, message) {
+      if (result !== null && result !== false && result !== undefined) return result;
+      throw new Error(message || "A ação não está disponível no contexto atual.");
     }
 
     isInsideContext(event, contextId) {
@@ -211,6 +226,18 @@
       return this.draggedTemplateId || event.dataTransfer.getData("application/x-catalog-template") || null;
     }
 
+    dropContextAtEvent(event, type) {
+      const currentContextId = this.store.getState().editor.editingContextId;
+      if (event.shiftKey) return currentContextId;
+      const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+      for (const node of path) {
+        const componentId = node?.dataset?.componentId;
+        if (componentId && this.store.isContainer(componentId) && this.store.isTypeAllowed(type, componentId)) return componentId;
+        if (node === this.page) break;
+      }
+      return currentContextId;
+    }
+
     smartSnap(frame, componentId, contextId, mode, snapX, snapY, disabled = false) {
       const state = this.store.getState();
       if (disabled || !state.editor.smartSnapEnabled || (!snapX && !snapY)) return { frame, guides: [] };
@@ -228,8 +255,8 @@
 
     handleDragOver(event) {
       event.preventDefault();
-      const contextId = this.store.getState().editor.editingContextId;
       const type = this.dragType(event);
+      const contextId = type ? this.dropContextAtEvent(event, type) : this.store.getState().editor.editingContextId;
       const allowed = Boolean(type && this.store.isTypeAllowed(type, contextId));
       const inside = this.isInsideContext(event, contextId);
       event.dataTransfer.dropEffect = allowed && inside ? "copy" : "none";
@@ -247,7 +274,8 @@
       event.preventDefault();
       const type = this.dragType(event);
       const templateId = this.dragTemplateId(event);
-      const contextId = this.store.getState().editor.editingContextId;
+      const currentContextId = this.store.getState().editor.editingContextId;
+      const contextId = type ? this.dropContextAtEvent(event, type) : currentContextId;
       if (!type || !this.store.isTypeAllowed(type, contextId) || !this.isInsideContext(event, contextId)) {
         this.clearDropIndicators();
         return;
@@ -288,6 +316,7 @@
       }
 
       try {
+        if (contextId !== currentContextId && contextId) this.store.setEditingContext(contextId);
         if (templateId) this.store.addComponentFromTemplate(templateId, frame, { parentId: contextId, slotName: slot?.name || null, replace });
         else this.store.addComponent(type, frame, { parentId: contextId, slotName: slot?.name || null, replace });
       } catch (error) {
@@ -331,7 +360,6 @@
       const component = record.component;
       const liveElement = this.layer.querySelector(`[data-component-id="${CSS.escape(componentId)}"]`) || hitElement;
       const point = this.pointInContext(event, parentId);
-      const parentAutoLayout = Boolean(record.parent && window.CATALOG_COMPONENT_REGISTRY[record.parent.type]?.container?.autoLayout);
       this.session = {
         mode: resizing ? "resize" : "move",
         componentId,
@@ -339,9 +367,7 @@
         element: liveElement,
         startPoint: point,
         startFrame: { ...component.frame },
-        axisLock: null,
-        wasSlotted: Boolean(component.slot?.name),
-        wasAutoManaged: Boolean(parentAutoLayout && component.layoutItem?.managed !== false)
+        axisLock: null
       };
       event.preventDefault();
     }
@@ -397,9 +423,16 @@
     handlePointerUp() {
       if (!this.session) return;
       if (this.session.previewFrame) {
-        if (this.session.wasSlotted) this.store.markSlotFree(this.session.componentId);
-        if (this.session.wasAutoManaged) this.store.markLayoutFree(this.session.componentId);
-        this.store.updateComponent(this.session.componentId, { frame: this.session.previewFrame });
+        const plan = this.store.updateComponentGeometry(this.session.componentId, this.session.previewFrame);
+        if (plan.status === "blocked") {
+          const component = this.store.findComponent(this.session.componentId)?.component;
+          if (component) Object.assign(this.session.element.style, {
+            left: `${component.frame.x}px`,
+            top: `${component.frame.y}px`,
+            width: `${component.frame.width}px`,
+            height: `${component.frame.height}px`
+          });
+        }
       }
       this.session = null;
       this.clearGuides();
