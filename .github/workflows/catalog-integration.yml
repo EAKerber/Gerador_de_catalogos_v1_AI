@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - development
+      - main
   push:
     branches:
       - agent/integracao-05.20
