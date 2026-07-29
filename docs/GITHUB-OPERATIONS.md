@@ -192,30 +192,41 @@ ser considerada para poda na própria etapa ou na próxima rotina de higiene.
 
 ### Autorização destrutiva mínima formal
 
-A autorização recorrente mínima limita-se a remover remotamente refs
-`refs/heads/agent/*` elegíveis. Ela não autoriza alterar, apagar, zerar,
-renomear, force-push, fechar ou mover `main` e `development`, sob nenhuma
-circunstância. Também não autoriza apagar tags, releases, ambientes, issues,
-assets, repositório ou qualquer ref fora desse namespace.
+A autorização recorrente mínima permite duas ações remotas elegíveis:
 
-Para fechar uma PR associada antes da poda, é necessária autorização adicional
-e pontual para encerrar a PR sem merge; a poda por si só não a inclui. A
-permissão técnica mínima é `Contents: write`, restrita a este repositório.
-`Pull requests: write` só é necessário quando o escopo da etapa incluir o
-encerramento de PRs.
+1. remover refs `refs/heads/agent/*`; e
+2. fechar sem merge PRs cuja `head` seja `agent/*` e cuja base não seja `main`.
+
+Ela não autoriza alterar, apagar, zerar, renomear, force-push, fechar ou mover
+`main`, sob nenhuma circunstância. Também não autoriza apagar tags, releases,
+ambientes, issues, assets, repositório ou qualquer ref fora desse namespace.
+`development` continua excluída de mutações de ref; uma PR que a tenha como
+base pode ser fechada apenas se obedecer aos critérios abaixo.
+
+O encerramento não é um atalho para limpar PRs ativas. Ele só é elegível quando
+o readback comprovar que a PR está integrada, foi substituída por outra PR ou
+branch identificada, ou foi explicitamente marcada como abandonada. PRs cujo
+`head` não seja `agent/*`, PRs de terceiros e qualquer PR que envolva `main`
+ficam preservadas e exigem autorização pontual. A permissão técnica mínima é
+`Contents: write` para as refs e `Pull requests: write` para os encerramentos,
+ambas restritas a este repositório.
 
 ### Algoritmo obrigatório
 
 1. ler do remoto todas as branches e PRs; o remoto, e não um checkout antigo,
    é a fonte de verdade;
-2. construir e apresentar a lista fechada de candidatas `agent/*`;
-3. excluir literalmente `main` e `development` e rejeitar qualquer nome que
-   não comece por `agent/`;
-4. para cada candidata, confirmar que não possui PR aberta e que está integrada
-   no destino ou foi explicitamente abandonada;
-5. apagar somente as refs elegíveis da lista apresentada;
-6. reler as refs e PRs, registrar removidas, preservadas e a razão de cada
-   preservação.
+2. construir e apresentar a lista fechada de PRs e branches candidatas
+   `agent/*`, com base, head e motivo de encerramento quando aplicável;
+3. excluir literalmente `main` de qualquer encerramento e excluir `main` e
+   `development` de qualquer mutação de ref; rejeitar qualquer head que não
+   comece por `agent/`;
+4. fechar somente as PRs que atendem à autorização recorrente e têm motivo
+   verificável: integrada, substituída ou explicitamente abandonada;
+5. para cada branch candidata, confirmar que não possui PR aberta e que está
+   integrada no destino ou foi explicitamente abandonada;
+6. apagar somente as refs elegíveis da lista apresentada;
+7. reler as refs e PRs, registrar encerradas, removidas, preservadas e a razão
+   de cada preservação.
 
 A falha parcial deve interromper apenas as exclusões restantes e produzir
 readback; ela não justifica tentativa cega, força em ref protegida ou ampliação

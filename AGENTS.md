@@ -18,10 +18,15 @@ explicitamente escolhido pelo usuário. Para esse tipo de recorte, registre a
 decisão, o escopo e os gates proporcionais na PR em vez de classificá-lo como
 bloqueado por estar fora de um roteiro anterior.
 
-Branches `agent/*` são temporárias. Depois de a PR correspondente ser integrada
-ou fechada sem merge, o agente deve incluí-las no inventário de poda da mesma
-etapa, quando a capacidade disponível permitir. A rotina só pode remover uma
-branch quando todos estes critérios forem comprovados por readback:
+Branches `agent/*` são temporárias. A rotina recorrente também pode encerrar
+sem merge a PR elegível cujo `head` esteja nesse namespace e cuja base não seja
+`main`, quando ela já estiver integrada, tiver sido substituída de modo
+identificável ou estiver explicitamente abandonada. Ela não pode encerrar uma
+PR ativa apenas para simplificar o inventário. Depois de a PR correspondente
+ser integrada ou fechada nessas condições, o agente deve incluir a branch no
+inventário de poda da mesma etapa, quando a capacidade disponível permitir. A
+rotina só pode remover uma branch quando todos estes critérios forem
+comprovados por readback:
 
 1. o nome começa literalmente por `agent/`;
 2. a branch não é `main` nem `development`;
