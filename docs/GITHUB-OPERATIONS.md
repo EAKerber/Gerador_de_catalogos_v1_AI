@@ -160,6 +160,69 @@ Credenciais do conector não são reutilizáveis pelo executável `git`. Portant
 `transport=github-connector` é um diagnóstico de separação de autenticação, não
 uma falha do repositório nem uma solicitação automática de nova autorização.
 
+## Decisões ad hoc e contornos recorrentes
+
+O procedimento determinístico controla como uma alteração é comprovada e
+integrada; não determina quais mudanças são aceitáveis por mérito. Uma decisão,
+um fix ou um contorno ad hoc escolhido pelo usuário continua válido quando:
+
+- possui objetivo e escopo registrados;
+- usa uma branch curta e uma PR quando alterar o repositório;
+- recebe gates proporcionais ao risco; e
+- não contradiz uma restrição explícita ainda vigente.
+
+Não classifique automaticamente como bloqueada uma correção porque ela não
+estava no incremento planejado, porque outro item está em discovery ou porque
+um handover recomendava outra ordem. *Discovery* sinaliza ausência de decisão
+canônica, não proibição. O agente deve explicitar o impacto e pedir decisão
+somente quando a mudança ampliar escopo, alterar arquitetura, tocar `main` ou
+contradizer uma restrição registrada.
+
+Em contrapartida, um contorno que se repete deve deixar de depender de memória
+de conversa: após recorrência comprovada, registre uma regra operacional,
+automatize a verificação quando ela for segura e mantenha uma saída explícita
+para exceções ad hoc. Assim, a automação evita retrabalho sem substituir a
+decisão humana.
+
+## Ciclo de vida e poda de branches `agent/*`
+
+`agent/*` é um namespace temporário. A criação de uma branch desse tipo não
+cria direito de retenção permanente: depois de integrada ou encerrada, ela deve
+ser considerada para poda na própria etapa ou na próxima rotina de higiene.
+
+### Autorização destrutiva mínima formal
+
+A autorização recorrente mínima limita-se a remover remotamente refs
+`refs/heads/agent/*` elegíveis. Ela não autoriza alterar, apagar, zerar,
+renomear, force-push, fechar ou mover `main` e `development`, sob nenhuma
+circunstância. Também não autoriza apagar tags, releases, ambientes, issues,
+assets, repositório ou qualquer ref fora desse namespace.
+
+Para fechar uma PR associada antes da poda, é necessária autorização adicional
+e pontual para encerrar a PR sem merge; a poda por si só não a inclui. A
+permissão técnica mínima é `Contents: write`, restrita a este repositório.
+`Pull requests: write` só é necessário quando o escopo da etapa incluir o
+encerramento de PRs.
+
+### Algoritmo obrigatório
+
+1. ler do remoto todas as branches e PRs; o remoto, e não um checkout antigo,
+   é a fonte de verdade;
+2. construir e apresentar a lista fechada de candidatas `agent/*`;
+3. excluir literalmente `main` e `development` e rejeitar qualquer nome que
+   não comece por `agent/`;
+4. para cada candidata, confirmar que não possui PR aberta e que está integrada
+   no destino ou foi explicitamente abandonada;
+5. apagar somente as refs elegíveis da lista apresentada;
+6. reler as refs e PRs, registrar removidas, preservadas e a razão de cada
+   preservação.
+
+A falha parcial deve interromper apenas as exclusões restantes e produzir
+readback; ela não justifica tentativa cega, força em ref protegida ou ampliação
+da autorização. A rotina não é uma condição para novos fixes: uma branch
+temporária pendente de poda pode ser preservada e o trabalho ad hoc pode
+prosseguir normalmente.
+
 ## Aplicação ao incidente da PR #4
 
 O fallback foi validado na execução `Catalog Integration #90`
