@@ -668,8 +668,10 @@
             ${["x", "y", "width", "height"].map(key => `<div class="inspector-field"><label>${key === "width" ? "Largura" : key === "height" ? "Altura" : key.toUpperCase()}</label><input type="number" step="1" value="${Math.round(component.frame[key])}" data-frame-draft-path="${key}" /></div>`).join("")}
           </div>
           <div class="inspector-field inspector-field--full" style="margin-top:10px"><label>Posição sugerida</label><select data-frame-preset><option value="custom">Valores atuais</option><option value="safe-top">Topo seguro</option><option value="safe-bottom">Base segura</option><option value="left-column">Coluna esquerda</option><option value="main-column">Coluna principal</option><option value="full-width">Faixa total</option></select></div>
-          <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
-          ${definition.container ? `<button type="button" class="inspector-action--wide" data-fit-content-height>Ajustar altura ao conteúdo · ${Math.ceil(minimum.height)} px</button>` : ""}
+          <div class="inspector-actions inspector-actions--stack">
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-frame-apply-all>Aplicar posição e tamanho</button>
+            ${definition.container ? `<button type="button" class="inspector-action--wide" data-fit-content-height>Ajustar altura ao conteúdo · ${Math.ceil(minimum.height)} px</button>` : ""}
+          </div>
           <p class="inspector-note">O documento só muda ao aplicar; mínimos, limites e autoridade de layout continuam respeitados.</p>
         </div>
       </section>`;
@@ -722,8 +724,8 @@
           <button type="button" role="tab" data-inspector-tab="structure" aria-selected="${String(this.activeTab === "structure")}"><span aria-hidden="true">▦</span> Layout</button>
           <button type="button" role="tab" data-inspector-tab="style" aria-selected="${String(this.activeTab === "style")}"><span aria-hidden="true">⌁</span> Visual</button>
         </nav>
-        ${frameCommandSection}
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="structure" ${this.activeTab === "structure" ? "" : "hidden"}>
+          ${frameCommandSection}
           ${this.renderContainerSection(component, definition)}
           ${this.renderSlotSection(component, record)}
           ${this.renderTemplateSection(component)}

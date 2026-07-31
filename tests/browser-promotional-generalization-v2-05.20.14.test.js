@@ -229,7 +229,10 @@ try {
 assert(result.status === 0, `Benchmark V2 falhou com status ${result.status}.`);
 const report = JSON.parse(fs.readFileSync(path.join(outputDir, "promotional-generalization-report.json"), "utf8"));
 assert(["pass", "pass-with-findings"].includes(report.status), `Status técnico inesperado: ${report.status}.`);
-assert(report.actionCount <= 215, `Benchmark V2 excedeu 215 ações: ${report.actionCount}.`);
+// 05.48 torna a geometria exclusiva da aba Layout. As três trocas de tarefa
+// permanecem contabilizadas porque são custo real, embora substituam o bloco
+// global que antes tornava Conteúdo e Visual praticamente inacessíveis.
+assert(report.actionCount <= 218, `Benchmark V2 excedeu 218 ações: ${report.actionCount}.`);
 assert(report.metrics.offerUnits === 4, `Benchmark V2 não possui quatro ofertas: ${report.metrics.offerUnits}.`);
 assert(report.metrics.priceContainers === 4, `Benchmark V2 não possui quatro preços: ${report.metrics.priceContainers}.`);
 assert(report.metrics.tableRows === 0, "Benchmark V2 voltou à representação tabular.");

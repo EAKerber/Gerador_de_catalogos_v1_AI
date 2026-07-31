@@ -95,12 +95,13 @@ async function setStyle(pathName, value) {
   await changeControl(`[data-style-path="${pathName}"]`, value, `Editar token visual ${pathName}`);
 }
 
-async function showAdvancedGeometry() {
+async function showLayoutGeometry() {
+  await activateTab("structure");
   await page.locator('[data-frame-draft-path="x"]').waitFor({ state: "visible" });
 }
 
 async function setFrame(frame) {
-  await showAdvancedGeometry();
+  await showLayoutGeometry();
   await act(`Aplicar frame ${frame.x},${frame.y},${frame.width}×${frame.height}`, async () => {
     for (const key of ["x", "y", "width", "height"]) {
       if (frame[key] == null) continue;

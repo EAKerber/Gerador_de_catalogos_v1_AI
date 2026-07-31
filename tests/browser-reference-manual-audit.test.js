@@ -175,6 +175,7 @@ const legendPlans = [
   };
   const setFrame = async (componentId, frame, label) => {
     await selectLayer(componentId, `Selecionar ${label}`);
+    await inspectorTab("structure");
     const current = await page.evaluate(id => ({ ...CatalogEditor.store.findComponent(id).component.frame }), componentId);
     const requested = { ...current, ...frame };
     for (const [key, value] of Object.entries(requested)) {
