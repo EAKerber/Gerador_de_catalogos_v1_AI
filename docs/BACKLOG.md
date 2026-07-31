@@ -4,6 +4,10 @@ Registro consolidado das observações recebidas após o Incremento 04. As prior
 
 ## Validação prática pós-promoção — ensaio de 2026-07-30
 
+**Status atual: V1 — em revisão prática.** `development` é a linha autorizada
+para corrigir os bloqueadores deste ensaio; `main@0505893` permanece como marco
+técnico preservado até uma nova decisão de consolidação.
+
 O primeiro ensaio real do fluxo **kit → agente externo → pacote → importação →
 refinamento** produziu um catálogo tecnicamente válido e resultados visuais
 promissores, mas encontrou bloqueios que os gates anteriores não mediam. O
@@ -34,8 +38,8 @@ desproporcional.
 | Ordem | Prioridade | Recorte | Decisão de implementação | Critério de saída |
 | --- | --- | --- | --- | --- |
 | 1 | P0 | Fixture do ensaio real | Preservar entrada, pacote, prompt/conversa relevante, PDF e capturas como uma única evidência de fluxo; distinguir problemas do agente, do kit, do compilador, do editor e do asset. | O mesmo caso pode ser reimportado e comparado sem reconstrução manual da evidência; cada falha possui proprietário e classe. |
-| 2 | P0 | Hierarquia e altura útil do inspetor | **Posição e tamanho** pertence à aba **Layout** e não pode consumir o corpo de **Conteúdo** ou **Visual**. Se alguma síntese global permanecer, deve ser compacta e recolhível. | Em `1366×768`, zoom do navegador em 100% e painel na largura mínima suportada, cada aba revela seu primeiro controle específico sem zoom externo e sem rolagem horizontal do documento. |
-| 3 | P0 | CSS e estados dos controles | Inventariar botões que caíram no estilo nativo ou perderam variantes; consolidar estilos, foco, hover, disabled e hitbox sem correções isoladas por seletor incidental. | Nenhum botão visível no inspetor usa apresentação nativa acidental; teste Chromium cobre estados e contraste nas três abas. |
+| 2 | P0 · concluído 05.48 | Hierarquia e altura útil do inspetor | **Posição e tamanho** pertence à aba **Layout** e não pode consumir o corpo de **Conteúdo** ou **Visual**. Se alguma síntese global permanecer, deve ser compacta e recolhível. | Em `1366×768`, zoom do navegador em 100% e painel na largura mínima suportada, cada aba revela seu primeiro controle específico sem zoom externo e sem rolagem horizontal do documento. |
+| 3 | P0 · concluído 05.48 | CSS e estados dos controles | Inventariar botões que caíram no estilo nativo ou perderam variantes; consolidar estilos, foco, hover, disabled e hitbox sem correções isoladas por seletor incidental. | Nenhum botão visível no inspetor usa apresentação nativa acidental; teste Chromium cobre estados e contraste nas três abas. |
 | 4 | P1 | Apresentação vertical de produto | Auditar `standard`, `hero`, `technical`, `variants` e `data-only`. Reutilizar modo, preset ou receita existente se ele puder expressar **arte acima → especificações abaixo**; criar novo contrato somente se a intenção não couber nos existentes. | A apresentação é escolhida em uma ação clara no card, reaplica o reflow sem apagar itens e aparece no manifesto/kit com exemplo e limites. |
 | 5 | P1 | Ergonomia de `specification` | Promover a dívida concreta antes classificada como posterior: expor escala do ícone e densidade interna por controles diretos e limitados, preservando presets e evitando CSS arbitrário. | Ícone, `gap` e `padding` podem ser ajustados ou normalizados sem redimensionar o frame externo; lote, undo, importação e PDF preservam o resultado. |
 | 6 | P1 | Cabeçalhos de tabela | Expor rótulo, ordem e visibilidade das colunas na aba **Conteúdo**, mantendo chaves semânticas estáveis e separando renomear de alterar o binding. | Selecionar uma tabela permite renomear seus cabeçalhos diretamente, reordená-los sem editar JSON e preservar células, round-trip e PDF. |

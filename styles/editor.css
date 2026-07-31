@@ -436,6 +436,7 @@ body[data-document-dirty="true"] #saveButton::after { content: ""; display: inli
 .inspector-actions .inspector-action--wide { grid-column: 1 / -1; }
 .inspector-actions button:disabled,
 .batch-command-grid button:disabled { opacity: .42; cursor: not-allowed; }
+.inspector-root button:disabled { opacity: .42; cursor: not-allowed; }
 .inspector-header--batch h2 { color: var(--color-brand-700); }
 .batch-type-summary { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
 .batch-type-summary span { padding: 4px 6px; border: 1px solid var(--color-line-250); border-radius: 999px; color: var(--color-ink-600); background: var(--color-neutral-100); font-size: 9px; font-weight: 700; }

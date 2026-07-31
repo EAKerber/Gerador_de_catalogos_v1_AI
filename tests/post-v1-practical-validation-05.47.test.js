@@ -18,6 +18,11 @@ assert(
   "O marco promovido deixou de ser distinguido da aceitação prática."
 );
 assert(
+  backlog.includes("Status atual: V1 — em revisão prática")
+    && backlog.includes("linha autorizada"),
+  "A V1 reaberta não está classificada explicitamente como em revisão prática."
+);
+assert(
   /aceitação do\s+fluxo principal do produto fica reaberta/.test(backlog),
   "O resultado do ensaio não reabriu a aceitação prática em development."
 );
