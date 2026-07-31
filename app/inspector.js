@@ -257,6 +257,7 @@
       if (component.type !== "data-table") return "";
       const rows = this.store.getTableRows(component);
       const columns = this.store.getTableColumns(component);
+      const visibleColumns = this.store.getVisibleTableColumns(component);
       const schemas = this.store.getTableSchemas();
       const legends = this.store.getColorLegends();
       const legendOptions = selected => `<option value="">Sem legenda</option>${selected && !legends.some(legend => legend.metadata?.key === selected) ? `<option value="${escapeHtml(selected)}" selected>Legenda ausente · ${escapeHtml(selected)}</option>` : ""}${legends.map(legend => `<option value="${escapeHtml(legend.metadata?.key)}" ${legend.metadata?.key === selected ? "selected" : ""}>${escapeHtml(legend.metadata?.textLabel || legend.label)}</option>`).join("")}`;
@@ -272,19 +273,24 @@
           </div>
           <details class="table-bulk-entry" ${this.tableBulkOpen ? "open" : ""}>
             <summary>Colar várias linhas <span>Excel, Sheets, TSV ou CSV</span></summary>
-            <p>A ordem atual das colunas é usada quando o cabeçalho não for colado.</p>
-            <textarea rows="6" data-table-bulk-text placeholder="${escapeHtml(columns.map(column => column.label).join("\t"))}&#10;"></textarea>
+            <p>A ordem das colunas visíveis é usada quando o cabeçalho não for colado.</p>
+            <textarea rows="6" data-table-bulk-text placeholder="${escapeHtml(visibleColumns.map(column => column.label).join("\t"))}&#10;"></textarea>
             <div class="table-bulk-entry__actions"><select aria-label="Modo de colagem" data-table-bulk-mode><option value="replace">Substituir linhas atuais</option><option value="append">Adicionar ao final</option></select><button type="button" data-table-bulk-apply>Aplicar linhas</button></div>
             ${this.tableBulkFeedback ? `<small role="status">${escapeHtml(this.tableBulkFeedback)}</small>` : ""}
           </details>
           <details class="table-column-editor" ${this.tableColumnsOpen ? "open" : ""}>
             <summary>Configurar colunas</summary>
             <div class="table-column-editor__list">
-              ${columns.map(column => `<article data-table-column="${escapeHtml(column.key)}">
+              ${columns.map((column, index) => `<article data-table-column="${escapeHtml(column.key)}" data-table-column-visible="${column.visible !== false}">
                 <div class="inspector-grid">
                   <div class="inspector-field inspector-field--full"><label>Rótulo</label><input type="text" value="${escapeHtml(column.label)}" data-table-column-key="${escapeHtml(column.key)}" data-table-column-path="label" /></div>
                   <div class="inspector-field"><label>Função</label><select data-table-column-key="${escapeHtml(column.key)}" data-table-column-path="role"><option value="value" ${column.role === "value" ? "selected" : ""}>Valor</option><option value="identifier" ${column.role === "identifier" ? "selected" : ""}>Identificador</option><option value="package" ${column.role === "package" ? "selected" : ""}>Embalagem</option><option value="price" ${column.role === "price" ? "selected" : ""}>Preço</option><option value="measure" ${column.role === "measure" ? "selected" : ""}>Medida</option></select></div>
                   <div class="inspector-field"><label>Alinhar</label><select data-table-column-key="${escapeHtml(column.key)}" data-table-column-path="align"><option value="start" ${column.align === "start" ? "selected" : ""}>Início</option><option value="center" ${column.align === "center" ? "selected" : ""}>Centro</option><option value="end" ${column.align === "end" ? "selected" : ""}>Fim</option></select></div>
+                </div>
+                <label class="table-column-editor__visibility"><input type="checkbox" data-table-column-key="${escapeHtml(column.key)}" data-table-column-visibility ${column.visible !== false ? "checked" : ""} ${column.visible !== false && visibleColumns.length === 1 ? "disabled" : ""} /> Mostrar na tabela e no PDF</label>
+                <div class="table-column-editor__actions">
+                  <button type="button" data-table-column-move="-1" data-table-column-key="${escapeHtml(column.key)}" ${index === 0 ? "disabled" : ""} aria-label="Mover ${escapeHtml(column.label)} para a esquerda">←</button>
+                  <button type="button" data-table-column-move="1" data-table-column-key="${escapeHtml(column.key)}" ${index === columns.length - 1 ? "disabled" : ""} aria-label="Mover ${escapeHtml(column.label)} para a direita">→</button>
                 </div>
                 <button type="button" data-table-column-remove="${escapeHtml(column.key)}" ${columns.length === 1 ? "disabled" : ""}>Remover coluna</button>
               </article>`).join("")}
@@ -897,6 +903,8 @@
           ? { ...column, [target.dataset.tableColumnPath]: target.dataset.tableColumnPath === "width" ? Number(target.value) : target.value }
           : column);
         this.store.updateTableColumns(component.id, columns);
+      } else if (target.matches("[data-table-column-visibility]")) {
+        this.store.setTableColumnVisibility(component.id, target.dataset.tableColumnKey, target.checked);
       } else if (target.matches("[data-table-cell-legend]")) {
         this.store.setTableCellLegend(component.id, target.dataset.tableRowId, target.dataset.tableColumnKey, target.value || null);
       } else if (target.matches("[data-card-product-id]")) {
@@ -1122,7 +1130,7 @@
         this.tableBulkOpen = true;
         const text = this.root.querySelector("[data-table-bulk-text]")?.value || "";
         const mode = this.root.querySelector("[data-table-bulk-mode]")?.value || "replace";
-        const parsed = window.CatalogManualEntry.parseTable(text, this.store.getTableColumns(component));
+        const parsed = window.CatalogManualEntry.parseTable(text, this.store.getVisibleTableColumns(component));
         if (!parsed.rows.length) {
           this.tableBulkFeedback = parsed.issues[0]?.message || "Nenhuma linha válida foi encontrada.";
           this.render();
@@ -1147,6 +1155,10 @@
       } else if (event.target.closest("[data-table-column-remove]")) {
         this.tableColumnsOpen = true;
         this.store.removeTableColumn(component.id, event.target.closest("[data-table-column-remove]").dataset.tableColumnRemove);
+      } else if (event.target.closest("[data-table-column-move]")) {
+        this.tableColumnsOpen = true;
+        const button = event.target.closest("[data-table-column-move]");
+        this.store.reorderTableColumn(component.id, button.dataset.tableColumnKey, Number(button.dataset.tableColumnMove));
       } else if (event.target.closest("[data-color-legend-add]")) {
         this.legendEditorOpen = true;
         const label = this.root.querySelector("[data-new-legend-label]")?.value?.trim();

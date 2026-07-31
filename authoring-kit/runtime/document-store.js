@@ -4066,7 +4066,30 @@
       if (!component || component.type !== "data-table") return false;
       const columns = tableColumns(component.props?.columns);
       if (columns.length >= 12) return false;
-      columns.push({ key: column.key || `column-${columns.length + 1}`, label: column.label || `Coluna ${columns.length + 1}`, role: column.role || "value", align: column.align || "center", width: column.width || 1 });
+      columns.push({ key: column.key || `column-${columns.length + 1}`, label: column.label || `Coluna ${columns.length + 1}`, role: column.role || "value", align: column.align || "center", width: column.width || 1, visible: column.visible !== false });
+      return this.updateTableColumns(componentId, columns);
+    }
+
+    reorderTableColumn(componentId, columnKey, direction) {
+      const component = this.findComponent(componentId)?.component;
+      if (!component || component.type !== "data-table") return false;
+      const columns = tableColumns(component.props?.columns);
+      const current = columns.findIndex(column => column.key === columnKey);
+      const target = current + (Number(direction) < 0 ? -1 : 1);
+      if (current < 0 || target < 0 || target >= columns.length) return false;
+      [columns[current], columns[target]] = [columns[target], columns[current]];
+      return this.updateTableColumns(componentId, columns);
+    }
+
+    setTableColumnVisibility(componentId, columnKey, visible) {
+      const component = this.findComponent(componentId)?.component;
+      if (!component || component.type !== "data-table") return false;
+      const columns = tableColumns(component.props?.columns);
+      const target = columns.find(column => column.key === columnKey);
+      if (!target) return false;
+      const nextVisible = visible !== false;
+      if (!nextVisible && target.visible !== false && columns.filter(column => column.visible !== false).length <= 1) return false;
+      target.visible = nextVisible;
       return this.updateTableColumns(componentId, columns);
     }
 
@@ -4120,6 +4143,10 @@
     getTableColumns(componentOrId) {
       const component = typeof componentOrId === "string" ? this.findComponent(componentOrId)?.component : componentOrId;
       return component?.type === "data-table" ? tableColumns(component.props?.columns) : [];
+    }
+
+    getVisibleTableColumns(componentOrId) {
+      return this.getTableColumns(componentOrId).filter(column => column.visible !== false);
     }
 
     getTableSchemas() {

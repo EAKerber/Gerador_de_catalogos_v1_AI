@@ -880,6 +880,11 @@ body[data-resizing-panel] { cursor: col-resize; user-select: none; }
 .table-column-editor__list { display: grid; gap: 7px; margin-top: 8px; }
 .table-column-editor__list article { padding: 7px; border: 1px solid var(--color-line-250); border-radius: 6px; background: #fff; }
 .table-column-editor__list article > button { width: 100%; min-height: 26px; margin-top: 6px; border: 1px solid var(--color-line-250); border-radius: 5px; color: var(--color-ink-600); background: #fff; font-size: 8px; font-weight: 800; }
+.table-column-editor__list article[data-table-column-visible="false"] { background: var(--color-neutral-100); opacity: .78; }
+.table-column-editor__visibility { display: flex; gap: 6px; align-items: center; margin-top: 7px; color: var(--color-ink-700); font-size: 9px; font-weight: 800; }
+.table-column-editor__visibility input { margin: 0; }
+.table-column-editor__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+.table-column-editor__actions button { min-height: 26px; border: 1px solid var(--color-line-250); border-radius: 5px; color: var(--color-ink-700); background: #fff; font-weight: 900; }
 .table-cell-editor { padding-bottom: 6px; border-bottom: 1px dashed var(--color-line-250); }
 .table-cell-editor select { min-height: 27px; font-size: 8px; }
 .semantic-legend-editor > p { color: var(--color-ink-600); font-size: 8px; line-height: 1.4; }

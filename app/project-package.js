@@ -262,6 +262,7 @@
         multiplePages: false,
         semanticCatalogSource: true,
         semanticTables: true,
+        tableColumnPresentationControls: true,
         semanticColorLegends: true,
         semanticProductVariants: true,
         linkedVariantRepresentations: true,
