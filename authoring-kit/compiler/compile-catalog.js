@@ -73,6 +73,11 @@ fs.writeFileSync(reportPath, `${JSON.stringify({
   summary: result.summary,
   decisions: result.decisions || [],
   repairs: result.repairs || [],
+  workflow: {
+    editorImportActions: Number(result.summary?.actionsRequired) || 0,
+    unresolvedCorrections: (result.issues || []).filter(issue => ["error", "warning"].includes(issue.severity)).length,
+    note: "editorImportActions mede o fluxo da interface; não representa pendências do catálogo."
+  },
   issues: result.issues || []
 }, null, 2)}\n`);
 

@@ -1,11 +1,13 @@
 {
   "$schema": "authoring-kit/schemas/catalog-project-package.schema.json",
+  "exampleType": "non-importable-template",
+  "integrityPlaceholders": true,
   "packageFormat": "CatalogProjectPackage",
   "packageVersion": "1.0.0",
   "createdAt": "2026-07-14T00:00:00.000Z",
   "generator": {
     "name": "Agente de catálogo",
-    "increment": "05.20",
+    "increment": "05.54",
     "schemaVersion": "1.16.0"
   },
   "project": {
@@ -35,7 +37,7 @@
   "authoringKit": {
     "root": "authoring-kit",
     "manifestPath": "authoring-kit/manifest.json",
-    "version": "1.6.0"
+    "version": "1.6.1"
   },
   "report": {
     "path": "reports/export-report.json"

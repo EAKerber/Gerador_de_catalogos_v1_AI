@@ -1,7 +1,7 @@
 {
   "guideFormat": "CatalogFeatureGuide",
   "guideVersion": "1.0.0",
-  "editorIncrement": "05.17",
+  "editorIncrement": "05.54",
   "entries": [
     {
       "id": "start.semantic-source",
@@ -73,13 +73,13 @@
       "intention": "Substituir uma arte ou logo por um asset real",
       "access": "Clicar no placeholder → biblioteca do projeto → importar do computador",
       "preconditions": ["SVG, PNG, JPEG ou WebP dentro do limite"],
-      "result": "Asset persistido por referência e reutilizável",
-      "example": "Escolher a foto do produto e ajustar foco/encaixe",
-      "limits": ["JSON isolado não transporta os bytes", "SVG só recolore em modo token"],
+      "result": "Asset factual preservado por referência, com encaixe e respiro rastreáveis",
+      "example": "Usar fit=contain e, se faltar respiro, ampliar somente o canvas neutro sem alterar os pixels do produto",
+      "limits": ["JSON isolado não transporta os bytes", "SVG só recolore em modo token", "Expansão de canvas factual deve ser não generativa e gerar novo tamanho, hash e proveniência"],
       "capabilityIds": ["projectPackageExport", "packageAssetPolicy"],
       "componentTypes": ["art"],
       "recipeIds": [],
-      "contracts": ["collections.assets", "component.props.assetId", "component.props.vectorMode"]
+      "contracts": ["collections.assets", "component.props.assetId", "component.props.fit", "component.props.vectorMode", "asset.provenance", "asset.approval"]
     },
     {
       "id": "content.variants",
@@ -108,6 +108,19 @@
       "contracts": ["colorLegends[].key", "component.props.legendKey", "row.metadata.legendKeys"]
     },
     {
+      "id": "content.semantic-pieces",
+      "intention": "Escolher entre especificação, dado destacado e legenda sem duplicar significado",
+      "access": "feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas",
+      "preconditions": ["A função semântica da informação está definida"],
+      "result": "Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey",
+      "example": "Usar specification para Alta resistência, fact para Carga 40 kg e legend-item para a cor Preto",
+      "limits": ["fact não substitui linha comercial", "legend-item não armazena o fato por posição ou somente por cor"],
+      "capabilityIds": ["officialSectionRecipes", "semanticColorLegends", "specificationDensityControls"],
+      "componentTypes": ["specification", "layout-container", "legend-item"],
+      "recipeIds": ["fact"],
+      "contracts": ["component.type=specification", "CatalogCapabilities.recipes.fact", "component.props.legendKey"]
+    },
+    {
       "id": "layout.multi-selection",
       "intention": "Refinar vários elementos irmãos de uma vez",
       "access": "Shift/Ctrl/Cmd+clique → Layout/Visual",
@@ -121,6 +134,19 @@
       "contracts": ["editor.selectedComponentIds", "CatalogCapabilities.separatorPresets"]
     },
     {
+      "id": "layout.slot-span",
+      "intention": "Fazer um item ocupar múltiplas posições reservadas sem duplicar conteúdo",
+      "access": "Documento: component.slot.span; em auto-layout por grade: component.layoutItem.span",
+      "preconditions": ["O pai possui slot com capacidade ou grade com múltiplas colunas"],
+      "result": "Um único componente ocupa duas ou mais posições e continua sendo uma única entidade editável",
+      "example": "Definir slot.span=2 no primeiro item do rodapé e manter os demais com span=1",
+      "limits": ["slot.span não cria conteúdo adicional", "o valor deve respeitar a capacidade do slot", "layoutItem.span e slot.span não são intercambiáveis"],
+      "capabilityIds": ["slotSpanControl"],
+      "componentTypes": ["layout-container", "footer-item"],
+      "recipeIds": [],
+      "contracts": ["component.slot.span", "component.layoutItem.span", "parent.container.slots[].capacity", "parent.layout.columns"]
+    },
+    {
       "id": "visual.editorial-depth",
       "intention": "Ajustar hierarquia visual e arranjo sem desmontar componentes",
       "access": "Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual",
@@ -131,7 +157,7 @@
       "capabilityIds": ["editorialTextControls", "internalIconScale", "specificationDensityControls", "distinctProductModes", "independentProductArrangement"],
       "componentTypes": ["text", "icon", "specification", "product-card"],
       "recipeIds": [],
-      "contracts": ["component.props.align", "component.props.iconScale", "component.props.densityPreset", "component.props.gap", "component.props.padding", "component.presentation.mode", "component.presentation.overrides.arrangement"]
+      "contracts": ["component.props.align", "component.props.iconScale", "component.props.densityPreset", "component.props.gap", "component.props.padding", "component.presentation.mode", "component.presentation.overrides.arrangement", "authoring-patterns.json#product-card-arrangement"]
     },
     {
       "id": "content.bulk-collections",
@@ -205,7 +231,7 @@
       "preconditions": ["Documento válido", "Bytes de assets disponíveis"],
       "result": "ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit",
       "example": "Exportar rascunho para revisão em outro navegador",
-      "limits": ["Publicação bloqueia pendências críticas", "Rascunho converte pendências permitidas em avisos"],
+      "limits": ["Publicação bloqueia pendências críticas", "Rascunho converte pendências permitidas em avisos", "O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema", "examples/catalog-project.json é template não importável até substituir tamanhos e hashes"],
       "capabilityIds": ["projectPackageExport", "draftPublicationGates", "geometricPublicationGate"],
       "componentTypes": [],
       "recipeIds": [],

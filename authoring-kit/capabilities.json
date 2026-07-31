@@ -55,6 +55,7 @@
     "semanticColorLegends": true,
     "semanticProductVariants": true,
     "semanticTables": true,
+    "slotSpanControl": true,
     "specificationDensityControls": true,
     "tableColumnPresentationControls": true,
     "undoRedo": true
@@ -1598,7 +1599,7 @@
     "pagePreset": "A4"
   },
   "editor": {
-    "increment": "05.20",
+    "increment": "05.54",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
