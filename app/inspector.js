@@ -25,6 +25,7 @@
       this.galleryBulkFeedback = "";
       this.legendBulkOpen = false;
       this.legendBulkFeedback = "";
+      this.cardPresentationSecondaryOpen = false;
       this.skipNextRender = false;
       this.taskStateByType = new Map();
       this.root.addEventListener("change", event => this.handleChange(event));
@@ -354,14 +355,63 @@
         </section>`;
     }
 
+    renderCardPresentationSection(component) {
+      const card = this.store.getProductCard(component.id);
+      if (!card) return "";
+      const presentation = window.CatalogPresentations?.normalizePresentation?.(card.presentation, card.type) || {
+        presetId: "product-standard",
+        mode: "standard",
+        density: "standard",
+        responsiveState: "auto",
+        overrides: { arrangement: "auto" }
+      };
+      const presets = window.CatalogPresentations?.presetsFor?.("product-card") || [];
+      const arrangements = window.CatalogPresentations?.ARRANGEMENTS || {};
+      const arrangement = window.CatalogPresentations?.arrangementOverride?.(presentation) || "auto";
+      const effectiveArrangement = window.CatalogPresentations?.effectiveArrangement?.(card) || "horizontal";
+      const mode = window.CatalogPresentations?.MODES?.[presentation.mode] || {};
+      const ownerLabel = card.id === component.id ? "Card selecionado" : `Card pai · ${card.name}`;
+      const ownerAttribute = `data-presentation-owner-id="${escapeHtml(card.id)}"`;
+      return `
+        <section class="inspector-section inspector-section--card-presentation" data-card-presentation-owner-id="${escapeHtml(card.id)}">
+          <div class="inspector-section__heading">
+            <h3 class="inspector-section__title">Apresentação do card</h3>
+            <span>${escapeHtml(ownerLabel)}</span>
+          </div>
+          <div class="card-presentation-summary" data-effective-arrangement="${escapeHtml(effectiveArrangement)}">
+            <strong>${escapeHtml(mode.label || presentation.mode)} · ${effectiveArrangement === "stacked" ? "Empilhado" : "Lado a lado"}</strong>
+            <span>${escapeHtml(mode.description || "")}</span>
+          </div>
+          <div class="card-presentation-primary">
+            <div class="inspector-field inspector-field--full">
+              <label>Arranjo da arte e especificações</label>
+              <select data-presentation-path="arrangement" ${ownerAttribute}>${Object.entries(arrangements).map(([value, item]) => `<option value="${escapeHtml(value)}" ${arrangement === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select>
+              <small>${escapeHtml(arrangements[arrangement]?.description || "")}</small>
+            </div>
+            <div class="inspector-field inspector-field--full">
+              <label>Modo editorial</label>
+              <select data-presentation-path="mode" ${ownerAttribute}>${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentation.mode === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select>
+              <small>Define a prioridade visual; não escolhe mais sozinho entre empilhado e lado a lado.</small>
+            </div>
+          </div>
+          <details class="card-presentation-secondary" ${this.cardPresentationSecondaryOpen ? "open" : ""}>
+            <summary>Ajustes complementares <span>preset, densidade e responsividade</span></summary>
+            <div class="presentation-intent-grid">
+              <div class="inspector-field inspector-field--full"><label>Preset</label><select data-presentation-path="presetId" ${ownerAttribute}>${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presentation.presetId === preset.id ? "selected" : ""}>${escapeHtml(preset.label)} · v${escapeHtml(preset.version)}</option>`).join("")}</select></div>
+              <div class="inspector-field inspector-field--full"><label>Densidade</label><select data-presentation-path="density" ${ownerAttribute}>${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentation.density === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field inspector-field--full"><label>Estado responsivo</label><select data-presentation-path="responsiveState" ${ownerAttribute}><option value="auto" ${presentation.responsiveState === "auto" ? "selected" : ""}>Automático pela largura</option><option value="compact" ${presentation.responsiveState === "compact" ? "selected" : ""}>Forçar compacto</option><option value="wide" ${presentation.responsiveState === "wide" ? "selected" : ""}>Forçar amplo</option></select></div>
+            </div>
+          </details>
+          <p class="inspector-note">As mudanças reaplicam o reflow sem recriar nem apagar a subárvore do card.</p>
+        </section>`;
+    }
+
     renderProductBindingSection(component) {
       if (component.type !== "product-card") return "";
       const binding = component.binding || { productId: null, templateId: null, overrides: {} };
       const product = this.store.getProduct(binding.productId);
       const products = this.store.getProducts();
       const templates = this.store.getProductTemplates();
-      const presentation = window.CatalogPresentations?.normalizePresentation?.(component.presentation, component.type) || { presetId: "product-standard", mode: "standard", density: "standard", responsiveState: "auto" };
-      const presets = window.CatalogPresentations?.presetsFor?.("product-card") || [];
       const fieldLabels = {
         title: "Título",
         specOne: "Especificação 1",
@@ -385,13 +435,6 @@
             <div class="inspector-field inspector-field--full"><label>Produto</label><select data-card-product-id><option value="">Sem vínculo</option>${products.map(item => `<option value="${escapeHtml(item.id)}" ${binding.productId === item.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             <div class="inspector-field inspector-field--full"><label>Template de apresentação</label><select data-card-template-id><option value="">Apresentação atual</option>${templates.map(item => `<option value="${escapeHtml(item.id)}" ${binding.templateId === item.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select><small>Troca estrutura e tokens, preservando o conteúdo e o número editorial.</small></div>
           </div>
-          <div class="presentation-intent-grid">
-            <div class="inspector-field inspector-field--full"><label>Preset</label><select data-presentation-path="presetId">${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presentation.presetId === preset.id ? "selected" : ""}>${escapeHtml(preset.label)} · v${escapeHtml(preset.version)}</option>`).join("")}</select></div>
-            <div class="inspector-field"><label>Modo</label><select data-presentation-path="mode">${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentation.mode === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
-            <div class="inspector-field"><label>Densidade</label><select data-presentation-path="density">${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentation.density === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
-            <div class="inspector-field inspector-field--full"><label>Estado responsivo</label><select data-presentation-path="responsiveState"><option value="auto" ${presentation.responsiveState === "auto" ? "selected" : ""}>Automático pela largura</option><option value="compact" ${presentation.responsiveState === "compact" ? "selected" : ""}>Forçar compacto</option><option value="wide" ${presentation.responsiveState === "wide" ? "selected" : ""}>Forçar amplo</option></select></div>
-          </div>
-          <p class="inspector-note">Preset define a intenção inicial; modo e densidade são overrides explícitos. O estado responsivo continua automático.</p>
           ${product ? `<div class="product-override-list"><span>Overrides locais explícitos</span>${Object.entries(fieldLabels).map(([field, label]) => `<label class="inspector-check"><input type="checkbox" data-product-override="${field}" ${binding.overrides?.[field] ? "checked" : ""} /> ${escapeHtml(label)}</label>`).join("")}</div>` : ""}
           <p class="inspector-note">Ao editar um campo sincronizado dentro do card, o override correspondente é ativado. Desmarque-o para receber novamente o valor do inventário.</p>
         </section>`;
@@ -435,7 +478,7 @@
 
     restoreTaskState(component, definition) {
       const saved = this.taskStateByType.get(this.taskStateKey(component));
-      this.activeTab = saved?.activeTab || (definition.container ? "structure" : "content");
+      this.activeTab = saved?.activeTab || (component.type === "product-card" ? "content" : definition.container ? "structure" : "content");
       this.showAllProperties = saved?.showAllProperties === true;
       this.tableColumnsOpen = saved?.tableColumnsOpen === true;
       this.tableBulkOpen = saved?.tableBulkOpen === true;
@@ -461,9 +504,13 @@
       const density = this.commonValue(cards, card => card.presentation?.density || "standard");
       const mode = this.commonValue(cards, card => card.presentation?.mode || "standard");
       const presetId = this.commonValue(cards, card => card.presentation?.presetId || "product-standard");
+      const arrangement = this.commonValue(cards, card => window.CatalogPresentations?.arrangementOverride?.(card) || "auto");
       const presentationDraft = this.batchPresentationDraft || {};
       const presentationPreview = this.store.getPresentationBatchPreview(components.map(component => component.id), presentationDraft);
       const presentationValue = (path, current) => Object.hasOwn(presentationDraft, path) ? presentationDraft[path] : current;
+      const presentationArrangementValue = Object.hasOwn(presentationDraft.overrides || {}, "arrangement")
+        ? presentationDraft.overrides.arrangement
+        : arrangement;
       const presentationPreviewText = !Object.keys(presentationDraft).length
         ? "Escolha uma apresentação para ver o efeito antes de confirmar."
         : !presentationPreview.changedCount
@@ -576,6 +623,7 @@
               <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-presentation="presetId">${mixedOption(presentationValue("presetId", presetId))}${presets.map(preset => `<option value="${escapeHtml(preset.id)}" ${presentationValue("presetId", presetId) === preset.id ? "selected" : ""}>${escapeHtml(preset.label)}</option>`).join("")}</select></div>
               <div class="inspector-field"><label>Modo</label><select data-batch-presentation="mode">${mixedOption(presentationValue("mode", mode))}${Object.entries(window.CatalogPresentations?.MODES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("mode", mode) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
               <div class="inspector-field"><label>Densidade</label><select data-batch-presentation="density">${mixedOption(presentationValue("density", density))}${Object.entries(window.CatalogPresentations?.DENSITIES || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationValue("density", density) === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
+              <div class="inspector-field inspector-field--full"><label>Arranjo</label><select data-batch-presentation="arrangement">${mixedOption(presentationArrangementValue)}${Object.entries(window.CatalogPresentations?.ARRANGEMENTS || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationArrangementValue === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             </div>
             <div class="inspector-actions inspector-actions--grid"><button type="button" class="inspector-action--primary" data-batch-presentation-apply ${presentationPreview.changedCount ? "" : "disabled"}>Aplicar apresentação</button><button type="button" data-batch-presentation-reset ${Object.keys(presentationDraft).length ? "" : "disabled"}>Descartar rascunho</button></div>
           </section>` : ""}
@@ -732,6 +780,7 @@
           ${this.renderDuplicationSection(component)}
         </div>
         <div class="inspector-tab-panel" role="tabpanel" data-inspector-panel="content" ${this.activeTab === "content" ? "" : "hidden"}>
+          ${this.renderCardPresentationSection(component)}
           ${this.renderProductBindingSection(component)}
           ${this.renderAssetSection(component)}
           ${this.renderGallerySection(component)}
@@ -755,11 +804,14 @@
       if (event.target.matches(".gallery-bulk-entry")) this.galleryBulkOpen = event.target.open;
       if (event.target.matches(".legend-bulk-entry")) this.legendBulkOpen = event.target.open;
       if (event.target.matches(".semantic-legend-editor")) this.legendEditorOpen = event.target.open;
+      if (event.target.matches(".card-presentation-secondary")) this.cardPresentationSecondaryOpen = event.target.open;
       this.rememberTaskState();
     }
 
     handleChange(event) {
       const target = event.target;
+      const presentationSecondary = target.closest(".card-presentation-secondary");
+      if (presentationSecondary) this.cardPresentationSecondaryOpen = presentationSecondary.open;
       const selectedIds = this.store.getSelectedIds();
       if (selectedIds.length > 1 && target.matches("[data-batch-gap-preset]")) {
         const input = this.root.querySelector("[data-batch-gap]");
@@ -789,6 +841,8 @@
         if (path === "presetId") {
           const preset = window.CatalogPresentations?.PRESETS?.[target.value];
           Object.assign(this.batchPresentationDraft, { presetId: target.value, mode: preset?.mode, density: preset?.density, responsiveState: preset?.density === "compact" ? "compact" : "auto" });
+        } else if (path === "arrangement") {
+          this.batchPresentationDraft.overrides = { ...(this.batchPresentationDraft.overrides || {}), arrangement: target.value };
         } else {
           Object.assign(this.batchPresentationDraft, { [path]: target.value, ...(path === "density" ? { responsiveState: target.value === "compact" ? "compact" : "auto" } : {}) });
         }
@@ -847,11 +901,14 @@
         this.store.setCardOverride(component.id, target.dataset.productOverride, target.checked);
       } else if (target.matches("[data-presentation-path]")) {
         const path = target.dataset.presentationPath;
+        const ownerId = target.dataset.presentationOwnerId || component.id;
         if (path === "presetId") {
           const preset = window.CatalogPresentations?.PRESETS?.[target.value];
-          this.store.setComponentPresentation(component.id, { presetId: target.value, mode: preset?.mode, density: preset?.density });
+          this.store.setComponentPresentation(ownerId, { presetId: target.value, mode: preset?.mode, density: preset?.density });
+        } else if (path === "arrangement") {
+          this.store.setComponentPresentation(ownerId, { overrides: { arrangement: target.value } });
         } else {
-          this.store.setComponentPresentation(component.id, { [path]: target.value });
+          this.store.setComponentPresentation(ownerId, { [path]: target.value });
         }
       } else if (target.matches("[data-custom-minimum-enabled]")) {
         const width = this.root.querySelector('[data-custom-minimum-path="width"]')?.value;

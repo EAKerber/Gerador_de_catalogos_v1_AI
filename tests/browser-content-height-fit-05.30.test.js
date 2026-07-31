@@ -30,6 +30,7 @@ let browser;
     return card.id;
   });
 
+  await page.locator('[data-inspector-tab="structure"]').click();
   const fitButton = page.locator("[data-fit-content-height]");
   await fitButton.waitFor({ state: "visible" });
   assert((await fitButton.textContent()).includes("190 px"), "A interface não antecipou a altura alcançável.");

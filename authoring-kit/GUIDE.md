@@ -100,7 +100,9 @@ Seleções irmãs no mesmo contexto podem receber alinhamento, distribuição, e
 
 O átomo `text` mantém conteúdo simples e declarativo. `align`, `verticalAlign`, `scale` e `overflow` controlam composição sem HTML ou CSS arbitrário. Use somente os valores publicados no manifesto. `iconScale` controla a escala interna de `icon` e `specification` sem alterar seus frames.
 
-Os modos de `product-card` têm prioridade visual real: `standard` equilibra, `hero` amplia arte e título, `technical` amplia especificações, `variants` empilha galeria e informações e `data-only` maximiza a região informativa. Todos preservam a mesma subárvore, bindings, tabela e IDs.
+Os modos de `product-card` têm prioridade visual real: `standard` equilibra, `hero` amplia arte e título, `technical` amplia especificações, `variants` prioriza galeria e legendas e `data-only` maximiza a região informativa. Todos preservam a mesma subárvore, bindings, tabela e IDs.
+
+Modo editorial e arranjo são decisões distintas. Use `presentation.overrides.arrangement` com `auto`, `horizontal` ou `stacked`. `stacked` representa explicitamente **arte acima → especificações abaixo**, inclusive em `standard` ou `technical`; `horizontal` mantém as duas regiões lado a lado, inclusive em `variants`. `auto` preserva o comportamento histórico: empilha em cards compactos e em `variants`, usando lado a lado nos demais cards amplos. Não escolha `variants` apenas para obter geometria vertical.
 
 ## Variantes e legendas vinculadas
 

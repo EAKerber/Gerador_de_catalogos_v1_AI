@@ -122,16 +122,16 @@
     },
     {
       "id": "visual.editorial-depth",
-      "intention": "Ajustar hierarquia visual sem desmontar componentes",
-      "access": "Texto, Ícone, Especificação ou Card → Conteúdo/Visual",
+      "intention": "Ajustar hierarquia visual e arranjo sem desmontar componentes",
+      "access": "Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual",
       "preconditions": ["Componente compatível selecionado"],
-      "result": "Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo",
-      "example": "Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa",
-      "limits": ["Escalas são discretas", "Texto não aceita HTML", "Modo não remove conteúdo da subárvore"],
-      "capabilityIds": ["editorialTextControls", "internalIconScale", "distinctProductModes"],
+      "result": "Modo editorial, arranjo empilhado/lado a lado, escala e overflow mudam sem CSS arbitrário nem troca de tipo",
+      "example": "Manter modo Técnico com arte acima das especificações usando arrangement=stacked, ou reduzir um ícone para 80% dentro da mesma caixa",
+      "limits": ["Escalas são discretas", "Texto não aceita HTML", "Modo e arranjo não removem conteúdo da subárvore", "Automático preserva os breakpoints históricos"],
+      "capabilityIds": ["editorialTextControls", "internalIconScale", "distinctProductModes", "independentProductArrangement"],
       "componentTypes": ["text", "icon", "specification", "product-card"],
       "recipeIds": [],
-      "contracts": ["component.props.align", "component.props.iconScale", "component.presentation.mode"]
+      "contracts": ["component.props.align", "component.props.iconScale", "component.presentation.mode", "component.presentation.overrides.arrangement"]
     },
     {
       "id": "content.bulk-collections",

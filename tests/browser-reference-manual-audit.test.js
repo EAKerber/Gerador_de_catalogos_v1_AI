@@ -355,16 +355,19 @@ const legendPlans = [
 
   await selectLayer(ids.cardIds[0], "Selecionar card 01");
   await inspectorTab("content");
+  await ensureDetails(".card-presentation-secondary", "Card 01: abrir opções avançadas");
   await select(page.locator('[data-presentation-path="presetId"]'), "product-hero", "Card 01: preset de destaque", { surface: "inspector" });
   await select(page.locator('[data-presentation-path="responsiveState"]'), "wide", "Card 01: forçar layout amplo", { surface: "inspector" });
   for (const index of [3, 6]) {
     await selectLayer(ids.cardIds[index], `Selecionar card ${index + 1}`);
     await inspectorTab("content");
+    await ensureDetails(".card-presentation-secondary", `Card ${index + 1}: abrir opções avançadas`);
     await select(page.locator('[data-presentation-path="presetId"]'), "product-variants", `Card ${index + 1}: preset de variações`, { surface: "inspector" });
   }
   for (const index of [1, 2, 3, 4, 5, 6]) {
     await selectLayer(ids.cardIds[index], `Selecionar card ${index + 1} para compactação`);
     await inspectorTab("content");
+    await ensureDetails(".card-presentation-secondary", `Card ${index + 1}: abrir opções avançadas`);
     await select(page.locator('[data-presentation-path="density"]'), "compact", `Card ${index + 1}: densidade compacta`, { surface: "inspector" });
     await select(page.locator('[data-presentation-path="responsiveState"]'), "compact", `Card ${index + 1}: layout compacto`, { surface: "inspector" });
   }

@@ -4,14 +4,14 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 ## Resumo
 
-- 45 capacidades de produto;
+- 46 capacidades de produto;
 - 16 tipos de componente;
 - 5 grupos de descoberta por intenção;
 - 2 posições iniciais prováveis;
 - 9 receitas oficiais;
 - 17 fluxos curados;
 - 35 ícones declarados.
-- governança: 30 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 31 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Grupos de componentes por intenção
 
@@ -43,7 +43,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
 | `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação |
-| `visual.editorial-depth` | Ajustar hierarquia visual sem desmontar componentes | Texto, Ícone, Especificação ou Card → Conteúdo/Visual | Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo |
+| `visual.editorial-depth` | Ajustar hierarquia visual e arranjo sem desmontar componentes | Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual | Modo editorial, arranjo empilhado/lado a lado, escala e overflow mudam sem CSS arbitrário nem troca de tipo |
 | `content.bulk-collections` | Criar imagens legendadas e legendas cromáticas sem repetir formulários | Galeria ou Tabela → Conteúdo → Editar coleção | Itens canônicos são sincronizados ou acrescentados em uma transação reversível |
 | `reuse.saved-component` | Reutilizar uma composição editada | Selecionar componente → Estrutura → Salvar em Meus componentes | Snapshot reutilizável com novos IDs a cada inserção |
 | `safety.history` | Reverter ou reaplicar uma mudança | Toolbar → Histórico; Ctrl/Cmd+Z e Ctrl/Cmd+Shift+Z ou Ctrl+Y | Estado anterior ou posterior restaurado atomicamente |
@@ -169,18 +169,18 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
 
-## Ajustar hierarquia visual sem desmontar componentes
+## Ajustar hierarquia visual e arranjo sem desmontar componentes
 
 - **ID:** `visual.editorial-depth`
-- **Acesso:** Texto, Ícone, Especificação ou Card → Conteúdo/Visual
+- **Acesso:** Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual
 - **Pré-condições:** Componente compatível selecionado
-- **Resultado:** Alinhamento, escala, overflow ou prioridade do modo mudam sem CSS arbitrário nem troca de tipo
-- **Exemplo:** Destacar a arte no hero, ampliar dados no técnico e reduzir um ícone para 80% dentro da mesma caixa
-- **Limites:** Escalas são discretas; Texto não aceita HTML; Modo não remove conteúdo da subárvore
-- **Capacidades:** `editorialTextControls`, `internalIconScale`, `distinctProductModes`
+- **Resultado:** Modo editorial, arranjo empilhado/lado a lado, escala e overflow mudam sem CSS arbitrário nem troca de tipo
+- **Exemplo:** Manter modo Técnico com arte acima das especificações usando arrangement=stacked, ou reduzir um ícone para 80% dentro da mesma caixa
+- **Limites:** Escalas são discretas; Texto não aceita HTML; Modo e arranjo não removem conteúdo da subárvore; Automático preserva os breakpoints históricos
+- **Capacidades:** `editorialTextControls`, `internalIconScale`, `distinctProductModes`, `independentProductArrangement`
 - **Componentes:** `text`, `icon`, `specification`, `product-card`
 - **Receitas:** —
-- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.presentation.mode`
+- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.presentation.mode`, `component.presentation.overrides.arrangement`
 
 ## Criar imagens legendadas e legendas cromáticas sem repetir formulários
 
@@ -322,6 +322,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `editorialTextControls` | `true` | **active** | Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário. | `CatalogCapabilities.capabilities.editorialTextControls` |
 | `internalIconScale` | `true` | **active** | Separa escala visual interna da geometria externa do componente. | `CatalogCapabilities.capabilities.internalIconScale` |
 | `distinctProductModes` | `true` | **active** | Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card. | `CatalogCapabilities.capabilities.distinctProductModes` |
+| `independentProductArrangement` | `true` | **active** | Separa prioridade editorial de orientação estrutural sem criar um sexto modo nem ampliar o schema do documento. | `CatalogCapabilities.capabilities.independentProductArrangement` |
 
 ## Inventário de componentes
 

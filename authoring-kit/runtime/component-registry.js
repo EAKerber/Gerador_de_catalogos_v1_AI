@@ -43,10 +43,11 @@
   function productCardRender(component) {
     const compact = cardIsCompact(component);
     const presentation = window.CatalogPresentations?.normalizePresentation?.(component.presentation, component.type) || { mode: "standard", density: "standard" };
+    const arrangement = window.CatalogPresentations?.effectiveArrangement?.(component) || (compact ? "stacked" : "horizontal");
     return `
-      <div class="component-card-shell" data-responsive-state="${compact ? "compact" : "wide"}" data-presentation-mode="${escapeHtml(presentation.mode)}" data-presentation-density="${escapeHtml(presentation.density)}" aria-label="Contêiner de card de produto">
+      <div class="component-card-shell" data-responsive-state="${compact ? "compact" : "wide"}" data-presentation-mode="${escapeHtml(presentation.mode)}" data-presentation-density="${escapeHtml(presentation.density)}" data-presentation-arrangement="${escapeHtml(arrangement)}" aria-label="Contêiner de card de produto">
         <span class="component-card-shell__accent" aria-hidden="true"></span>
-        <span class="component-card-shell__state">${compact ? "layout compacto" : "layout amplo"}</span>
+        <span class="component-card-shell__state">${arrangement === "stacked" ? "empilhado" : "lado a lado"} · ${compact ? "compacto" : "amplo"}</span>
       </div>`;
   }
 
@@ -218,6 +219,8 @@
 
   function cardGeometry(component) {
     const compact = cardIsCompact(component);
+    const arrangement = window.CatalogPresentations?.effectiveArrangement?.(component) || (compact ? "stacked" : "horizontal");
+    const stacked = arrangement === "stacked";
     const dense = component.presentation?.density === "compact";
     const mode = ["hero", "technical", "variants", "data-only"].includes(component.presentation?.mode) ? component.presentation.mode : "standard";
     const titlePresent = hasSlot(component, "title");
@@ -236,13 +239,13 @@
     let art = { x: edge, y: contentTop, width: fullWidth, height: contentHeight };
     let specifications = { x: edge, y: contentTop, width: fullWidth, height: contentHeight };
 
-    if ((compact || mode === "variants") && artPresent && specificationsPresent) {
+    if (stacked && artPresent && specificationsPresent) {
       const specsHeight = dense ? 42 : 60;
       const between = dense ? 6 : 14;
       const artHeight = Math.max(dense ? 60 : 72, artMinimumHeight, Math.min(dense ? 92 : 84, contentHeight - specsHeight - between));
       art = { x: edge, y: contentTop, width: fullWidth, height: artHeight };
       specifications = { x: edge, y: contentTop + artHeight + between, width: fullWidth, height: Math.max(specsHeight, contentBottom - contentTop - artHeight - between) };
-    } else if (!compact && artPresent && specificationsPresent) {
+    } else if (!stacked && artPresent && specificationsPresent) {
       const availableWidth = Math.max(192, fullWidth - 10);
       const ratio = mode === "hero" ? .68 : mode === "technical" ? .42 : mode === "data-only" ? .34 : .6;
       const artWidth = Math.max(100, Math.min(availableWidth - 82, Math.round(availableWidth * ratio)));
@@ -560,18 +563,19 @@
       defaultStyle: { surface: "surface.paper", border: "border.default", radius: "radius.medium", accentColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.card-title" },
       measureMinimum(component, proposedFrame) {
         const compact = component.presentation?.responsiveState === "compact" || (component.presentation?.responsiveState !== "wide" && Number(proposedFrame?.width || component.frame.width) < 320);
+        const stacked = (window.CatalogPresentations?.effectiveArrangement?.(component, proposedFrame?.width || component.frame.width) || (compact ? "stacked" : "horizontal")) === "stacked";
         const tableHeight = tableSlotHeight(component);
         const dense = component.presentation?.density === "compact";
         const galleryHeight = artSlotMinimumHeight(component);
         const specificationsPresent = hasSlot(component, "specifications");
-        if (compact && dense && !specificationsPresent) return { width: 220, height: 48 + galleryHeight + 6 + tableHeight + 8 };
+        if (stacked && dense && !specificationsPresent) return { width: 220, height: 48 + galleryHeight + 6 + tableHeight + 8 };
         const galleryExtra = Math.max(0, galleryHeight - (dense ? 92 : 84));
-        if (compact && dense) return { width: 220, height: 170 + tableHeight + galleryExtra };
-        return { width: 220, height: compact ? 210 + tableHeight + galleryExtra : Math.max(220, 174 + tableHeight) };
+        if (stacked && dense) return { width: 220, height: 170 + tableHeight + galleryExtra };
+        return { width: 220, height: stacked ? 210 + tableHeight + galleryExtra : Math.max(220, 174 + tableHeight) };
       },
       responsiveRules: [
-        { label: "Compacto", maxWidth: 319, description: "Arte em largura total e especificações em grade de duas colunas." },
-        { label: "Amplo", minWidth: 320, description: "Arte à esquerda e especificações em coluna." }
+        { label: "Compacto", maxWidth: 319, description: "No arranjo Automático, arte e especificações ficam empilhadas." },
+        { label: "Amplo", minWidth: 320, description: "No arranjo Automático, arte e especificações ficam lado a lado." }
       ],
       contentFields: [],
       styleFields: ["surface", "border", "radius", "accentColor", "textColor"],

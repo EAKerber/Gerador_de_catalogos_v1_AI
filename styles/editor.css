@@ -866,6 +866,15 @@ body[data-resizing-panel] { cursor: col-resize; user-select: none; }
 .inspector-advanced > summary { position: sticky; top: 0; z-index: 2; padding: 10px 12px; border-bottom: 1px solid var(--color-line-250); color: var(--color-ink-800); background: var(--color-neutral-100); cursor: pointer; font-size: 9px; font-weight: 900; text-transform: uppercase; }
 .recommended-minimum-editor { display: grid; gap: 8px; margin-top: 9px; padding: 9px; border: 1px solid var(--color-line-250); border-radius: 7px; background: var(--color-neutral-100); }
 .presentation-intent-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--color-line-250); }
+.inspector-section--card-presentation { border-bottom: 1px solid var(--color-line-250); background: linear-gradient(180deg, var(--color-brand-50), #fff 72%); }
+.card-presentation-summary { display: grid; gap: 3px; margin-top: 8px; padding: 9px 10px; border: 1px solid var(--color-brand-100); border-radius: 8px; background: #fff; }
+.card-presentation-summary strong { color: var(--color-brand-700); font-family: var(--font-display); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.card-presentation-summary span { color: var(--color-ink-600); font-size: 8px; line-height: 1.4; }
+.card-presentation-primary { display: grid; gap: 8px; margin-top: 9px; }
+.card-presentation-secondary { margin-top: 9px; padding: 8px; border: 1px solid var(--color-line-250); border-radius: 7px; background: var(--color-neutral-100); }
+.card-presentation-secondary summary { cursor: pointer; color: var(--color-ink-800); font-size: 9px; font-weight: 900; text-transform: uppercase; }
+.card-presentation-secondary summary span { display: block; margin-top: 2px; color: var(--color-ink-500); font-size: 7px; font-weight: 700; text-transform: none; }
+.card-presentation-secondary .presentation-intent-grid { grid-template-columns: 1fr; margin-top: 8px; padding-top: 8px; }
 .table-column-editor, .semantic-legend-editor { margin-top: 10px; padding: 8px; border: 1px solid var(--color-line-250); border-radius: 7px; background: var(--color-neutral-100); }
 .table-column-editor summary, .semantic-legend-editor summary { cursor: pointer; color: var(--color-ink-800); font-size: 9px; font-weight: 900; text-transform: uppercase; }
 .table-column-editor__list { display: grid; gap: 7px; margin-top: 8px; }

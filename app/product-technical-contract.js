@@ -6,6 +6,7 @@
 
   function isCompactTechnical(component) {
     if (component?.type !== "product-card" || component.presentation?.mode !== "technical") return false;
+    if (window.CatalogPresentations?.effectiveArrangement?.(component) === "horizontal") return false;
     const responsiveState = component.presentation?.responsiveState;
     if (responsiveState === "wide") return false;
     if (responsiveState === "compact") return true;

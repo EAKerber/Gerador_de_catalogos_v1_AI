@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const MODES = Object.freeze({
     standard: { label: "Padrão", description: "Equilibra imagem, atributos e tabela.", visualPriority: "balanced" },
     hero: { label: "Destaque", description: "Prioriza a imagem principal e o título.", visualPriority: "art" },
@@ -13,6 +13,11 @@
     compact: { label: "Compacta", gap: 6, padding: 8, fontScale: .88, iconScale: .9 },
     standard: { label: "Padrão", gap: 10, padding: 12, fontScale: 1, iconScale: 1 },
     comfortable: { label: "Confortável", gap: 14, padding: 16, fontScale: 1.08, iconScale: 1.12 }
+  });
+  const ARRANGEMENTS = Object.freeze({
+    auto: { label: "Automático", description: "Empilha em cards compactos e no modo Variações; nos demais cards amplos usa lado a lado." },
+    horizontal: { label: "Lado a lado", description: "Mantém arte e especificações em colunas, independentemente do modo editorial." },
+    stacked: { label: "Empilhado", description: "Coloca a arte acima e as especificações abaixo, independentemente do modo editorial." }
   });
   const PRESETS = Object.freeze({
     "product-standard": {
@@ -67,14 +72,33 @@
     const preset = PRESETS[source?.presetId] || PRESETS["product-standard"];
     const mode = MODES[source?.mode] ? source.mode : preset.mode;
     const density = DENSITIES[source?.density] ? source.density : preset.density;
+    const overrides = source?.overrides && typeof source.overrides === "object" ? clone(source.overrides) : {};
+    if (type === "product-card") {
+      overrides.arrangement = ARRANGEMENTS[overrides.arrangement] ? overrides.arrangement : "auto";
+    }
     return {
       templateId: source?.templateId ? String(source.templateId) : null,
       mode,
       density,
       responsiveState: ["auto", "compact", "wide"].includes(source?.responsiveState) ? source.responsiveState : "auto",
       presetId: type === "product-card" ? preset.id : null,
-      overrides: source?.overrides && typeof source.overrides === "object" ? clone(source.overrides) : {}
+      overrides
     };
+  }
+
+  function arrangementOverride(source = {}) {
+    const value = source?.presentation?.overrides?.arrangement ?? source?.overrides?.arrangement;
+    return ARRANGEMENTS[value] ? value : "auto";
+  }
+
+  function effectiveArrangement(component = {}, proposedWidth = component?.frame?.width) {
+    const presentation = component?.presentation || component || {};
+    const arrangement = arrangementOverride(presentation);
+    if (arrangement !== "auto") return arrangement;
+    if (presentation.mode === "variants") return "stacked";
+    if (presentation.responsiveState === "compact") return "stacked";
+    if (presentation.responsiveState === "wide") return "horizontal";
+    return Number(proposedWidth) < 320 ? "stacked" : "horizontal";
   }
 
   function normalizeTemplateMetadata(metadata = {}, component = null) {
@@ -96,5 +120,16 @@
     return Object.values(PRESETS).filter(preset => preset.rootType === type).map(clone);
   }
 
-  window.CatalogPresentations = Object.freeze({ VERSION, MODES, DENSITIES, PRESETS, normalizePresentation, normalizeTemplateMetadata, presetsFor });
+  window.CatalogPresentations = Object.freeze({
+    VERSION,
+    MODES,
+    DENSITIES,
+    ARRANGEMENTS,
+    PRESETS,
+    normalizePresentation,
+    normalizeTemplateMetadata,
+    presetsFor,
+    arrangementOverride,
+    effectiveArrangement
+  });
 })();

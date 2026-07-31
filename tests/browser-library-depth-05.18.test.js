@@ -37,6 +37,7 @@ let browser;
 
   await page.evaluate(cardId => CatalogEditor.store.setSelection(cardId), ids.cardId);
   await page.locator('[data-inspector-tab="content"]').click();
+  await page.locator(".card-presentation-secondary > summary").click();
   await page.locator('[data-presentation-path="presetId"]').selectOption("product-hero");
   const hero = await page.evaluate(cardId => {
     const card = CatalogEditor.store.findComponent(cardId).component;

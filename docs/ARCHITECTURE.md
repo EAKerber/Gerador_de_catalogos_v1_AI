@@ -171,10 +171,19 @@ Produtos usam `collections.products[].metadata.values`. O card conserva apenas o
     "mode": "technical",
     "density": "compact",
     "responsiveState": "auto",
-    "overrides": {}
+    "overrides": {
+      "arrangement": "stacked"
+    }
   }
 }
 ```
+
+`presentation.mode` declara a prioridade editorial; não deve ser usado como
+atalho para escolher orientação. `presentation.overrides.arrangement` aceita
+`auto`, `horizontal` e `stacked`. O valor `auto` preserva o comportamento
+histórico por breakpoint e mantém `variants` empilhado. Os valores explícitos
+permitem, por exemplo, um card `technical` empilhado ou um card `variants` lado
+a lado sem trocar conteúdo, IDs ou tipo.
 
 Atualizar produto modifica somente os átomos e valores de tabela já existentes para campos sem override. A identidade do card, dos filhos e da linha permanece estável. Aplicar um template de apresentação é uma ação estrutural separada: pode materializar novos filhos e linhas internas, mas preserva a raiz, seu frame, número, produto e conteúdo.
 

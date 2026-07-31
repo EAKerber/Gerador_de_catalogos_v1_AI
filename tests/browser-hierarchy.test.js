@@ -56,7 +56,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
     CatalogEditor.store.setEditingContext(null);
     CatalogEditor.store.setSelection(cardId);
   }, ids.cardId);
-  assert(await page.locator('[data-inspector-tab="structure"]').getAttribute("aria-selected") === "true", "Contêineres devem abrir na aba Estrutura.");
+  assert(await page.locator('[data-inspector-tab="content"]').getAttribute("aria-selected") === "true", "Cards devem abrir em Conteúdo para revelar a apresentação.");
   const emphasis = await page.evaluate(cardId => ({
     canvasChildren: document.querySelectorAll(`[data-component-id="${cardId}"] > .component-children-layer > [data-within-selected-container="true"]`).length,
     layerChildren: document.querySelectorAll(`[data-layer-id][data-within-selection="true"]`).length
