@@ -1,16 +1,20 @@
 name: Prune integrated branches 05.54
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/authoring-kit-review-05.54
+      - development
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 permissions:
   contents: write
 
 jobs:
   prune:
-    if: github.repository == 'EAKerber/Gerador_de_catalogos_v1_AI' && github.ref_name == 'agent/authoring-kit-review-05.54'
+    if: github.repository == 'EAKerber/Gerador_de_catalogos_v1_AI' && github.event.pull_request.head.ref == 'agent/authoring-kit-review-05.54'
     runs-on: ubuntu-latest
     steps:
       - name: Delete verified integrated branches
@@ -34,5 +38,3 @@ jobs:
             *) exit 64 ;;
           esac
           git push "$remote" --delete "$branch"
-
-# Disparo descartável via Contents API.
