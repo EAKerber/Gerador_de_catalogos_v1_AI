@@ -66,7 +66,8 @@ let browser;
   assert(await density.inputValue() === "custom", "Inspetor não refletiu o ajuste personalizado.");
 
   await page.evaluate(specificationIds => {
-    CatalogEditor.store.selectComponents(specificationIds);
+    CatalogEditor.store.selectComponentInContext(specificationIds[0]);
+    specificationIds.slice(1).forEach(id => CatalogEditor.store.selectComponentInContext(id, { additive: true }));
   }, ids.specificationIds);
   await page.locator("[data-batch-specification-density]").selectOption("compact");
   await page.locator("[data-batch-specification-density-apply]").click();
