@@ -55,6 +55,7 @@
     "semanticColorLegends": true,
     "semanticProductVariants": true,
     "semanticTables": true,
+    "specificationDensityControls": true,
     "undoRedo": true
   },
   "componentIntents": {
@@ -1267,6 +1268,35 @@
           "type": "text"
         },
         {
+          "full": true,
+          "label": "Densidade interna",
+          "options": [
+            {
+              "label": "Automática · acompanha o card",
+              "value": "auto"
+            },
+            {
+              "label": "Compacta",
+              "value": "compact"
+            },
+            {
+              "label": "Padrão",
+              "value": "standard"
+            },
+            {
+              "label": "Confortável",
+              "value": "comfortable"
+            },
+            {
+              "disabled": true,
+              "label": "Personalizada",
+              "value": "custom"
+            }
+          ],
+          "path": "densityPreset",
+          "type": "select"
+        },
+        {
           "label": "Escala do ícone",
           "options": [
             {
@@ -1283,6 +1313,52 @@
             }
           ],
           "path": "iconScale",
+          "type": "select"
+        },
+        {
+          "label": "Espaço interno",
+          "options": [
+            {
+              "label": "Automático",
+              "value": "auto"
+            },
+            {
+              "label": "3 px · compacto",
+              "value": 3
+            },
+            {
+              "label": "7 px · padrão",
+              "value": 7
+            },
+            {
+              "label": "10 px · confortável",
+              "value": 10
+            }
+          ],
+          "path": "gap",
+          "type": "select"
+        },
+        {
+          "label": "Respiro interno",
+          "options": [
+            {
+              "label": "Automático",
+              "value": "auto"
+            },
+            {
+              "label": "2 px · compacto",
+              "value": 2
+            },
+            {
+              "label": "4 px · padrão",
+              "value": 4
+            },
+            {
+              "label": "6 px · confortável",
+              "value": 6
+            }
+          ],
+          "path": "padding",
           "type": "select"
         }
       ],

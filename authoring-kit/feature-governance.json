@@ -102,6 +102,7 @@
     { "id": "progressiveInspectorVocabulary", "status": "active", "reason": "Precisa evoluir de abas por propriedade para continuidade de tarefa." },
     { "id": "editorialTextControls", "status": "active", "reason": "Aprofunda o átomo canônico sem introduzir editor rico ou CSS arbitrário." },
     { "id": "internalIconScale", "status": "active", "reason": "Separa escala visual interna da geometria externa do componente." },
+    { "id": "specificationDensityControls", "status": "active", "reason": "Expõe presets e ajustes discretos de gap e padding sem alterar o frame nem aceitar CSS arbitrário." },
     { "id": "distinctProductModes", "status": "active", "reason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card." },
     { "id": "independentProductArrangement", "status": "active", "reason": "Separa prioridade editorial de orientação estrutural sem criar um sexto modo nem ampliar o schema do documento." }
   ],

@@ -10,6 +10,8 @@
     .replaceAll("'", "&#039;");
 
   const discreteScale = value => [80, 100, 120].includes(Number(value)) ? Number(value) : 100;
+  const discreteSpecificationGap = value => [3, 7, 10].includes(Number(value)) ? Number(value) : null;
+  const discreteSpecificationPadding = value => [2, 4, 6].includes(Number(value)) ? Number(value) : null;
 
   const slotChildren = (component, slotName) => (component.children || []).filter(child => child.slot?.name === slotName);
   const hasSlot = (component, slotName, type = null) => slotChildren(component, slotName).some(child => !type || child.type === type);
@@ -118,8 +120,19 @@
   }
 
   function specificationRender(component) {
+    const gap = discreteSpecificationGap(component.props?.gap);
+    const padding = discreteSpecificationPadding(component.props?.padding);
+    const density = ["auto", "compact", "standard", "comfortable", "custom"].includes(component.props?.densityPreset)
+      ? component.props.densityPreset
+      : "auto";
+    const spacing = [
+      `--icon-content-scale:${discreteScale(component.props?.iconScale) / 100}`,
+      gap == null ? "" : `--specification-gap:${gap}px`,
+      padding == null ? "" : `--specification-padding-x:${padding}px`,
+      padding == null ? "" : `--specification-padding-y:${Math.max(1, Math.round(padding / 2))}px`
+    ].filter(Boolean).join(";");
     return `
-      <div class="component-specification" style="--icon-content-scale:${discreteScale(component.props?.iconScale) / 100}">
+      <div class="component-specification" data-density-preset="${density}" style="${spacing}">
         ${icon(component.props.icon || "shield-star", "component-specification__icon")}
         <span>${escapeHtml(component.props.label)}</span>
       </div>`;
@@ -733,12 +746,15 @@
       gridUnit: 1,
       minSize: { width: 82, height: 28 },
       defaultFrame: { width: 130, height: 38 },
-      defaultProps: { icon: "shield-star", label: "Alta resistência", iconScale: 100 },
+      defaultProps: { icon: "shield-star", label: "Alta resistência", iconScale: 100, densityPreset: "auto", gap: "auto", padding: "auto" },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.label" },
       contentFields: [
         { path: "icon", label: "Ícone", type: "icon-select", full: true },
         { path: "label", label: "Especificação", type: "text", full: true },
-        { path: "iconScale", label: "Escala do ícone", type: "select", options: [{ value: 100, label: "100% · padrão" }, { value: 80, label: "80% · discreto" }, { value: 120, label: "120% · destaque" }] }
+        { path: "densityPreset", label: "Densidade interna", type: "select", full: true, options: [{ value: "auto", label: "Automática · acompanha o card" }, { value: "compact", label: "Compacta" }, { value: "standard", label: "Padrão" }, { value: "comfortable", label: "Confortável" }, { value: "custom", label: "Personalizada", disabled: true }] },
+        { path: "iconScale", label: "Escala do ícone", type: "select", options: [{ value: 100, label: "100% · padrão" }, { value: 80, label: "80% · discreto" }, { value: 120, label: "120% · destaque" }] },
+        { path: "gap", label: "Espaço interno", type: "select", options: [{ value: "auto", label: "Automático" }, { value: 3, label: "3 px · compacto" }, { value: 7, label: "7 px · padrão" }, { value: 10, label: "10 px · confortável" }] },
+        { path: "padding", label: "Respiro interno", type: "select", options: [{ value: "auto", label: "Automático" }, { value: 2, label: "2 px · compacto" }, { value: 4, label: "4 px · padrão" }, { value: 6, label: "6 px · confortável" }] }
       ],
       styleFields: ["surface", "border", "radius", "accentColor", "vectorColor", "textColor", "typography"],
       render: specificationRender
