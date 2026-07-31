@@ -23,6 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          repo_dir="/tmp/catalog-branch-prune-05.54"
+          git init "$repo_dir"
           for branch in \
             "agent/table-column-headers-05.53"
           do
@@ -30,11 +32,11 @@ jobs:
               agent/*) ;;
               *) exit 64 ;;
             esac
-            git push "$remote" --delete "$branch"
+            git -C "$repo_dir" push "$remote" --delete "$branch"
           done
           branch="agent/authoring-kit-review-05.54"
           case "$branch" in
             agent/*) ;;
             *) exit 64 ;;
           esac
-          git push "$remote" --delete "$branch"
+          git -C "$repo_dir" push "$remote" --delete "$branch"
