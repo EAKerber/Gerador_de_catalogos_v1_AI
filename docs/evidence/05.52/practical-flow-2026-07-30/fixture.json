@@ -1,0 +1,187 @@
+{
+  "fixtureFormat": "CatalogPracticalFlowFixture",
+  "fixtureVersion": "1.0.0",
+  "id": "corredicas-top-mobili-2026-07-30",
+  "capturedAt": "2026-07-31",
+  "flow": [
+    "authoring-kit",
+    "cold-agent",
+    "catalog-project-package",
+    "editor-import",
+    "user-review",
+    "revised-package"
+  ],
+  "conversation": "conversation.md",
+  "artifacts": [
+    {
+      "path": "input/authoring-kit.zip",
+      "stage": "input",
+      "role": "authoring-kit",
+      "size": 161480,
+      "sha256": "79c8dee1d12dec9a38511dbe4b4d72946a012f4f44942030f39e158879d406df"
+    },
+    {
+      "path": "input/prices-unit.png",
+      "sourceName": "pedido-marketup-2026-07-30_17-30-56-1315x1299.png",
+      "stage": "input",
+      "role": "factual-input",
+      "size": 359533,
+      "sha256": "02faf81e841893a2ea91a4a04ae034ec820e270f0effa7cde1301eb0e9060699"
+    },
+    {
+      "path": "input/prices-15-units.png",
+      "sourceName": "pedido-marketup-2026-07-30_17-33-02-1315x1299.png",
+      "stage": "input",
+      "role": "factual-input",
+      "size": 374965,
+      "sha256": "a7ffb4d01f901d85330f9cfd0ecb8d9d8e1bb389f7874b332a9c0e0c87aabcca"
+    },
+    {
+      "path": "initial/catalog-project-package.zip",
+      "stage": "initial",
+      "role": "importable-package",
+      "size": 903379,
+      "sha256": "019221c1ed94f67b7c196b3297158041b7270edf03720c3fd3764179b55da2b8"
+    },
+    {
+      "path": "initial/catalog.pdf",
+      "stage": "initial",
+      "role": "printed-output",
+      "size": 745053,
+      "sha256": "ac225b5b3ecb6081927554f19c623e46d6a6cff98cf5ce657657a5fd4d273ecf"
+    },
+    {
+      "path": "initial/catalog-preview.png",
+      "stage": "initial",
+      "role": "package-preview",
+      "size": 190189,
+      "sha256": "4e55044b39ee9e9deeea2f1fea8bed5b02565dfe6df41c1c0cd9be9d78e93575"
+    },
+    {
+      "path": "initial/authorial-target.png",
+      "stage": "initial",
+      "role": "authorial-target",
+      "size": 1374874,
+      "sha256": "b2a0c2a95da88fd2ebc3ad1c51eac18b3e336a2ed27e1d8da26a72f67ec0947f"
+    },
+    {
+      "path": "revised/catalog-project-package.zip",
+      "stage": "revised",
+      "role": "importable-package",
+      "size": 987962,
+      "sha256": "54f96224d816efbe0535b4888d65cb335fce95570c1b374cb63f1e726c6fb982"
+    },
+    {
+      "path": "revised/catalog.pdf",
+      "stage": "revised",
+      "role": "printed-output",
+      "size": 749796,
+      "sha256": "4e79f824931d48bd3ec61465622efa5f05c7bdd338ad6d222a41064e125e632c"
+    },
+    {
+      "path": "revised/catalog-preview.png",
+      "stage": "revised",
+      "role": "package-preview",
+      "size": 282033,
+      "sha256": "1c5b1c7139c7516b7b9ca28b477119e8d1aa9b4788a23fd387f791b6bedeeb00"
+    },
+    {
+      "path": "revised/authorial-target.png",
+      "stage": "revised",
+      "role": "authorial-target",
+      "size": 1452117,
+      "sha256": "f1526f0f35a9f4fd8845b2e2367ec8665caf8d968676ecb023105e0ea52586e3"
+    }
+  ],
+  "findings": [
+    {
+      "id": "PF-001",
+      "summary": "Preço unitário ausente na saída inicial",
+      "owner": "agent",
+      "class": "authoring",
+      "status": "corrected-in-revised",
+      "evidence": [
+        "initial/catalog-project-package.zip#source/catalog-source.json",
+        "revised/catalog-project-package.zip#source/catalog-source.json"
+      ]
+    },
+    {
+      "id": "PF-002",
+      "summary": "Rótulo 'Preço 15+' interpretou incorretamente a condição",
+      "owner": "agent",
+      "class": "authoring",
+      "status": "corrected-in-revised",
+      "evidence": [
+        "initial/catalog-project-package.zip#source/catalog-source.json",
+        "revised/catalog-project-package.zip#source/catalog-source.json"
+      ]
+    },
+    {
+      "id": "PF-003",
+      "summary": "Arranjo vertical e especificações não eram salientes no kit usado",
+      "owner": "authoring-kit",
+      "class": "discovery",
+      "status": "addressed-05.49-and-05.51",
+      "evidence": [
+        "conversation.md",
+        "input/authoring-kit.zip"
+      ]
+    },
+    {
+      "id": "PF-004",
+      "summary": "Inspetor exigia redução do zoom para refinamento",
+      "owner": "editor",
+      "class": "usability",
+      "status": "addressed-05.48",
+      "evidence": [
+        "conversation.md"
+      ]
+    },
+    {
+      "id": "PF-005",
+      "summary": "Cabeçalhos de tabela não podiam ser refinados pela superfície normal",
+      "owner": "editor",
+      "class": "capability-surface",
+      "status": "pending",
+      "evidence": [
+        "conversation.md",
+        "revised/catalog-project-package.zip#source/catalog-source.json"
+      ]
+    },
+    {
+      "id": "PF-006",
+      "summary": "Área branca factual dos produtos precisava de maior respiro",
+      "owner": "asset",
+      "class": "factual-composition",
+      "status": "pending-p2",
+      "evidence": [
+        "initial/catalog-preview.png",
+        "revised/catalog-preview.png"
+      ]
+    },
+    {
+      "id": "PF-007",
+      "summary": "Compilação, schema, geometria e empacotamento permaneceram válidos",
+      "owner": "compiler",
+      "class": "non-failure",
+      "status": "confirmed",
+      "evidence": [
+        "initial/catalog-project-package.zip#reports/compiler-report.json",
+        "revised/catalog-project-package.zip#reports/compiler-report.json",
+        "revised/catalog-project-package.zip#reports/layout-revision.json"
+      ]
+    }
+  ],
+  "replay": {
+    "packageStages": [
+      "initial/catalog-project-package.zip",
+      "revised/catalog-project-package.zip"
+    ],
+    "expectedSchemaVersion": "1.16.0",
+    "expectedProducts": 3,
+    "expectedAssets": 4,
+    "expectedFactualInputs": 2,
+    "requiresNetwork": false,
+    "comparison": "Compare pacote, PDF, preview e alvo autoral dentro do mesmo estágio; use os achados para atribuir divergências."
+  }
+}
