@@ -3,7 +3,7 @@
 
   const PACKAGE_FORMAT = "CatalogProjectPackage";
   const PACKAGE_VERSION = "1.0.0";
-  const AUTHORING_KIT_VERSION = "1.6.1";
+  const AUTHORING_KIT_VERSION = "1.7.0";
   const CAPABILITIES_VERSION = "1.0.0";
   const MAX_PACKAGE_SIZE = 100 * 1024 * 1024;
   const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
@@ -216,7 +216,7 @@
     let manifest = {
       manifestType: "CatalogCapabilities",
       manifestVersion: CAPABILITIES_VERSION,
-      editor: { name: "Catálogo V1", increment: "05.54", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
+      editor: { name: "Catálogo V1", increment: "05.55", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
       document: { pagePreset: "A4", logicalSize: { width: 794, height: 1123, unit: "px" }, editorSessionRequired: false },
       components: Object.entries(window.CATALOG_COMPONENT_REGISTRY || {}).sort(([a], [b]) => a.localeCompare(b)).map(serializeComponentDefinition),
       templates: templates.map(template => ({
@@ -399,6 +399,9 @@
   function mimeForPath(path) {
     if (path.endsWith(".json")) return "application/json";
     if (path.endsWith(".md")) return "text/markdown";
+    if (path.endsWith(".svg")) return "image/svg+xml";
+    if (path.endsWith(".png")) return "image/png";
+    if (/\.jpe?g$/i.test(path)) return "image/jpeg";
     return "application/octet-stream";
   }
 
@@ -529,14 +532,14 @@
         packageFormat: PACKAGE_FORMAT,
         packageVersion: PACKAGE_VERSION,
         createdAt: new Date().toISOString(),
-        generator: { name: "Catálogo V1", increment: "05.54", schemaVersion: document.schemaVersion },
+        generator: { name: "Catálogo V1", increment: "05.55", schemaVersion: document.schemaVersion },
         project: { id: document.id, title: document.title },
         policy: { assetMode: "assisted", publicationGate: target },
         document: { path: DOCUMENT_PATH, schemaVersion: document.schemaVersion },
         catalogSource: { path: CATALOG_SOURCE_PATH, sourceVersion: window.CatalogSource?.VERSION || "1.1.0" },
         ...(document.generation?.plan ? { generationPlan: { path: GENERATION_PLAN_PATH, planVersion: document.generation.plan.planVersion || "1.0.0" } } : {}),
         capabilities: { path: CAPABILITIES_PATH, manifestVersion: CAPABILITIES_VERSION },
-        authoringKit: { root: "authoring-kit", manifestPath: "authoring-kit/manifest.json", version: AUTHORING_KIT_VERSION },
+        authoringKit: { root: "authoring-kit", manifestPath: "authoring-kit/manifest.json", version: AUTHORING_KIT_VERSION, visualGuideIncluded: false },
         report: { path: EXPORT_REPORT_PATH },
         assets: manifestAssets,
         files: fileRecords
@@ -553,17 +556,80 @@
       return result;
     }
 
-    buildAuthoringKit() {
+    buildAuthoringKit(options = {}) {
       const capabilities = buildCapabilitiesManifest(this.store.getExportDocument());
       const source = window.CATALOG_AUTHORING_KIT_FILES || {};
       const files = {};
       Object.entries(source).sort(([a], [b]) => a.localeCompare(b)).forEach(([path, content]) => { files[`CatalogAuthoringKit-${AUTHORING_KIT_VERSION}/${path}`] = encoder.encode(String(content)); });
       files[`CatalogAuthoringKit-${AUTHORING_KIT_VERSION}/capabilities.json`] = encoder.encode(stableJSON(capabilities));
+      const visualGuideFiles = options.visualGuideFiles || null;
+      if (visualGuideFiles) {
+        Object.entries(visualGuideFiles).sort(([a], [b]) => a.localeCompare(b)).forEach(([path, content]) => {
+          if (!safePath(path)) throw new PackageError("VISUAL_GUIDE_PATH", `Caminho inseguro no guia visual: ${path}`);
+          files[`CatalogAuthoringKit-${AUTHORING_KIT_VERSION}/visual-guide/${path}`] = asBytes(content);
+        });
+      }
       return fflate().zipSync(files, { level: 6, mtime: FIXED_ZIP_TIME });
     }
 
-    exportAuthoringKit() {
-      const bytes = this.buildAuthoringKit();
+    async loadVisualGuideFiles() {
+      const source = window.CATALOG_AUTHORING_KIT_FILES || {};
+      let coreManifest;
+      try {
+        coreManifest = JSON.parse(source["manifest.json"] || "{}");
+      } catch (error) {
+        throw new PackageError("VISUAL_GUIDE_CORE_MANIFEST", `Manifesto do núcleo inválido: ${error.message}`);
+      }
+      const companion = coreManifest.visualCompanion;
+      if (!companion?.manifestSha256 || companion.distribution !== "standalone-kit-only") {
+        throw new PackageError("VISUAL_GUIDE_UNDECLARED", "O núcleo não declara um complemento visual exportável.");
+      }
+      let manifestBytes;
+      try {
+        const response = await fetch("authoring-kit-visual/manifest.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        manifestBytes = new Uint8Array(await response.arrayBuffer());
+      } catch (error) {
+        throw new PackageError("VISUAL_GUIDE_MANIFEST_FETCH", `Não foi possível carregar o manifesto visual: ${error.message}`);
+      }
+      if (await sha256(manifestBytes) !== companion.manifestSha256) throw new PackageError("VISUAL_GUIDE_MANIFEST_HASH", "O manifesto visual diverge do hash declarado pelo núcleo.");
+      let manifest;
+      try {
+        manifest = JSON.parse(decoder.decode(manifestBytes));
+      } catch (error) {
+        throw new PackageError("VISUAL_GUIDE_MANIFEST_JSON", `Manifesto visual inválido: ${error.message}`);
+      }
+      if (manifest.guideFormat !== companion.format || manifest.guideVersion !== companion.version || !Array.isArray(manifest.files)) {
+        throw new PackageError("VISUAL_GUIDE_MANIFEST_CONTRACT", "O manifesto visual não corresponde ao complemento declarado.");
+      }
+      const files = { "manifest.json": manifestBytes };
+      const loadedFiles = await Promise.all(manifest.files.map(async record => {
+        if (!safePath(record.path) || !Number.isInteger(record.size) || record.size < 1 || !/^[a-f0-9]{64}$/.test(record.sha256 || "")) {
+          throw new PackageError("VISUAL_GUIDE_FILE_RECORD", `Registro inválido no guia visual: ${record.path || "?"}`);
+        }
+        let bytes;
+        try {
+          const response = await fetch(`authoring-kit-visual/${record.path}`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          bytes = new Uint8Array(await response.arrayBuffer());
+        } catch (error) {
+          throw new PackageError("VISUAL_GUIDE_FILE_FETCH", `Não foi possível carregar ${record.path}: ${error.message}`);
+        }
+        if (bytes.byteLength !== record.size || await sha256(bytes) !== record.sha256) {
+          throw new PackageError("VISUAL_GUIDE_FILE_HASH", `O arquivo visual ${record.path} diverge do manifesto.`);
+        }
+        return [record.path, bytes];
+      }));
+      loadedFiles.forEach(([path, bytes]) => { files[path] = bytes; });
+      return files;
+    }
+
+    async buildCompleteAuthoringKit() {
+      return this.buildAuthoringKit({ visualGuideFiles: await this.loadVisualGuideFiles() });
+    }
+
+    async exportAuthoringKit() {
+      const bytes = await this.buildCompleteAuthoringKit();
       download(bytes, `CatalogAuthoringKit-${AUTHORING_KIT_VERSION}.zip`);
       return bytes;
     }

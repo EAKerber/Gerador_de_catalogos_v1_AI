@@ -4,9 +4,11 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { generate: generateVisualGuide } = require("./build-visual-guide.js");
 
 const root = path.resolve(__dirname, "..");
 const kitRoot = path.join(root, "authoring-kit");
+const visualGuideBuild = generateVisualGuide();
 const schemaCopies = [
   "catalog-document.schema.json",
   "catalog-project-package.schema.json",
@@ -130,6 +132,9 @@ if (kitManifest.editorIncrement !== featureGuide.editorIncrement || kitManifest.
   throw new Error("Manifesto, guia, governança e capacidades divergem sobre o incremento atual.");
 }
 if (authoringPatterns.patternsFormat !== "CatalogAuthoringPatterns" || !Array.isArray(authoringPatterns.patterns)) throw new Error("Padrões de autoria inválidos.");
+if (kitManifest.visualCompanion?.manifestSha256 !== visualGuideBuild.manifestSha256 || kitManifest.visualCompanion?.version !== visualGuideBuild.manifest.guideVersion) {
+  throw new Error("O núcleo não aponta para o manifesto atual do complemento visual.");
+}
 const patternIds = new Set();
 authoringPatterns.patterns.forEach(pattern => {
   if (!pattern.id || !pattern.kind || !pattern.stage) throw new Error("Padrão de autoria sem id, kind ou stage.");

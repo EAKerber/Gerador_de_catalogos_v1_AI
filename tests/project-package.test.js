@@ -70,6 +70,7 @@ const fileFrom = (name, bytes) => ({
   const archive = fflate.unzipSync(built.bytes);
   assert(archive["catalog-project.json"] && archive["document/catalog.json"] && archive["source/catalog-source.json"] && archive["manifests/catalog-capabilities.json"], "A estrutura mínima do pacote está incompleta.");
   assert(archive["authoring-kit/GUIDE.md"] && archive["reports/export-report.json"], "Kit e relatório não acompanharam o pacote.");
+  assert(!Object.keys(archive).some(name => name.startsWith("authoring-kit-visual/") || name.includes("/visual-guide/")), "O pacote de catálogo duplicou o complemento visual autônomo.");
   const portableDocument = JSON.parse(new TextDecoder().decode(archive["document/catalog.json"]));
   const portableAsset = portableDocument.collections.find(collection => collection.id === "assets").items[0];
   assert(portableAsset.reference.provider === "package" && portableAsset.reference.key === built.manifest.assets[0].path, "A referência não foi convertida para o caminho portátil.");
@@ -120,6 +121,13 @@ const fileFrom = (name, bytes) => ({
   const kitBytes = manager.buildAuthoringKit();
   const kitEntries = Object.keys(fflate.unzipSync(kitBytes));
   assert(kitEntries.some(name => name.endsWith("/GUIDE.md")) && kitEntries.some(name => name.endsWith("/capabilities.json")) && kitEntries.some(name => name.endsWith("/feature-inventory.json")) && kitEntries.some(name => name.endsWith("/feature-guide.json")), "O download do AuthoringKit não é autocontido ou perdeu o atlas funcional.");
+  assert(!kitEntries.some(name => name.includes("/visual-guide/")), "O build síncrono do núcleo passou a duplicar o complemento visual sem solicitação.");
+  const visualRoot = path.join(root, "authoring-kit-visual");
+  const visualManifest = JSON.parse(fs.readFileSync(path.join(visualRoot, "manifest.json"), "utf8"));
+  const visualGuideFiles = { "manifest.json": fs.readFileSync(path.join(visualRoot, "manifest.json")) };
+  visualManifest.files.forEach(file => { visualGuideFiles[file.path] = fs.readFileSync(path.join(visualRoot, file.path)); });
+  const completeKitEntries = Object.keys(fflate.unzipSync(manager.buildAuthoringKit({ visualGuideFiles })));
+  assert(completeKitEntries.some(name => name.endsWith("/visual-guide/START-HERE.md")) && completeKitEntries.some(name => name.endsWith("/visual-guide/case-studies/promocional/reference.jpeg")), "O kit completo não inclui entrada visual e referências.");
   const capabilities = CatalogProjectManifests.buildCapabilitiesManifest(store.getExportDocument());
   const recipeIds = new Set(capabilities.recipes.map(recipe => recipe.id));
   const requiredRecipeIds = [
@@ -131,7 +139,7 @@ const fileFrom = (name, bytes) => ({
     "section-tip-callout"
   ];
   assert(capabilities.components.length === Object.keys(CATALOG_COMPONENT_REGISTRY).length && capabilities.icons.length === Object.keys(CATALOG_ICON_LIBRARY).length, "O manifesto declarativo diverge dos registros runtime.");
-  assert(capabilities.editor.increment === "05.54" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing && capabilities.capabilities.slotSpanControl, "O kit não preservou geometria, spans, coleções em lote e receitas oficiais no 05.54.");
+  assert(capabilities.editor.increment === "05.55" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing && capabilities.capabilities.slotSpanControl, "O kit não preservou geometria, spans, coleções em lote e receitas oficiais no 05.55.");
   assert(capabilities.capabilities.editorialTextControls && capabilities.capabilities.internalIconScale && capabilities.capabilities.distinctProductModes, "O kit não publicou a profundidade editorial do 05.18.");
   assert(capabilities.tableSchemas.length === 4 && capabilities.capabilities.batchTableSchemas && capabilities.capabilities.heroGridStripComposition, "O kit não publicou esquemas de tabela e composição focal.");
   assert(capabilities.separatorPresets.length === 5 && capabilities.capabilities.contextualTableRows && capabilities.capabilities.batchSeparators, "Ações contextuais e presets de separador não foram publicados no kit.");
@@ -147,7 +155,7 @@ const fileFrom = (name, bytes) => ({
   try { await new CatalogProjectPackageManager(missingStore, new CatalogAssetStorage()).buildPackage(); } catch (error) { missingBlocked = error.code === "ASSET_BYTES_MISSING"; }
   assert(missingBlocked, "O exportador criou um pacote supostamente portátil sem os bytes de um asset registrado.");
 
-  console.log("✓ Pacote, hashes, assets, CatalogSource, gates e AuthoringKit 1.6.1 validados.");
+  console.log("✓ Pacote, hashes, assets, CatalogSource, gates e AuthoringKit 1.7.0 validados.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;

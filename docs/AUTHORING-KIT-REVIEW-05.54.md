@@ -57,6 +57,10 @@ expectativas estruturais e benchmarks. O gate mede compatibilidade de categoria
 visual, repetição de ofertas, preços, benefícios e assets; não reprodução pixel
 a pixel e não bloqueia a aceitação single-page da V1.
 
+> Atualização 05.55: após aprovação explícita do complemento visual, a imagem
+> passou a ser versionada como material pedagógico e benchmark. Permanece não
+> bloqueante e não foi promovida a baseline.
+
 ## Limites preservados
 
 - uma página A4;

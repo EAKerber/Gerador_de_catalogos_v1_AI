@@ -2,7 +2,7 @@
 
 ## Finalidade
 
-Esta matriz rastreia a tradução da composição visual de referência para contratos editáveis. Ela mede cobertura estrutural e não afirma comparação pixel a pixel. A imagem-base fornecida está versionada em [`docs/reference/catalogo-base.jpeg`](reference/catalogo-base.jpeg) exclusivamente como evidência visual; ela não é persistida no documento JSON nem distribuída como asset do catálogo editado.
+Esta matriz rastreia a tradução da composição visual de referência para contratos editáveis. Ela mede cobertura estrutural e não afirma comparação pixel a pixel. As imagens fornecidas estão versionadas em [`docs/reference/catalogo-base.jpeg`](reference/catalogo-base.jpeg) e [`docs/reference/promocional-base.jpeg`](reference/promocional-base.jpeg) exclusivamente como evidência visual e material pedagógico; elas não são persistidas no documento JSON nem distribuídas como assets do catálogo editado.
 
 ## Legenda
 
@@ -15,7 +15,9 @@ Esta matriz rastreia a tradução da composição visual de referência para con
 
 | Região ou comportamento observado | Componente/contrato | Cobertura visual | Edição | Estado | Evidência atual |
 | --- | --- | --- | --- | --- | --- |
-| Imagem-base do catálogo | `docs/reference/catalogo-base.jpeg` | referência integral 1024×1536 | somente documentação | Coberto | baseline fornecida em 14/07/2026 e preservada no ZIP do projeto |
+| Imagem-base do catálogo | `docs/reference/catalogo-base.jpeg` | referência integral 1024×1536 | somente documentação | Coberto | referência fornecida em 14/07/2026; não é golden baseline |
+| Imagem promocional | `docs/reference/promocional-base.jpeg` | referência integral 1024×1536 | somente documentação | Benchmark | pós-V1, não bloqueante e não golden image |
+| Decomposição tutorial | `authoring-kit-visual/case-studies/*` | mapa direto/composição/aproximação/fora da V1 | índice visual | Coberto | complemento 05.55 distribuído apenas no kit autônomo |
 | Formato e proporção da folha | página A4 lógica 794×1123 | integral | grid, margem e escala | Coberto | página ajustada automaticamente à área disponível |
 | Faixa superior e identidade | `catalog-header` composto | integral | logo, sobretítulo, título, slots, separadores e tokens | Coberto | cinco peças editáveis, incluindo linhas horizontal e vertical atômicas |
 | Espaço de logo/arte | `art` com `role: "logo"` | imagem real ou placeholder | biblioteca, função, ajuste, ponto focal e token vetorial | Coberto | upload/reuso por `assetId`; bytes locais em IndexedDB |

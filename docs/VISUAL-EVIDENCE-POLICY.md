@@ -11,7 +11,8 @@ deva versionar uma imagem.
 ### 1. Referência externa de produto
 
 Material recebido para orientar linguagem editorial ou cobertura, como
-`docs/reference/catalogo-base.jpeg`.
+`docs/reference/catalogo-base.jpeg` e
+`docs/reference/promocional-base.jpeg`.
 
 Não é resultado do editor nem baseline de regressão. Deve registrar origem,
 papel no escopo e se é critério canônico ou somente benchmark.
@@ -22,6 +23,11 @@ No estado atual:
 - a segunda referência promocional é benchmark pós-V1;
 - nenhuma referência externa autoriza reprodução pixel a pixel ou novos tipos
   sem evidência de intenção exclusiva.
+
+No 05.55, as duas referências passam a acompanhar o complemento visual do
+Authoring Kit com seus hashes originais. Essa distribuição as promove a material
+pedagógico versionado, não a baselines. A referência técnica decomposta deixa de
+ser adequada ao ensaio cego; esse gate usa uma terceira referência inédita.
 
 ### 2. Baseline canônica
 

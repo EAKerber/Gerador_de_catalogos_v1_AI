@@ -18,8 +18,8 @@ const patterns = readJSON("authoring-kit/authoring-patterns.json");
 const packageTemplate = readJSON("authoring-kit/examples/catalog-project.json");
 const guideMarkdown = read("authoring-kit/GUIDE.md");
 
-assert(manifest.kitVersion === "1.6.1", "O kit revisado não possui identidade nova em relação ao 1.6.0 preservado na fixture 05.52.");
-assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.54"), "Metadados de proveniência do kit divergem.");
+assert(manifest.kitVersion === "1.7.0", "O kit com complemento visual não possui identidade própria em relação ao núcleo 1.6.1.");
+assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.55"), "Metadados de proveniência do kit divergem.");
 for (const field of ["guide", "capabilities", "featureInventory", "featureGuide", "featureGovernance", "authoringPatterns", "compiler", "runtime"]) {
   assert(fs.existsSync(path.join(root, "authoring-kit", manifest[field])), `Manifesto aponta para caminho ausente: ${field}.`);
 }
@@ -62,4 +62,4 @@ const promotionalProfile = readJSON("tests/fixtures/promotional-reference-profil
 assert(technicalHash === "4262171d057c6daedd47cd192600fa9f826d739552b4a4c84f38c917c010f2f6", "A referência técnica canônica mudou.");
 assert(promotionalProfile.source.sha256 === "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1e38cffd02b4ab586" && promotionalProfile.interpretation.blocking === false, "O limite do benchmark promocional mudou.");
 
-console.log("✓ Authoring Kit 1.6.1 possui proveniência única, padrões descobríveis, schemas executados e compilação isolada.");
+console.log("✓ Authoring Kit 1.7.0 preserva a revisão 05.54 e declara o complemento visual 05.55.");

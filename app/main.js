@@ -186,10 +186,19 @@
     }
     document.getElementById("exportPackageButton").addEventListener("click", event => exportPortablePackage(event, "draft"));
     document.getElementById("exportPublicationPackageButton").addEventListener("click", event => exportPortablePackage(event, "publication"));
-    document.getElementById("exportAuthoringKitButton").addEventListener("click", event => {
+    document.getElementById("exportAuthoringKitButton").addEventListener("click", async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
       document.getElementById("exportMenu").open = false;
-      projectPackage.exportAuthoringKit();
-      toast("CatalogAuthoringKit 1.6.1 exportado.");
+      try {
+        await projectPackage.exportAuthoringKit();
+        toast("CatalogAuthoringKit 1.7.0 + guia visual exportado.");
+      } catch (error) {
+        console.error("Falha ao exportar o kit de autoria completo.", error);
+        toast(`Kit não exportado: ${error.message}`);
+      } finally {
+        button.disabled = false;
+      }
     });
     document.getElementById("printButton").addEventListener("click", () => {
       if (printExport.printCurrentPage()) toast("No diálogo do navegador, escolha Salvar como PDF.");

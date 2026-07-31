@@ -1,21 +1,9 @@
 {
-  "kitFormat": "CatalogAuthoringKit",
-  "kitVersion": "1.6.1",
-  "editorIncrement": "05.54",
-  "defaultAssetPolicy": "assisted",
-  "guide": "GUIDE.md",
-  "capabilities": "capabilities.json",
-  "featureInventory": "feature-inventory.json",
-  "featureGuide": "feature-guide.json",
-  "featureGovernance": "feature-governance.json",
   "authoringPatterns": "authoring-patterns.json",
-  "schemas": [
-    "schemas/catalog-document.schema.json",
-    "schemas/catalog-project-package.schema.json",
-    "schemas/catalog-capabilities.schema.json",
-    "schemas/catalog-source.schema.json",
-    "schemas/catalog-generation-plan.schema.json"
-  ],
+  "capabilities": "capabilities.json",
+  "compiler": "compiler/compile-catalog.js",
+  "defaultAssetPolicy": "assisted",
+  "editorIncrement": "05.55",
   "examples": [
     "examples/minimal-document.json",
     "examples/catalog-project.json",
@@ -23,6 +11,27 @@
     "examples/catalog-generation-plan.json",
     "examples/reference-catalog-source.json"
   ],
-  "compiler": "compiler/compile-catalog.js",
-  "runtime": "runtime"
+  "featureGovernance": "feature-governance.json",
+  "featureGuide": "feature-guide.json",
+  "featureInventory": "feature-inventory.json",
+  "guide": "GUIDE.md",
+  "kitFormat": "CatalogAuthoringKit",
+  "kitVersion": "1.7.0",
+  "runtime": "runtime",
+  "schemas": [
+    "schemas/catalog-document.schema.json",
+    "schemas/catalog-project-package.schema.json",
+    "schemas/catalog-capabilities.schema.json",
+    "schemas/catalog-source.schema.json",
+    "schemas/catalog-generation-plan.schema.json"
+  ],
+  "visualCompanion": {
+    "distribution": "standalone-kit-only",
+    "format": "CatalogAuthoringVisualGuide",
+    "manifestPath": "visual-guide/manifest.json",
+    "manifestSha256": "dde67cd0b31b549ee6ea71b302d65dc4220f86be8eff7f10edb1ef98508026d9",
+    "requiredForCompilation": false,
+    "root": "visual-guide",
+    "version": "1.0.0"
+  }
 }
