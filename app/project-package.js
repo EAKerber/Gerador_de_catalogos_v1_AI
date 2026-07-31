@@ -294,6 +294,7 @@
         progressiveInspectorVocabulary: ["content", "layout", "visual", "advanced"],
         editorialTextControls: true,
         internalIconScale: true,
+        specificationDensityControls: true,
         distinctProductModes: true,
         independentProductArrangement: true
       }

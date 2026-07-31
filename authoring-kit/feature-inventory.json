@@ -319,6 +319,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.specificationDensityControls",
+      "governance": "active",
+      "governanceReason": "Expõe presets e ajustes discretos de gap e padding sem alterar o frame nem aceitar CSS arbitrário.",
+      "id": "specificationDensityControls",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.distinctProductModes",
       "governance": "active",
       "governanceReason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card.",
@@ -1313,8 +1320,23 @@
           "type": "text"
         },
         {
+          "label": "Densidade interna",
+          "path": "densityPreset",
+          "type": "select"
+        },
+        {
           "label": "Escala do ícone",
           "path": "iconScale",
+          "type": "select"
+        },
+        {
+          "label": "Espaço interno",
+          "path": "gap",
+          "type": "select"
+        },
+        {
+          "label": "Respiro interno",
+          "path": "padding",
           "type": "select"
         }
       ],
@@ -1599,6 +1621,7 @@
       "capabilityIds": [
         "editorialTextControls",
         "internalIconScale",
+        "specificationDensityControls",
         "distinctProductModes",
         "independentProductArrangement"
       ],
@@ -2331,13 +2354,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 46,
+    "capabilities": 47,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
     "curatedFlows": 17,
     "governance": {
-      "active": 31,
+      "active": 32,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

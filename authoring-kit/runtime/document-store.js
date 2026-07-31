@@ -3762,6 +3762,41 @@
       });
     }
 
+    specificationDensityProps(presetId = "auto") {
+      const presets = {
+        auto: { densityPreset: "auto", iconScale: 100, gap: "auto", padding: "auto" },
+        compact: { densityPreset: "compact", iconScale: 80, gap: 3, padding: 2 },
+        standard: { densityPreset: "standard", iconScale: 100, gap: 7, padding: 4 },
+        comfortable: { densityPreset: "comfortable", iconScale: 120, gap: 10, padding: 6 }
+      };
+      return clone(presets[presetId] || presets.auto);
+    }
+
+    setSpecificationDensity(componentId, presetId = "auto") {
+      const component = this.findComponent(componentId)?.component;
+      if (component?.type !== "specification") return false;
+      this.updateComponent(component.id, { props: this.specificationDensityProps(presetId) });
+      return this.findComponent(component.id).component;
+    }
+
+    setSpecificationDensityBatch(componentIds, presetId = "auto") {
+      const components = (componentIds || [])
+        .map(componentId => this.findComponent(componentId)?.component)
+        .filter(component => component?.type === "specification");
+      if (!components.length) return [];
+      const props = this.specificationDensityProps(presetId);
+      return this.runCompoundChange({
+        type: "specification-density-updated",
+        componentIds: components.map(component => component.id),
+        presetId: props.densityPreset
+      }, () => {
+        components.forEach(component => this.updateComponent(component.id, { props }));
+        this.state.editor.selectedComponentIds = components.map(component => component.id);
+        this.state.editor.selectedComponentId = components[components.length - 1].id;
+        return components;
+      });
+    }
+
     duplicateComponents(componentIds = this.getSelectedIds(), options = {}) {
       const selection = this.getBatchSelection(componentIds);
       if (!selection) return [];

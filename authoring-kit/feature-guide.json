@@ -125,13 +125,13 @@
       "intention": "Ajustar hierarquia visual e arranjo sem desmontar componentes",
       "access": "Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual",
       "preconditions": ["Componente compatível selecionado"],
-      "result": "Modo editorial, arranjo empilhado/lado a lado, escala e overflow mudam sem CSS arbitrário nem troca de tipo",
-      "example": "Manter modo Técnico com arte acima das especificações usando arrangement=stacked, ou reduzir um ícone para 80% dentro da mesma caixa",
-      "limits": ["Escalas são discretas", "Texto não aceita HTML", "Modo e arranjo não removem conteúdo da subárvore", "Automático preserva os breakpoints históricos"],
-      "capabilityIds": ["editorialTextControls", "internalIconScale", "distinctProductModes", "independentProductArrangement"],
+      "result": "Modo editorial, arranjo empilhado/lado a lado, escala, densidade de especificação e overflow mudam sem CSS arbitrário nem troca de tipo",
+      "example": "Manter modo Técnico com arte acima das especificações usando arrangement=stacked, ou aplicar densidade compacta às especificações sem redimensionar suas caixas",
+      "limits": ["Escalas, gap e padding são discretos", "Texto não aceita HTML", "Modo e arranjo não removem conteúdo da subárvore", "Automático preserva os breakpoints históricos"],
+      "capabilityIds": ["editorialTextControls", "internalIconScale", "specificationDensityControls", "distinctProductModes", "independentProductArrangement"],
       "componentTypes": ["text", "icon", "specification", "product-card"],
       "recipeIds": [],
-      "contracts": ["component.props.align", "component.props.iconScale", "component.presentation.mode", "component.presentation.overrides.arrangement"]
+      "contracts": ["component.props.align", "component.props.iconScale", "component.props.densityPreset", "component.props.gap", "component.props.padding", "component.presentation.mode", "component.presentation.overrides.arrangement"]
     },
     {
       "id": "content.bulk-collections",

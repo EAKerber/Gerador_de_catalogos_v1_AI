@@ -53,7 +53,7 @@
         return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><textarea data-prop-path="${escapeHtml(field.path)}">${escapeHtml(value)}</textarea></div>`;
       }
       if (field.type === "select") {
-        const options = (field.options || []).map(option => `<option value="${escapeHtml(option.value)}" ${option.value === value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("");
+        const options = (field.options || []).map(option => `<option value="${escapeHtml(option.value)}" ${String(option.value) === String(value) ? "selected" : ""} ${option.disabled ? "disabled" : ""}>${escapeHtml(option.label)}</option>`).join("");
         const valueType = (field.options || []).length && field.options.every(option => typeof option.value === "number") ? "number" : "text";
         return `<div class="inspector-field${full}"><label>${escapeHtml(field.label)}</label><select data-prop-path="${escapeHtml(field.path)}" data-prop-type="${valueType}">${options}</select></div>`;
       }
@@ -497,6 +497,7 @@
       const records = components.map(component => this.store.findComponent(component.id)).filter(Boolean);
       const contextLabel = records[0]?.parent?.name || this.store.getPage().name;
       const cards = Array.from(new Map(components.map(component => this.store.getProductCard(component.id)).filter(Boolean).map(card => [card.id, card])).values());
+      const specifications = components.filter(component => component.type === "specification");
       const tables = this.store.getTablesForComponents(components);
       const tableSchemas = this.store.getTableSchemas();
       const accentEligible = components.filter(component => window.CATALOG_COMPONENT_REGISTRY[component.type]?.styleFields?.includes("accentColor"));
@@ -626,6 +627,12 @@
               <div class="inspector-field inspector-field--full"><label>Arranjo</label><select data-batch-presentation="arrangement">${mixedOption(presentationArrangementValue)}${Object.entries(window.CatalogPresentations?.ARRANGEMENTS || {}).map(([value, item]) => `<option value="${escapeHtml(value)}" ${presentationArrangementValue === value ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
             </div>
             <div class="inspector-actions inspector-actions--grid"><button type="button" class="inspector-action--primary" data-batch-presentation-apply ${presentationPreview.changedCount ? "" : "disabled"}>Aplicar apresentação</button><button type="button" data-batch-presentation-reset ${Object.keys(presentationDraft).length ? "" : "disabled"}>Descartar rascunho</button></div>
+          </section>` : ""}
+          ${specifications.length ? `<section class="inspector-section">
+            <div class="inspector-section__heading"><h3 class="inspector-section__title">Densidade das especificações</h3><span>${specifications.length} elegível(is)</span></div>
+            <p class="inspector-note">Aplica escala do ícone, espaço e respiro internos sem alterar as caixas externas.</p>
+            <div class="inspector-field inspector-field--full"><label>Preset</label><select data-batch-specification-density><option value="auto">Automática · acompanha o card</option><option value="compact">Compacta</option><option value="standard">Padrão</option><option value="comfortable">Confortável</option></select></div>
+            <button type="button" class="inspector-action--primary inspector-action--wide" data-batch-specification-density-apply>Aplicar a ${specifications.length} especificação(ões)</button>
           </section>` : ""}
           ${tables.length ? `<section class="inspector-section">
             <div class="inspector-section__heading"><h3 class="inspector-section__title">Esquema das tabelas</h3><span>${tables.length} elegível(is)</span></div>
@@ -942,6 +949,11 @@
       } else if (target.matches('[data-prop-path="presetId"]') && component.type === "separator") {
         const preset = window.CATALOG_SEPARATOR_PRESETS?.[target.value];
         if (preset) this.update({ props: { presetId: preset.id, thickness: preset.thickness, cap: preset.cap, marker: preset.marker } });
+      } else if (target.matches('[data-prop-path="densityPreset"]') && component.type === "specification") {
+        this.store.setSpecificationDensity(component.id, target.value);
+      } else if (target.matches('[data-prop-path="iconScale"], [data-prop-path="gap"], [data-prop-path="padding"]') && component.type === "specification") {
+        const value = target.dataset.propType === "number" ? Number(target.value) : target.value;
+        this.update({ props: { [target.dataset.propPath]: value, densityPreset: "custom" } });
       } else if (target.matches("[data-prop-path]")) {
         const value = target.dataset.propType === "number" ? Number(target.value) : target.dataset.propType === "checkbox" ? target.checked : target.value;
         this.update({ props: { [target.dataset.propPath]: value } });
@@ -1040,6 +1052,10 @@
         else if (event.target.closest("[data-batch-presentation-reset]")) {
           this.batchPresentationDraft = null;
           this.render();
+        }
+        else if (event.target.closest("[data-batch-specification-density-apply]")) {
+          const presetId = this.root.querySelector("[data-batch-specification-density]")?.value || "auto";
+          this.store.setSpecificationDensityBatch(selectedIds, presetId);
         }
         else if (event.target.closest("[data-batch-duplicate]")) this.store.duplicateComponents(selectedIds);
         else if (event.target.closest("[data-batch-delete]")) this.store.deleteComponents(selectedIds);
