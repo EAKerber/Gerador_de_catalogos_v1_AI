@@ -6,6 +6,7 @@
 
   function isCompactHero(component) {
     if (component?.type !== "product-card" || component.presentation?.mode !== "hero") return false;
+    if (window.CatalogPresentations?.effectiveArrangement?.(component) === "horizontal") return false;
     const responsiveState = component.presentation?.responsiveState;
     if (responsiveState === "wide") return false;
     if (responsiveState === "compact") return true;

@@ -39,6 +39,7 @@ let browser;
   });
 
   await page.locator('[data-inspector-tab="content"]').click();
+  await page.locator(".card-presentation-secondary > summary").click();
 
   const capture = async () => page.evaluate(cardId => {
     const card = CatalogEditor.store.findComponent(cardId)?.component;

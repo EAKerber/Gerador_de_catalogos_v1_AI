@@ -40,6 +40,7 @@ let browser;
   });
 
   await page.locator('[data-inspector-tab="content"]').click();
+  await page.locator(".card-presentation-secondary > summary").click();
   const modeSelect = page.locator('[data-presentation-path="mode"]');
   assert(await modeSelect.locator('option[value="data-only"]').count() === 1, "O inspetor não oferece o modo Dados.");
   assert(await page.locator('[data-presentation-path="presetId"] option[value="product-data-only"]').count() === 0, "Foi criado um preset redundante para data-only.");

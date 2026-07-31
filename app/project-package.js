@@ -244,6 +244,7 @@
         manifestVersion: window.CatalogPresentations?.VERSION || "1.0.0",
         modes: clone(window.CatalogPresentations?.MODES || {}),
         densities: clone(window.CatalogPresentations?.DENSITIES || {}),
+        arrangements: clone(window.CatalogPresentations?.ARRANGEMENTS || {}),
         presets: clone(window.CatalogPresentations?.PRESETS || {})
       },
       tokens: clone(window.CATALOG_EDITOR_TOKENS || {}),
@@ -293,7 +294,8 @@
         progressiveInspectorVocabulary: ["content", "layout", "visual", "advanced"],
         editorialTextControls: true,
         internalIconScale: true,
-        distinctProductModes: true
+        distinctProductModes: true,
+        independentProductArrangement: true
       }
     };
     manifest = window.CatalogComponentIntentManifestContract?.enhance?.(manifest) || manifest;

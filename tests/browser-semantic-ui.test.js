@@ -51,6 +51,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
     CatalogEditor.store.setSelection(cardId);
   }, ids.cardId);
   await page.locator('[data-inspector-tab="content"]').click();
+  await page.locator(".card-presentation-secondary > summary").click();
   await page.locator('[data-presentation-path="presetId"]').selectOption("product-technical");
   const presentation = await page.evaluate(cardId => CatalogEditor.store.findComponent(cardId).component.presentation, ids.cardId);
   assert(presentation.mode === "technical" && presentation.density === "compact", "O preset não atualizou modo e densidade.");

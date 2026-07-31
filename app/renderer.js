@@ -182,6 +182,9 @@
       const definition = registry()[component.type];
       if (!definition) return "";
       const presentation = window.CatalogPresentations?.normalizePresentation?.(component.presentation, component.type) || { mode: "standard", density: "standard", presetId: null };
+      const presentationArrangement = component.type === "product-card"
+        ? window.CatalogPresentations?.effectiveArrangement?.(component) || "horizontal"
+        : "none";
       const selectedIds = new Set(state.editor.selectedComponentIds || (state.editor.selectedComponentId ? [state.editor.selectedComponentId] : []));
       const selected = selectedIds.has(component.id);
       const contextId = state.editor.editingContextId;
@@ -216,6 +219,7 @@
                  data-layout-managed="${String(component.layoutItem?.managed !== false)}"
                  data-presentation-mode="${escapeHtml(component.type === "product-card" ? presentation.mode : "none")}"
                  data-presentation-density="${escapeHtml(component.type === "product-card" ? presentation.density : "standard")}"
+                 data-presentation-arrangement="${escapeHtml(presentationArrangement)}"
                  data-presentation-preset="${escapeHtml(component.type === "product-card" ? presentation.presetId || "" : "")}"
                  style="${componentStyle(component)};z-index:${index + 1}">
           <span class="editor-component__label">${escapeHtml(component.name || definition.label)}</span>

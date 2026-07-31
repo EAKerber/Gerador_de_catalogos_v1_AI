@@ -324,6 +324,13 @@
       "governanceReason": "Faz os modos existentes cumprirem sua intenção visual sem criar tipos paralelos de card.",
       "id": "distinctProductModes",
       "value": true
+    },
+    {
+      "contract": "CatalogCapabilities.capabilities.independentProductArrangement",
+      "governance": "active",
+      "governanceReason": "Separa prioridade editorial de orientação estrutural sem criar um sexto modo nem ampliar o schema do documento.",
+      "id": "independentProductArrangement",
+      "value": true
     }
   ],
   "componentIntents": {
@@ -1592,7 +1599,8 @@
       "capabilityIds": [
         "editorialTextControls",
         "internalIconScale",
-        "distinctProductModes"
+        "distinctProductModes",
+        "independentProductArrangement"
       ],
       "componentTypes": [
         "text",
@@ -2027,6 +2035,20 @@
   "inventoryFormat": "CatalogFeatureInventory",
   "inventoryVersion": "1.0.0",
   "presentations": {
+    "arrangements": {
+      "auto": {
+        "description": "Empilha em cards compactos e no modo Variações; nos demais cards amplos usa lado a lado.",
+        "label": "Automático"
+      },
+      "horizontal": {
+        "description": "Mantém arte e especificações em colunas, independentemente do modo editorial.",
+        "label": "Lado a lado"
+      },
+      "stacked": {
+        "description": "Coloca a arte acima e as especificações abaixo, independentemente do modo editorial.",
+        "label": "Empilhado"
+      }
+    },
     "densities": {
       "comfortable": {
         "fontScale": 1.08,
@@ -2050,7 +2072,7 @@
         "padding": 12
       }
     },
-    "manifestVersion": "1.1.0",
+    "manifestVersion": "1.2.0",
     "modes": {
       "data-only": {
         "description": "Prioriza tabela e conteúdo textual.",
@@ -2309,13 +2331,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 45,
+    "capabilities": 46,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
     "curatedFlows": 17,
     "governance": {
-      "active": 30,
+      "active": 31,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

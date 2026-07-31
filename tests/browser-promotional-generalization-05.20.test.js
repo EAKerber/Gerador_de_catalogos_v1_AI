@@ -114,6 +114,14 @@ async function setFrame(frame) {
 
 async function setPresentation(presentation) {
   await activateTab("content");
+  const usesSecondaryOptions = ["density", "responsiveState"].some(key => presentation[key] != null);
+  if (usesSecondaryOptions) {
+    const details = page.locator(".card-presentation-secondary").first();
+    if (!await details.evaluate(element => element.open)) {
+      await act("Abrir opções avançadas de apresentação", () => details.locator(":scope > summary").click());
+      await wait(20);
+    }
+  }
   for (const key of ["mode", "density", "responsiveState"]) {
     if (presentation[key] == null) continue;
     await changeControl(`[data-presentation-path="${key}"]`, presentation[key], `Definir apresentação ${key}`);

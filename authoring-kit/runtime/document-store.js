@@ -1591,7 +1591,12 @@
     }
 
     isAdaptiveProductCard(component, modes = ADAPTIVE_PRODUCT_MODES) {
-      return component?.type === "product-card" && modes.includes(component.presentation?.mode);
+      if (component?.type !== "product-card") return false;
+      if (modes.includes(component.presentation?.mode)) return true;
+      const defaultAdaptiveSet = modes.length === ADAPTIVE_PRODUCT_MODES.length
+        && ADAPTIVE_PRODUCT_MODES.every(mode => modes.includes(mode));
+      return defaultAdaptiveSet
+        && window.CatalogPresentations?.arrangementOverride?.(component) === "stacked";
     }
 
     adaptiveProductCardFor(componentId, modes = ADAPTIVE_PRODUCT_MODES) {
@@ -3709,7 +3714,12 @@
       const requested = clone(patch || {});
       const items = cards.map(card => {
         const before = window.CatalogPresentations?.normalizePresentation?.(card.presentation, card.type) || clone(card.presentation || {});
-        const after = window.CatalogPresentations?.normalizePresentation?.({ ...before, ...requested }, card.type) || { ...before, ...requested };
+        const candidate = {
+          ...before,
+          ...requested,
+          overrides: { ...(before.overrides || {}), ...(requested.overrides || {}) }
+        };
+        const after = window.CatalogPresentations?.normalizePresentation?.(candidate, card.type) || candidate;
         const currentMinimum = this.getReflowMinimum(card, card.frame);
         const preview = clone(card);
         preview.presentation = after;
@@ -4266,7 +4276,13 @@
     setComponentPresentation(componentId, patch = {}) {
       const component = this.getProductCard(componentId);
       if (!component) return null;
-      component.presentation = window.CatalogPresentations?.normalizePresentation?.({ ...(component.presentation || {}), ...patch }, component.type) || { ...(component.presentation || {}), ...patch };
+      const current = window.CatalogPresentations?.normalizePresentation?.(component.presentation, component.type) || { ...(component.presentation || {}) };
+      const next = {
+        ...current,
+        ...patch,
+        overrides: { ...(current.overrides || {}), ...(patch.overrides || {}) }
+      };
+      component.presentation = window.CatalogPresentations?.normalizePresentation?.(next, component.type) || next;
       const record = this.findComponent(component.id);
       this.ensureContainerMinimum(component, record?.parent?.id || null);
       reflowTree(component);

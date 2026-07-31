@@ -23,6 +23,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   });
 
   page.once("dialog", dialog => dialog.accept("Card reutilizável"));
+  await page.locator('[data-inspector-tab="structure"]').click();
   await page.locator("[data-save-component-template]").click();
   const template = page.locator('[data-saved-components] [data-template-id]');
   assert(await template.isVisible(), "O componente salvo não apareceu em Meus componentes.");

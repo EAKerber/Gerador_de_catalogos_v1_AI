@@ -12,6 +12,7 @@
   }
 
   function isCompact(component) {
+    if (window.CatalogPresentations?.effectiveArrangement?.(component) === "horizontal") return false;
     const state = component?.presentation?.responsiveState;
     if (state === "compact") return true;
     if (state === "wide") return false;

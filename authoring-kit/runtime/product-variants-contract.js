@@ -7,8 +7,10 @@
   const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   const slotChildren = (component, slotName) => (component?.children || []).filter(child => child.slot?.name === slotName);
 
-  function isVariants(component) {
-    return component?.type === "product-card" && component.presentation?.mode === "variants";
+  function usesStackedContract(component) {
+    if (component?.type !== "product-card") return false;
+    const override = window.CatalogPresentations?.arrangementOverride?.(component) || "auto";
+    return override === "stacked" || (override === "auto" && component.presentation?.mode === "variants");
   }
 
   function isCompact(component) {
@@ -102,7 +104,7 @@
 
     function frames(component) {
       const raw = rawFrames(component);
-      if (!isVariants(component)) return raw;
+      if (!usesStackedContract(component)) return raw;
       const required = requirements(component);
       if (!required.artPresent && !required.specificationsPresent) return raw;
 
@@ -147,7 +149,7 @@
       const base = typeof originalMeasureMinimum === "function"
         ? originalMeasureMinimum(component, proposedFrame) || {}
         : card.minSize || {};
-      if (!isVariants(component)) return base;
+      if (!usesStackedContract(component)) return base;
       const preview = { ...component, frame: { ...(component.frame || {}), ...(proposedFrame || {}) } };
       const raw = rawFrames(preview);
       const required = requirements(preview);
@@ -189,7 +191,8 @@
     const registry = window.CATALOG_COMPONENT_REGISTRY || {};
     const slots = registry["product-card"]?.container?.slots || [];
     return {
-      variants: isVariants(component),
+      variants: component?.presentation?.mode === "variants",
+      stacked: usesStackedContract(component),
       compact: isCompact(component),
       artMinimum: artMinimumHeight(component, registry),
       specificationsMinimum: specificationsMinimumHeight(component, registry, slots.find(slot => slot.name === "specifications")),

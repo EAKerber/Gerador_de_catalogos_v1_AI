@@ -332,11 +332,13 @@ const legendPlans = [
 
   await selectLayer(ids.cardIds[0], "Selecionar card 01");
   await inspectorTab("content");
+  await ensureDetails(".card-presentation-secondary", "Card 01: abrir opções avançadas");
   await select(page.locator('[data-presentation-path="presetId"]'), "product-hero", "Card 01: preset de destaque", { surface: "inspector" });
   await select(page.locator('[data-presentation-path="responsiveState"]'), "wide", "Card 01: forçar layout amplo", { surface: "inspector" });
   for (const index of [3, 6]) {
     await selectLayer(ids.cardIds[index], `Selecionar card ${index + 1}`);
     await inspectorTab("content");
+    await ensureDetails(".card-presentation-secondary", `Card ${index + 1}: abrir opções avançadas`);
     await select(page.locator('[data-presentation-path="presetId"]'), "product-variants", `Card ${index + 1}: preset de variações`, { surface: "inspector" });
   }
 

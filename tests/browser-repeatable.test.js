@@ -63,6 +63,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(caption.value === caption.text && caption.position === "overlay", "A legenda vinculada não foi projetada corretamente.");
 
   await page.evaluate(cardId => CatalogEditor.store.setSelection(cardId), ids.cardId);
+  await page.locator('[data-inspector-tab="structure"]').click();
   await page.locator("[data-duplicate-direction]").selectOption("right");
   await page.locator("[data-duplicate-mode]").selectOption("gap");
   await page.locator("[data-duplicate-distance]").fill("10");
