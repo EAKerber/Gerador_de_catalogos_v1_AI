@@ -1,0 +1,36 @@
+name: Prune integrated branches 05.54
+
+on:
+  push:
+    branches:
+      - agent/authoring-kit-review-05.54
+
+permissions:
+  contents: write
+
+jobs:
+  prune:
+    if: github.repository == 'EAKerber/Gerador_de_catalogos_v1_AI' && github.ref_name == 'agent/authoring-kit-review-05.54'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete verified integrated branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          for branch in \
+            "agent/table-column-headers-05.53"
+          do
+            case "$branch" in
+              agent/*) ;;
+              *) exit 64 ;;
+            esac
+            git push "$remote" --delete "$branch"
+          done
+          branch="agent/authoring-kit-review-05.54"
+          case "$branch" in
+            agent/*) ;;
+            *) exit 64 ;;
+          esac
+          git push "$remote" --delete "$branch"
