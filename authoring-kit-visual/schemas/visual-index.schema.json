@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://catalogo.local/schemas/catalog-authoring-visual-index.schema.json",
+  "title": "CatalogAuthoringVisualIndex",
+  "type": "object",
+  "required": ["indexFormat", "indexVersion", "editorIncrement", "coreKitVersion", "entrypoint", "entries"],
+  "properties": {
+    "indexFormat": { "const": "CatalogAuthoringVisualIndex" },
+    "indexVersion": { "const": "1.0.0" },
+    "editorIncrement": { "type": "string", "minLength": 1 },
+    "coreKitVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "entrypoint": { "type": "string", "minLength": 1 },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "title", "intent", "guidePath", "previewPath", "artifactPaths", "featureGuideIds", "capabilityIds", "componentTypes", "recipeIds"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9.-]+$" },
+          "kind": { "enum": ["interface-map", "tutorial", "cookbook", "case-study", "troubleshooting"] },
+          "title": { "type": "string", "minLength": 1 },
+          "intent": { "type": "string", "minLength": 1 },
+          "guidePath": { "type": "string", "minLength": 1 },
+          "previewPath": { "type": "string", "minLength": 1 },
+          "artifactPaths": { "type": "array", "items": { "type": "string" } },
+          "featureGuideIds": { "type": "array", "items": { "type": "string" } },
+          "capabilityIds": { "type": "array", "items": { "type": "string" } },
+          "componentTypes": { "type": "array", "items": { "type": "string" } },
+          "recipeIds": { "type": "array", "items": { "type": "string" } }
+          ,"provenance": {
+            "type": "object",
+            "properties": {
+              "sourceIncrement": { "type": "string" },
+              "verifiedAgainstIncrement": { "type": "string" },
+              "viewport": { "type": "string" },
+              "baseline": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,6 +1,12 @@
-# CatalogAuthoringKit 1.6.1
+# CatalogAuthoringKit 1.7.0
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
+
+O ZIP autônomo acompanha `visual-guide/START-HERE.md`, com mapa da interface,
+sete microtutoriais, cookbook, troubleshooting e estudos de caso. Use essa rota
+visual para reconhecer a intenção e volte a este núcleo para resolver IDs,
+propriedades, schemas e gates. O complemento não é necessário para compilar e
+não é duplicado dentro de cada pacote de catálogo.
 
 ## Resultado deste incremento
 
@@ -114,7 +120,7 @@ Use `specification` para um atributo técnico curto ligado ao produto; use a rec
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.6.1
+## Limites 1.7.0
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

@@ -1,0 +1,279 @@
+{
+  "coreKit": {
+    "format": "CatalogAuthoringKit",
+    "relativeRoot": "..",
+    "version": "1.7.0"
+  },
+  "editorIncrement": "05.55",
+  "entrypoint": "START-HERE.md",
+  "files": [
+    {
+      "mimeType": "image/svg+xml",
+      "path": "case-studies/catalogo-tecnico/decomposition.svg",
+      "role": "case-study",
+      "sha256": "0924cec833d16ce5524824f5c3c2c501d314b5881037b845f3835483efb6bccb",
+      "size": 2758
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "case-studies/catalogo-tecnico/README.md",
+      "role": "case-study",
+      "sha256": "5e07baf6ca253ff8493fb2f5e82d10604354153c1b78f67ba6dccc12bf3b3d01",
+      "size": 1011
+    },
+    {
+      "mimeType": "image/jpeg",
+      "path": "case-studies/catalogo-tecnico/reference.jpeg",
+      "role": "case-study",
+      "sha256": "4262171d057c6daedd47cd192600fa9f826d739552b4a4c84f38c917c010f2f6",
+      "size": 362050
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "case-studies/promocional/decomposition.svg",
+      "role": "case-study",
+      "sha256": "46f54aa4832b8eab4cce70bd60870da952ad73d82352ae54f33c25f39c5d9ce1",
+      "size": 2761
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "case-studies/promocional/README.md",
+      "role": "case-study",
+      "sha256": "a7126ecef3aa540b69602284401ddc41a9f93848a762346c55d62dd10bea9499",
+      "size": 1038
+    },
+    {
+      "mimeType": "image/jpeg",
+      "path": "case-studies/promocional/reference.jpeg",
+      "role": "case-study",
+      "sha256": "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1e38cffd02b4ab586",
+      "size": 262404
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "cookbook/factual-image-fit.svg",
+      "role": "cookbook",
+      "sha256": "3dc57fc65f379c7c28134934e9142b206756b08bf7d39c0379cd67ec1b700904",
+      "size": 2629
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "cookbook/footer-span.svg",
+      "role": "cookbook",
+      "sha256": "7a5a84b3c8dc837713f6927cd7422d11de10dd61c9725e6f4d6729fdbef1e97c",
+      "size": 2659
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "cookbook/product-arrangements.svg",
+      "role": "cookbook",
+      "sha256": "046b34b29af721c4857d3aa5716fe67e14aebd4945041617f41f60c44a8a6adc",
+      "size": 2682
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "cookbook/README.md",
+      "role": "cookbook",
+      "sha256": "b2b496857982179b091c74ecb56991f65286acdd4d1bdcfd8cd9e40e0b1a079c",
+      "size": 539
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "cookbook/semantic-pieces.svg",
+      "role": "cookbook",
+      "sha256": "a7d1ca4fb541f41139c0eb535c7197bd366505432e577058c923270d9f2c3152",
+      "size": 2665
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "cookbook/table-columns.svg",
+      "role": "cookbook",
+      "sha256": "f15807d8acb65c42424d1fded14d2a39c00e772d6448fd43ed2b9cc4c3f7da03",
+      "size": 2672
+    },
+    {
+      "mimeType": "application/json",
+      "path": "examples/first-page.document.json",
+      "role": "executable-example",
+      "sha256": "dc5457a0ca82fe91dc44929e02dccb330f694c9510087266f66a86c5a87cdfe4",
+      "size": 215008
+    },
+    {
+      "mimeType": "application/json",
+      "path": "examples/first-page.report.json",
+      "role": "executable-example",
+      "sha256": "1adce6056575bc33e197feba47b83c44dffbfdd1d2a3c5d0b36aafdaf3e54608",
+      "size": 705
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "interface/editor-map.svg",
+      "role": "interface-reference",
+      "sha256": "904eed28c4876239c279c3d87c0d7bcf4019f3d8cefe2eacdd5e976dfc23fc26",
+      "size": 2566
+    },
+    {
+      "mimeType": "image/png",
+      "path": "interface/editor-reference.png",
+      "role": "interface-reference",
+      "sha256": "3474d0092b4567263821a7db54f1e5bcf9c98c24f4150e970b461890623b0cd0",
+      "size": 259482
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "interface/README.md",
+      "role": "interface-reference",
+      "sha256": "d8ddbab45ad28f8ed7cad915766b39380e1fb6b75d56a083d8f721d775c32b6b",
+      "size": 574
+    },
+    {
+      "mimeType": "application/json",
+      "path": "schemas/visual-index.schema.json",
+      "role": "schema",
+      "sha256": "8b5a97cf5b7578a08fa99aad06cf8d052782078474c9b09d4b62af3e06e0c845",
+      "size": 2215
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "START-HERE.md",
+      "role": "entrypoint",
+      "sha256": "d2f882cf821d3f5fa01cdb99fe839361830fdf9033a1dd8e45e110efbf1ab3f0",
+      "size": 2164
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "troubleshooting/GATES.md",
+      "role": "troubleshooting",
+      "sha256": "c50646fb0a2c9b892debec03a36d83ae470e630c9acdc54a74b3b85a9053a529",
+      "size": 1093
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "troubleshooting/gates.svg",
+      "role": "troubleshooting",
+      "sha256": "4bbbe46615abfc045639b920e2fdb2456710530266087634d89b75d363424b3f",
+      "size": 2945
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/01-first-page/README.md",
+      "role": "tutorial",
+      "sha256": "5a1ba048372912c4fac1270359ba7ee32bbedd78c34f24473d577e7e334288c9",
+      "size": 915
+    },
+    {
+      "mimeType": "image/png",
+      "path": "tutorials/01-first-page/reference-canvas-05.17.png",
+      "role": "tutorial",
+      "sha256": "2662ee6cd50b5bafcbb641a4518246b4e03d6c87fafb84073d0a204c7d1cf731",
+      "size": 140856
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/01-first-page/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "902aa38eaf122eef0b42ed5097b28da6f08a4822029aa668ae8695ca51cf8474",
+      "size": 2827
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/02-factual-assets/README.md",
+      "role": "tutorial",
+      "sha256": "d3cab9a9d46eb8c0894360121ff43727838561a3d9cb5c96062d740328e3c56d",
+      "size": 654
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/02-factual-assets/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "e2bef18d103477917bf2fd2bd41d51d086875b2235daf1e170832951982862a4",
+      "size": 2877
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/03-product-arrangement/README.md",
+      "role": "tutorial",
+      "sha256": "54036dae55ff4fefcf284f27d5fc82fa5ace4cf6c92f23f588ef6addd0c78f88",
+      "size": 600
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/03-product-arrangement/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "94b2c99d58c20ac73782796958c221fb4daaba3205cbe4acbc6a6428d2696a03",
+      "size": 2559
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/04-table-columns/README.md",
+      "role": "tutorial",
+      "sha256": "7b8954a170fe31751ca031f9ced828d9c5e394c88111fcbfb1f472f845b24a36",
+      "size": 599
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/04-table-columns/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "40721873a97a137266ad8d8d67d0a0b58a268836fc7c3ae1c02e442e5a640153",
+      "size": 2879
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/05-variants-legends/README.md",
+      "role": "tutorial",
+      "sha256": "bd42394422ef713223d2e6e724c3c4db221ff68144109c492870c333913e5476",
+      "size": 672
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/05-variants-legends/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "86aa74a2dee23914c40730bd479c4daf0e19933ddc7fa5f60786c7f8439fb207",
+      "size": 2902
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/06-footer-span/README.md",
+      "role": "tutorial",
+      "sha256": "05d67607dd9e16acd296cd43dcbcdbc8c1a810e2e67e9be7fabdf8e638360013",
+      "size": 570
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/06-footer-span/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "ba2b63176ffc60f1b5403a187438816697491939c7e5e20ef89caf4dd9612998",
+      "size": 2899
+    },
+    {
+      "mimeType": "text/markdown",
+      "path": "tutorials/07-delivery-gates/README.md",
+      "role": "tutorial",
+      "sha256": "f53bd6efd7afba0e18011506a74cdaf917cabf4ef83667b0e6927e20b12411ad",
+      "size": 622
+    },
+    {
+      "mimeType": "image/svg+xml",
+      "path": "tutorials/07-delivery-gates/walkthrough.svg",
+      "role": "tutorial",
+      "sha256": "2f021c42dfcd86e3405023eb2c5439228f3ea6565983df2e9149b8410f55887e",
+      "size": 2853
+    },
+    {
+      "mimeType": "application/json",
+      "path": "visual-index.json",
+      "role": "index",
+      "sha256": "e079a61aff6506131562e93d4783a68d198ee0b7765a45eac2afc13ab552c40d",
+      "size": 10696
+    }
+  ],
+  "guideFormat": "CatalogAuthoringVisualGuide",
+  "guideVersion": "1.0.0",
+  "index": "visual-index.json",
+  "policy": {
+    "blindTrialReference": "third-unseen-reference",
+    "embeddedInCatalogPackages": false,
+    "imagesAreGoldenBaselines": false,
+    "includedInStandaloneAuthoringKitExport": true
+  }
+}

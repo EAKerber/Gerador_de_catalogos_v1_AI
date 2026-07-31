@@ -1,16 +1,16 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.54",
+  "editorIncrement": "05.55",
   "v1State": {
     "scope": "single-page",
     "status": "stable",
     "closedByIncrement": "05.23",
-    "currentIncrement": "05.54",
+    "currentIncrement": "05.55",
     "nextExpansion": "paused",
     "activeFocus": [
-      "practical-validation",
-      "authoring-kit-reliability",
+      "blind-trial-readiness",
+      "visual-authoring-discovery",
       "documentation-consistency"
     ]
   },

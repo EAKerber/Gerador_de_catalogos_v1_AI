@@ -1,7 +1,7 @@
 {
   "patternsFormat": "CatalogAuthoringPatterns",
   "patternsVersion": "1.0.0",
-  "editorIncrement": "05.54",
+  "editorIncrement": "05.55",
   "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.0.0.",
   "patterns": [
     {

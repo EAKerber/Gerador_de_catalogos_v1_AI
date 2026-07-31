@@ -696,7 +696,7 @@ locks, multipágina, colaboração, IA ou frentes congeladas.
 
 ## Incremento 05.54 — Revisão integral do Authoring Kit
 
-Em validação sobre `development`:
+Concluído e integrado em `development` pela PR #37:
 
 - dar identidade `1.6.1` ao kit posterior à fixture 05.52;
 - alinhar proveniência em 05.54;
@@ -705,6 +705,18 @@ Em validação sobre `development`:
 - distinguir template de pacote, compilação e empacotamento;
 - executar JSON Schemas Draft 2020-12 na suíte Node;
 - preservar `CatalogDocument 1.16.0`, runtime visual e limites single-page.
+
+## Incremento 05.55 — Guia visual do Authoring Kit
+
+Em validação sobre `development`:
+
+- dar identidade `1.7.0` ao núcleo que declara o complemento visual;
+- distribuir tutoriais e referências sem embutir binários no bundle textual;
+- publicar índice pesquisável por intenção, capacidade, componente e receita;
+- reunir núcleo e guia apenas no ZIP autônomo do Authoring Kit;
+- preservar pacotes de catálogo leves, `CatalogDocument 1.16.0` e runtime
+  visual;
+- usar terceira referência inédita no ensaio cego final.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

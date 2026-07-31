@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "compilerVersion": "1.0.0",
+  "sourceVersion": "1.1.0",
+  "targetVersion": "1.16.0",
+  "summary": {
+    "pages": 1,
+    "components": 87,
+    "products": 7,
+    "templates": 0,
+    "assets": 0,
+    "tableRows": 16,
+    "collisions": 0,
+    "overflows": 0,
+    "actionsRequired": 3
+  },
+  "decisions": [],
+  "repairs": [],
+  "workflow": {
+    "editorImportActions": 3,
+    "unresolvedCorrections": 0,
+    "note": "editorImportActions mede o fluxo da interface; não representa pendências do catálogo."
+  },
+  "issues": [
+    {
+      "severity": "info",
+      "code": "VALIDATION_READY",
+      "message": "Documento estrutural, referencial, editorial e visualmente válido."
+    }
+  ]
+}

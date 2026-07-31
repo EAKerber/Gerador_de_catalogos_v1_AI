@@ -7,7 +7,7 @@
   "createdAt": "2026-07-14T00:00:00.000Z",
   "generator": {
     "name": "Agente de catálogo",
-    "increment": "05.54",
+    "increment": "05.55",
     "schemaVersion": "1.16.0"
   },
   "project": {
@@ -37,7 +37,8 @@
   "authoringKit": {
     "root": "authoring-kit",
     "manifestPath": "authoring-kit/manifest.json",
-    "version": "1.6.1"
+    "version": "1.7.0",
+    "visualGuideIncluded": false
   },
   "report": {
     "path": "reports/export-report.json"
