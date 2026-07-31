@@ -97,6 +97,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.slotSpanControl",
+      "governance": "active",
+      "governanceReason": "Ocupação de múltiplas posições já existe no documento e precisa ser descobrível sem leitura do runtime.",
+      "id": "slotSpanControl",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.semanticColorLegends",
       "governance": "maintain",
       "governanceReason": "Preservar vínculos existentes; regras avançadas ficam congeladas.",
@@ -1610,6 +1617,22 @@
     },
     {
       "capabilityIds": [
+        "officialSectionRecipes",
+        "semanticColorLegends",
+        "specificationDensityControls"
+      ],
+      "componentTypes": [
+        "specification",
+        "layout-container",
+        "legend-item"
+      ],
+      "id": "content.semantic-pieces",
+      "recipeIds": [
+        "fact"
+      ]
+    },
+    {
+      "capabilityIds": [
         "multiSelection",
         "batchAlignment",
         "batchGeometry",
@@ -1623,6 +1646,17 @@
         "separator"
       ],
       "id": "layout.multi-selection",
+      "recipeIds": []
+    },
+    {
+      "capabilityIds": [
+        "slotSpanControl"
+      ],
+      "componentTypes": [
+        "layout-container",
+        "footer-item"
+      ],
+      "id": "layout.slot-span",
       "recipeIds": []
     },
     {
@@ -1720,7 +1754,7 @@
     }
   ],
   "editor": {
-    "increment": "05.20",
+    "increment": "05.54",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -2362,13 +2396,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 48,
+    "capabilities": 49,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
-    "curatedFlows": 17,
+    "curatedFlows": 19,
     "governance": {
-      "active": 33,
+      "active": 34,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

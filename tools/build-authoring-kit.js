@@ -112,6 +112,10 @@ if (!window.CatalogCalloutRecipeContract.install()) throw new Error("O contrato 
 const capabilities = window.CatalogProjectManifests.buildCapabilitiesManifest();
 fs.writeFileSync(path.join(kitRoot, "capabilities.json"), window.CatalogProjectManifests.stableJSON(capabilities));
 
+const kitManifestPath = path.join(kitRoot, "manifest.json");
+const kitManifest = JSON.parse(fs.readFileSync(kitManifestPath, "utf8"));
+const authoringPatternsPath = path.join(kitRoot, kitManifest.authoringPatterns || "authoring-patterns.json");
+const authoringPatterns = JSON.parse(fs.readFileSync(authoringPatternsPath, "utf8"));
 const featureGuidePath = path.join(kitRoot, "feature-guide.json");
 const featureGuide = JSON.parse(fs.readFileSync(featureGuidePath, "utf8"));
 const featureGovernancePath = path.join(kitRoot, "feature-governance.json");
@@ -120,6 +124,18 @@ const capabilityIds = new Set(Object.keys(capabilities.capabilities));
 const componentTypes = new Set(capabilities.components.map(component => component.type));
 const recipeIds = new Set(capabilities.recipes.map(recipe => recipe.id));
 const featureIds = new Set();
+
+if (kitManifest.kitFormat !== "CatalogAuthoringKit" || !kitManifest.kitVersion) throw new Error("Manifesto do Authoring Kit inválido.");
+if (kitManifest.editorIncrement !== featureGuide.editorIncrement || kitManifest.editorIncrement !== featureGovernance.editorIncrement || kitManifest.editorIncrement !== capabilities.editor.increment) {
+  throw new Error("Manifesto, guia, governança e capacidades divergem sobre o incremento atual.");
+}
+if (authoringPatterns.patternsFormat !== "CatalogAuthoringPatterns" || !Array.isArray(authoringPatterns.patterns)) throw new Error("Padrões de autoria inválidos.");
+const patternIds = new Set();
+authoringPatterns.patterns.forEach(pattern => {
+  if (!pattern.id || !pattern.kind || !pattern.stage) throw new Error("Padrão de autoria sem id, kind ou stage.");
+  if (patternIds.has(pattern.id)) throw new Error(`Padrão de autoria duplicado: ${pattern.id}.`);
+  patternIds.add(pattern.id);
+});
 
 function requireText(entry, field) {
   if (typeof entry[field] !== "string" || !entry[field].trim()) throw new Error(`Feature ${entry.id || "sem id"}: ${field} é obrigatório.`);
@@ -220,9 +236,9 @@ fs.writeFileSync(path.join(kitRoot, "feature-inventory.json"), window.CatalogPro
 const markdownCell = value => String(value).replace(/\|/g, "\\|").replace(/\n/g, " ");
 const list = values => values?.length ? values.map(value => `\`${value}\``).join(", ") : "—";
 const catalogLines = [
-  "# Atlas de funcionalidades — Incremento 05.18",
+  `# Atlas de funcionalidades — Incremento ${kitManifest.editorIncrement}`,
   "",
-  "Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.",
+  "Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.",
   "",
   "## Resumo",
   "",
@@ -280,4 +296,4 @@ const files = walk(kitRoot);
 const output = `(function () {\n  "use strict";\n  window.CATALOG_AUTHORING_KIT_FILES = Object.freeze(${JSON.stringify(files, null, 2)});\n})();\n`;
 fs.writeFileSync(path.join(root, "app", "authoring-kit-files.js"), output);
 
-console.log(`✓ CatalogAuthoringKit 1.6.0 gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${featureInventory.summary.componentIntents} intenções, ${featureInventory.summary.componentPlacements} posições prováveis, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados e ${capabilityIds.size} capacidades governadas.`);
+console.log(`✓ CatalogAuthoringKit ${kitManifest.kitVersion} gerado com ${Object.keys(files).length} arquivos, ${capabilities.components.length} componentes, ${featureInventory.summary.componentIntents} intenções, ${featureInventory.summary.componentPlacements} posições prováveis, ${capabilities.recipes.length} receitas, ${featureGuide.entries.length} fluxos curados, ${patternIds.size} padrões de autoria e ${capabilityIds.size} capacidades governadas.`);

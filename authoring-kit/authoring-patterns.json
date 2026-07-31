@@ -1,0 +1,85 @@
+{
+  "patternsFormat": "CatalogAuthoringPatterns",
+  "patternsVersion": "1.0.0",
+  "editorIncrement": "05.54",
+  "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.0.0.",
+  "patterns": [
+    {
+      "id": "product-card-arrangement",
+      "kind": "property",
+      "stage": "post-compile",
+      "targetType": "product-card",
+      "path": "presentation.overrides.arrangement",
+      "allowed": ["auto", "horizontal", "stacked"],
+      "example": { "value": "stacked", "meaning": "arte acima e especificações abaixo sem trocar o modo editorial" }
+    },
+    {
+      "id": "specification-density",
+      "kind": "property-group",
+      "stage": "post-compile-or-editor",
+      "targetType": "specification",
+      "properties": {
+        "props.densityPreset": ["auto", "compact", "standard", "comfortable", "custom"],
+        "props.iconScale": [80, 100, 120],
+        "props.gap": ["auto", 3, 7, 10],
+        "props.padding": ["auto", 2, 4, 6]
+      },
+      "rule": "Ajustes internos não mudam o frame externo; qualquer combinação individual resulta em custom."
+    },
+    {
+      "id": "semantic-piece-choice",
+      "kind": "decision",
+      "stage": "source-or-document",
+      "choices": [
+        { "use": "specification", "when": "atributo técnico curto ligado a um produto, normalmente com ícone" },
+        { "use": "recipe:fact", "when": "dado autônomo com rótulo, valor e unidade, como carga de 40 kg" },
+        { "use": "legend-item", "when": "classificação compartilhada resolvida por legendKey, como cor ou embalagem" }
+      ],
+      "rule": "Não inferir identidade por posição e não usar cor como único significado."
+    },
+    {
+      "id": "slot-span",
+      "kind": "property-choice",
+      "stage": "post-compile-or-editor",
+      "choices": [
+        { "path": "slot.span", "when": "o pai declara um slot com capacity maior que 1", "minimum": 1, "maximum": "slot.capacity" },
+        { "path": "layoutItem.span", "when": "o pai usa auto-layout em grade", "minimum": 1, "maximum": "parent.layout.columns" }
+      ],
+      "example": "O primeiro footer-item usa slot.span=2; os demais continuam em 1."
+    },
+    {
+      "id": "table-column-presentation",
+      "kind": "property-group",
+      "stage": "source-document-or-editor",
+      "targetType": "data-table",
+      "properties": {
+        "props.columns[].key": "identidade estável de binding e célula",
+        "props.columns[].label": "texto editorial do cabeçalho",
+        "props.columns[].visible": "projeção no editor e PDF; false preserva valores",
+        "props.columns[] order": "ordem visual das colunas"
+      },
+      "rule": "Nunca renomear key para alterar apenas o cabeçalho e nunca ocultar a última coluna visível."
+    },
+    {
+      "id": "factual-image-neutral-canvas",
+      "kind": "asset-derivation",
+      "stage": "before-package",
+      "targetType": "art",
+      "componentPatch": { "props.fit": "contain" },
+      "method": "neutral-canvas-padding",
+      "rules": [
+        "Adicionar somente pixels brancos ou transparentes ao redor da referência.",
+        "Não recortar, deformar, recolorir, completar nem regenerar o produto factual.",
+        "Salvar como novo arquivo e recalcular mimeType, size e sha256.",
+        "Registrar origin, sourceAssetIds, method, fidelity e aprovação no manifesto do pacote."
+      ]
+    },
+    {
+      "id": "package-manifest-template",
+      "kind": "template-boundary",
+      "stage": "before-package",
+      "path": "examples/catalog-project.json",
+      "rule": "O arquivo demonstra a estrutura, mas seus tamanhos 1 e hashes zerados são marcadores inválidos para importação; substitua-os pelos bytes reais antes de entregar o ZIP."
+    }
+  ]
+}

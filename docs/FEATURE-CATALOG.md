@@ -1,17 +1,17 @@
-# Atlas de funcionalidades — Incremento 05.18
+# Atlas de funcionalidades — Incremento 05.54
 
-Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
+Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 48 capacidades de produto;
+- 49 capacidades de produto;
 - 16 tipos de componente;
 - 5 grupos de descoberta por intenção;
 - 2 posições iniciais prováveis;
 - 9 receitas oficiais;
-- 17 fluxos curados;
+- 19 fluxos curados;
 - 35 ícones declarados.
-- governança: 33 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 34 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Grupos de componentes por intenção
 
@@ -39,10 +39,12 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
 | `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
 | `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis |
-| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset persistido por referência e reutilizável |
+| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset factual preservado por referência, com encaixe e respiro rastreáveis |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
+| `content.semantic-pieces` | Escolher entre especificação, dado destacado e legenda sem duplicar significado | feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas | Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey |
 | `layout.multi-selection` | Refinar vários elementos irmãos de uma vez | Shift/Ctrl/Cmd+clique → Layout/Visual | Alinhamento, distribuição, equalização, valores exatos, deltas, espaçamento, apresentação ou separadores em uma transação |
+| `layout.slot-span` | Fazer um item ocupar múltiplas posições reservadas sem duplicar conteúdo | Documento: component.slot.span; em auto-layout por grade: component.layoutItem.span | Um único componente ocupa duas ou mais posições e continua sendo uma única entidade editável |
 | `visual.editorial-depth` | Ajustar hierarquia visual e arranjo sem desmontar componentes | Card ou peça interna → Conteúdo → Apresentação do card; Texto, Ícone ou Especificação → Conteúdo/Visual | Modo editorial, arranjo empilhado/lado a lado, escala, densidade de especificação e overflow mudam sem CSS arbitrário nem troca de tipo |
 | `content.bulk-collections` | Criar imagens legendadas e legendas cromáticas sem repetir formulários | Galeria ou Tabela → Conteúdo → Editar coleção | Itens canônicos são sincronizados ou acrescentados em uma transação reversível |
 | `reuse.saved-component` | Reutilizar uma composição editada | Selecionar componente → Estrutura → Salvar em Meus componentes | Snapshot reutilizável com novos IDs a cada inserção |
@@ -122,13 +124,13 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `content.assets`
 - **Acesso:** Clicar no placeholder → biblioteca do projeto → importar do computador
 - **Pré-condições:** SVG, PNG, JPEG ou WebP dentro do limite
-- **Resultado:** Asset persistido por referência e reutilizável
-- **Exemplo:** Escolher a foto do produto e ajustar foco/encaixe
-- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token
+- **Resultado:** Asset factual preservado por referência, com encaixe e respiro rastreáveis
+- **Exemplo:** Usar fit=contain e, se faltar respiro, ampliar somente o canvas neutro sem alterar os pixels do produto
+- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token; Expansão de canvas factual deve ser não generativa e gerar novo tamanho, hash e proveniência
 - **Capacidades:** `projectPackageExport`, `packageAssetPolicy`
 - **Componentes:** `art`
 - **Receitas:** —
-- **Contratos:** `collections.assets`, `component.props.assetId`, `component.props.vectorMode`
+- **Contratos:** `collections.assets`, `component.props.assetId`, `component.props.fit`, `component.props.vectorMode`, `asset.provenance`, `asset.approval`
 
 ## Representar variações com imagem, legenda e linha comercial próprias
 
@@ -156,6 +158,19 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Receitas:** `section-packaging-legend`
 - **Contratos:** `colorLegends[].key`, `component.props.legendKey`, `row.metadata.legendKeys`
 
+## Escolher entre especificação, dado destacado e legenda sem duplicar significado
+
+- **ID:** `content.semantic-pieces`
+- **Acesso:** feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas
+- **Pré-condições:** A função semântica da informação está definida
+- **Resultado:** Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey
+- **Exemplo:** Usar specification para Alta resistência, fact para Carga 40 kg e legend-item para a cor Preto
+- **Limites:** fact não substitui linha comercial; legend-item não armazena o fato por posição ou somente por cor
+- **Capacidades:** `officialSectionRecipes`, `semanticColorLegends`, `specificationDensityControls`
+- **Componentes:** `specification`, `layout-container`, `legend-item`
+- **Receitas:** `fact`
+- **Contratos:** `component.type=specification`, `CatalogCapabilities.recipes.fact`, `component.props.legendKey`
+
 ## Refinar vários elementos irmãos de uma vez
 
 - **ID:** `layout.multi-selection`
@@ -169,6 +184,19 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Receitas:** —
 - **Contratos:** `editor.selectedComponentIds`, `CatalogCapabilities.separatorPresets`
 
+## Fazer um item ocupar múltiplas posições reservadas sem duplicar conteúdo
+
+- **ID:** `layout.slot-span`
+- **Acesso:** Documento: component.slot.span; em auto-layout por grade: component.layoutItem.span
+- **Pré-condições:** O pai possui slot com capacidade ou grade com múltiplas colunas
+- **Resultado:** Um único componente ocupa duas ou mais posições e continua sendo uma única entidade editável
+- **Exemplo:** Definir slot.span=2 no primeiro item do rodapé e manter os demais com span=1
+- **Limites:** slot.span não cria conteúdo adicional; o valor deve respeitar a capacidade do slot; layoutItem.span e slot.span não são intercambiáveis
+- **Capacidades:** `slotSpanControl`
+- **Componentes:** `layout-container`, `footer-item`
+- **Receitas:** —
+- **Contratos:** `component.slot.span`, `component.layoutItem.span`, `parent.container.slots[].capacity`, `parent.layout.columns`
+
 ## Ajustar hierarquia visual e arranjo sem desmontar componentes
 
 - **ID:** `visual.editorial-depth`
@@ -180,7 +208,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Capacidades:** `editorialTextControls`, `internalIconScale`, `specificationDensityControls`, `distinctProductModes`, `independentProductArrangement`
 - **Componentes:** `text`, `icon`, `specification`, `product-card`
 - **Receitas:** —
-- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.props.densityPreset`, `component.props.gap`, `component.props.padding`, `component.presentation.mode`, `component.presentation.overrides.arrangement`
+- **Contratos:** `component.props.align`, `component.props.iconScale`, `component.props.densityPreset`, `component.props.gap`, `component.props.padding`, `component.presentation.mode`, `component.presentation.overrides.arrangement`, `authoring-patterns.json#product-card-arrangement`
 
 ## Criar imagens legendadas e legendas cromáticas sem repetir formulários
 
@@ -254,7 +282,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Pré-condições:** Documento válido; Bytes de assets disponíveis
 - **Resultado:** ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit
 - **Exemplo:** Exportar rascunho para revisão em outro navegador
-- **Limites:** Publicação bloqueia pendências críticas; Rascunho converte pendências permitidas em avisos
+- **Limites:** Publicação bloqueia pendências críticas; Rascunho converte pendências permitidas em avisos; O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema; examples/catalog-project.json é template não importável até substituir tamanhos e hashes
 - **Capacidades:** `projectPackageExport`, `draftPublicationGates`, `geometricPublicationGate`
 - **Componentes:** —
 - **Receitas:** —
@@ -290,6 +318,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `semanticCatalogSource` | `true` | **active** | Fonte data-first é a direção principal do produto. | `CatalogCapabilities.capabilities.semanticCatalogSource` |
 | `semanticTables` | `true` | **active** | Esquemas reutilizáveis são prioridade de redução de ações. | `CatalogCapabilities.capabilities.semanticTables` |
 | `tableColumnPresentationControls` | `true` | **active** | Rótulo, ordem e visibilidade editorial ficam editáveis sem alterar chaves semânticas ou células. | `CatalogCapabilities.capabilities.tableColumnPresentationControls` |
+| `slotSpanControl` | `true` | **active** | Ocupação de múltiplas posições já existe no documento e precisa ser descobrível sem leitura do runtime. | `CatalogCapabilities.capabilities.slotSpanControl` |
 | `semanticColorLegends` | `true` | **maintain** | Preservar vínculos existentes; regras avançadas ficam congeladas. | `CatalogCapabilities.capabilities.semanticColorLegends` |
 | `semanticProductVariants` | `true` | **maintain** | Entidade semântica é preservada sem expansão multimídia. | `CatalogCapabilities.capabilities.semanticProductVariants` |
 | `linkedVariantRepresentations` | `true` | **audit** | Evitar duplicidade entre variante, linha e representação visual. | `CatalogCapabilities.capabilities.linkedVariantRepresentations` |

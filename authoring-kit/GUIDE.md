@@ -1,4 +1,4 @@
-# CatalogAuthoringKit 1.6.0
+# CatalogAuthoringKit 1.6.1
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
 
@@ -19,7 +19,7 @@ O ZIP é o formato recomendado quando existem assets. JSON isolado permanece ace
 
 ## Ordem de trabalho para um agente
 
-1. Leia `feature-guide.json`, `feature-inventory.json`, `feature-governance.json`, `capabilities.json` e os schemas; use o guia para escolher a intenção, o inventário para resolver IDs/limites e a governança para distinguir recursos ativos, mantidos, auditados, congelados ou pausados.
+1. Leia `feature-guide.json`, `authoring-patterns.json`, `feature-inventory.json`, `feature-governance.json`, `capabilities.json` e os schemas; use o guia para escolher a intenção, os padrões para refinamentos pós-compilação, o inventário para resolver IDs/limites e a governança para distinguir recursos ativos, mantidos, auditados, congelados ou pausados.
 2. Normalize somente fatos fornecidos; nunca invente preço, código, medida, embalagem ou especificação.
 3. Normalize produtos em `CatalogSource 1.1.0`, preservando atributos, destaques, aplicações, variantes, linhas comerciais vinculadas, legendas agrupadas e papéis de assets.
 4. Crie um `CatalogGenerationPlan 1.0.0` apenas quando precisar sobrescrever o plano padrão `hero-grid`; caso contrário, deixe o compilador decidir.
@@ -54,7 +54,9 @@ node compiler/compile-catalog.js \
   --report catalog.report.json
 ```
 
-A mesma fonte e o mesmo plano produzem os mesmos IDs, frames e bindings. O compilador não inventa fatos e bloqueia capacidade excedida, colisão, clipping e referências estruturais inválidas.
+A mesma fonte e o mesmo plano produzem os mesmos IDs, frames e bindings. O compilador não inventa fatos e bloqueia capacidade excedida, colisão, clipping e referências estruturais inválidas. No relatório, `workflow.editorImportActions` (e o alias histórico `summary.actionsRequired`) representa as três ações do fluxo de importação no editor; não é uma contagem de correções pendentes. Pendências reais aparecem em `workflow.unresolvedCorrections` e `issues`.
+
+O CLI incluído termina em `CatalogDocument + relatório`. Ele não cria o ZIP. Para empacotar, use **Exportar → Pacote** no editor ou monte o arquivo conforme `catalog-project-package.schema.json` e valide-o por reimportação. `examples/catalog-project.json` é deliberadamente um template não importável: `size: 1` e hashes zerados precisam ser substituídos pelos valores reais de cada arquivo.
 
 ## Assets e fatos
 
@@ -66,13 +68,15 @@ Prioridade: fornecido → oficial → derivação segura → geração não fact
 - `publish-ready` exige decisão explícita e `publishAllowed: true`;
 - base64 não pertence ao documento ou ao manifesto.
 
+Para imagens factuais, prefira `art.props.fit = "contain"`. Quando a referência precisa de mais fundo ou respiro, amplie apenas o canvas com pixels brancos ou transparentes, sem recortar, deformar, recolorir ou regenerar o produto. Salve a derivação como novo asset, recalcule tamanho e SHA-256 e registre `method = "neutral-canvas-padding"`, origem, fontes, fidelidade e aprovação. O padrão completo está em `authoring-patterns.json#factual-image-neutral-canvas`.
+
 ## Edição permissiva
 
-Os arquivos são JSON/Markdown comuns. O agente deve preferir `CatalogSource → CatalogGenerationPlan → compilador`; edição direta do documento continua sendo um escape hatch validado. O editor também aceita um `CatalogSource` diretamente e aplica o plano padrão em três ações de interface.
+Os arquivos são JSON/Markdown comuns. O agente deve preferir `CatalogSource → CatalogGenerationPlan → compilador`; edição direta do documento continua sendo um escape hatch validado. Como `CatalogGenerationPlan 1.0.0` cobre somente estrutura de página e apresentação básica dos produtos, arranjo independente, densidade interna, spans e projeção de colunas são refinamentos pós-compilação normais, não contornos não suportados. Aplique apenas os caminhos e valores de `authoring-patterns.json` e valide novamente o documento. O editor também aceita um `CatalogSource` diretamente e aplica o plano padrão em três ações de interface.
 
 ## Atlas de funcionalidades
 
-`feature-inventory.json` é gerado a partir do manifesto e enumera toda capacidade, componente, campo, slot, receita, apresentação, preset de separador, token e ícone. `feature-guide.json` é curado por intenção e informa acesso na interface, pré-condições, resultado, exemplo, limites e contratos relacionados. `feature-governance.json` registra foco e ciclo de vida sem declarar indisponível um contrato apenas por sua expansão estar congelada.
+`feature-inventory.json` é gerado a partir do manifesto e enumera toda capacidade, componente, campo, slot, receita, apresentação, preset de separador, token e ícone. `feature-guide.json` é curado por intenção e informa acesso na interface, pré-condições, resultado, exemplo, limites e contratos relacionados. `authoring-patterns.json` torna explícitos os padrões de autoria que atravessam mais de um componente ou não pertencem ao plano 1.0. `feature-governance.json` registra foco e ciclo de vida sem declarar indisponível um contrato apenas por sua expansão estar congelada.
 
 Use o guia para decidir **o que fazer**, o inventário para descobrir **com quais IDs e restrições** e a governança para evitar depender de uma frente pausada ou em consolidação. O build falha quando guia ou governança divergem das capacidades; não edite o inventário gerado manualmente.
 
@@ -104,11 +108,13 @@ Os modos de `product-card` têm prioridade visual real: `standard` equilibra, `h
 
 Modo editorial e arranjo são decisões distintas. Use `presentation.overrides.arrangement` com `auto`, `horizontal` ou `stacked`. `stacked` representa explicitamente **arte acima → especificações abaixo**, inclusive em `standard` ou `technical`; `horizontal` mantém as duas regiões lado a lado, inclusive em `variants`. `auto` preserva o comportamento histórico: empilha em cards compactos e em `variants`, usando lado a lado nos demais cards amplos. Não escolha `variants` apenas para obter geometria vertical.
 
+Use `specification` para um atributo técnico curto ligado ao produto; use a receita `fact` para um dado autônomo com rótulo, valor e unidade; use `legend-item` quando várias projeções compartilham uma classificação por `legendKey`. Para ocupar duas posições reservadas com um único item, use `slot.span = 2`; em auto-layout por grade, a propriedade equivalente é `layoutItem.span`. Os dois spans não são intercambiáveis e devem respeitar a capacidade do pai.
+
 ## Variantes e legendas vinculadas
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.6.0
+## Limites 1.6.1
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

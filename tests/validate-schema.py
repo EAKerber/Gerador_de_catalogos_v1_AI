@@ -62,7 +62,7 @@ except ModuleNotFoundError:
 
     for page in document["pages"]:
         validate_components(page["children"])
-    print("✓ Documento, pacote, CatalogSource, plano e capacidades atendem aos contratos 05.6 (fallback sem jsonschema).")
+    print("✓ Documento 1.16.0, pacote, CatalogSource 1.1.0, plano e capacidades atendem aos schemas publicados (fallback sem jsonschema).")
 else:
     errors = sorted(Draft202012Validator(schema).iter_errors(document), key=lambda error: list(error.path))
     if errors:
@@ -88,4 +88,4 @@ else:
             for error in contract_errors:
                 print(f"{label} {list(error.path)}: {error.message}")
             raise SystemExit(1)
-    print("✓ Documento 1.15, plano 1.0, pacote 1.0 e capacidades 1.0 válidos; sessão de editor permanece opcional.")
+    print("✓ Documento 1.16.0, CatalogSource 1.1.0, plano 1.0.0, pacote 1.0.0 e capacidades 1.0.0 válidos; sessão de editor permanece opcional.")

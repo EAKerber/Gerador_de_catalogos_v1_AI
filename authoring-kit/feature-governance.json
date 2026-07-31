@@ -1,17 +1,17 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.27",
+  "editorIncrement": "05.54",
   "v1State": {
     "scope": "single-page",
     "status": "stable",
     "closedByIncrement": "05.23",
-    "currentIncrement": "05.27",
+    "currentIncrement": "05.54",
     "nextExpansion": "paused",
     "activeFocus": [
-      "regression",
-      "documentation-consistency",
-      "internal-consolidation"
+      "practical-validation",
+      "authoring-kit-reliability",
+      "documentation-consistency"
     ]
   },
   "statusVocabulary": {
@@ -71,6 +71,7 @@
     { "id": "semanticCatalogSource", "status": "active", "reason": "Fonte data-first é a direção principal do produto." },
     { "id": "semanticTables", "status": "active", "reason": "Esquemas reutilizáveis são prioridade de redução de ações." },
     { "id": "tableColumnPresentationControls", "status": "active", "reason": "Rótulo, ordem e visibilidade editorial ficam editáveis sem alterar chaves semânticas ou células." },
+    { "id": "slotSpanControl", "status": "active", "reason": "Ocupação de múltiplas posições já existe no documento e precisa ser descobrível sem leitura do runtime." },
     { "id": "semanticColorLegends", "status": "maintain", "reason": "Preservar vínculos existentes; regras avançadas ficam congeladas." },
     { "id": "semanticProductVariants", "status": "maintain", "reason": "Entidade semântica é preservada sem expansão multimídia." },
     { "id": "linkedVariantRepresentations", "status": "audit", "reason": "Evitar duplicidade entre variante, linha e representação visual." },

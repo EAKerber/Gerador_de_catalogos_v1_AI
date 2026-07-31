@@ -694,6 +694,18 @@ Concluído e integrado em `development` pela PR #26:
 O incremento não move `main`, não altera runtime/schema/manifestos e não reabre
 locks, multipágina, colaboração, IA ou frentes congeladas.
 
+## Incremento 05.54 — Revisão integral do Authoring Kit
+
+Em validação sobre `development`:
+
+- dar identidade `1.6.1` ao kit posterior à fixture 05.52;
+- alinhar proveniência em 05.54;
+- publicar padrões pós-compilação para arranjo, densidade, semântica, spans,
+  colunas e canvas factual;
+- distinguir template de pacote, compilação e empacotamento;
+- executar JSON Schemas Draft 2020-12 na suíte Node;
+- preservar `CatalogDocument 1.16.0`, runtime visual e limites single-page.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de

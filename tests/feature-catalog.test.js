@@ -19,9 +19,9 @@ const inventoryCapabilityIds = inventory.capabilities.map(item => item.id).sort(
 const componentTypes = new Set(capabilities.components.map(component => component.type));
 const recipeIds = new Set(capabilities.recipes.map(recipe => recipe.id));
 
-assert(manifest.kitVersion === "1.6.0", "O manifesto não preserva a versão contratual do atlas.");
+assert(manifest.kitVersion === "1.6.1", "O manifesto não preserva a versão contratual do atlas.");
 assert(manifest.editorIncrement === governance.editorIncrement, "Manifesto e governança divergem sobre o incremento do editor.");
-assert(manifest.featureInventory === "feature-inventory.json" && manifest.featureGuide === "feature-guide.json" && manifest.featureGovernance === "feature-governance.json", "O manifesto não publica os três artefatos do atlas.");
+assert(manifest.featureInventory === "feature-inventory.json" && manifest.featureGuide === "feature-guide.json" && manifest.featureGovernance === "feature-governance.json" && manifest.authoringPatterns === "authoring-patterns.json", "O manifesto não publica os quatro artefatos do atlas.");
 assert(JSON.stringify(capabilityIds) === JSON.stringify(inventoryCapabilityIds), "O inventário não cobre exatamente as capacidades do manifesto.");
 assert(JSON.stringify(capabilityIds) === JSON.stringify(governance.capabilityDecisions.map(item => item.id).sort()), "A governança não cobre exatamente as capacidades do manifesto.");
 assert(inventory.components.length === capabilities.components.length && inventory.recipes.length === capabilities.recipes.length, "Componentes ou receitas divergiram do manifesto.");

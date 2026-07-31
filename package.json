@@ -16,6 +16,8 @@
     "test:stress": "node tools/run-catalog-stress.js --all"
   },
   "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
     "playwright": "1.61.1"
   }
 }

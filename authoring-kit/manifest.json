@@ -1,13 +1,14 @@
 {
   "kitFormat": "CatalogAuthoringKit",
-  "kitVersion": "1.6.0",
-  "editorIncrement": "05.27",
+  "kitVersion": "1.6.1",
+  "editorIncrement": "05.54",
   "defaultAssetPolicy": "assisted",
   "guide": "GUIDE.md",
   "capabilities": "capabilities.json",
   "featureInventory": "feature-inventory.json",
   "featureGuide": "feature-guide.json",
   "featureGovernance": "feature-governance.json",
+  "authoringPatterns": "authoring-patterns.json",
   "schemas": [
     "schemas/catalog-document.schema.json",
     "schemas/catalog-project-package.schema.json",
