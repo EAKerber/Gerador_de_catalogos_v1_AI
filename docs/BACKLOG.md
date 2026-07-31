@@ -2,6 +2,57 @@
 
 Registro consolidado das observações recebidas após o Incremento 04. As prioridades orientam a sequência, mas não substituem validação de interface. A direção canônica está em `PRODUCT-DEFINITION.md`; itens concluídos abaixo permanecem como histórico.
 
+## Validação prática pós-promoção — ensaio de 2026-07-30
+
+O primeiro ensaio real do fluxo **kit → agente externo → pacote → importação →
+refinamento** produziu um catálogo tecnicamente válido e resultados visuais
+promissores, mas encontrou bloqueios que os gates anteriores não mediam. O
+marco técnico promovido em `main@0505893` permanece preservado; a aceitação do
+fluxo principal do produto fica reaberta em `development` até os itens P0 e P1
+abaixo passarem por um novo ensaio cego.
+
+Essa revisão não reabre multipágina, colaboração, plataforma online, touch ou
+expansão multimídia. Ela corrige a distância entre um pacote importável e um
+catálogo gerado que possa ser refinado por usuário ou agente sem depender de
+zoom do navegador, conhecimento implícito do editor ou edição estrutural
+desproporcional.
+
+### Leitura do ensaio
+
+| Dimensão | Resultado | Consequência |
+| --- | --- | --- |
+| Integridade do pacote e importação | Suficiente | Preservar os gates existentes; eles provaram estrutura e round-trip, não usabilidade de refinamento. |
+| Qualidade inicial do resultado | Promissora, mas abaixo da visão descrita pelo agente | Medir fidelidade autoral separadamente de colisão, overflow e validade de schema. |
+| Descoberta de capacidades | Parcialmente positiva | O agente encontrou uma função específica quando solicitado; o kit é utilizável, mas as opções relevantes não são salientes o bastante no primeiro planejamento. |
+| Refinamento no editor | Bloqueado | O painel exige zoom externo de aproximadamente 67%, repete controles de tamanho e contém botões sem apresentação consistente. |
+| Expressividade do card | Incompleta na superfície atual | O usuário não encontrou uma escolha simples para arte acima e especificações abaixo; o card permaneceu percebido como preso ao modo amplo. |
+| Componentes internos | Editáveis com atrito excessivo | Escala de ícone, espaçamento do átomo `specification` e rótulos de coluna da tabela não ficaram facilmente controláveis. |
+| Tratamento de imagens de referência | Parcial | O produto foi preservado, mas a área útil branca deveria ser ampliada sem deformar ou reinterpretar a referência. |
+
+### Plano de ação e fila bloqueante
+
+| Ordem | Prioridade | Recorte | Decisão de implementação | Critério de saída |
+| --- | --- | --- | --- | --- |
+| 1 | P0 | Fixture do ensaio real | Preservar entrada, pacote, prompt/conversa relevante, PDF e capturas como uma única evidência de fluxo; distinguir problemas do agente, do kit, do compilador, do editor e do asset. | O mesmo caso pode ser reimportado e comparado sem reconstrução manual da evidência; cada falha possui proprietário e classe. |
+| 2 | P0 | Hierarquia e altura útil do inspetor | **Posição e tamanho** pertence à aba **Layout** e não pode consumir o corpo de **Conteúdo** ou **Visual**. Se alguma síntese global permanecer, deve ser compacta e recolhível. | Em `1366×768`, zoom do navegador em 100% e painel na largura mínima suportada, cada aba revela seu primeiro controle específico sem zoom externo e sem rolagem horizontal do documento. |
+| 3 | P0 | CSS e estados dos controles | Inventariar botões que caíram no estilo nativo ou perderam variantes; consolidar estilos, foco, hover, disabled e hitbox sem correções isoladas por seletor incidental. | Nenhum botão visível no inspetor usa apresentação nativa acidental; teste Chromium cobre estados e contraste nas três abas. |
+| 4 | P1 | Apresentação vertical de produto | Auditar `standard`, `hero`, `technical`, `variants` e `data-only`. Reutilizar modo, preset ou receita existente se ele puder expressar **arte acima → especificações abaixo**; criar novo contrato somente se a intenção não couber nos existentes. | A apresentação é escolhida em uma ação clara no card, reaplica o reflow sem apagar itens e aparece no manifesto/kit com exemplo e limites. |
+| 5 | P1 | Ergonomia de `specification` | Promover a dívida concreta antes classificada como posterior: expor escala do ícone e densidade interna por controles diretos e limitados, preservando presets e evitando CSS arbitrário. | Ícone, `gap` e `padding` podem ser ajustados ou normalizados sem redimensionar o frame externo; lote, undo, importação e PDF preservam o resultado. |
+| 6 | P1 | Cabeçalhos de tabela | Expor rótulo, ordem e visibilidade das colunas na aba **Conteúdo**, mantendo chaves semânticas estáveis e separando renomear de alterar o binding. | Selecionar uma tabela permite renomear seus cabeçalhos diretamente, reordená-los sem editar JSON e preservar células, round-trip e PDF. |
+| 7 | P1 | Descoberta no Authoring Kit | Tornar salientes as intenções do ensaio: escolha de apresentação, `specification` versus `fact` versus legenda, escala interna, `slot.span` e edição de colunas. Não duplicar o catálogo de capacidades em prosa concorrente. | Um agente sem contexto prévio encontra e usa as capacidades a partir do kit, sem o usuário precisar nomear a função escondida. |
+| 8 | P2 | Fundo útil de imagens factuais | Documentar no fluxo de assets a expansão de área neutra: preferir `contain`, padding/canvas e composição não generativa; quando extensão generativa for necessária, preservar a forma factual do produto e registrar proveniência. | O agente consegue aumentar a área branca ao redor da referência sem cortar, deformar ou reinventar a corrediça; o PDF mantém escala e respiro consistentes. |
+| 9 | P0 | Gate de aceitação prática | Repetir o caso com um agente em início frio, usando somente o kit e os dados/referências do ensaio; depois executar uma rodada de revisão com feedback equivalente ao usuário. | Pacote válido, importação e PDF continuam verdes; o agente materializa a intenção vertical, o editor permanece utilizável a 100% e os ajustes de especificação/tabela são encontrados sem orientação nominal. |
+
+### Regra de consolidação revisada
+
+Os gates Node, schema, build, Chromium, colisão e overflow continuam
+obrigatórios, mas deixam de ser evidência suficiente para aceitação do fluxo
+principal. Um corte pode ser tecnicamente estável e ainda falhar em autoria ou
+refinamento. A V1 só volta a ser considerada aceita como produto quando o gate
+de agente em início frio e a rodada de revisão passarem; até lá,
+`main@0505893` é o baseline técnico e `development` é a linha de estabilização
+prática.
+
 ## Estado operacional após o Incremento 05.23
 
 A **V1 single-page estável** foi encerrada no Incremento 05.23 e integrada em
