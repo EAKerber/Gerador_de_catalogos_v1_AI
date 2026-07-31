@@ -6,11 +6,12 @@ const { spawnSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
 const runnerPath = path.join(root, "tools", "run-catalog-tests.js");
+const { classifyFailure, planShards } = require(runnerPath);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 assert(fs.existsSync(runnerPath), "O executor integral não existe.");
 const source = fs.readFileSync(runnerPath, "utf8");
-for (const flag of ["--list", "--node", "--browser", "--build", "--all"]) {
+for (const flag of ["--list", "--list-shards", "--node", "--browser", "--build", "--all"]) {
   assert(source.includes(`"${flag}"`), `O executor não reconhece ${flag}.`);
 }
 assert(source.includes('file.endsWith(".test.js")'), "A descoberta não cobre todos os testes.");
@@ -20,6 +21,10 @@ assert(source.includes("build-authoring-kit.js"), "O executor não usa o build c
 assert(source.includes("CATALOG_TEST_TIMEOUT_MS") && source.includes("ETIMEDOUT"), "O executor não encerra ou classifica testes travados.");
 assert(source.includes("CATALOG_PROMOTIONAL_REMEDIATION_ENFORCE"), "O gate promocional não é bloqueante por padrão.");
 assert(source.includes("CATALOG_TEST_SHARD_COUNT") && source.includes("CATALOG_TEST_SHARD_INDEX"), "O executor não permite particionar a suíte Chromium.");
+assert(source.includes("CATALOG_INFRA_RETRY_LIMIT"), "O executor não limita explicitamente a repetição infraestrutural.");
+assert(source.includes("infrastructure-timeout") && source.includes('"functional"'), "O executor não distingue falha funcional de infraestrutura.");
+assert(source.includes("Chromium executável:") && source.includes("Chromium versão:"), "O executor não diagnostica caminho e versão do Chromium.");
+assert(source.includes("browserTestWeights"), "O executor não declara custos estáveis para os testes Chromium longos.");
 assert(!/execSync|shell\s*:\s*true|npx\s+/.test(source), "O executor introduziu shell ou resolução de dependência não determinística.");
 
 const execution = spawnSync(process.execPath, [runnerPath, "--list"], { cwd: root, encoding: "utf8" });
@@ -45,9 +50,22 @@ assert(listed.length === expectedCount, `O inventário listou ${listed.length} d
 assert(listed.length === new Set(listed).size, "O inventário contém testes duplicados.");
 
 const browserFiles = listed.filter(file => path.basename(file).startsWith("browser-"));
-const shardAssignments = Array.from({ length: 4 }, (_, shardIndex) => browserFiles.filter((file, index) => index % 4 === shardIndex));
-assert(shardAssignments.flat().length === browserFiles.length, "O particionamento perdeu testes Chromium.");
-assert(new Set(shardAssignments.flat()).size === browserFiles.length, "O particionamento duplicou testes Chromium.");
-assert(Math.max(...shardAssignments.map(shard => shard.length)) - Math.min(...shardAssignments.map(shard => shard.length)) <= 1, "Os shards Chromium estão desequilibrados.");
+assert(classifyFailure({ error: { code: "ETIMEDOUT" } }) === "infrastructure-timeout", "Timeout não foi classificado como infraestrutura.");
+assert(classifyFailure({ signal: "SIGSEGV" }) === "infrastructure-signal", "Sinal nativo não foi classificado como infraestrutura.");
+assert(classifyFailure({ stdout: "", stderr: "fatal library error", status: 1 }) === "infrastructure-browser", "Queda explícita do browser não foi classificada como infraestrutura.");
+assert(classifyFailure({ stdout: "", stderr: "AssertionError", status: 1 }) === "functional", "Asserção funcional foi classificada como infraestrutura.");
+const directShardPlan = planShards(browserFiles.map(file => path.basename(file)), 4);
+assert(directShardPlan.length === 4, "O planejamento direto não produziu quatro shards.");
+const shardExecution = spawnSync(process.execPath, [runnerPath, "--list-shards"], {
+  cwd: root,
+  encoding: "utf8",
+  env: { ...process.env, CATALOG_TEST_SHARD_COUNT: "4", CATALOG_TEST_SHARD_INDEX: "0" }
+});
+assert(shardExecution.status === 0, `O plano de shards falhou: ${shardExecution.stderr || shardExecution.stdout}`);
+const shardPlan = JSON.parse(shardExecution.stdout);
+const assignedFiles = shardPlan.flatMap(shard => shard.files);
+assert(assignedFiles.length === browserFiles.length, "O particionamento perdeu testes Chromium.");
+assert(new Set(assignedFiles).size === browserFiles.length, "O particionamento duplicou testes Chromium.");
+assert(Math.max(...shardPlan.map(shard => shard.weight)) - Math.min(...shardPlan.map(shard => shard.weight)) <= 1, "Os custos estáveis dos shards Chromium estão desequilibrados.");
 
 console.log(`✓ Executor canônico descobriu todos os ${listed.length} testes, incluindo 05.20 e estresse.`);
