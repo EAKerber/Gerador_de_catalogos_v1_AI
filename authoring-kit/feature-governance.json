@@ -70,6 +70,7 @@
     { "id": "multiplePages", "status": "paused", "reason": "Depende de layout e reflow confiáveis." },
     { "id": "semanticCatalogSource", "status": "active", "reason": "Fonte data-first é a direção principal do produto." },
     { "id": "semanticTables", "status": "active", "reason": "Esquemas reutilizáveis são prioridade de redução de ações." },
+    { "id": "tableColumnPresentationControls", "status": "active", "reason": "Rótulo, ordem e visibilidade editorial ficam editáveis sem alterar chaves semânticas ou células." },
     { "id": "semanticColorLegends", "status": "maintain", "reason": "Preservar vínculos existentes; regras avançadas ficam congeladas." },
     { "id": "semanticProductVariants", "status": "maintain", "reason": "Entidade semântica é preservada sem expansão multimídia." },
     { "id": "linkedVariantRepresentations", "status": "audit", "reason": "Evitar duplicidade entre variante, linha e representação visual." },

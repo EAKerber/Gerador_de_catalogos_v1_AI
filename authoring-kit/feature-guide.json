@@ -60,13 +60,13 @@
       "intention": "Editar estrutura e dados de uma tabela",
       "access": "Selecionar tabela → Conteúdo; ou + para nova linha",
       "preconditions": ["Tabela selecionada"],
-      "result": "Colunas semânticas, múltiplas linhas e valores editáveis",
-      "example": "Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais",
+      "result": "Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis",
+      "example": "Renomear Embalagem para Caixa, movê-la e ocultá-la sem perder a célula; depois colar duas linhas comerciais",
       "limits": ["Regras condicionais avançadas permanecem fora desta versão"],
-      "capabilityIds": ["semanticTables", "contextualTableRows", "manualBulkTableEntry", "reusableTableSchemas", "batchTableSchemas"],
+      "capabilityIds": ["semanticTables", "tableColumnPresentationControls", "contextualTableRows", "manualBulkTableEntry", "reusableTableSchemas", "batchTableSchemas"],
       "componentTypes": ["data-table"],
       "recipeIds": [],
-      "contracts": ["component.props.columns", "collection.tableRows"]
+      "contracts": ["component.props.columns[].key", "component.props.columns[].label", "component.props.columns[].visible", "collection.tableRows"]
     },
     {
       "id": "content.assets",

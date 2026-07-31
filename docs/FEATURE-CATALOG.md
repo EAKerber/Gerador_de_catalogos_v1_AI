@@ -4,14 +4,14 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 ## Resumo
 
-- 47 capacidades de produto;
+- 48 capacidades de produto;
 - 16 tipos de componente;
 - 5 grupos de descoberta por intenção;
 - 2 posições iniciais prováveis;
 - 9 receitas oficiais;
 - 17 fluxos curados;
 - 35 ícones declarados.
-- governança: 32 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 33 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Grupos de componentes por intenção
 
@@ -38,7 +38,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `start.page-structure` | Começar uma página manual sem montar a estrutura peça por peça | Componentes → Estruturas prontas → Página-base → + | Cabeçalho, área principal e rodapé editáveis, com foco no conteúdo |
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
 | `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
-| `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas, múltiplas linhas e valores editáveis |
+| `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis |
 | `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset persistido por referência e reutilizável |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
@@ -109,13 +109,13 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `content.table`
 - **Acesso:** Selecionar tabela → Conteúdo; ou + para nova linha
 - **Pré-condições:** Tabela selecionada
-- **Resultado:** Colunas semânticas, múltiplas linhas e valores editáveis
-- **Exemplo:** Aplicar Medida e embalagem a vários cards e colar duas linhas comerciais
+- **Resultado:** Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis
+- **Exemplo:** Renomear Embalagem para Caixa, movê-la e ocultá-la sem perder a célula; depois colar duas linhas comerciais
 - **Limites:** Regras condicionais avançadas permanecem fora desta versão
-- **Capacidades:** `semanticTables`, `contextualTableRows`, `manualBulkTableEntry`, `reusableTableSchemas`, `batchTableSchemas`
+- **Capacidades:** `semanticTables`, `tableColumnPresentationControls`, `contextualTableRows`, `manualBulkTableEntry`, `reusableTableSchemas`, `batchTableSchemas`
 - **Componentes:** `data-table`
 - **Receitas:** —
-- **Contratos:** `component.props.columns`, `collection.tableRows`
+- **Contratos:** `component.props.columns[].key`, `component.props.columns[].label`, `component.props.columns[].visible`, `collection.tableRows`
 
 ## Substituir uma arte ou logo por um asset real
 
@@ -289,6 +289,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `multiplePages` | `false` | **paused** | Depende de layout e reflow confiáveis. | `CatalogCapabilities.capabilities.multiplePages` |
 | `semanticCatalogSource` | `true` | **active** | Fonte data-first é a direção principal do produto. | `CatalogCapabilities.capabilities.semanticCatalogSource` |
 | `semanticTables` | `true` | **active** | Esquemas reutilizáveis são prioridade de redução de ações. | `CatalogCapabilities.capabilities.semanticTables` |
+| `tableColumnPresentationControls` | `true` | **active** | Rótulo, ordem e visibilidade editorial ficam editáveis sem alterar chaves semânticas ou células. | `CatalogCapabilities.capabilities.tableColumnPresentationControls` |
 | `semanticColorLegends` | `true` | **maintain** | Preservar vínculos existentes; regras avançadas ficam congeladas. | `CatalogCapabilities.capabilities.semanticColorLegends` |
 | `semanticProductVariants` | `true` | **maintain** | Entidade semântica é preservada sem expansão multimídia. | `CatalogCapabilities.capabilities.semanticProductVariants` |
 | `linkedVariantRepresentations` | `true` | **audit** | Evitar duplicidade entre variante, linha e representação visual. | `CatalogCapabilities.capabilities.linkedVariantRepresentations` |

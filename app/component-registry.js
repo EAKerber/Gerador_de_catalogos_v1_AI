@@ -177,7 +177,7 @@
   function dataTableRender(component, context = {}) {
     const linkedRows = context.store?.getTableRows?.(component) || [];
     const rows = linkedRows.length ? linkedRows : [{ metadata: { values: component.props || {} } }];
-    const columns = tableColumns(component);
+    const columns = tableColumns(component).filter(column => column.visible !== false);
     const grid = columns.map(column => `${column.width || 1}fr`).join(" ");
     return `
       <div class="component-data-table" style="--table-columns:${escapeHtml(grid)}">

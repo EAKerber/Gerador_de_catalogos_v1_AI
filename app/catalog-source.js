@@ -4,9 +4,9 @@
   const VERSION = "1.1.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const DEFAULT_TABLE_COLUMNS = Object.freeze([
-    { key: "code", label: "Código", role: "identifier", align: "center", width: 1 },
-    { key: "package", label: "Embalagem", role: "package", align: "center", width: 1.25 },
-    { key: "price", label: "Preço", role: "price", align: "center", width: 1.15 }
+    { key: "code", label: "Código", role: "identifier", align: "center", width: 1, visible: true },
+    { key: "package", label: "Embalagem", role: "package", align: "center", width: 1.25, visible: true },
+    { key: "price", label: "Preço", role: "price", align: "center", width: 1.15, visible: true }
   ]);
 
   function key(value, fallback = "item") {
@@ -39,7 +39,8 @@
         role: String(column?.role || "value"),
         align: ["start", "center", "end"].includes(column?.align) ? column.align : "center",
         width: Math.max(.25, Math.min(6, Number(column?.width) || 1)),
-        format: column?.format ? String(column.format) : null
+        format: column?.format ? String(column.format) : null,
+        visible: column?.visible !== false
       };
     });
   }

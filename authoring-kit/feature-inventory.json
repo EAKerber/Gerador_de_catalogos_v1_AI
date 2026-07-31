@@ -90,6 +90,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.tableColumnPresentationControls",
+      "governance": "active",
+      "governanceReason": "Rótulo, ordem e visibilidade editorial ficam editáveis sem alterar chaves semânticas ou células.",
+      "id": "tableColumnPresentationControls",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.semanticColorLegends",
       "governance": "maintain",
       "governanceReason": "Preservar vínculos existentes; regras avançadas ficam congeladas.",
@@ -1547,6 +1554,7 @@
     {
       "capabilityIds": [
         "semanticTables",
+        "tableColumnPresentationControls",
         "contextualTableRows",
         "manualBulkTableEntry",
         "reusableTableSchemas",
@@ -2354,13 +2362,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 47,
+    "capabilities": 48,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
     "curatedFlows": 17,
     "governance": {
-      "active": 32,
+      "active": 33,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

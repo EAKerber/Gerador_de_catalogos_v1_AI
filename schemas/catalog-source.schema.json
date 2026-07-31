@@ -67,7 +67,8 @@
         "role": { "type": "string", "minLength": 1 },
         "align": { "enum": ["start", "center", "end"] },
         "width": { "type": "number", "minimum": 0.25, "maximum": 6 },
-        "format": { "type": ["string", "null"] }
+        "format": { "type": ["string", "null"] },
+        "visible": { "type": "boolean" }
       },
       "additionalProperties": false
     },
