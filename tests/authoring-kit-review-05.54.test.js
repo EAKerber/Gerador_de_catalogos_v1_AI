@@ -18,14 +18,14 @@ const patterns = readJSON("authoring-kit/authoring-patterns.json");
 const packageTemplate = readJSON("authoring-kit/examples/catalog-project.json");
 const guideMarkdown = read("authoring-kit/GUIDE.md");
 
-assert(manifest.kitVersion === "1.7.0", "O kit com complemento visual não possui identidade própria em relação ao núcleo 1.6.1.");
-assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.55"), "Metadados de proveniência do kit divergem.");
+assert(manifest.kitVersion === "1.7.1", "O kit com gate textual não possui identidade própria em relação ao núcleo 1.7.0.");
+assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.56"), "Metadados de proveniência do kit divergem.");
 for (const field of ["guide", "capabilities", "featureInventory", "featureGuide", "featureGovernance", "authoringPatterns", "compiler", "runtime"]) {
   assert(fs.existsSync(path.join(root, "authoring-kit", manifest[field])), `Manifesto aponta para caminho ausente: ${field}.`);
 }
 for (const relative of [...manifest.schemas, ...manifest.examples]) assert(fs.existsSync(path.join(root, "authoring-kit", relative)), `Artefato declarado ausente: ${relative}.`);
 
-const expectedPatterns = new Set(["product-card-arrangement", "specification-density", "semantic-piece-choice", "slot-span", "table-column-presentation", "factual-image-neutral-canvas", "package-manifest-template"]);
+const expectedPatterns = new Set(["product-card-arrangement", "specification-density", "semantic-piece-choice", "slot-span", "table-column-presentation", "factual-image-presentation", "package-manifest-template"]);
 assert(patterns.patterns.length === expectedPatterns.size && patterns.patterns.every(pattern => expectedPatterns.has(pattern.id)), "Padrões pós-compilação incompletos ou inesperados.");
 assert(capabilities.capabilities.slotSpanControl === true, "slot.span continua escondido do manifesto de capacidades.");
 assert(guide.entries.some(entry => entry.id === "layout.slot-span" && entry.contracts.includes("component.slot.span")), "O fluxo curado não ensina slot.span.");
@@ -34,7 +34,7 @@ assert(guide.entries.find(entry => entry.id === "content.assets")?.contracts.inc
 
 assert(packageTemplate.exampleType === "non-importable-template" && packageTemplate.integrityPlaceholders === true, "O manifesto de exemplo não se declara template.");
 assert(packageTemplate.files.every(file => file.size === 1 && /^0{64}$/.test(file.sha256)), "Os marcadores de integridade do template mudaram sem virar pacote real.");
-assert(/template não importável/i.test(guideMarkdown) && /neutral-canvas-padding/.test(guideMarkdown), "O guia não explica o limite do template ou a expansão neutra de canvas.");
+assert(/template não importável/i.test(guideMarkdown) && /expansão de fundo uniforme/.test(guideMarkdown), "O guia não explica o limite do template ou a expansão factual de fundo.");
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "catalog-authoring-kit-05.54-"));
 try {
@@ -62,4 +62,4 @@ const promotionalProfile = readJSON("tests/fixtures/promotional-reference-profil
 assert(technicalHash === "4262171d057c6daedd47cd192600fa9f826d739552b4a4c84f38c917c010f2f6", "A referência técnica canônica mudou.");
 assert(promotionalProfile.source.sha256 === "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1e38cffd02b4ab586" && promotionalProfile.interpretation.blocking === false, "O limite do benchmark promocional mudou.");
 
-console.log("✓ Authoring Kit 1.7.0 preserva a revisão 05.54 e declara o complemento visual 05.55.");
+console.log("✓ Authoring Kit 1.7.1 preserva a revisão 05.54, o complemento visual e o gate textual 05.56.");

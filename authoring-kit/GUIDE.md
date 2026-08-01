@@ -1,4 +1,4 @@
-# CatalogAuthoringKit 1.7.0
+# CatalogAuthoringKit 1.7.1
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
 
@@ -30,13 +30,13 @@ O ZIP é o formato recomendado quando existem assets. JSON isolado permanece ace
 3. Normalize produtos em `CatalogSource 1.1.0`, preservando atributos, destaques, aplicações, variantes, linhas comerciais vinculadas, legendas agrupadas e papéis de assets.
 4. Crie um `CatalogGenerationPlan 1.0.0` apenas quando precisar sobrescrever o plano padrão `hero-grid`; caso contrário, deixe o compilador decidir.
 5. Execute `compiler/compile-catalog.js` para materializar componentes, slots, frames e bindings determinísticos.
-6. Revise o relatório e corrija todo erro estrutural, referencial, editorial ou geométrico antes de empacotar.
+6. Revise o relatório estrutural e, no editor/Chromium, execute o gate renderizado. Corrija truncamento, reticências efetivamente aplicadas, colisões de texto e fonte abaixo do mínimo antes de publicar. O compilador Node não mede tipografia nem pode declarar integridade visual.
 7. Use a política de assets `assisted` quando o usuário não indicar outro modo.
 8. Gere o documento sem o bloco opcional `editor`.
 9. Guarde imagens em arquivos do pacote e use `reference.provider = "package"` com o caminho correspondente.
 10. Calcule tamanho e SHA-256 de todos os arquivos declarados.
 11. Registre proveniência, fidelidade e aprovação de cada asset.
-12. Exporte como `draft` durante revisão; use `publication` somente após o gate aprovar requisitos, geometria e assets.
+12. Exporte como `draft` durante revisão; use `publication` somente após o gate aprovar requisitos, geometria, integridade textual renderizada e assets.
 13. Valide o pacote antes da entrega.
 
 ## Compilar
@@ -74,7 +74,21 @@ Prioridade: fornecido → oficial → derivação segura → geração não fact
 - `publish-ready` exige decisão explícita e `publishAllowed: true`;
 - base64 não pertence ao documento ou ao manifesto.
 
-Para imagens factuais, prefira `art.props.fit = "contain"`. Quando a referência precisa de mais fundo ou respiro, amplie apenas o canvas com pixels brancos ou transparentes, sem recortar, deformar, recolorir ou regenerar o produto. Salve a derivação como novo asset, recalcule tamanho e SHA-256 e registre `method = "neutral-canvas-padding"`, origem, fontes, fidelidade e aprovação. O padrão completo está em `authoring-patterns.json#factual-image-neutral-canvas`.
+Para imagens factuais, prefira `art.props.fit = "contain"`, mas não preserve passivamente margens ou o limite quadrado de um arquivo quando isso cria vazios visíveis no componente. **Edições não imaginativas** destinadas a melhorar apresentação são permitidas e recomendadas: zoom, foco, reposicionamento, reenquadramento, recorte de margem neutra, redimensionamento, expansão de fundo uniforme, contraste, luminosidade, balanço de branco e correção de cor. Elas precisam preservar identidade, geometria, acabamento e características comerciais; não inventem partes, não ocultem detalhes relevantes e não transformem uma variante em outra.
+
+Recoloração do produto só é válida quando a variante de cor existe na fonte. Expansão de fundo branco, transparente ou de cor uniforme pode eliminar o efeito de “quadrado dentro de retângulo”. Toda derivação deve ser reversível e rastreável: guarde o asset-fonte, salve um novo arquivo, recalcule tamanho/SHA-256 e registre `sourceAssetIds`, `method`, fidelidade e aprovação. O padrão completo está em `authoring-patterns.json#factual-image-presentation`.
+
+## Gate renderizado de integridade textual
+
+`CatalogDocumentValidator` mede frames, referências e colisões estruturais no JSON. Ele não mede glifos. O editor complementa esse resultado com `CatalogVisualTextIntegrity`, executado sobre o DOM real e repetido no fluxo de exportação. O `reports/export-report.json` deve preservar `gate.visualIntegrity` e as contagens `textTruncations`, `textCollisions`, `textObjectCollisions` e `textBelowMinimum`.
+
+- `TEXT_ELLIPSIS_APPLIED`: conteúdo efetivamente encurtado com reticências;
+- `TEXT_CONTENT_CLIPPED`: glifos ou linhas excedem a caixa;
+- `TEXT_TEXT_COLLISION`: fragmentos de texto se sobrepõem;
+- `TEXT_OBJECT_COLLISION`: texto se sobrepõe a imagem, ícone ou divisor;
+- `TEXT_BELOW_MINIMUM`: aviso separado de legibilidade, atualmente abaixo de 6 pt.
+
+No rascunho, os achados são avisos auditáveis. Na exportação `publication`, truncamentos e colisões bloqueiam; fonte abaixo do mínimo continua aviso explícito. `summary.overflows` do compilador significa apenas overflow geométrico e nunca deve ser apresentado como prova de ausência de truncamento textual.
 
 ## Edição permissiva
 
@@ -120,7 +134,7 @@ Use `specification` para um atributo técnico curto ligado ao produto; use a rec
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.7.0
+## Limites 1.7.1
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

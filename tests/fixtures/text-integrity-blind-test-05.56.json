@@ -1,0 +1,16 @@
+{
+  "source": "Ensaio real do Authoring Kit 1.7.0, 31/07/2026",
+  "purpose": "Preservar como regressão mínima os dez truncamentos visíveis confirmados no PDF, sem versionar assets ou dados comerciais do pacote.",
+  "cases": [
+    { "componentId": "card-02-product-soft-extra-specification-03", "text": "Abertura total" },
+    { "componentId": "card-02-product-soft-extra-specification-04", "text": "Fechamento suave" },
+    { "componentId": "card-02-product-soft-extra-specification-06", "text": "Até 40 mil ciclos" },
+    { "componentId": "card-04-product-soft-close-title-symbol-01", "text": "CORREDIÇA TELESCÓPICA SOFT CLOSE" },
+    { "componentId": "card-04-product-soft-close-specification-03", "text": "Construção reforçada" },
+    { "componentId": "card-05-product-dobradica-specification-03", "text": "Regulagem tridimensional" },
+    { "componentId": "card-06-product-pistao-specification-03", "text": "Abertura assistida" },
+    { "componentId": "card-07-product-rodizio-specification-03", "text": "Mobilidade para móveis" },
+    { "componentId": "card-07-product-rodizio-specification-04", "text": "Opções com e sem trava" },
+    { "componentId": "card-08-product-pe-redondo-specification-04", "text": "Quatro opções de altura" }
+  ]
+}

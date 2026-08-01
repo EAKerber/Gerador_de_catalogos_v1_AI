@@ -2,9 +2,9 @@
   "coreKit": {
     "format": "CatalogAuthoringKit",
     "relativeRoot": "..",
-    "version": "1.7.0"
+    "version": "1.7.1"
   },
-  "editorIncrement": "05.55",
+  "editorIncrement": "05.56",
   "entrypoint": "START-HERE.md",
   "files": [
     {
@@ -102,8 +102,8 @@
       "mimeType": "application/json",
       "path": "examples/first-page.report.json",
       "role": "executable-example",
-      "sha256": "1adce6056575bc33e197feba47b83c44dffbfdd1d2a3c5d0b36aafdaf3e54608",
-      "size": 705
+      "sha256": "5c4a4f3d925fba784dcf87118251b0a66f2073decc9d9bbeee76f14fdc881f04",
+      "size": 709
     },
     {
       "mimeType": "image/svg+xml",

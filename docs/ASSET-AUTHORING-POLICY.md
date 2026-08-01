@@ -136,6 +136,22 @@ O agente pode perguntar quando a associação entre produto e imagem for ambígu
 - cor nunca é o único meio de comunicar uma categoria ou variante;
 - hashes e MIME validam integridade de arquivo, não fidelidade do produto.
 
+### 8.1 Edição factual não imaginativa
+
+Zoom, foco, reenquadramento, redimensionamento, recorte de margens neutras,
+expansão de fundo uniforme e correções de contraste, luminosidade, balanço de
+branco e cor são permitidos e recomendados quando melhoram o preenchimento do
+componente sem alterar a identidade do produto. Em especial, o agente deve
+evitar deixar visível um arquivo quadrado sobre um componente retangular quando
+o fundo puder ser expandido de forma uniforme ou a margem neutra puder ser
+recortada com segurança.
+
+A transformação não pode inventar partes, deformar geometria, ocultar detalhes
+comerciais, alterar acabamento nem criar uma variante inexistente. Recoloração
+só materializa uma cor confirmada pela fonte. Toda derivação preserva o
+asset-fonte, cria novo arquivo, recalcula integridade e registra método,
+`sourceAssetIds`, fidelidade e aprovação, para permanecer reversível.
+
 ## 9. Estado de implementação
 
 O Incremento 05.3 formalizou e transporta `provenance` e `approval`, com defaults conservadores e política Assistida no manifesto. Permanecem para incrementos posteriores:

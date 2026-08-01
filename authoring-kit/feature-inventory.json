@@ -160,6 +160,13 @@
       "value": true
     },
     {
+      "contract": "CatalogCapabilities.capabilities.renderedTextIntegrityGate",
+      "governance": "active",
+      "governanceReason": "Separa a medição tipográfica no Chromium da geometria estrutural e impede falso zero visual.",
+      "id": "renderedTextIntegrityGate",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.catalogSourceDirectImport",
       "governance": "active",
       "governanceReason": "Fluxo principal de geração data-first.",
@@ -1511,7 +1518,8 @@
         "semanticCatalogSource",
         "catalogSourceDirectImport",
         "generationPlanCompiler",
-        "geometricPublicationGate"
+        "geometricPublicationGate",
+        "renderedTextIntegrityGate"
       ],
       "componentTypes": [
         "product-card"
@@ -1735,7 +1743,8 @@
       "capabilityIds": [
         "projectPackageExport",
         "draftPublicationGates",
-        "geometricPublicationGate"
+        "geometricPublicationGate",
+        "renderedTextIntegrityGate"
       ],
       "componentTypes": [],
       "id": "transfer.package",
@@ -1754,7 +1763,7 @@
     }
   ],
   "editor": {
-    "increment": "05.55",
+    "increment": "05.56",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -2396,13 +2405,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 49,
+    "capabilities": 50,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
     "curatedFlows": 19,
     "governance": {
-      "active": 34,
+      "active": 35,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

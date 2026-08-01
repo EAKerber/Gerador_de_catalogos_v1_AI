@@ -3,7 +3,7 @@
   "capabilities": "capabilities.json",
   "compiler": "compiler/compile-catalog.js",
   "defaultAssetPolicy": "assisted",
-  "editorIncrement": "05.55",
+  "editorIncrement": "05.56",
   "examples": [
     "examples/minimal-document.json",
     "examples/catalog-project.json",
@@ -16,7 +16,7 @@
   "featureInventory": "feature-inventory.json",
   "guide": "GUIDE.md",
   "kitFormat": "CatalogAuthoringKit",
-  "kitVersion": "1.7.0",
+  "kitVersion": "1.7.1",
   "runtime": "runtime",
   "schemas": [
     "schemas/catalog-document.schema.json",
@@ -29,7 +29,7 @@
     "distribution": "standalone-kit-only",
     "format": "CatalogAuthoringVisualGuide",
     "manifestPath": "visual-guide/manifest.json",
-    "manifestSha256": "dde67cd0b31b549ee6ea71b302d65dc4220f86be8eff7f10edb1ef98508026d9",
+    "manifestSha256": "e132cf01f3a173369f51971b8b06025ea48a6b88ab0e20311e1a99a4acb2da88",
     "requiredForCompilation": false,
     "root": "visual-guide",
     "version": "1.0.0"

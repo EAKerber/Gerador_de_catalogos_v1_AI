@@ -4404,7 +4404,9 @@
     }
 
     getPublicationReport(target = "draft") {
-      return window.CatalogDocumentValidator?.validate?.(this.getExportDocument(), { target }) || { ok: true, target, issues: [] };
+      const structural = window.CatalogDocumentValidator?.validate?.(this.getExportDocument(), { target }) || { ok: true, target, issues: [] };
+      const visual = window.CatalogVisualTextIntegrity?.audit?.({ root: globalThis.document?.getElementById?.("componentLayer"), target, surface: "editor" });
+      return visual ? window.CatalogVisualTextIntegrity.mergeReport(structural, visual) : structural;
     }
 
     getSelectionGeometryReport(componentIds = this.getSelectedIds()) {

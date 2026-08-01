@@ -10,8 +10,8 @@ const root = path.resolve(__dirname, "..");
 const visualRoot = path.join(root, "authoring-kit-visual");
 const coreRoot = path.join(root, "authoring-kit");
 const VISUAL_VERSION = "1.0.0";
-const CORE_VERSION = "1.7.0";
-const EDITOR_INCREMENT = "05.55";
+const CORE_VERSION = "1.7.1";
+const EDITOR_INCREMENT = "05.56";
 
 const stableValue = value => {
   if (Array.isArray(value)) return value.map(stableValue);

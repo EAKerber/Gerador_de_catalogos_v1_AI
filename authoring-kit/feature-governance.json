@@ -1,16 +1,16 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.55",
+  "editorIncrement": "05.56",
   "v1State": {
     "scope": "single-page",
     "status": "stable",
     "closedByIncrement": "05.23",
-    "currentIncrement": "05.55",
+    "currentIncrement": "05.56",
     "nextExpansion": "paused",
     "activeFocus": [
-      "blind-trial-readiness",
-      "visual-authoring-discovery",
+      "rendered-text-integrity",
+      "factual-asset-fidelity",
       "documentation-consistency"
     ]
   },
@@ -80,6 +80,7 @@
     { "id": "draftPublicationGates", "status": "frozen", "reason": "Workflow de aprovação/publicação não será ampliado." },
     { "id": "generationPlanCompiler", "status": "active", "reason": "Deve compartilhar comandos com a edição manual." },
     { "id": "geometricPublicationGate", "status": "active", "reason": "Será tratado como validação de saída e confiabilidade geométrica." },
+    { "id": "renderedTextIntegrityGate", "status": "active", "reason": "Separa a medição tipográfica no Chromium da geometria estrutural e impede falso zero visual." },
     { "id": "catalogSourceDirectImport", "status": "active", "reason": "Fluxo principal de geração data-first." },
     { "id": "manualBulkProductEntry", "status": "active", "reason": "Maior ganho observado na criação manual." },
     { "id": "manualBulkTableEntry", "status": "active", "reason": "Base para esquema e dados em operações separadas." },

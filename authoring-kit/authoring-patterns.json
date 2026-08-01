@@ -1,7 +1,7 @@
 {
   "patternsFormat": "CatalogAuthoringPatterns",
   "patternsVersion": "1.0.0",
-  "editorIncrement": "05.55",
+  "editorIncrement": "05.56",
   "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.0.0.",
   "patterns": [
     {
@@ -61,16 +61,23 @@
       "rule": "Nunca renomear key para alterar apenas o cabeçalho e nunca ocultar a última coluna visível."
     },
     {
-      "id": "factual-image-neutral-canvas",
+      "id": "factual-image-presentation",
       "kind": "asset-derivation",
       "stage": "before-package",
       "targetType": "art",
       "componentPatch": { "props.fit": "contain" },
-      "method": "neutral-canvas-padding",
+      "allowedMethods": [
+        "neutral-margin-crop",
+        "neutral-background-expansion",
+        "factual-reframe",
+        "factual-tone-correction",
+        "declared-variant-recolor"
+      ],
       "rules": [
-        "Adicionar somente pixels brancos ou transparentes ao redor da referência.",
-        "Não recortar, deformar, recolorir, completar nem regenerar o produto factual.",
-        "Salvar como novo arquivo e recalcular mimeType, size e sha256.",
+        "Zoom, foco, reposicionamento, reenquadramento, recorte de margem neutra, redimensionamento, expansão de fundo uniforme e correção tonal são recomendados quando eliminam vazios sem alterar o produto.",
+        "Não inventar partes, deformar geometria, ocultar características relevantes nem mudar acabamento ou variante sem fonte declarada.",
+        "Recoloração só pode materializar uma variante confirmada no input.",
+        "A derivação deve ser reversível: preservar o asset-fonte, salvar novo arquivo e recalcular mimeType, size e sha256.",
         "Registrar origin, sourceAssetIds, method, fidelity e aprovação no manifesto do pacote."
       ]
     },

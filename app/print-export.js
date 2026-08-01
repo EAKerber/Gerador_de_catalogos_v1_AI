@@ -16,10 +16,12 @@
     printCurrentPage() {
       const page = this.store.getPage();
       if (!page) return false;
-      const report = this.store.getPublicationReport("draft");
+      const structural = window.CatalogDocumentValidator?.validate?.(this.store.getExportDocument(), { target: "draft" }) || { ok: true, target: "draft", issues: [] };
+      const visual = window.CatalogVisualTextIntegrity?.audit?.({ root: document.getElementById("componentLayer"), target: "draft", surface: "print-preflight" });
+      const report = visual ? window.CatalogVisualTextIntegrity.mergeReport(structural, visual) : structural;
       const blocking = report.issues.filter(issue => issue.severity === "error");
       this.lastPreflight = { ...report, blockingCount: blocking.length };
-      if (blocking.length && !window.confirm(`A verificação encontrou ${blocking.length} problema(s) estrutural(is). Imprimir mesmo assim?`)) return false;
+      if (blocking.length && !window.confirm(`A verificação encontrou ${blocking.length} problema(s) estrutural(is) ou visual(is). Imprimir mesmo assim?`)) return false;
       document.documentElement.dataset.printing = "true";
       this.restoreTitle = document.title;
       document.title = "catalogo-a4";
