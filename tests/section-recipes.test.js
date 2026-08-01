@@ -12,6 +12,7 @@ global.CatalogEditorIcon = () => "";
   "app/catalog-source.js",
   "app/presentation-registry.js",
   "app/catalog-icons.js",
+  "app/footer-recipes.js",
   "app/layout-engine.js",
   "app/component-registry.js",
   "app/section-recipes.js",
@@ -56,7 +57,7 @@ const header = scaffold.children.find(component => component.type === "catalog-h
 const content = scaffold.children.find(component => component.props?.recipeRole === "primary-content");
 const footer = scaffold.children.find(component => component.type === "catalog-footer");
 assert(scaffold.frame.x === 24 && scaffold.frame.y === 24 && scaffold.frame.width === 746 && scaffold.frame.height === 1075, "A página-base não ocupou a área segura da A4.");
-assert(header?.children.length === 5 && footer?.children.length === 6, "Cabeçalho ou rodapé da receita não foi hidratado como estrutura composta.");
+assert(header?.children.length === 5 && footer?.children.length === 3, "Cabeçalho ou rodapé da receita não foi hidratado como estrutura composta.");
 assert(content?.type === "layout-container" && store.getState().editor.editingContextId === content.id, "A receita não abriu o conteúdo principal para a próxima intenção.");
 assert(store.getHistoryState().undoCount === historyBefore + 1 && store.getHistoryState().undoLabel === "Inserir estrutura pronta", "A página-base não foi uma transação única.");
 assert(store.getComponentTemplates().length === 0, "Receitas oficiais foram misturadas com Meus componentes.");

@@ -64,7 +64,7 @@ let browser;
 
   const screen = await measure();
   assert(screen.footer.height === 80, `O rodapé não permaneceu no mínimo de 80 px: ${JSON.stringify(screen.footer)}.`);
-  assert(screen.items.length === 6, `Quantidade inesperada de itens do rodapé: ${screen.items.length}.`);
+  assert(screen.items.length === 3, `Quantidade inesperada de itens do rodapé: ${screen.items.length}.`);
 
   for (const item of screen.items) {
     assert(item.frame.height <= 77, `O item não foi contido no slot mínimo do rodapé: ${JSON.stringify(item.frame)}.`);
@@ -78,8 +78,8 @@ let browser;
     }
   }
 
-  const whatsapp = screen.items.flatMap(item => item.textChildren).find(child => child.text === "Atendimento via WhatsApp");
-  assert(whatsapp, "O subtítulo de WhatsApp não foi encontrado.");
+  const whatsapp = screen.items.flatMap(item => item.textChildren).find(child => child.text === "[CANAL DE ATENDIMENTO]");
+  assert(whatsapp, "O placeholder de atendimento não foi encontrado.");
   assert(whatsapp.whiteSpace === "normal", `O subtítulo voltou a usar nowrap: ${JSON.stringify(whatsapp)}.`);
 
   await page.emulateMedia({ media: "print" });

@@ -33,6 +33,7 @@ const runtimeRoot = path.resolve(__dirname, "..", "runtime");
 [
   "tokens.js",
   "catalog-source.js",
+  "footer-recipes.js",
   "catalog-generation-plan.js",
   "presentation-registry.js",
   "catalog-icons.js",
@@ -70,6 +71,7 @@ fs.writeFileSync(reportPath, `${JSON.stringify({
   compilerVersion: result.compilerVersion,
   sourceVersion: result.sourceVersion,
   targetVersion: result.targetVersion,
+  gates: result.gates || {},
   summary: result.summary,
   decisions: result.decisions || [],
   repairs: result.repairs || [],

@@ -30,7 +30,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
       history: CatalogEditor.store.getHistoryState()
     };
   });
-  assert(actions === 1 && scaffold.headerChildren === 5 && scaffold.footerChildren === 6 && scaffold.contextId === scaffold.contentId, "A página-base não ficou pronta e focada em uma ação.");
+  assert(actions === 1 && scaffold.headerChildren === 5 && scaffold.footerChildren === 3 && scaffold.contextId === scaffold.contentId, "A página-base não ficou pronta e focada em uma ação.");
   assert(scaffold.history.undoCount === 1 && scaffold.history.undoLabel === "Inserir estrutura pronta", "A página-base não foi registrada como uma transação.");
 
   const products = [

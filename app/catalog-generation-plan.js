@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const number = (value, fallback, minimum, maximum) => Math.max(minimum, Math.min(maximum, Number(value) || fallback));
   const allowed = (value, values, fallback) => values.includes(value) ? value : fallback;
@@ -17,7 +17,11 @@
     return order.map((productId, index) => {
       const directive = directives.get(productId) || {};
       const product = products.find(item => String(item.id) === productId) || {};
-      const galleryCount = Math.max(product.assetRoles?.gallery?.length || 0, product.variants?.length || 0);
+      const galleryAssets = new Set([
+        ...(product.assetRoles?.gallery || []),
+        ...(product.variants || []).flatMap(variant => variant.assetIds || [])
+      ].map(String).filter(Boolean));
+      const galleryCount = galleryAssets.size;
       const inferredPreset = galleryCount >= 2 ? "product-variants" : "product-standard";
       return {
         productId,
@@ -27,6 +31,43 @@
         density: allowed(directive.density, ["compact", "standard", "comfortable"], index === 0 ? "comfortable" : "compact")
       };
     });
+  }
+
+  function normalizeFooter(catalog, footer = {}) {
+    if (footer.enabled === false) {
+      return { enabled: false, state: "omitted", recipeId: null, itemCount: 0, items: [], recommendation: null, store: "", city: "", phone: "", updatedAt: "" };
+    }
+    const values = {
+      store: String(footer.store || catalog.store || ""),
+      city: String(footer.city || catalog.city || ""),
+      phone: String(footer.phone || catalog.phone || ""),
+      address: String(footer.address || catalog.address || ""),
+      benefit: String(footer.benefit || ""),
+      service: String(footer.service || ""),
+      updatedAt: String(footer.updatedAt || catalog.updatedAtLabel || "")
+    };
+    const recommendation = window.CatalogFooterRecipes?.recommendation?.(values) || { status: "needs-input", recipeId: "contact", count: 3, message: "Confirme o conteúdo do rodapé." };
+    const explicitItems = Array.isArray(footer.items) ? footer.items.slice(0, window.CatalogFooterRecipes?.HARD_MAX || 8).map((item, index) => ({
+      role: String(item?.role || "custom"),
+      icon: String(item?.icon || "shield-star"),
+      title: String(item?.title || "[ITEM DO RODAPÉ]"),
+      subtitle: String(item?.subtitle || ""),
+      contentState: item?.contentState === "confirmed" ? "confirmed" : "pending",
+      placeholder: item?.contentState !== "confirmed"
+    })) : null;
+    const valuesByRole = {
+      identity: values.store ? { title: values.store, subtitle: values.city } : null,
+      contact: values.phone ? { title: values.phone, subtitle: String(footer.contactLabel || "") } : null,
+      location: values.address || values.city ? { title: values.address || values.city, subtitle: values.address && values.city ? values.city : "" } : null,
+      benefit: values.benefit ? { title: values.benefit, subtitle: "" } : null,
+      service: values.service ? { title: values.service, subtitle: "" } : null,
+      page: { title: String(footer.pageLabel || "Página 01"), subtitle: values.updatedAt }
+    };
+    const recipeId = String(footer.recipeId || recommendation.recipeId || "contact");
+    const itemCount = window.CatalogFooterRecipes?.normalizeCount?.(footer.itemCount, explicitItems?.length || recommendation.count || 3) || Math.max(1, Math.min(8, Number(footer.itemCount) || explicitItems?.length || 3));
+    const items = explicitItems || window.CatalogFooterRecipes?.descriptors?.(recipeId, itemCount, valuesByRole) || [];
+    const state = items.some(item => item.contentState !== "confirmed") ? "pending" : "ready";
+    return { enabled: true, state, recipeId, itemCount: items.length, items, recommendation, ...values };
   }
 
   function normalize(source, plan = {}) {
@@ -67,13 +108,7 @@
         title: String(header.title || catalog.title || "CATÁLOGO DE PRODUTOS"),
         logoAssetId: header.logoAssetId || catalog.logoAssetId || null
       },
-      footer: {
-        enabled: footer.enabled !== false,
-        store: String(footer.store || catalog.store || "Top Mobili Ferragens"),
-        city: String(footer.city || catalog.city || ""),
-        phone: String(footer.phone || catalog.phone || ""),
-        updatedAt: String(footer.updatedAt || catalog.updatedAtLabel || "")
-      },
+      footer: normalizeFooter(catalog, footer),
       heroProductId: explicitHero,
       productOrder: directives.map(item => item.productId),
       products: directives,
@@ -91,7 +126,7 @@
     if (!plan || typeof plan !== "object" || Array.isArray(plan)) add("error", "PLAN_TYPE", "O plano editorial precisa ser um objeto JSON.");
     else {
       if (plan.planFormat && plan.planFormat !== "CatalogGenerationPlan") add("error", "PLAN_FORMAT", "O arquivo não usa planFormat CatalogGenerationPlan.");
-      if (plan.planVersion && plan.planVersion !== VERSION) add("error", "PLAN_VERSION", `A versão ${plan.planVersion} do plano não é suportada; esperado ${VERSION}.`);
+      if (plan.planVersion && !["1.0.0", VERSION].includes(plan.planVersion)) add("error", "PLAN_VERSION", `A versão ${plan.planVersion} do plano não é suportada; esperado 1.0.0 ou ${VERSION}.`);
       const known = new Set((source?.products || []).map(product => String(product.id)));
       (plan.productOrder || []).forEach(productId => { if (!known.has(String(productId))) add("error", "PLAN_PRODUCT_UNKNOWN", `O produto “${productId}” do plano não existe no CatalogSource.`); });
       (plan.products || []).forEach(item => { if (!known.has(String(item?.productId))) add("error", "PLAN_DIRECTIVE_PRODUCT_UNKNOWN", `A diretiva referencia o produto desconhecido “${item?.productId || "sem ID"}”.`); });
@@ -99,5 +134,5 @@
     return { ok: !issues.some(issue => issue.severity === "error"), issues };
   }
 
-  window.CatalogGenerationPlan = Object.freeze({ VERSION, normalize, validate, normalizeProductDirectives, clone });
+  window.CatalogGenerationPlan = Object.freeze({ VERSION, normalize, validate, normalizeProductDirectives, normalizeFooter, clone });
 })();

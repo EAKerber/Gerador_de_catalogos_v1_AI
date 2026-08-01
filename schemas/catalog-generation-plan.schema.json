@@ -6,7 +6,7 @@
   "required": ["planFormat", "planVersion", "id", "catalogId", "strategy", "page", "layout", "header", "footer", "heroProductId", "productOrder", "products", "policies"],
   "properties": {
     "planFormat": { "const": "CatalogGenerationPlan" },
-    "planVersion": { "const": "1.0.0" },
+    "planVersion": { "const": "1.1.0" },
     "id": { "type": "string", "minLength": 1 },
     "catalogId": { "type": ["string", "null"] },
     "strategy": { "enum": ["hero-grid", "grid-only"] },
@@ -48,12 +48,46 @@
     },
     "footer": {
       "type": "object",
-      "required": ["enabled", "store", "city", "phone", "updatedAt"],
+      "required": ["enabled", "state", "recipeId", "itemCount", "items", "recommendation", "store", "city", "phone", "address", "benefit", "service", "updatedAt"],
       "properties": {
         "enabled": { "type": "boolean" },
+        "state": { "enum": ["ready", "pending", "omitted"] },
+        "recipeId": { "type": ["string", "null"] },
+        "itemCount": { "type": "integer", "minimum": 0, "maximum": 8 },
+        "items": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": ["role", "icon", "title", "subtitle", "contentState", "placeholder"],
+            "properties": {
+              "role": { "type": "string", "minLength": 1 },
+              "icon": { "type": "string", "minLength": 1 },
+              "title": { "type": "string" },
+              "subtitle": { "type": "string" },
+              "contentState": { "enum": ["confirmed", "pending"] },
+              "placeholder": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "recommendation": {
+          "type": ["object", "null"],
+          "properties": {
+            "status": { "enum": ["ready", "needs-input"] },
+            "recipeId": { "type": "string" },
+            "count": { "type": "integer", "minimum": 1, "maximum": 8 },
+            "message": { "type": "string" }
+          },
+          "required": ["status", "recipeId", "count", "message"],
+          "additionalProperties": false
+        },
         "store": { "type": "string" },
         "city": { "type": "string" },
         "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "benefit": { "type": "string" },
+        "service": { "type": "string" },
         "updatedAt": { "type": "string" }
       },
       "additionalProperties": false

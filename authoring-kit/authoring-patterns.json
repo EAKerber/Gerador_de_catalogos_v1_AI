@@ -1,8 +1,8 @@
 {
   "patternsFormat": "CatalogAuthoringPatterns",
   "patternsVersion": "1.0.0",
-  "editorIncrement": "05.56",
-  "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.0.0.",
+  "editorIncrement": "05.57",
+  "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.1.0.",
   "patterns": [
     {
       "id": "product-card-arrangement",

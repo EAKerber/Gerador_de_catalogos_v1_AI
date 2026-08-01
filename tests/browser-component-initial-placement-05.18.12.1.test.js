@@ -36,7 +36,7 @@ let browser;
     const pageRect = pageElement.getBoundingClientRect();
     const footerRect = footerElement.getBoundingClientRect();
     const subtitle = Array.from(footerElement.querySelectorAll('.editor-component--text[data-slot-name="subtitle"] .component-text p'))
-      .find(element => element.textContent.includes("Atendimento via WhatsApp"));
+      .find(element => element.textContent.includes("[CANAL DE ATENDIMENTO]"));
     const style = subtitle ? getComputedStyle(subtitle) : null;
     return {
       header: { ...header.frame },
@@ -62,7 +62,7 @@ let browser;
   assert(snapshot.footer.x === 24 && snapshot.footer.y === 999 && snapshot.footer.width === 746, `Rodapé visual fora da base segura: ${JSON.stringify(snapshot.footer)}.`);
   assert(Math.abs(snapshot.footerDom.x - 24) <= 2 && Math.abs(snapshot.footerDom.y - 999) <= 2, `DOM do rodapé divergiu do modelo: ${JSON.stringify(snapshot.footerDom)}.`);
   assert(snapshot.subtitle, "O complemento de atendimento não foi renderizado.");
-  assert(snapshot.subtitle.text === "Atendimento via WhatsApp", "O texto integral do complemento não foi preservado.");
+  assert(snapshot.subtitle.text === "[CANAL DE ATENDIMENTO]", "O placeholder inválido do complemento não foi preservado.");
   assert(snapshot.subtitle.whiteSpace === "normal" && snapshot.subtitle.lineClamp === "2", `O wrap de duas linhas não foi aplicado: ${JSON.stringify(snapshot.subtitle)}.`);
   assert(snapshot.subtitle.scrollHeight <= snapshot.subtitle.clientHeight + 1, "O complemento continua excedendo verticalmente a caixa.");
 
@@ -76,7 +76,7 @@ let browser;
   await page.evaluate(() => { document.documentElement.dataset.printing = "true"; });
   const printed = await page.evaluate(id => {
     const footer = document.querySelector(`[data-component-id="${id}"]`);
-    const subtitle = Array.from(footer.querySelectorAll('.editor-component--text[data-slot-name="subtitle"] .component-text p')).find(element => element.textContent.includes("Atendimento via WhatsApp"));
+    const subtitle = Array.from(footer.querySelectorAll('.editor-component--text[data-slot-name="subtitle"] .component-text p')).find(element => element.textContent.includes("[CANAL DE ATENDIMENTO]"));
     return { y: CatalogEditor.store.findComponent(id).component.frame.y, whiteSpace: getComputedStyle(subtitle).whiteSpace };
   }, snapshot.footerId);
   assert(printed.y === 999 && printed.whiteSpace === "normal", "Impressão perdeu posição ou wrap do rodapé.");

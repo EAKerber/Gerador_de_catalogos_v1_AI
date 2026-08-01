@@ -4,7 +4,7 @@
     "relativeRoot": "..",
     "version": "1.7.1"
   },
-  "editorIncrement": "05.56",
+  "editorIncrement": "05.57",
   "entrypoint": "START-HERE.md",
   "files": [
     {
@@ -95,15 +95,15 @@
       "mimeType": "application/json",
       "path": "examples/first-page.document.json",
       "role": "executable-example",
-      "sha256": "dc5457a0ca82fe91dc44929e02dccb330f694c9510087266f66a86c5a87cdfe4",
-      "size": 215008
+      "sha256": "a1640f6c03a953e5ea1f9ba14a4978b8ee6bd44a842c2cc1f13b1d340bd3ff1a",
+      "size": 173480
     },
     {
       "mimeType": "application/json",
       "path": "examples/first-page.report.json",
       "role": "executable-example",
-      "sha256": "5c4a4f3d925fba784dcf87118251b0a66f2073decc9d9bbeee76f14fdc881f04",
-      "size": 709
+      "sha256": "fbc9eecd8db375e49f91e87367c32e938e71267a8642adbde13efc19897e0f8b",
+      "size": 1908
     },
     {
       "mimeType": "image/svg+xml",

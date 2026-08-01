@@ -720,7 +720,7 @@ Concluído e integrado em `development` pela PR #39:
 
 ## Incremento 05.56 — Integridade textual renderizada
 
-Em implementação sobre `development`:
+Concluído em `development`:
 
 - separar validade geométrica de integridade visual do texto;
 - medir reticências, clipping, colisão texto–texto e texto–objeto no Chromium;
@@ -732,6 +732,22 @@ Em implementação sobre `development`:
   imaginativa de imagens;
 - preservar `CatalogDocument 1.16.0`, multipágina e recorte automático fora do
   escopo.
+
+## Incremento 05.57 — Integridade factual e footer declarativo
+
+Concluído em `development`:
+
+- remover fatos comerciais dos defaults do footer e tornar exemplos didáticos
+  inválidos por construção;
+- substituir o footer binário por receitas estruturais, papéis semânticos e
+  quantidade editável, recomendando de dois a cinco itens;
+- pedir decisão quando faltarem dados e manter footer vazio como caso explícito;
+- validar linhas comerciais pelas colunas declaradas e bloquear divergências de
+  caixa nas chaves;
+- criar galerias automáticas somente quando houver assets distintos;
+- declarar gates renderizados indisponíveis como `notRun`;
+- preservar `CatalogDocument 1.16.0` e Authoring Kit `1.7.1`, deixando controles
+  avançados de enquadramento e revisão editorial do kit para o próximo ensaio.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

@@ -13,6 +13,7 @@ global.CatalogEditorIcon = () => "";
   "app/catalog-generation-plan.js",
   "app/presentation-registry.js",
   "app/catalog-icons.js",
+  "app/footer-recipes.js",
   "app/layout-engine.js",
   "app/component-registry.js",
   "app/collection-registry.js",
@@ -37,7 +38,12 @@ const cards = first.document.pages[0].children.filter(component => component.typ
 assert(cards.length === 7 && cards[0].binding.productId === "product-1176", "Ordem editorial ou binding dos cards divergiu.");
 const rowCounts = cards.map(card => card.children.find(child => child.type === "data-table").props.rowIds.length);
 assert(JSON.stringify(rowCounts) === JSON.stringify([1, 2, 2, 3, 1, 2, 5]), "As linhas comerciais da referência não foram preservadas.");
-assert(cards[3].children.some(child => child.type === "art-gallery") && cards[6].children.some(child => child.type === "art-gallery"), "Variantes não escolheram galeria automaticamente.");
+assert(!cards.some(card => card.children.some(child => child.type === "art-gallery")), "Linhas ou variantes sem assets criaram galerias automáticas.");
+const explicitVariants = CatalogCompiler.compile(source, {
+  products: [3, 6].map(index => ({ productId: source.products[index].id, presetId: "product-variants", mode: "variants" }))
+});
+assert(explicitVariants.document.pages[0].children.filter(component => component.type === "product-card").filter(card => card.children.some(child => child.type === "art-gallery")).length === 2, "A solicitação explícita de galeria deixou de materializar variantes.");
+assert(first.gates.renderedText.status === "notRun" && first.gates.editorRoundTrip.status === "notRun", "Gates indisponíveis fora do editor foram apresentados como executados.");
 
 const invalidGeometry = JSON.parse(JSON.stringify(first.document));
 invalidGeometry.pages[0].children[2].frame.x = invalidGeometry.pages[0].children[1].frame.x;

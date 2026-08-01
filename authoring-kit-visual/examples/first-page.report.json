@@ -3,9 +3,25 @@
   "compilerVersion": "1.0.0",
   "sourceVersion": "1.1.0",
   "targetVersion": "1.16.0",
+  "gates": {
+    "structure": {
+      "status": "passed",
+      "source": "compiler"
+    },
+    "renderedText": {
+      "status": "notRun",
+      "source": "editor",
+      "reason": "O compilador não executa o DOM tipográfico do editor."
+    },
+    "editorRoundTrip": {
+      "status": "notRun",
+      "source": "editor",
+      "reason": "O pacote ainda não foi reimportado e exportado pelo editor."
+    }
+  },
   "summary": {
     "pages": 1,
-    "components": 87,
+    "components": 67,
     "products": 7,
     "templates": 0,
     "assets": 0,
@@ -14,18 +30,36 @@
     "overflows": 0,
     "actionsRequired": 3
   },
-  "decisions": [],
+  "decisions": [
+    {
+      "code": "FOOTER_INPUT_REQUIRED",
+      "message": "Nenhuma informação de rodapé foi fornecida; confirme contato, paginação, slots pendentes ou remoção explícita."
+    }
+  ],
   "repairs": [],
   "workflow": {
     "editorImportActions": 3,
-    "unresolvedCorrections": 0,
+    "unresolvedCorrections": 2,
     "note": "editorImportActions mede o fluxo da interface; não representa pendências do catálogo."
   },
   "issues": [
     {
-      "severity": "info",
-      "code": "VALIDATION_READY",
-      "message": "Documento estrutural, referencial, editorial e geometricamente válido."
+      "severity": "warning",
+      "code": "FOOTER_CONTENT_PENDING",
+      "message": "O item de rodapé “Item do rodapé” contém conteúdo pendente.",
+      "path": "page:page-1/page-1-catalog-footer-10/page-1-catalog-footer-10-footer-item-01",
+      "componentId": "page-1-catalog-footer-10-footer-item-01",
+      "pageId": "page-1",
+      "role": "identity"
+    },
+    {
+      "severity": "warning",
+      "code": "FOOTER_CONTENT_PENDING",
+      "message": "O item de rodapé “Item do rodapé” contém conteúdo pendente.",
+      "path": "page:page-1/page-1-catalog-footer-10/page-1-catalog-footer-10-footer-item-02",
+      "componentId": "page-1-catalog-footer-10-footer-item-02",
+      "pageId": "page-1",
+      "role": "contact"
     }
   ]
 }

@@ -616,7 +616,7 @@
       gridUnit: 4,
       minSize: { width: 500, height: 80 },
       defaultFrame: { width: 746, height: 100 },
-      defaultProps: { store: "Top Mobili Ferragens", city: "Canoas · RS", phone: "51 98977-6262", pageLabel: "Página 01", updatedAt: "Atualizado em 2026" },
+      defaultProps: { recipeId: "contact", itemCount: 3, store: "", city: "", phone: "", pageLabel: "Página 01", updatedAt: "" },
       defaultStyle: { surface: "surface.paper", border: "border.default", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.label" },
       contentFields: [],
       styleFields: ["surface", "border", "radius", "accentColor", "vectorColor", "textColor"],
@@ -626,14 +626,18 @@
         slots: footerSlots
       },
       defaultChildren(component) {
-        return [
-          { type: "footer-item", slot: "items", props: { icon: "location", title: component.props.store || "Top Mobili Ferragens", subtitle: component.props.city || "Canoas · RS" } },
-          { type: "footer-item", slot: "items", props: { icon: "whatsapp", title: component.props.phone || "51 98977-6262", subtitle: "Atendimento via WhatsApp" } },
-          { type: "footer-item", slot: "items", props: { icon: "shield-star", title: "Qualidade", subtitle: "" } },
-          { type: "footer-item", slot: "items", props: { icon: "truck", title: "Entrega", subtitle: "" } },
-          { type: "footer-item", slot: "items", props: { icon: "headset", title: "Atendimento", subtitle: "" } },
-          { type: "footer-item", slot: "items", props: { icon: "calendar", title: component.props.pageLabel || "Página 01", subtitle: component.props.updatedAt || "Atualizado em 2026" } }
+        const valuesByRole = {
+          identity: component.props.store ? { title: component.props.store, subtitle: component.props.city || "" } : null,
+          contact: component.props.phone ? { title: component.props.phone, subtitle: component.props.contactLabel || "" } : null,
+          location: component.props.address || component.props.city ? { title: component.props.address || component.props.city, subtitle: component.props.address && component.props.city ? component.props.city : "" } : null,
+          page: { title: component.props.pageLabel || "Página 01", subtitle: component.props.updatedAt || "" }
+        };
+        const entries = window.CatalogFooterRecipes?.descriptors?.(component.props.recipeId || "contact", component.props.itemCount, valuesByRole) || [
+          { role: "identity", icon: "location", title: component.props.store || "[NOME DA EMPRESA]", subtitle: component.props.city || "[CIDADE · UF]", contentState: component.props.store ? "confirmed" : "pending", placeholder: !component.props.store },
+          { role: "contact", icon: "whatsapp", title: component.props.phone || "(00) 00000-0000", subtitle: component.props.contactLabel || "[CANAL DE ATENDIMENTO]", contentState: component.props.phone ? "confirmed" : "pending", placeholder: !component.props.phone },
+          { role: "page", icon: "calendar", title: component.props.pageLabel || "Página 01", subtitle: component.props.updatedAt || "", contentState: "confirmed", placeholder: false }
         ];
+        return entries.map(entry => ({ type: "footer-item", slot: "items", props: entry }));
       },
       render: footerRender
     },
@@ -768,7 +772,7 @@
       minSize: { width: 80, height: 64 },
       recommendedSize: { width: 112, height: 96 },
       defaultFrame: { width: 112, height: 96 },
-      defaultProps: { icon: "shield-star", title: "Novo item", subtitle: "" },
+      defaultProps: { role: "custom", icon: "shield-star", title: "[ITEM DO RODAPÉ]", subtitle: "[INFORMAÇÃO OPCIONAL]", contentState: "pending", placeholder: true },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.label" },
       contentFields: [],
       styleFields: ["surface", "border", "radius"],
@@ -780,8 +784,8 @@
       defaultChildren(component) {
         return [
           { type: "icon", slot: "icon", props: { icon: component.props.icon || "shield-star", label: "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: component.style.accentColor || "brand.primary", vectorColor: component.style.vectorColor || component.style.accentColor || "brand.primary", textColor: component.style.textColor || "text.primary", typography: "type.caption" } },
-          { type: "text", slot: "title", constraints: { minWidth: 40, minHeight: 14 }, props: { content: component.props.title || "Novo item" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: component.style.textColor || "text.primary", typography: component.style.typography || "type.label" } },
-          { type: "text", slot: "subtitle", constraints: { minWidth: 40, minHeight: 14 }, props: { content: component.props.subtitle || "" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: component.style.mutedColor || "text.muted", typography: "type.caption" } }
+          { type: "text", slot: "title", constraints: { minWidth: 40, minHeight: 14 }, props: { content: component.props.title || "[ITEM DO RODAPÉ]", contentState: component.props.contentState || "pending", placeholder: component.props.placeholder !== false }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: component.style.textColor || "text.primary", typography: component.style.typography || "type.label" } },
+          { type: "text", slot: "subtitle", constraints: { minWidth: 40, minHeight: 14 }, props: { content: component.props.subtitle || "", contentState: component.props.contentState || "pending", placeholder: component.props.placeholder !== false }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: component.style.mutedColor || "text.muted", typography: "type.caption" } }
         ];
       },
       render: footerItemRender

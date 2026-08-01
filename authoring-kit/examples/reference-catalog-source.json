@@ -3,24 +3,24 @@
   "sourceVersion": "1.1.0",
   "catalog": {
     "id": "catalogo-fixacao-acessorios",
-    "title": "FIXAÇÃO E ACESSÓRIOS",
-    "kicker": "CATÁLOGO",
-    "store": "TOP MOBILI FERRAGENS",
-    "city": "Canoas · RS",
-    "phone": "51 98977-6262",
-    "updatedAtLabel": "Atualizado em 2026"
+    "title": "[TÍTULO DO CATÁLOGO]",
+    "kicker": "[CHAMADA EDITORIAL]",
+    "store": "[NOME DA EMPRESA]",
+    "city": "[CIDADE · UF]",
+    "phone": "(00) 00000-0000",
+    "updatedAtLabel": "[DD/MM/AAAA]"
   },
   "products": [
     {
       "id": "product-1176",
-      "label": "Parafuso oval PHS",
+      "label": "[PRODUTO 1]",
       "values": {
-        "title": "PARAFUSO OVAL PHS",
-        "specOne": "Cabeça oval",
-        "specTwo": "Aço cromado",
-        "code": "1176",
-        "package": "CX 1000 UNID.",
-        "price": "R$ 35,90",
+        "title": "[PRODUTO 1]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -28,28 +28,28 @@
       "highlights": [
         {
           "key": "cabeca-oval",
-          "label": "Cabeça oval",
+          "label": "[DESTAQUE 1]",
           "value": null,
           "unit": null,
           "icon": "shield-star"
         },
         {
           "key": "aco-cromado",
-          "label": "Aço cromado",
+          "label": "[DESTAQUE 2]",
           "value": null,
           "unit": null,
           "icon": "layers"
         },
         {
           "key": "bits-philips",
-          "label": "Bits Philips",
+          "label": "[DESTAQUE 3]",
           "value": null,
           "unit": null,
           "icon": "shield-star"
         },
         {
           "key": "alta-resistencia",
-          "label": "Alta resistência",
+          "label": "[DESTAQUE 4]",
           "value": null,
           "unit": null,
           "icon": "shield-star"
@@ -58,14 +58,14 @@
       "applications": [
         {
           "key": "mdf",
-          "label": "MDF",
+          "label": "[APLICAÇÃO 1]",
           "value": null,
           "unit": null,
           "icon": "layers"
         },
         {
           "key": "mdp",
-          "label": "MDP",
+          "label": "[APLICAÇÃO 2]",
           "value": null,
           "unit": null,
           "icon": "layers"
@@ -81,9 +81,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1176",
-            "package": "CX 1000 UNID.",
-            "price": "R$ 35,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1176-row-1",
@@ -93,14 +93,14 @@
     },
     {
       "id": "product-4016",
-      "label": "Parafuso chipboard colorido",
+      "label": "[PRODUTO 2]",
       "values": {
-        "title": "PARAFUSO CHIPBOARD COLORIDO",
-        "specOne": "Branco",
-        "specTwo": "Preto",
-        "code": "4016B",
-        "package": "PCT 100 UNID.",
-        "price": "R$ 12,90",
+        "title": "[PRODUTO 2]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -117,9 +117,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "4016B",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 12,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-4016-row-1",
@@ -127,9 +127,9 @@
         },
         {
           "values": {
-            "code": "4016P",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 12,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-4016-row-2",
@@ -139,14 +139,14 @@
     },
     {
       "id": "product-1197",
-      "label": "Parafuso chipboard flangeado",
+      "label": "[PRODUTO 3]",
       "values": {
-        "title": "PARAFUSO CHIPBOARD FLANGEADO",
-        "specOne": "Cabeça flangeada",
-        "specTwo": "Madeira e MDF",
-        "code": "1197",
-        "package": "CX 250 UNID.",
-        "price": "R$ 48,80",
+        "title": "[PRODUTO 3]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -163,9 +163,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1197",
-            "package": "CX 250 UNID.",
-            "price": "R$ 48,80"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {
             "package": "cx-250"
@@ -175,9 +175,9 @@
         },
         {
           "values": {
-            "code": "1196",
-            "package": "CX 150 UNID.",
-            "price": "R$ 43,87"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {
             "package": "cx-150"
@@ -189,14 +189,14 @@
     },
     {
       "id": "product-1037",
-      "label": "Cantoneira Zamac 13×13 maciça",
+      "label": "[PRODUTO 4]",
       "values": {
-        "title": "CANTONEIRA ZAMAC 13×13 MACIÇA",
-        "specOne": "Cromado",
-        "specTwo": "Cores variadas",
-        "code": "1037",
-        "package": "PCT 100 UNID.",
-        "price": "R$ 22,90",
+        "title": "[PRODUTO 4]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -206,7 +206,7 @@
       "variants": [
         {
           "id": "cromado",
-          "label": "Cromado",
+          "label": "[VARIANTE 1]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -215,7 +215,7 @@
         },
         {
           "id": "preto",
-          "label": "Preto",
+          "label": "[VARIANTE 2]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -224,7 +224,7 @@
         },
         {
           "id": "branco",
-          "label": "Branco",
+          "label": "[VARIANTE 3]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -241,9 +241,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1037",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 22,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1037-row-1",
@@ -251,9 +251,9 @@
         },
         {
           "values": {
-            "code": "1039",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 22,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1037-row-2",
@@ -261,9 +261,9 @@
         },
         {
           "values": {
-            "code": "1038",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 22,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1037-row-3",
@@ -273,14 +273,14 @@
     },
     {
       "id": "product-1056",
-      "label": "Pino de prateleira metalizado",
+      "label": "[PRODUTO 5]",
       "values": {
-        "title": "PINO DE PRATELEIRA METALIZADO",
-        "specOne": "Aço metalizado",
-        "specTwo": "Fácil instalação",
-        "code": "1056",
-        "package": "PCT 100 UNID.",
-        "price": "R$ 19,90",
+        "title": "[PRODUTO 5]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -297,9 +297,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1056",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 19,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1056-row-1",
@@ -309,14 +309,14 @@
     },
     {
       "id": "product-1369",
-      "label": "Pino invisível de fixação",
+      "label": "[PRODUTO 6]",
       "values": {
-        "title": "PINO INVISÍVEL DE FIXAÇÃO",
-        "specOne": "Pino 160 mm",
-        "specTwo": "Pino 210 mm",
-        "code": "1369",
-        "package": "PCT 10 UNID.",
-        "price": "R$ 49,00",
+        "title": "[PRODUTO 6]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -333,9 +333,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1369",
-            "package": "PCT 10 UNID.",
-            "price": "R$ 49,00"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1369-row-1",
@@ -343,9 +343,9 @@
         },
         {
           "values": {
-            "code": "1370",
-            "package": "PCT 7 UNID.",
-            "price": "R$ 40,60"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1369-row-2",
@@ -355,14 +355,14 @@
     },
     {
       "id": "product-1042",
-      "label": "L capa de fixação",
+      "label": "[PRODUTO 7]",
       "values": {
-        "title": "L CAPA DE FIXAÇÃO",
-        "specOne": "Cores variadas",
-        "specTwo": "Fixação",
-        "code": "1042",
-        "package": "Branco",
-        "price": "R$ 1,69",
+        "title": "[PRODUTO 7]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
@@ -372,7 +372,7 @@
       "variants": [
         {
           "id": "branco",
-          "label": "Branco",
+          "label": "[VARIANTE 1]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -381,7 +381,7 @@
         },
         {
           "id": "cinza",
-          "label": "Cinza",
+          "label": "[VARIANTE 2]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -390,7 +390,7 @@
         },
         {
           "id": "marrom",
-          "label": "Marrom",
+          "label": "[VARIANTE 3]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -399,7 +399,7 @@
         },
         {
           "id": "preto",
-          "label": "Preto",
+          "label": "[VARIANTE 4]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -408,7 +408,7 @@
         },
         {
           "id": "bege",
-          "label": "Bege",
+          "label": "[VARIANTE 5]",
           "attributes": [],
           "assetIds": [],
           "commercialRowIds": [
@@ -425,9 +425,9 @@
       "commercialRows": [
         {
           "values": {
-            "code": "1042",
-            "package": "Branco",
-            "price": "R$ 1,69"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1042-row-1",
@@ -435,9 +435,9 @@
         },
         {
           "values": {
-            "code": "1145",
-            "package": "Cinza",
-            "price": "R$ 1,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1042-row-2",
@@ -445,9 +445,9 @@
         },
         {
           "values": {
-            "code": "1144",
-            "package": "Marrom",
-            "price": "R$ 1,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1042-row-3",
@@ -455,9 +455,9 @@
         },
         {
           "values": {
-            "code": "1111",
-            "package": "Preto",
-            "price": "R$ 1,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1042-row-4",
@@ -465,9 +465,9 @@
         },
         {
           "values": {
-            "code": "1371",
-            "package": "Bege",
-            "price": "R$ 1,90"
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]"
           },
           "legendKeys": {},
           "id": "product-1042-row-5",
