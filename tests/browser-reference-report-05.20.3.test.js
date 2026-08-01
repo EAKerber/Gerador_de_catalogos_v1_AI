@@ -73,7 +73,10 @@ fs.mkdirSync(outputDir, { recursive: true });
   assert(result.schemaVersion === "1.16.0", "A alteração de diagnóstico modificou o schema.");
   assert(result.baseDraft.summary.missingReferences === 0, "Card local foi contado como referência ausente no rascunho.");
   assert(result.basePublication.summary.missingReferences === 0, "Card local foi contado como referência ausente na publicação.");
-  assert(result.basePublication.ok === true, `Documento autônomo deveria ser publicável: ${JSON.stringify(result.basePublication.issues)}`);
+  assert(result.baseDraft.ok === true && result.baseDraft.visualIntegrity?.summary.blockingIssues === 0, `Rascunho autônomo deveria permanecer exportável: ${JSON.stringify(result.baseDraft.issues)}`);
+  assert(result.basePublication.ok === false, "A publicação deveria ser bloqueada pelos truncamentos renderizados do documento-base.");
+  assert(result.basePublication.visualIntegrity?.summary.truncations >= 1, "O relatório de publicação não materializou o truncamento renderizado conhecido.");
+  assert(result.basePublication.issues.some(issue => issue.code === "TEXT_ELLIPSIS_APPLIED" && issue.text === "Alta resistência"), "O diagnóstico não identificou a reticência real em Alta resistência.");
   assert(optionalKinds.filter(value => value === "product:local-content").length === 1, "O card local não aparece como vínculo opcional.");
   assert(optionalKinds.filter(value => value === "asset:placeholder-without-asset").length === 2, `Esperadas duas artes opcionais, obtido ${JSON.stringify(optionalKinds)}.`);
 
