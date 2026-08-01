@@ -502,7 +502,7 @@
 
     restoreTaskState(component, definition) {
       const saved = this.taskStateByType.get(this.taskStateKey(component));
-      this.activeTab = saved?.activeTab || (component.type === "product-card" ? "content" : definition.container ? "structure" : "content");
+      this.activeTab = saved?.activeTab || (["product-card", "catalog-footer"].includes(component.type) ? "content" : definition.container ? "structure" : "content");
       this.showAllProperties = saved?.showAllProperties === true;
       this.tableColumnsOpen = saved?.tableColumnsOpen === true;
       this.tableBulkOpen = saved?.tableBulkOpen === true;
