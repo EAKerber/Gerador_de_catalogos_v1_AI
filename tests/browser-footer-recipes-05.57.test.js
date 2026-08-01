@@ -20,6 +20,7 @@ let browser = null;
     return { footerId: footer.id, history: CatalogEditor.store.getHistoryState().undoCount };
   });
 
+  await page.locator('[data-inspector-tab="content"]').click();
   await page.locator("[data-footer-recipe]").selectOption("informative");
   await page.locator("[data-footer-count]").selectOption("5");
   await page.locator("[data-footer-recipe-apply]").click();
