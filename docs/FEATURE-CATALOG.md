@@ -1,4 +1,4 @@
-# Atlas de funcionalidades — Incremento 05.56
+# Atlas de funcionalidades — Incremento 05.57
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 

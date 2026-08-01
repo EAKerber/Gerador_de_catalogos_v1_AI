@@ -9,8 +9,10 @@ const extraArgs = process.env.CATALOG_CHROMIUM_ARGS ? JSON.parse(process.env.CAT
 
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
+let browser = null;
+
 (async () => {
-  const browser = await chromium.launch({ executablePath, headless: true, args: [...extraArgs, "--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: [...extraArgs, "--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   const pageErrors = [];
   page.on("pageerror", error => pageErrors.push(error.message));
@@ -46,10 +48,11 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 
   const footerState = await page.evaluate(footerId => {
     CatalogEditor.store.setEditingContext(footerId);
+    const previousCount = CatalogEditor.store.findComponent(footerId).component.children.length;
     const item = CatalogEditor.store.addComponent("footer-item", { x: 0, y: 0 }, { parentId: footerId, slotName: "items", props: { icon: "tag", title: "Oferta", subtitle: "Só hoje" } });
-    return { count: CatalogEditor.store.findComponent(footerId).component.children.length, itemId: item.id, width: item.frame.width, atomTypes: item.children.map(child => child.type) };
+    return { previousCount, count: CatalogEditor.store.findComponent(footerId).component.children.length, itemId: item.id, width: item.frame.width, atomTypes: item.children.map(child => child.type) };
   }, ids.footerId);
-  assert(footerState.count === 7 && footerState.width > 0, "O rodapé não aceitou uma nova molécula editável.");
+  assert(footerState.count === footerState.previousCount + 1 && footerState.width > 0, "O rodapé não aceitou uma nova molécula editável.");
   assert(footerState.atomTypes.includes("icon") && footerState.atomTypes.filter(type => type === "text").length === 2, "A nova molécula do rodapé não foi atomizada.");
 
   await page.evaluate(cardId => {
@@ -90,9 +93,10 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(pageErrors.length === 0, `Erros no navegador: ${pageErrors.join(" | ")}`);
   if (process.env.CATALOG_SCREENSHOT) await page.screenshot({ path: process.env.CATALOG_SCREENSHOT, fullPage: true });
 
-  await browser.close();
   console.log("✓ Estruturas compostas, abas, ênfase contextual e Ctrl+roda validados no navegador.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
+}).finally(async () => {
+  await browser?.close();
 });

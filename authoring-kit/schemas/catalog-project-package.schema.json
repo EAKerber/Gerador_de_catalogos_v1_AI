@@ -42,7 +42,7 @@
     "generationPlan": {
       "allOf": [
         { "$ref": "#/$defs/pathDescriptor" },
-        { "type": "object", "required": ["planVersion"], "properties": { "planVersion": { "const": "1.0.0" } } }
+        { "type": "object", "required": ["planVersion"], "properties": { "planVersion": { "const": "1.1.0" } } }
       ]
     },
     "capabilities": {

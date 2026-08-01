@@ -1033,11 +1033,11 @@
             }
           },
           "props": {
-            "store": "Top Mobili Ferragens",
-            "city": "Canoas · RS",
-            "phone": "51 98977-6262",
+            "store": "[NOME DA EMPRESA]",
+            "city": "[CIDADE · UF]",
+            "phone": "(00) 00000-0000",
             "pageLabel": "Página 01",
-            "updatedAt": "Atualizado em 2026"
+            "updatedAt": "[DD/MM/AAAA]"
           },
           "style": {
             "surface": "surface.paper",
@@ -1084,8 +1084,8 @@
               },
               "props": {
                 "icon": "location",
-                "title": "Top Mobili Ferragens",
-                "subtitle": "Canoas · RS"
+                "title": "[NOME DA EMPRESA]",
+                "subtitle": "[CIDADE · UF]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -1197,7 +1197,7 @@
                     }
                   },
                   "props": {
-                    "content": "Top Mobili Ferragens"
+                    "content": "[NOME DA EMPRESA]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1251,7 +1251,7 @@
                     }
                   },
                   "props": {
-                    "content": "Canoas · RS"
+                    "content": "[CIDADE · UF]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1308,8 +1308,8 @@
               },
               "props": {
                 "icon": "whatsapp",
-                "title": "51 98977-6262",
-                "subtitle": "Atendimento via WhatsApp"
+                "title": "(00) 00000-0000",
+                "subtitle": "[CANAL DE ATENDIMENTO]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -1421,7 +1421,7 @@
                     }
                   },
                   "props": {
-                    "content": "51 98977-6262"
+                    "content": "(00) 00000-0000"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1475,7 +1475,7 @@
                     }
                   },
                   "props": {
-                    "content": "Atendimento via WhatsApp"
+                    "content": "[CANAL DE ATENDIMENTO]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1532,7 +1532,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "title": "Qualidade",
+                "title": "[BENEFÍCIO CONFIRMADO]",
                 "subtitle": ""
               },
               "style": {
@@ -1645,7 +1645,7 @@
                     }
                   },
                   "props": {
-                    "content": "Qualidade"
+                    "content": "[BENEFÍCIO CONFIRMADO]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1756,7 +1756,7 @@
               },
               "props": {
                 "icon": "truck",
-                "title": "Entrega",
+                "title": "[SERVIÇO CONFIRMADO]",
                 "subtitle": ""
               },
               "style": {
@@ -1869,7 +1869,7 @@
                     }
                   },
                   "props": {
-                    "content": "Entrega"
+                    "content": "[SERVIÇO CONFIRMADO]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -1980,7 +1980,7 @@
               },
               "props": {
                 "icon": "headset",
-                "title": "Atendimento",
+                "title": "[ITEM DO RODAPÉ]",
                 "subtitle": ""
               },
               "style": {
@@ -2093,7 +2093,7 @@
                     }
                   },
                   "props": {
-                    "content": "Atendimento"
+                    "content": "[ITEM DO RODAPÉ]"
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -2205,7 +2205,7 @@
               "props": {
                 "icon": "calendar",
                 "title": "Página 01",
-                "subtitle": "Atualizado em 2026"
+                "subtitle": "[DD/MM/AAAA]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -2371,7 +2371,7 @@
                     }
                   },
                   "props": {
-                    "content": "Atualizado em 2026"
+                    "content": "[DD/MM/AAAA]"
                   },
                   "style": {
                     "surface": "surface.paper",

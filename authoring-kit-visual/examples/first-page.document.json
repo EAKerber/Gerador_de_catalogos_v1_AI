@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.16.0",
   "id": "catalogo-fixacao-acessorios",
-  "title": "FIXAÇÃO E ACESSÓRIOS",
+  "title": "[TÍTULO DO CATÁLOGO]",
   "createdAt": "2000-01-01T00:00:00.000Z",
   "updatedAt": "2000-01-01T00:00:00.000Z",
   "activePageId": "page-1",
@@ -21,17 +21,17 @@
       "items": [
         {
           "id": "product-1176",
-          "label": "PARAFUSO OVAL PHS",
+          "label": "[PRODUTO 1]",
           "metadata": {
             "id": "product-1176",
-            "label": "Parafuso oval PHS",
+            "label": "[PRODUTO 1]",
             "values": {
-              "title": "PARAFUSO OVAL PHS",
-              "specOne": "Cabeça oval",
-              "specTwo": "Aço cromado",
-              "code": "1176",
-              "package": "CX 1000 UNID.",
-              "price": "R$ 35,90",
+              "title": "[PRODUTO 1]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -39,28 +39,28 @@
             "highlights": [
               {
                 "key": "cabeca-oval",
-                "label": "Cabeça oval",
+                "label": "[DESTAQUE 1]",
                 "value": null,
                 "unit": null,
                 "icon": "shield-star"
               },
               {
                 "key": "aco-cromado",
-                "label": "Aço cromado",
+                "label": "[DESTAQUE 2]",
                 "value": null,
                 "unit": null,
                 "icon": "layers"
               },
               {
                 "key": "bits-philips",
-                "label": "Bits Philips",
+                "label": "[DESTAQUE 3]",
                 "value": null,
                 "unit": null,
                 "icon": "shield-star"
               },
               {
                 "key": "alta-resistencia",
-                "label": "Alta resistência",
+                "label": "[DESTAQUE 4]",
                 "value": null,
                 "unit": null,
                 "icon": "shield-star"
@@ -69,14 +69,14 @@
             "applications": [
               {
                 "key": "mdf",
-                "label": "MDF",
+                "label": "[APLICAÇÃO 1]",
                 "value": null,
                 "unit": null,
                 "icon": "layers"
               },
               {
                 "key": "mdp",
-                "label": "MDP",
+                "label": "[APLICAÇÃO 2]",
                 "value": null,
                 "unit": null,
                 "icon": "layers"
@@ -94,9 +94,9 @@
                 "id": "product-1176-row-1",
                 "variantId": null,
                 "values": {
-                  "code": "1176",
-                  "package": "CX 1000 UNID.",
-                  "price": "R$ 35,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -135,17 +135,17 @@
         },
         {
           "id": "product-4016",
-          "label": "PARAFUSO CHIPBOARD COLORIDO",
+          "label": "[PRODUTO 2]",
           "metadata": {
             "id": "product-4016",
-            "label": "Parafuso chipboard colorido",
+            "label": "[PRODUTO 2]",
             "values": {
-              "title": "PARAFUSO CHIPBOARD COLORIDO",
-              "specOne": "Branco",
-              "specTwo": "Preto",
-              "code": "4016B",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 12,90",
+              "title": "[PRODUTO 2]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -164,9 +164,9 @@
                 "id": "product-4016-row-1",
                 "variantId": null,
                 "values": {
-                  "code": "4016B",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 12,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -174,9 +174,9 @@
                 "id": "product-4016-row-2",
                 "variantId": null,
                 "values": {
-                  "code": "4016P",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 12,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -215,17 +215,17 @@
         },
         {
           "id": "product-1197",
-          "label": "PARAFUSO CHIPBOARD FLANGEADO",
+          "label": "[PRODUTO 3]",
           "metadata": {
             "id": "product-1197",
-            "label": "Parafuso chipboard flangeado",
+            "label": "[PRODUTO 3]",
             "values": {
-              "title": "PARAFUSO CHIPBOARD FLANGEADO",
-              "specOne": "Cabeça flangeada",
-              "specTwo": "Madeira e MDF",
-              "code": "1197",
-              "package": "CX 250 UNID.",
-              "price": "R$ 48,80",
+              "title": "[PRODUTO 3]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -244,9 +244,9 @@
                 "id": "product-1197-row-1",
                 "variantId": null,
                 "values": {
-                  "code": "1197",
-                  "package": "CX 250 UNID.",
-                  "price": "R$ 48,80"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {
                   "package": "cx-250"
@@ -256,9 +256,9 @@
                 "id": "product-1197-row-2",
                 "variantId": null,
                 "values": {
-                  "code": "1196",
-                  "package": "CX 150 UNID.",
-                  "price": "R$ 43,87"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {
                   "package": "cx-150"
@@ -299,17 +299,17 @@
         },
         {
           "id": "product-1037",
-          "label": "CANTONEIRA ZAMAC 13×13 MACIÇA",
+          "label": "[PRODUTO 4]",
           "metadata": {
             "id": "product-1037",
-            "label": "Cantoneira Zamac 13×13 maciça",
+            "label": "[PRODUTO 4]",
             "values": {
-              "title": "CANTONEIRA ZAMAC 13×13 MACIÇA",
-              "specOne": "Cromado",
-              "specTwo": "Cores variadas",
-              "code": "1037",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 22,90",
+              "title": "[PRODUTO 4]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -319,7 +319,7 @@
             "variants": [
               {
                 "id": "cromado",
-                "label": "Cromado",
+                "label": "[VARIANTE 1]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -328,7 +328,7 @@
               },
               {
                 "id": "preto",
-                "label": "Preto",
+                "label": "[VARIANTE 2]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -337,7 +337,7 @@
               },
               {
                 "id": "branco",
-                "label": "Branco",
+                "label": "[VARIANTE 3]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -356,9 +356,9 @@
                 "id": "product-1037-row-1",
                 "variantId": "cromado",
                 "values": {
-                  "code": "1037",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 22,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -366,9 +366,9 @@
                 "id": "product-1037-row-2",
                 "variantId": "preto",
                 "values": {
-                  "code": "1039",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 22,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -376,9 +376,9 @@
                 "id": "product-1037-row-3",
                 "variantId": "branco",
                 "values": {
-                  "code": "1038",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 22,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -417,17 +417,17 @@
         },
         {
           "id": "product-1056",
-          "label": "PINO DE PRATELEIRA METALIZADO",
+          "label": "[PRODUTO 5]",
           "metadata": {
             "id": "product-1056",
-            "label": "Pino de prateleira metalizado",
+            "label": "[PRODUTO 5]",
             "values": {
-              "title": "PINO DE PRATELEIRA METALIZADO",
-              "specOne": "Aço metalizado",
-              "specTwo": "Fácil instalação",
-              "code": "1056",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 19,90",
+              "title": "[PRODUTO 5]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -446,9 +446,9 @@
                 "id": "product-1056-row-1",
                 "variantId": null,
                 "values": {
-                  "code": "1056",
-                  "package": "PCT 100 UNID.",
-                  "price": "R$ 19,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -487,17 +487,17 @@
         },
         {
           "id": "product-1369",
-          "label": "PINO INVISÍVEL DE FIXAÇÃO",
+          "label": "[PRODUTO 6]",
           "metadata": {
             "id": "product-1369",
-            "label": "Pino invisível de fixação",
+            "label": "[PRODUTO 6]",
             "values": {
-              "title": "PINO INVISÍVEL DE FIXAÇÃO",
-              "specOne": "Pino 160 mm",
-              "specTwo": "Pino 210 mm",
-              "code": "1369",
-              "package": "PCT 10 UNID.",
-              "price": "R$ 49,00",
+              "title": "[PRODUTO 6]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -516,9 +516,9 @@
                 "id": "product-1369-row-1",
                 "variantId": null,
                 "values": {
-                  "code": "1369",
-                  "package": "PCT 10 UNID.",
-                  "price": "R$ 49,00"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -526,9 +526,9 @@
                 "id": "product-1369-row-2",
                 "variantId": null,
                 "values": {
-                  "code": "1370",
-                  "package": "PCT 7 UNID.",
-                  "price": "R$ 40,60"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -567,17 +567,17 @@
         },
         {
           "id": "product-1042",
-          "label": "L CAPA DE FIXAÇÃO",
+          "label": "[PRODUTO 7]",
           "metadata": {
             "id": "product-1042",
-            "label": "L capa de fixação",
+            "label": "[PRODUTO 7]",
             "values": {
-              "title": "L CAPA DE FIXAÇÃO",
-              "specOne": "Cores variadas",
-              "specTwo": "Fixação",
-              "code": "1042",
-              "package": "Branco",
-              "price": "R$ 1,69",
+              "title": "[PRODUTO 7]",
+              "specOne": "[ATRIBUTO 01]",
+              "specTwo": "[ATRIBUTO 02]",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "assetId": null
             },
             "sourceVersion": "1.1.0",
@@ -587,7 +587,7 @@
             "variants": [
               {
                 "id": "branco",
-                "label": "Branco",
+                "label": "[VARIANTE 1]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -596,7 +596,7 @@
               },
               {
                 "id": "cinza",
-                "label": "Cinza",
+                "label": "[VARIANTE 2]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -605,7 +605,7 @@
               },
               {
                 "id": "marrom",
-                "label": "Marrom",
+                "label": "[VARIANTE 3]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -614,7 +614,7 @@
               },
               {
                 "id": "preto",
-                "label": "Preto",
+                "label": "[VARIANTE 4]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -623,7 +623,7 @@
               },
               {
                 "id": "bege",
-                "label": "Bege",
+                "label": "[VARIANTE 5]",
                 "attributes": [],
                 "assetIds": [],
                 "commercialRowIds": [
@@ -642,9 +642,9 @@
                 "id": "product-1042-row-1",
                 "variantId": "branco",
                 "values": {
-                  "code": "1042",
-                  "package": "Branco",
-                  "price": "R$ 1,69"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -652,9 +652,9 @@
                 "id": "product-1042-row-2",
                 "variantId": "cinza",
                 "values": {
-                  "code": "1145",
-                  "package": "Cinza",
-                  "price": "R$ 1,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -662,9 +662,9 @@
                 "id": "product-1042-row-3",
                 "variantId": "marrom",
                 "values": {
-                  "code": "1144",
-                  "package": "Marrom",
-                  "price": "R$ 1,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -672,9 +672,9 @@
                 "id": "product-1042-row-4",
                 "variantId": "preto",
                 "values": {
-                  "code": "1111",
-                  "package": "Preto",
-                  "price": "R$ 1,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               },
@@ -682,9 +682,9 @@
                 "id": "product-1042-row-5",
                 "variantId": "bege",
                 "values": {
-                  "code": "1371",
-                  "package": "Bege",
-                  "price": "R$ 1,90"
+                  "code": "[CÓDIGO]",
+                  "package": "[EMBALAGEM]",
+                  "price": "[R$ 00,00]"
                 },
                 "legendKeys": {}
               }
@@ -748,9 +748,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1176",
-              "package": "CX 1000 UNID.",
-              "price": "R$ 35,90",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -764,9 +764,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "4016B",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 12,90",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -780,9 +780,9 @@
           "label": "Tabela de dados · linha 2",
           "metadata": {
             "values": {
-              "code": "4016P",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 12,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-4016-row-2",
@@ -795,9 +795,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1197",
-              "package": "CX 250 UNID.",
-              "price": "R$ 48,80",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {
@@ -813,9 +813,9 @@
           "label": "Tabela de dados · linha 2",
           "metadata": {
             "values": {
-              "code": "1196",
-              "package": "CX 150 UNID.",
-              "price": "R$ 43,87"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {
               "package": "cx-150"
@@ -830,9 +830,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1037",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 22,90",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -846,9 +846,9 @@
           "label": "Tabela de dados · linha 2",
           "metadata": {
             "values": {
-              "code": "1039",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 22,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1037-row-2",
@@ -861,9 +861,9 @@
           "label": "Tabela de dados · linha 3",
           "metadata": {
             "values": {
-              "code": "1038",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 22,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1037-row-3",
@@ -876,9 +876,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1056",
-              "package": "PCT 100 UNID.",
-              "price": "R$ 19,90",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -892,9 +892,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1369",
-              "package": "PCT 10 UNID.",
-              "price": "R$ 49,00",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -908,9 +908,9 @@
           "label": "Tabela de dados · linha 2",
           "metadata": {
             "values": {
-              "code": "1370",
-              "package": "PCT 7 UNID.",
-              "price": "R$ 40,60"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1369-row-2",
@@ -923,9 +923,9 @@
           "label": "Tabela de dados · linha 1",
           "metadata": {
             "values": {
-              "code": "1042",
-              "package": "Branco",
-              "price": "R$ 1,69",
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]",
               "collectionId": "tableRows"
             },
             "legendKeys": {},
@@ -939,9 +939,9 @@
           "label": "Tabela de dados · linha 2",
           "metadata": {
             "values": {
-              "code": "1145",
-              "package": "Cinza",
-              "price": "R$ 1,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1042-row-2",
@@ -954,9 +954,9 @@
           "label": "Tabela de dados · linha 3",
           "metadata": {
             "values": {
-              "code": "1144",
-              "package": "Marrom",
-              "price": "R$ 1,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1042-row-3",
@@ -969,9 +969,9 @@
           "label": "Tabela de dados · linha 4",
           "metadata": {
             "values": {
-              "code": "1111",
-              "package": "Preto",
-              "price": "R$ 1,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1042-row-4",
@@ -984,9 +984,9 @@
           "label": "Tabela de dados · linha 5",
           "metadata": {
             "values": {
-              "code": "1371",
-              "package": "Bege",
-              "price": "R$ 1,90"
+              "code": "[CÓDIGO]",
+              "package": "[EMBALAGEM]",
+              "price": "[R$ 00,00]"
             },
             "legendKeys": {},
             "sourceRowId": "product-1042-row-5",
@@ -1434,12 +1434,12 @@
           },
           "props": {
             "number": "01",
-            "title": "PARAFUSO OVAL PHS",
-            "specOne": "Cabeça oval",
-            "specTwo": "Aço cromado",
-            "code": "1176",
-            "package": "CX 1000 UNID.",
-            "price": "R$ 35,90",
+            "title": "[PRODUTO 1]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -1491,7 +1491,7 @@
               },
               "props": {
                 "number": "01",
-                "title": "PARAFUSO OVAL PHS"
+                "title": "[PRODUTO 1]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -1611,7 +1611,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Cabeça oval",
+                "label": "[DESTAQUE 1]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -1671,7 +1671,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Aço cromado",
+                "label": "[DESTAQUE 2]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -1821,7 +1821,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Bits Philips",
+                "label": "[DESTAQUE 3]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -1881,7 +1881,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Alta resistência",
+                "label": "[DESTAQUE 4]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -1966,12 +1966,12 @@
           },
           "props": {
             "number": "02",
-            "title": "PARAFUSO CHIPBOARD COLORIDO",
-            "specOne": "Branco",
-            "specTwo": "Preto",
-            "code": "4016B",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 12,90",
+            "title": "[PRODUTO 2]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -2023,7 +2023,7 @@
               },
               "props": {
                 "number": "02",
-                "title": "PARAFUSO CHIPBOARD COLORIDO"
+                "title": "[PRODUTO 2]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -2143,7 +2143,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Branco",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2203,7 +2203,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Preto",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2379,12 +2379,12 @@
           },
           "props": {
             "number": "03",
-            "title": "PARAFUSO CHIPBOARD FLANGEADO",
-            "specOne": "Cabeça flangeada",
-            "specTwo": "Madeira e MDF",
-            "code": "1197",
-            "package": "CX 250 UNID.",
-            "price": "R$ 48,80",
+            "title": "[PRODUTO 3]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -2436,7 +2436,7 @@
               },
               "props": {
                 "number": "03",
-                "title": "PARAFUSO CHIPBOARD FLANGEADO"
+                "title": "[PRODUTO 3]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -2556,7 +2556,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Cabeça flangeada",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2616,7 +2616,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Madeira e MDF",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2792,12 +2792,12 @@
           },
           "props": {
             "number": "04",
-            "title": "CANTONEIRA ZAMAC 13×13 MACIÇA",
-            "specOne": "Cromado",
-            "specTwo": "Cores variadas",
-            "code": "1037",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 22,90",
+            "title": "[PRODUTO 4]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -2849,7 +2849,7 @@
               },
               "props": {
                 "number": "04",
-                "title": "CANTONEIRA ZAMAC 13×13 MACIÇA"
+                "title": "[PRODUTO 4]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -2873,14 +2873,79 @@
               "children": []
             },
             {
-              "id": "card-05-product-1037-specification-02",
+              "id": "card-05-product-1037-art-02",
+              "type": "art",
+              "name": "Arte / logo",
+              "frame": {
+                "x": 8,
+                "y": 48,
+                "width": 226,
+                "height": 90
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 60,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 60
+                  },
+                  "recommended": {
+                    "width": 210,
+                    "height": 160
+                  },
+                  "custom": null
+                },
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false
+              },
+              "props": {
+                "label": "ARTE DO PRODUTO",
+                "hint": "Foto, render, SVG ou desenho técnico",
+                "role": "product",
+                "fit": "contain",
+                "assetId": null,
+                "alt": "",
+                "focalX": 50,
+                "focalY": 50,
+                "vectorMode": "original",
+                "caption": "",
+                "captionPosition": "below"
+              },
+              "style": {
+                "surface": "surface.neutral",
+                "border": "border.default",
+                "radius": "radius.medium",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.strong",
+                "mutedColor": "text.muted",
+                "typography": "type.card-title"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "art",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "card-05-product-1037-specification-03",
               "type": "specification",
               "name": "Especificação",
               "frame": {
                 "x": 8,
-                "y": 158,
+                "y": 144,
                 "width": 110,
-                "height": 28
+                "height": 42
               },
               "constraints": {
                 "minWidth": 82,
@@ -2904,7 +2969,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Cromado",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2933,14 +2998,14 @@
               "children": []
             },
             {
-              "id": "card-05-product-1037-specification-03",
+              "id": "card-05-product-1037-specification-04",
               "type": "specification",
               "name": "Especificação",
               "frame": {
                 "x": 125,
-                "y": 158,
+                "y": 144,
                 "width": 110,
-                "height": 28
+                "height": 42
               },
               "constraints": {
                 "minWidth": 82,
@@ -2964,7 +3029,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Cores variadas",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -2993,7 +3058,7 @@
               "children": []
             },
             {
-              "id": "card-05-product-1037-data-table-04",
+              "id": "card-05-product-1037-data-table-05",
               "type": "data-table",
               "name": "Tabela de dados",
               "frame": {
@@ -3083,276 +3148,6 @@
               },
               "structureInitialized": false,
               "children": []
-            },
-            {
-              "id": "card-05-product-1037-art-gallery-05",
-              "type": "art-gallery",
-              "name": "Galeria de imagens",
-              "frame": {
-                "x": 8,
-                "y": 48,
-                "width": 226,
-                "height": 104
-              },
-              "constraints": {
-                "minWidth": 120,
-                "minHeight": 60,
-                "minimums": {
-                  "technical": {
-                    "width": 150,
-                    "height": 96
-                  },
-                  "recommended": {
-                    "width": 260,
-                    "height": 150
-                  },
-                  "custom": null
-                },
-                "gridUnit": 2,
-                "snapX": true,
-                "snapY": true,
-                "freeX": false,
-                "freeY": false
-              },
-              "props": {
-                "label": "VARIAÇÕES"
-              },
-              "style": {
-                "surface": "surface.paper",
-                "border": "border.default",
-                "radius": "radius.medium",
-                "accentColor": "brand.primary",
-                "textColor": "text.primary",
-                "mutedColor": "text.muted",
-                "typography": "type.label"
-              },
-              "layout": {
-                "mode": "grid",
-                "padding": 2,
-                "gap": 4,
-                "columns": 3,
-                "align": "stretch",
-                "distribution": "fill",
-                "responsive": {
-                  "enabled": false,
-                  "breakpoint": 150,
-                  "mode": "grid"
-                }
-              },
-              "layoutItem": null,
-              "reflow": {
-                "mode": "auto"
-              },
-              "slot": {
-                "name": "art",
-                "order": 0,
-                "managed": true,
-                "span": 1
-              },
-              "structureInitialized": true,
-              "children": [
-                {
-                  "id": "card-05-product-1037-art-gallery-05-art-01",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 2,
-                    "y": 2,
-                    "width": 71,
-                    "height": 100
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "CROMADO",
-                    "hint": "Escolha a primeira imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Cromado",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "cromado",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-05-product-1037-art-gallery-05-art-02",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 77,
-                    "y": 2,
-                    "width": 71,
-                    "height": 100
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "PRETO",
-                    "hint": "Escolha a segunda imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Preto",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "preto",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-05-product-1037-art-gallery-05-art-03",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 153,
-                    "y": 2,
-                    "width": 71,
-                    "height": 100
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "BRANCO",
-                    "hint": "Escolha a terceira imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Branco",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "branco",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                }
-              ]
             }
           ],
           "binding": {
@@ -3370,10 +3165,10 @@
           },
           "presentation": {
             "templateId": null,
-            "mode": "variants",
+            "mode": "standard",
             "density": "compact",
             "responsiveState": "auto",
-            "presetId": "product-variants",
+            "presetId": "product-standard",
             "overrides": {
               "arrangement": "auto"
             }
@@ -3411,12 +3206,12 @@
           },
           "props": {
             "number": "05",
-            "title": "PINO DE PRATELEIRA METALIZADO",
-            "specOne": "Aço metalizado",
-            "specTwo": "Fácil instalação",
-            "code": "1056",
-            "package": "PCT 100 UNID.",
-            "price": "R$ 19,90",
+            "title": "[PRODUTO 5]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -3468,7 +3263,7 @@
               },
               "props": {
                 "number": "05",
-                "title": "PINO DE PRATELEIRA METALIZADO"
+                "title": "[PRODUTO 5]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -3588,7 +3383,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Aço metalizado",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -3648,7 +3443,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Fácil instalação",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -3823,12 +3618,12 @@
           },
           "props": {
             "number": "06",
-            "title": "PINO INVISÍVEL DE FIXAÇÃO",
-            "specOne": "Pino 160 mm",
-            "specTwo": "Pino 210 mm",
-            "code": "1369",
-            "package": "PCT 10 UNID.",
-            "price": "R$ 49,00",
+            "title": "[PRODUTO 6]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -3880,7 +3675,7 @@
               },
               "props": {
                 "number": "06",
-                "title": "PINO INVISÍVEL DE FIXAÇÃO"
+                "title": "[PRODUTO 6]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -4000,7 +3795,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Pino 160 mm",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -4060,7 +3855,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Pino 210 mm",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -4236,12 +4031,12 @@
           },
           "props": {
             "number": "07",
-            "title": "L CAPA DE FIXAÇÃO",
-            "specOne": "Cores variadas",
-            "specTwo": "Fixação",
-            "code": "1042",
-            "package": "Branco",
-            "price": "R$ 1,69",
+            "title": "[PRODUTO 7]",
+            "specOne": "[ATRIBUTO 01]",
+            "specTwo": "[ATRIBUTO 02]",
+            "code": "[CÓDIGO]",
+            "package": "[EMBALAGEM]",
+            "price": "[R$ 00,00]",
             "assetId": null
           },
           "style": {
@@ -4293,7 +4088,7 @@
               },
               "props": {
                 "number": "07",
-                "title": "L CAPA DE FIXAÇÃO"
+                "title": "[PRODUTO 7]"
               },
               "style": {
                 "surface": "surface.paper",
@@ -4317,14 +4112,79 @@
               "children": []
             },
             {
-              "id": "card-08-product-1042-specification-02",
+              "id": "card-08-product-1042-art-02",
+              "type": "art",
+              "name": "Arte / logo",
+              "frame": {
+                "x": 8,
+                "y": 48,
+                "width": 226,
+                "height": 66
+              },
+              "constraints": {
+                "minWidth": 80,
+                "minHeight": 60,
+                "minimums": {
+                  "technical": {
+                    "width": 80,
+                    "height": 60
+                  },
+                  "recommended": {
+                    "width": 210,
+                    "height": 160
+                  },
+                  "custom": null
+                },
+                "gridUnit": 2,
+                "snapX": true,
+                "snapY": true,
+                "freeX": false,
+                "freeY": false
+              },
+              "props": {
+                "label": "ARTE DO PRODUTO",
+                "hint": "Foto, render, SVG ou desenho técnico",
+                "role": "product",
+                "fit": "contain",
+                "assetId": null,
+                "alt": "",
+                "focalX": 50,
+                "focalY": 50,
+                "vectorMode": "original",
+                "caption": "",
+                "captionPosition": "below"
+              },
+              "style": {
+                "surface": "surface.neutral",
+                "border": "border.default",
+                "radius": "radius.medium",
+                "accentColor": "brand.primary",
+                "vectorColor": "brand.primary",
+                "textColor": "text.strong",
+                "mutedColor": "text.muted",
+                "typography": "type.card-title"
+              },
+              "layout": null,
+              "layoutItem": null,
+              "reflow": null,
+              "slot": {
+                "name": "art",
+                "order": 0,
+                "managed": true,
+                "span": 1
+              },
+              "structureInitialized": false,
+              "children": []
+            },
+            {
+              "id": "card-08-product-1042-specification-03",
               "type": "specification",
               "name": "Especificação",
               "frame": {
                 "x": 8,
-                "y": 134,
+                "y": 120,
                 "width": 110,
-                "height": 28
+                "height": 42
               },
               "constraints": {
                 "minWidth": 82,
@@ -4348,7 +4208,7 @@
               },
               "props": {
                 "icon": "shield-star",
-                "label": "Cores variadas",
+                "label": "[ATRIBUTO 01]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -4377,14 +4237,14 @@
               "children": []
             },
             {
-              "id": "card-08-product-1042-specification-03",
+              "id": "card-08-product-1042-specification-04",
               "type": "specification",
               "name": "Especificação",
               "frame": {
                 "x": 125,
-                "y": 134,
+                "y": 120,
                 "width": 110,
-                "height": 28
+                "height": 42
               },
               "constraints": {
                 "minWidth": 82,
@@ -4408,7 +4268,7 @@
               },
               "props": {
                 "icon": "layers",
-                "label": "Fixação",
+                "label": "[ATRIBUTO 02]",
                 "iconScale": 100,
                 "densityPreset": "auto",
                 "gap": "auto",
@@ -4437,7 +4297,7 @@
               "children": []
             },
             {
-              "id": "card-08-product-1042-data-table-04",
+              "id": "card-08-product-1042-data-table-05",
               "type": "data-table",
               "name": "Tabela de dados",
               "frame": {
@@ -4529,408 +4389,6 @@
               },
               "structureInitialized": false,
               "children": []
-            },
-            {
-              "id": "card-08-product-1042-art-gallery-05",
-              "type": "art-gallery",
-              "name": "Galeria de imagens",
-              "frame": {
-                "x": 8,
-                "y": 48,
-                "width": 226,
-                "height": 80
-              },
-              "constraints": {
-                "minWidth": 120,
-                "minHeight": 60,
-                "minimums": {
-                  "technical": {
-                    "width": 150,
-                    "height": 96
-                  },
-                  "recommended": {
-                    "width": 260,
-                    "height": 150
-                  },
-                  "custom": null
-                },
-                "gridUnit": 2,
-                "snapX": true,
-                "snapY": true,
-                "freeX": false,
-                "freeY": false
-              },
-              "props": {
-                "label": "VARIAÇÕES"
-              },
-              "style": {
-                "surface": "surface.paper",
-                "border": "border.default",
-                "radius": "radius.medium",
-                "accentColor": "brand.primary",
-                "textColor": "text.primary",
-                "mutedColor": "text.muted",
-                "typography": "type.label"
-              },
-              "layout": {
-                "mode": "grid",
-                "padding": 2,
-                "gap": 4,
-                "columns": 5,
-                "align": "stretch",
-                "distribution": "fill",
-                "responsive": {
-                  "enabled": false,
-                  "breakpoint": 150,
-                  "mode": "grid"
-                }
-              },
-              "layoutItem": null,
-              "reflow": {
-                "mode": "auto"
-              },
-              "slot": {
-                "name": "art",
-                "order": 0,
-                "managed": true,
-                "span": 1
-              },
-              "structureInitialized": true,
-              "children": [
-                {
-                  "id": "card-08-product-1042-art-gallery-05-art-01",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 2,
-                    "y": 2,
-                    "width": 41,
-                    "height": 76
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "BRANCO",
-                    "hint": "Escolha a primeira imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Branco",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "branco",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-08-product-1042-art-gallery-05-art-02",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 47,
-                    "y": 2,
-                    "width": 41,
-                    "height": 76
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "CINZA",
-                    "hint": "Escolha a segunda imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Cinza",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "cinza",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-08-product-1042-art-gallery-05-art-03",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 92,
-                    "y": 2,
-                    "width": 41,
-                    "height": 76
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "MARROM",
-                    "hint": "Escolha a terceira imagem",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Marrom",
-                    "captionPosition": "below",
-                    "galleryItem": true,
-                    "variantId": "marrom",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-08-product-1042-art-gallery-05-art-04",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 138,
-                    "y": 2,
-                    "width": 41,
-                    "height": 76
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "PRETO",
-                    "hint": "Logo, foto, render, SVG ou desenho técnico",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Preto",
-                    "captionPosition": "below",
-                    "variantId": "preto",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "card-08-product-1042-art-gallery-05-art-05",
-                  "type": "art",
-                  "name": "Arte / logo",
-                  "frame": {
-                    "x": 183,
-                    "y": 2,
-                    "width": 41,
-                    "height": 76
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 40,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 60
-                      },
-                      "recommended": {
-                        "width": 210,
-                        "height": 160
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "label": "BEGE",
-                    "hint": "Logo, foto, render, SVG ou desenho técnico",
-                    "role": "product",
-                    "fit": "contain",
-                    "assetId": null,
-                    "alt": "",
-                    "focalX": 50,
-                    "focalY": 50,
-                    "vectorMode": "original",
-                    "caption": "Bege",
-                    "captionPosition": "below",
-                    "variantId": "bege",
-                    "semanticBinding": "variant"
-                  },
-                  "style": {
-                    "surface": "surface.neutral",
-                    "border": "border.default",
-                    "radius": "radius.medium",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.strong",
-                    "mutedColor": "text.muted",
-                    "typography": "type.card-title"
-                  },
-                  "layout": null,
-                  "layoutItem": {
-                    "managed": true,
-                    "grow": 1,
-                    "span": 1
-                  },
-                  "reflow": null,
-                  "slot": null,
-                  "structureInitialized": false,
-                  "children": []
-                }
-              ]
             }
           ],
           "binding": {
@@ -4948,10 +4406,10 @@
           },
           "presentation": {
             "templateId": null,
-            "mode": "variants",
+            "mode": "standard",
             "density": "compact",
             "responsiveState": "auto",
-            "presetId": "product-variants",
+            "presetId": "product-standard",
             "overrides": {
               "arrangement": "auto"
             }
@@ -5224,11 +4682,14 @@
             "freeY": false
           },
           "props": {
-            "store": "Top Mobili Ferragens",
-            "city": "Canoas · RS",
-            "phone": "51 98977-6262",
+            "recipeId": "contact",
+            "itemCount": 3,
+            "store": "[NOME DA EMPRESA]",
+            "city": "[CIDADE · UF]",
+            "phone": "(00) 00000-0000",
             "pageLabel": "Página 01",
-            "updatedAt": "Atualizado em 2026"
+            "updatedAt": "[DD/MM/AAAA]",
+            "footerState": "pending"
           },
           "style": {
             "surface": "surface.paper",
@@ -5255,7 +4716,7 @@
               "frame": {
                 "x": 0,
                 "y": 3,
-                "width": 124,
+                "width": 249,
                 "height": 97
               },
               "constraints": {
@@ -5279,9 +4740,12 @@
                 "freeY": false
               },
               "props": {
+                "role": "identity",
                 "icon": "location",
-                "title": "Top Mobili Ferragens",
-                "subtitle": "Canoas · RS"
+                "title": "[NOME DA EMPRESA]",
+                "subtitle": "[CIDADE · UF]",
+                "contentState": "pending",
+                "placeholder": true
               },
               "style": {
                 "surface": "surface.paper",
@@ -5311,7 +4775,7 @@
                   "type": "icon",
                   "name": "Ícone",
                   "frame": {
-                    "x": 49,
+                    "x": 112,
                     "y": 4,
                     "width": 26,
                     "height": 26
@@ -5370,7 +4834,7 @@
                   "frame": {
                     "x": 4,
                     "y": 31,
-                    "width": 116,
+                    "width": 241,
                     "height": 32
                   },
                   "constraints": {
@@ -5394,13 +4858,15 @@
                     "freeY": false
                   },
                   "props": {
-                    "content": "Top Mobili Ferragens",
+                    "content": "[NOME DA EMPRESA]",
                     "align": "center",
                     "verticalAlign": "center",
                     "scale": 100,
                     "overflow": "ellipsis",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "pending",
+                    "placeholder": true
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -5430,7 +4896,7 @@
                   "frame": {
                     "x": 4,
                     "y": 65,
-                    "width": 116,
+                    "width": 241,
                     "height": 29
                   },
                   "constraints": {
@@ -5454,13 +4920,15 @@
                     "freeY": false
                   },
                   "props": {
-                    "content": "Canoas · RS",
+                    "content": "[CIDADE · UF]",
                     "align": "center",
                     "verticalAlign": "center",
                     "scale": 100,
                     "overflow": "wrap",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "pending",
+                    "placeholder": true
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -5490,9 +4958,9 @@
               "type": "footer-item",
               "name": "Item do rodapé",
               "frame": {
-                "x": 124,
+                "x": 249,
                 "y": 3,
-                "width": 124,
+                "width": 249,
                 "height": 97
               },
               "constraints": {
@@ -5516,9 +4984,12 @@
                 "freeY": false
               },
               "props": {
+                "role": "contact",
                 "icon": "whatsapp",
-                "title": "51 98977-6262",
-                "subtitle": "Atendimento via WhatsApp"
+                "title": "(00) 00000-0000",
+                "subtitle": "[CANAL DE ATENDIMENTO]",
+                "contentState": "pending",
+                "placeholder": true
               },
               "style": {
                 "surface": "surface.paper",
@@ -5548,7 +5019,7 @@
                   "type": "icon",
                   "name": "Ícone",
                   "frame": {
-                    "x": 49,
+                    "x": 112,
                     "y": 4,
                     "width": 26,
                     "height": 26
@@ -5607,7 +5078,7 @@
                   "frame": {
                     "x": 4,
                     "y": 31,
-                    "width": 116,
+                    "width": 241,
                     "height": 32
                   },
                   "constraints": {
@@ -5631,13 +5102,15 @@
                     "freeY": false
                   },
                   "props": {
-                    "content": "51 98977-6262",
+                    "content": "(00) 00000-0000",
                     "align": "center",
                     "verticalAlign": "center",
                     "scale": 100,
                     "overflow": "ellipsis",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "pending",
+                    "placeholder": true
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -5667,7 +5140,7 @@
                   "frame": {
                     "x": 4,
                     "y": 65,
-                    "width": 116,
+                    "width": 241,
                     "height": 29
                   },
                   "constraints": {
@@ -5691,13 +5164,15 @@
                     "freeY": false
                   },
                   "props": {
-                    "content": "Atendimento via WhatsApp",
+                    "content": "[CANAL DE ATENDIMENTO]",
                     "align": "center",
                     "verticalAlign": "center",
                     "scale": 100,
                     "overflow": "wrap",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "pending",
+                    "placeholder": true
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -5727,9 +5202,9 @@
               "type": "footer-item",
               "name": "Item do rodapé",
               "frame": {
-                "x": 249,
+                "x": 497,
                 "y": 3,
-                "width": 124,
+                "width": 249,
                 "height": 97
               },
               "constraints": {
@@ -5753,9 +5228,12 @@
                 "freeY": false
               },
               "props": {
-                "icon": "shield-star",
-                "title": "Qualidade",
-                "subtitle": ""
+                "role": "page",
+                "icon": "calendar",
+                "title": "Página 01",
+                "subtitle": "",
+                "contentState": "confirmed",
+                "placeholder": false
               },
               "style": {
                 "surface": "surface.paper",
@@ -5785,718 +5263,7 @@
                   "type": "icon",
                   "name": "Ícone",
                   "frame": {
-                    "x": 49,
-                    "y": 4,
-                    "width": 26,
-                    "height": 26
-                  },
-                  "constraints": {
-                    "minWidth": 24,
-                    "minHeight": 24,
-                    "minimums": {
-                      "technical": {
-                        "width": 24,
-                        "height": 24
-                      },
-                      "recommended": {
-                        "width": 56,
-                        "height": 56
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 1,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "icon": "shield-star",
-                    "label": "",
-                    "iconScale": 100
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "icon",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-03-text-02",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 31,
-                    "width": 116,
-                    "height": 32
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "Qualidade",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "ellipsis",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.label"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "title",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-03-text-03",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 65,
-                    "width": 116,
-                    "height": 29
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "wrap",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.muted",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "subtitle",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "page-1-catalog-footer-10-footer-item-04",
-              "type": "footer-item",
-              "name": "Item do rodapé",
-              "frame": {
-                "x": 373,
-                "y": 3,
-                "width": 124,
-                "height": 97
-              },
-              "constraints": {
-                "minWidth": 80,
-                "minHeight": 64,
-                "minimums": {
-                  "technical": {
-                    "width": 80,
-                    "height": 64
-                  },
-                  "recommended": {
-                    "width": 112,
-                    "height": 96
-                  },
-                  "custom": null
-                },
-                "gridUnit": 1,
-                "snapX": true,
-                "snapY": true,
-                "freeX": false,
-                "freeY": false
-              },
-              "props": {
-                "icon": "truck",
-                "title": "Entrega",
-                "subtitle": ""
-              },
-              "style": {
-                "surface": "surface.paper",
-                "border": "border.none",
-                "radius": "radius.none",
-                "accentColor": "brand.primary",
-                "vectorColor": "brand.primary",
-                "textColor": "text.primary",
-                "mutedColor": "text.muted",
-                "typography": "type.label"
-              },
-              "layout": null,
-              "layoutItem": null,
-              "reflow": {
-                "mode": "auto"
-              },
-              "slot": {
-                "name": "items",
-                "order": 3,
-                "managed": true,
-                "span": 1
-              },
-              "structureInitialized": true,
-              "children": [
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-04-icon-01",
-                  "type": "icon",
-                  "name": "Ícone",
-                  "frame": {
-                    "x": 49,
-                    "y": 4,
-                    "width": 26,
-                    "height": 26
-                  },
-                  "constraints": {
-                    "minWidth": 24,
-                    "minHeight": 24,
-                    "minimums": {
-                      "technical": {
-                        "width": 24,
-                        "height": 24
-                      },
-                      "recommended": {
-                        "width": 56,
-                        "height": 56
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 1,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "icon": "truck",
-                    "label": "",
-                    "iconScale": 100
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "icon",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-04-text-02",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 31,
-                    "width": 116,
-                    "height": 32
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "Entrega",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "ellipsis",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.label"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "title",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-04-text-03",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 65,
-                    "width": 116,
-                    "height": 29
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "wrap",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.muted",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "subtitle",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "page-1-catalog-footer-10-footer-item-05",
-              "type": "footer-item",
-              "name": "Item do rodapé",
-              "frame": {
-                "x": 497,
-                "y": 3,
-                "width": 124,
-                "height": 97
-              },
-              "constraints": {
-                "minWidth": 80,
-                "minHeight": 64,
-                "minimums": {
-                  "technical": {
-                    "width": 80,
-                    "height": 64
-                  },
-                  "recommended": {
-                    "width": 112,
-                    "height": 96
-                  },
-                  "custom": null
-                },
-                "gridUnit": 1,
-                "snapX": true,
-                "snapY": true,
-                "freeX": false,
-                "freeY": false
-              },
-              "props": {
-                "icon": "headset",
-                "title": "Atendimento",
-                "subtitle": ""
-              },
-              "style": {
-                "surface": "surface.paper",
-                "border": "border.none",
-                "radius": "radius.none",
-                "accentColor": "brand.primary",
-                "vectorColor": "brand.primary",
-                "textColor": "text.primary",
-                "mutedColor": "text.muted",
-                "typography": "type.label"
-              },
-              "layout": null,
-              "layoutItem": null,
-              "reflow": {
-                "mode": "auto"
-              },
-              "slot": {
-                "name": "items",
-                "order": 4,
-                "managed": true,
-                "span": 1
-              },
-              "structureInitialized": true,
-              "children": [
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-05-icon-01",
-                  "type": "icon",
-                  "name": "Ícone",
-                  "frame": {
-                    "x": 49,
-                    "y": 4,
-                    "width": 26,
-                    "height": 26
-                  },
-                  "constraints": {
-                    "minWidth": 24,
-                    "minHeight": 24,
-                    "minimums": {
-                      "technical": {
-                        "width": 24,
-                        "height": 24
-                      },
-                      "recommended": {
-                        "width": 56,
-                        "height": 56
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 1,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "icon": "headset",
-                    "label": "",
-                    "iconScale": 100
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "vectorColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "icon",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-05-text-02",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 31,
-                    "width": 116,
-                    "height": 32
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "Atendimento",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "ellipsis",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.primary",
-                    "mutedColor": "text.muted",
-                    "typography": "type.label"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "title",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                },
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-05-text-03",
-                  "type": "text",
-                  "name": "Texto",
-                  "frame": {
-                    "x": 4,
-                    "y": 65,
-                    "width": 116,
-                    "height": 29
-                  },
-                  "constraints": {
-                    "minWidth": 40,
-                    "minHeight": 14,
-                    "minimums": {
-                      "technical": {
-                        "width": 80,
-                        "height": 34
-                      },
-                      "recommended": {
-                        "width": 260,
-                        "height": 80
-                      },
-                      "custom": null
-                    },
-                    "gridUnit": 2,
-                    "snapX": true,
-                    "snapY": true,
-                    "freeX": false,
-                    "freeY": false
-                  },
-                  "props": {
-                    "content": "",
-                    "align": "center",
-                    "verticalAlign": "center",
-                    "scale": 100,
-                    "overflow": "wrap",
-                    "alignExplicit": false,
-                    "overflowExplicit": false
-                  },
-                  "style": {
-                    "surface": "surface.paper",
-                    "border": "border.none",
-                    "radius": "radius.none",
-                    "accentColor": "brand.primary",
-                    "textColor": "text.muted",
-                    "mutedColor": "text.muted",
-                    "typography": "type.caption"
-                  },
-                  "layout": null,
-                  "layoutItem": null,
-                  "reflow": null,
-                  "slot": {
-                    "name": "subtitle",
-                    "order": 0,
-                    "managed": true,
-                    "span": 1
-                  },
-                  "structureInitialized": false,
-                  "children": []
-                }
-              ]
-            },
-            {
-              "id": "page-1-catalog-footer-10-footer-item-06",
-              "type": "footer-item",
-              "name": "Item do rodapé",
-              "frame": {
-                "x": 622,
-                "y": 3,
-                "width": 124,
-                "height": 97
-              },
-              "constraints": {
-                "minWidth": 80,
-                "minHeight": 64,
-                "minimums": {
-                  "technical": {
-                    "width": 80,
-                    "height": 64
-                  },
-                  "recommended": {
-                    "width": 112,
-                    "height": 96
-                  },
-                  "custom": null
-                },
-                "gridUnit": 1,
-                "snapX": true,
-                "snapY": true,
-                "freeX": false,
-                "freeY": false
-              },
-              "props": {
-                "icon": "calendar",
-                "title": "Página 01",
-                "subtitle": "Atualizado em 2026"
-              },
-              "style": {
-                "surface": "surface.paper",
-                "border": "border.none",
-                "radius": "radius.none",
-                "accentColor": "brand.primary",
-                "vectorColor": "brand.primary",
-                "textColor": "text.primary",
-                "mutedColor": "text.muted",
-                "typography": "type.label"
-              },
-              "layout": null,
-              "layoutItem": null,
-              "reflow": {
-                "mode": "auto"
-              },
-              "slot": {
-                "name": "items",
-                "order": 5,
-                "managed": true,
-                "span": 1
-              },
-              "structureInitialized": true,
-              "children": [
-                {
-                  "id": "page-1-catalog-footer-10-footer-item-06-icon-01",
-                  "type": "icon",
-                  "name": "Ícone",
-                  "frame": {
-                    "x": 49,
+                    "x": 112,
                     "y": 4,
                     "width": 26,
                     "height": 26
@@ -6549,13 +5316,13 @@
                   "children": []
                 },
                 {
-                  "id": "page-1-catalog-footer-10-footer-item-06-text-02",
+                  "id": "page-1-catalog-footer-10-footer-item-03-text-02",
                   "type": "text",
                   "name": "Texto",
                   "frame": {
                     "x": 4,
                     "y": 31,
-                    "width": 116,
+                    "width": 241,
                     "height": 32
                   },
                   "constraints": {
@@ -6585,7 +5352,9 @@
                     "scale": 100,
                     "overflow": "ellipsis",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "confirmed",
+                    "placeholder": false
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -6609,13 +5378,13 @@
                   "children": []
                 },
                 {
-                  "id": "page-1-catalog-footer-10-footer-item-06-text-03",
+                  "id": "page-1-catalog-footer-10-footer-item-03-text-03",
                   "type": "text",
                   "name": "Texto",
                   "frame": {
                     "x": 4,
                     "y": 65,
-                    "width": 116,
+                    "width": 241,
                     "height": 29
                   },
                   "constraints": {
@@ -6639,13 +5408,15 @@
                     "freeY": false
                   },
                   "props": {
-                    "content": "Atualizado em 2026",
+                    "content": "",
                     "align": "center",
                     "verticalAlign": "center",
                     "scale": 100,
                     "overflow": "wrap",
                     "alignExplicit": false,
-                    "overflowExplicit": false
+                    "overflowExplicit": false,
+                    "contentState": "confirmed",
+                    "placeholder": false
                   },
                   "style": {
                     "surface": "surface.paper",
@@ -6678,13 +5449,13 @@
   "generation": {
     "compilerVersion": "1.0.0",
     "sourceVersion": "1.1.0",
-    "planVersion": "1.0.0",
-    "sourceDigest": "1960f085",
-    "planDigest": "60299613",
+    "planVersion": "1.1.0",
+    "sourceDigest": "61860604",
+    "planDigest": "59bf380f",
     "strategy": "hero-grid",
     "plan": {
       "planFormat": "CatalogGenerationPlan",
-      "planVersion": "1.0.0",
+      "planVersion": "1.1.0",
       "id": "plan-document-example",
       "catalogId": "catalogo-fixacao-acessorios",
       "strategy": "hero-grid",
@@ -6711,10 +5482,48 @@
       },
       "footer": {
         "enabled": true,
-        "store": "Top Mobili Ferragens",
-        "city": "Canoas · RS",
-        "phone": "51 98977-6262",
-        "updatedAt": "Atualizado em 2026"
+        "state": "pending",
+        "recipeId": "contact",
+        "itemCount": 3,
+        "items": [
+          {
+            "role": "identity",
+            "icon": "location",
+            "title": "[NOME DA EMPRESA]",
+            "subtitle": "[CIDADE · UF]",
+            "contentState": "pending",
+            "placeholder": true
+          },
+          {
+            "role": "contact",
+            "icon": "whatsapp",
+            "title": "(00) 00000-0000",
+            "subtitle": "[CANAL DE ATENDIMENTO]",
+            "contentState": "pending",
+            "placeholder": true
+          },
+          {
+            "role": "page",
+            "icon": "calendar",
+            "title": "Página 01",
+            "subtitle": "",
+            "contentState": "confirmed",
+            "placeholder": false
+          }
+        ],
+        "recommendation": {
+          "status": "needs-input",
+          "recipeId": "contact",
+          "count": 3,
+          "message": "Nenhuma informação de rodapé foi fornecida; confirme contato, paginação, slots pendentes ou remoção explícita."
+        },
+        "store": "[NOME DA EMPRESA]",
+        "city": "[CIDADE · UF]",
+        "phone": "(00) 00000-0000",
+        "address": "",
+        "benefit": "",
+        "service": "",
+        "updatedAt": "[DD/MM/AAAA]"
       },
       "heroProductId": "product-1176",
       "productOrder": [
@@ -6751,8 +5560,8 @@
         {
           "productId": "product-1037",
           "role": "grid",
-          "presetId": "product-variants",
-          "mode": "variants",
+          "presetId": "product-standard",
+          "mode": "standard",
           "density": "compact"
         },
         {
@@ -6772,8 +5581,8 @@
         {
           "productId": "product-1042",
           "role": "grid",
-          "presetId": "product-variants",
-          "mode": "variants",
+          "presetId": "product-standard",
+          "mode": "standard",
           "density": "compact"
         }
       ],
@@ -6783,7 +5592,12 @@
         "safeRepair": true
       }
     },
-    "decisions": [],
+    "decisions": [
+      {
+        "code": "FOOTER_INPUT_REQUIRED",
+        "message": "Nenhuma informação de rodapé foi fornecida; confirme contato, paginação, slots pendentes ou remoção explícita."
+      }
+    ],
     "repairs": []
   }
 }

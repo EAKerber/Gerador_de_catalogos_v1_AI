@@ -28,7 +28,7 @@ O ZIP é o formato recomendado quando existem assets. JSON isolado permanece ace
 1. Leia `feature-guide.json`, `authoring-patterns.json`, `feature-inventory.json`, `feature-governance.json`, `capabilities.json` e os schemas; use o guia para escolher a intenção, os padrões para refinamentos pós-compilação, o inventário para resolver IDs/limites e a governança para distinguir recursos ativos, mantidos, auditados, congelados ou pausados.
 2. Normalize somente fatos fornecidos; nunca invente preço, código, medida, embalagem ou especificação.
 3. Normalize produtos em `CatalogSource 1.1.0`, preservando atributos, destaques, aplicações, variantes, linhas comerciais vinculadas, legendas agrupadas e papéis de assets.
-4. Crie um `CatalogGenerationPlan 1.0.0` apenas quando precisar sobrescrever o plano padrão `hero-grid`; caso contrário, deixe o compilador decidir.
+4. Crie um `CatalogGenerationPlan 1.1.0` apenas quando precisar sobrescrever o plano padrão `hero-grid`, inclusive a receita e os papéis do footer; caso contrário, deixe o compilador recomendar a estrutura e registre `needs-input` quando faltarem dados.
 5. Execute `compiler/compile-catalog.js` para materializar componentes, slots, frames e bindings determinísticos.
 6. Revise o relatório estrutural e, no editor/Chromium, execute o gate renderizado. Corrija truncamento, reticências efetivamente aplicadas, colisões de texto e fonte abaixo do mínimo antes de publicar. O compilador Node não mede tipografia nem pode declarar integridade visual.
 7. Use a política de assets `assisted` quando o usuário não indicar outro modo.
@@ -62,6 +62,8 @@ node compiler/compile-catalog.js \
 
 A mesma fonte e o mesmo plano produzem os mesmos IDs, frames e bindings. O compilador não inventa fatos e bloqueia capacidade excedida, colisão, clipping e referências estruturais inválidas. No relatório, `workflow.editorImportActions` (e o alias histórico `summary.actionsRequired`) representa as três ações do fluxo de importação no editor; não é uma contagem de correções pendentes. Pendências reais aparecem em `workflow.unresolvedCorrections` e `issues`.
 
+Receitas de footer definem somente estrutura e papéis semânticos. Sem dados suficientes, preserve os placeholders inválidos como `pending`, pergunte ao usuário e não publique. Footer vazio ou omitido exige escolha explícita; a faixa recomendada é de dois a cinco itens e o limite estrutural é oito.
+
 O CLI incluído termina em `CatalogDocument + relatório`. Ele não cria o ZIP. Para empacotar, use **Exportar → Pacote** no editor ou monte o arquivo conforme `catalog-project-package.schema.json` e valide-o por reimportação. `examples/catalog-project.json` é deliberadamente um template não importável: `size: 1` e hashes zerados precisam ser substituídos pelos valores reais de cada arquivo.
 
 ## Assets e fatos
@@ -92,11 +94,11 @@ No rascunho, os achados são avisos auditáveis. Na exportação `publication`, 
 
 ## Edição permissiva
 
-Os arquivos são JSON/Markdown comuns. O agente deve preferir `CatalogSource → CatalogGenerationPlan → compilador`; edição direta do documento continua sendo um escape hatch validado. Como `CatalogGenerationPlan 1.0.0` cobre somente estrutura de página e apresentação básica dos produtos, arranjo independente, densidade interna, spans e projeção de colunas são refinamentos pós-compilação normais, não contornos não suportados. Aplique apenas os caminhos e valores de `authoring-patterns.json` e valide novamente o documento. O editor também aceita um `CatalogSource` diretamente e aplica o plano padrão em três ações de interface.
+Os arquivos são JSON/Markdown comuns. O agente deve preferir `CatalogSource → CatalogGenerationPlan → compilador`; edição direta do documento continua sendo um escape hatch validado. Como `CatalogGenerationPlan 1.1.0` cobre estrutura de página, apresentação básica dos produtos e footer declarativo, arranjo independente, densidade interna, spans e projeção de colunas são refinamentos pós-compilação normais, não contornos não suportados. Aplique apenas os caminhos e valores de `authoring-patterns.json` e valide novamente o documento. O editor também aceita um `CatalogSource` diretamente e aplica o plano padrão em três ações de interface.
 
 ## Atlas de funcionalidades
 
-`feature-inventory.json` é gerado a partir do manifesto e enumera toda capacidade, componente, campo, slot, receita, apresentação, preset de separador, token e ícone. `feature-guide.json` é curado por intenção e informa acesso na interface, pré-condições, resultado, exemplo, limites e contratos relacionados. `authoring-patterns.json` torna explícitos os padrões de autoria que atravessam mais de um componente ou não pertencem ao plano 1.0. `feature-governance.json` registra foco e ciclo de vida sem declarar indisponível um contrato apenas por sua expansão estar congelada.
+`feature-inventory.json` é gerado a partir do manifesto e enumera toda capacidade, componente, campo, slot, receita, apresentação, preset de separador, token e ícone. `feature-guide.json` é curado por intenção e informa acesso na interface, pré-condições, resultado, exemplo, limites e contratos relacionados. `authoring-patterns.json` torna explícitos os padrões de autoria que atravessam mais de um componente ou não pertencem ao plano 1.1. `feature-governance.json` registra foco e ciclo de vida sem declarar indisponível um contrato apenas por sua expansão estar congelada.
 
 Use o guia para decidir **o que fazer**, o inventário para descobrir **com quais IDs e restrições** e a governança para evitar depender de uma frente pausada ou em consolidação. O build falha quando guia ou governança divergem das capacidades; não edite o inventário gerado manualmente.
 

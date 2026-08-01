@@ -4,6 +4,7 @@
   const VERSION = "1.1.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+  const invalidPlaceholder = value => window.CatalogFooterRecipes?.isPlaceholder?.(value) || /^\[[^\]]+\]$/.test(String(value || "").trim()) || /^\(00\)\s*0{4,5}-0{4}$/.test(String(value || "").trim());
 
   function collection(document, id) {
     return (document?.collections || []).find(item => item.id === id) || { items: [] };
@@ -120,10 +121,27 @@
           }
         }
         if (component.type === "data-table") {
+          const columns = window.CatalogSource?.normalizeColumns?.(component.props?.columns) || [];
+          const expectedKeys = new Set(columns.map(column => column.key));
+          const expectedByCase = new Map(columns.map(column => [column.key.toLowerCase(), column.key]));
           (component.props?.rowIds || []).forEach(rowId => {
-            if (rows.has(rowId)) return;
-            recordMissing("error", "TABLE_ROW_REFERENCE_MISSING", `A linha “${rowId}” não existe na coleção tableRows.`, { kind: "table-row", referenceId: rowId }, { path, componentId: component.id, pageId, collectionId: "tableRows", rowId });
+            if (!rows.has(rowId)) {
+              recordMissing("error", "TABLE_ROW_REFERENCE_MISSING", `A linha “${rowId}” não existe na coleção tableRows.`, { kind: "table-row", referenceId: rowId }, { path, componentId: component.id, pageId, collectionId: "tableRows", rowId });
+              return;
+            }
+            const row = rowItems.find(item => item.id === rowId);
+            Object.keys(row?.metadata?.values || {}).forEach(actualKey => {
+              if (expectedKeys.has(actualKey)) return;
+              const expectedKey = expectedByCase.get(actualKey.toLowerCase());
+              if (!expectedKey) return;
+              add("error", "TABLE_COLUMN_KEY_CASE_MISMATCH", `A linha “${row.label || row.id}” usa “${actualKey}”, mas a coluna declara “${expectedKey}”.`, {
+                path, componentId: component.id, pageId, rowId, actualKey, expectedKey
+              });
+            });
           });
+        }
+        if (component.type === "footer-item" && (component.props?.contentState === "pending" || component.props?.placeholder === true || invalidPlaceholder(component.props?.title) || invalidPlaceholder(component.props?.subtitle))) {
+          add(target === "publication" ? "error" : "warning", "FOOTER_CONTENT_PENDING", `O item de rodapé “${component.name || component.id}” contém conteúdo pendente.`, { path, componentId: component.id, pageId, role: component.props?.role || "custom" });
         }
         if (component.type === "legend-item" && (!component.props?.legendKey || !legendKeys.has(component.props.legendKey))) {
           const legendKey = component.props?.legendKey || null;
@@ -169,11 +187,12 @@
     productItems.forEach(product => {
       const values = product.metadata?.values || {};
       if (!String(values.title || product.label || "").trim()) add("error", "PRODUCT_TITLE_REQUIRED", `O produto “${product.id}” não possui título.`, { productId: product.id });
-      ["code", "package", "price"].forEach(field => {
-        if (String(values[field] || "").trim()) return;
-        add("warning", "PRODUCT_COMMERCIAL_VALUE_MISSING", `O produto “${product.label || product.id}” não informa ${field}.`, { productId: product.id, field });
-      });
       const commercialRows = product.metadata?.commercialRows || [];
+      const commercialColumns = window.CatalogSource?.normalizeColumns?.(product.metadata?.tableColumns) || [];
+      commercialColumns.forEach(column => {
+        if (commercialRows.some(row => String(row.values?.[column.key] || "").trim())) return;
+        add("warning", "PRODUCT_COMMERCIAL_COLUMN_EMPTY", `O produto “${product.label || product.id}” não informa valores para a coluna “${column.label}”.`, { productId: product.id, columnKey: column.key, role: column.role });
+      });
       const commercialById = new Map(commercialRows.map(row => [row.id, row]));
       (product.metadata?.variants || []).forEach(variant => {
         if (product.metadata?.needsReview === true || !String(variant.label || "").trim() || variant.label === "Variação sem nome") {

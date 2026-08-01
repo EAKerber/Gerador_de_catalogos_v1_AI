@@ -3,42 +3,47 @@
   "sourceVersion": "1.1.0",
   "catalog": {
     "id": "document-example",
-    "title": "Catálogo de exemplo"
+    "title": "[TÍTULO DO CATÁLOGO]",
+    "kicker": "[CHAMADA EDITORIAL]",
+    "store": "[NOME DA EMPRESA]",
+    "city": "[CIDADE · UF]",
+    "phone": "(00) 00000-0000",
+    "updatedAtLabel": "[DD/MM/AAAA]"
   },
   "products": [
     {
       "id": "product-1176",
-      "label": "Parafuso oval PHS",
+      "label": "[PRODUTO 1]",
       "values": {
-        "title": "PARAFUSO OVAL PHS",
-        "specOne": "Alta resistência",
-        "specTwo": "Aço cromado",
-        "code": "1176",
-        "package": "CX 1000 UNID.",
-        "price": "R$ 35,90",
+        "title": "[PRODUTO 1]",
+        "specOne": "[ATRIBUTO 01]",
+        "specTwo": "[ATRIBUTO 02]",
+        "code": "[CÓDIGO]",
+        "package": "[EMBALAGEM]",
+        "price": "[R$ 00,00]",
         "assetId": null
       },
       "sourceVersion": "1.1.0",
       "attributes": [
         {
           "key": "material",
-          "label": "Material",
-          "value": "Aço cromado",
+          "label": "[ATRIBUTO 1]",
+          "value": "[VALOR]",
           "unit": null,
           "icon": null
         },
         {
           "key": "medida",
-          "label": "Medida",
-          "value": "4,0×16",
-          "unit": "mm",
+          "label": "[ATRIBUTO 2]",
+          "value": "[VALOR]",
+          "unit": null,
           "icon": null
         }
       ],
       "highlights": [
         {
           "key": "alta-resistencia",
-          "label": "Alta resistência",
+          "label": "[DESTAQUE 1]",
           "value": null,
           "unit": null,
           "icon": "shield-star"
@@ -47,7 +52,7 @@
       "applications": [
         {
           "key": "mdf",
-          "label": "MDF",
+          "label": "[APLICAÇÃO 1]",
           "value": null,
           "unit": null,
           "icon": "layers"

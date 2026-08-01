@@ -90,6 +90,7 @@
       "component-template-saved": "Salvar componente",
       "component-template-inserted": "Inserir componente salvo",
       "section-recipe-inserted": "Inserir estrutura pronta",
+      "footer-recipe-applied": "Ajustar receita do rodapé",
       "art-converted-to-gallery": "Criar galeria da arte",
       "gallery-items-bulk-applied": "Editar galeria em lote",
       "component-template-removed": "Excluir componente salvo",
@@ -2588,6 +2589,45 @@
       const parent = this.getEditingContext();
       const contextType = parent?.type || "page";
       return (window.CatalogSectionRecipes?.list?.() || []).filter(recipe => (recipe.contexts || ["page", "layout-container"]).includes(contextType) && this.isTypeAllowed(recipe.component?.type, parent?.id || null));
+    }
+
+    getFooterRecipeState(componentId) {
+      const footer = this.findComponent(componentId)?.component;
+      if (footer?.type !== "catalog-footer") return null;
+      const items = (footer.children || []).filter(child => child.type === "footer-item");
+      const recipeId = window.CatalogFooterRecipes?.get?.(footer.props?.recipeId) ? footer.props.recipeId : "contact";
+      return {
+        recipeId,
+        count: items.length,
+        minRecommended: window.CatalogFooterRecipes?.MIN_RECOMMENDED || 2,
+        maxRecommended: window.CatalogFooterRecipes?.MAX_RECOMMENDED || 5,
+        hardMax: window.CatalogFooterRecipes?.HARD_MAX || 8,
+        pending: items.filter(item => item.props?.contentState === "pending" || item.props?.placeholder === true).length
+      };
+    }
+
+    applyFooterRecipe(componentId, recipeId, count) {
+      const footer = this.findComponent(componentId)?.component;
+      if (footer?.type !== "catalog-footer" || !window.CatalogFooterRecipes?.get?.(recipeId)) return null;
+      const nextCount = window.CatalogFooterRecipes.normalizeCount(count, window.CatalogFooterRecipes.get(recipeId).roles.length);
+      const confirmedByRole = Object.fromEntries((footer.children || [])
+        .filter(child => child.type === "footer-item" && child.props?.role && child.props?.contentState === "confirmed")
+        .map(child => [child.props.role, { icon: child.props.icon, title: child.props.title, subtitle: child.props.subtitle }]));
+      const descriptors = window.CatalogFooterRecipes.descriptors(recipeId, nextCount, confirmedByRole);
+      return this.runCompoundChange({ type: "footer-recipe-applied", componentId, recipeId, itemCount: nextCount }, () => {
+        (footer.children || []).slice().forEach(child => this.deleteComponent(child.id));
+        descriptors.forEach(descriptor => this.addComponent("footer-item", { x: 0, y: 0, width: 112, height: Math.max(64, footer.frame.height - 3) }, {
+          parentId: footer.id,
+          slotName: "items",
+          props: descriptor
+        }));
+        footer.props.recipeId = recipeId;
+        footer.props.itemCount = descriptors.length;
+        footer.props.footerState = descriptors.some(item => item.contentState === "pending") ? "pending" : "ready";
+        this.state.editor.selectedComponentId = footer.id;
+        this.state.editor.selectedComponentIds = [footer.id];
+        return footer;
+      });
     }
 
     getInsertableTemplate(templateId) {

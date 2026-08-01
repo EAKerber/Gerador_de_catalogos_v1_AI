@@ -178,6 +178,27 @@
     if (logo && plan.header.logoAssetId) store.updateComponent(logo.id, { props: { assetId: plan.header.logoAssetId } });
   }
 
+  function applyFooter(store, footer, plan) {
+    (footer.children || []).slice().forEach(child => store.deleteComponent(child.id));
+    (plan.footer.items || []).forEach(item => {
+      store.addComponent("footer-item", { x: 0, y: 0, width: 112, height: Math.max(64, footer.frame.height - 3) }, {
+        parentId: footer.id,
+        slotName: "items",
+        props: clone(item)
+      });
+    });
+    store.updateComponent(footer.id, { props: {
+      recipeId: plan.footer.recipeId,
+      itemCount: plan.footer.items.length,
+      footerState: plan.footer.state,
+      store: plan.footer.store,
+      city: plan.footer.city,
+      phone: plan.footer.phone,
+      updatedAt: plan.footer.updatedAt
+    } });
+    return footer;
+  }
+
   function canonicalize(document, source, plan, decisions, repairs) {
     const signature = digest({ source, plan });
     const idMap = new Map();
@@ -293,6 +314,10 @@
 
     const decisions = [];
     if (!inputPlan) decisions.push({ code: "DEFAULT_PLAN", message: "Plano hero-grid padrão escolhido porque nenhum plano editorial foi fornecido." });
+    if (plan.footer.enabled && plan.footer.state === "pending") decisions.push({
+      code: "FOOTER_INPUT_REQUIRED",
+      message: plan.footer.recommendation?.message || "O rodapé contém papéis pendentes e precisa de confirmação do usuário antes da publicação."
+    });
     const blank = window.createBlankCatalogDocument();
     blank.schemaVersion = window.CATALOG_SCHEMA_VERSION;
     blank.title = String(source.catalog?.title || "Catálogo");
@@ -382,8 +407,10 @@
     }
 
     if (plan.footer.enabled) {
-      store.addComponent("catalog-footer", { x: margin, y: footerY, width: innerWidth, height: compiledFooterHeight }, {
+      const footer = store.addComponent("catalog-footer", { x: margin, y: footerY, width: innerWidth, height: compiledFooterHeight }, {
         props: {
+          recipeId: plan.footer.recipeId,
+          itemCount: plan.footer.itemCount,
           store: plan.footer.store,
           city: plan.footer.city,
           phone: plan.footer.phone,
@@ -391,6 +418,7 @@
           updatedAt: plan.footer.updatedAt
         }
       });
+      applyFooter(store, footer, plan);
     }
 
     let document = store.getExportDocument();
@@ -414,6 +442,11 @@
       overflows: validation.summary.overflows,
       actionsRequired: 3
     };
+    const gates = {
+      structure: { status: validation.ok ? "passed" : "failed", source: "compiler" },
+      renderedText: { status: "notRun", source: "editor", reason: "O compilador não executa o DOM tipográfico do editor." },
+      editorRoundTrip: { status: "notRun", source: "editor", reason: "O pacote ainda não foi reimportado e exportado pelo editor." }
+    };
     return {
       ok: !issues.some(item => item.severity === "error"),
       kind: "source",
@@ -425,6 +458,7 @@
       report: validation,
       decisions,
       repairs,
+      gates,
       summary,
       issues
     };

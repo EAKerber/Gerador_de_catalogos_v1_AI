@@ -253,6 +253,24 @@
         </section>`;
     }
 
+    renderFooterSection(component) {
+      if (component.type !== "catalog-footer") return "";
+      const state = this.store.getFooterRecipeState(component.id);
+      const recipes = window.CatalogFooterRecipes?.list?.() || [];
+      const counts = Array.from({ length: state?.hardMax || 8 }, (_, index) => index + 1);
+      return `
+        <section class="inspector-section inspector-section--footer">
+          <div class="inspector-section__heading"><h3 class="inspector-section__title">Receita do rodapé</h3><span>${state?.pending || 0} pendente(s)</span></div>
+          <p class="inspector-note">Receitas definem papéis e estrutura, nunca fatos comerciais. Itens sem dados usam placeholders inválidos e bloqueiam a publicação.</p>
+          <div class="inspector-grid">
+            <div class="inspector-field inspector-field--full"><label>Caso de uso</label><select data-footer-recipe>${recipes.map(recipe => `<option value="${escapeHtml(recipe.id)}" ${recipe.id === state?.recipeId ? "selected" : ""}>${escapeHtml(recipe.label)} · ${escapeHtml(recipe.description)}</option>`).join("")}</select></div>
+            <div class="inspector-field inspector-field--full"><label>Quantidade de itens</label><select data-footer-count>${counts.map(count => `<option value="${count}" ${count === state?.count ? "selected" : ""}>${count}${count >= state.minRecommended && count <= state.maxRecommended ? " · recomendado" : count > state.maxRecommended ? " · alta densidade" : " · mínimo editorial"}</option>`).join("")}</select><small>Faixa recomendada: ${state?.minRecommended || 2}–${state?.maxRecommended || 5}; limite estrutural: ${state?.hardMax || 8}.</small></div>
+          </div>
+          <div class="inspector-actions"><button type="button" class="inspector-action--primary inspector-action--wide" data-footer-recipe-apply>Aplicar receita e quantidade</button></div>
+          <p class="inspector-note">Sem informações, o agente deve perguntar antes de publicar. Remover o rodapé inteiro continua sendo uma escolha explícita de borda.</p>
+        </section>`;
+    }
+
     renderTableRowsSection(component) {
       if (component.type !== "data-table") return "";
       const rows = this.store.getTableRows(component);
@@ -797,6 +815,7 @@
           ${this.renderProductBindingSection(component)}
           ${this.renderAssetSection(component)}
           ${this.renderGallerySection(component)}
+          ${this.renderFooterSection(component)}
           ${this.renderTableRowsSection(component)}
           ${contentSection}
         </div>
@@ -1126,6 +1145,10 @@
           } catch (error) { this.galleryBulkFeedback = error.message; }
         }
         this.render();
+      } else if (event.target.closest("[data-footer-recipe-apply]")) {
+        const recipeId = this.root.querySelector("[data-footer-recipe]")?.value || "contact";
+        const count = Number(this.root.querySelector("[data-footer-count]")?.value || 3);
+        this.store.applyFooterRecipe(component.id, recipeId, count);
       } else if (event.target.closest("[data-table-bulk-apply]")) {
         this.tableBulkOpen = true;
         const text = this.root.querySelector("[data-table-bulk-text]")?.value || "";

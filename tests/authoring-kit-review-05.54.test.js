@@ -19,7 +19,7 @@ const packageTemplate = readJSON("authoring-kit/examples/catalog-project.json");
 const guideMarkdown = read("authoring-kit/GUIDE.md");
 
 assert(manifest.kitVersion === "1.7.1", "O kit com gate textual não possui identidade própria em relação ao núcleo 1.7.0.");
-assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.56"), "Metadados de proveniência do kit divergem.");
+assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.57"), "Metadados de proveniência do kit divergem.");
 for (const field of ["guide", "capabilities", "featureInventory", "featureGuide", "featureGovernance", "authoringPatterns", "compiler", "runtime"]) {
   assert(fs.existsSync(path.join(root, "authoring-kit", manifest[field])), `Manifesto aponta para caminho ausente: ${field}.`);
 }
@@ -51,7 +51,8 @@ try {
   assert(execution.status === 0, `Compilador isolado falhou: ${execution.stderr || execution.stdout}`);
   const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
   assert(report.ok && report.summary.products === 7 && report.summary.collisions === 0 && report.summary.overflows === 0, "Compilação isolada perdeu o baseline técnico.");
-  assert(report.workflow.editorImportActions === 3 && report.workflow.unresolvedCorrections === 0, "O relatório ainda confunde ações da interface com correções pendentes.");
+  assert(report.workflow.editorImportActions === 3 && report.workflow.unresolvedCorrections === 3, "O relatório não separa ações da interface das três pendências factuais esperadas do footer.");
+  assert(report.gates.structure.status === "passed" && report.gates.renderedText.status === "notRun" && report.gates.editorRoundTrip.status === "notRun", "O CLI promoveu um gate externo sem execução.");
 } finally {
   fs.rmSync(temp, { recursive: true, force: true });
 }
@@ -62,4 +63,4 @@ const promotionalProfile = readJSON("tests/fixtures/promotional-reference-profil
 assert(technicalHash === "4262171d057c6daedd47cd192600fa9f826d739552b4a4c84f38c917c010f2f6", "A referência técnica canônica mudou.");
 assert(promotionalProfile.source.sha256 === "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1e38cffd02b4ab586" && promotionalProfile.interpretation.blocking === false, "O limite do benchmark promocional mudou.");
 
-console.log("✓ Authoring Kit 1.7.1 preserva a revisão 05.54, o complemento visual e o gate textual 05.56.");
+console.log("✓ Authoring Kit 1.7.1 preserva a revisão 05.54 e explicita as pendências e gates do 05.57.");

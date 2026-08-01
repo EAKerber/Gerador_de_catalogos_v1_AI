@@ -21,7 +21,7 @@ const schema = readJSON("authoring-kit-visual/schemas/visual-index.schema.json")
 const capabilities = readJSON("authoring-kit/capabilities.json");
 const guide = readJSON("authoring-kit/feature-guide.json");
 
-assert(core.kitVersion === "1.7.1" && core.editorIncrement === "05.56", "O núcleo não identifica a geração com guia visual e gate textual.");
+assert(core.kitVersion === "1.7.1" && core.editorIncrement === "05.57", "O núcleo não identifica a geração com guia visual e gate textual.");
 assert(core.visualCompanion?.format === "CatalogAuthoringVisualGuide" && core.visualCompanion.version === "1.0.0", "O núcleo não declara o complemento visual.");
 assert(core.visualCompanion.distribution === "standalone-kit-only" && core.visualCompanion.requiredForCompilation === false, "A fronteira de distribuição do complemento visual mudou.");
 assert(core.visualCompanion.manifestSha256 === digest(manifestBytes), "O hash do manifesto visual diverge do núcleo.");
@@ -65,7 +65,8 @@ assert(digest(promotional) === "dfdf29abd4d82f207071e482cb6f49bfd893f28a741039f1
 const report = readJSON("authoring-kit-visual/examples/first-page.report.json");
 const document = readJSON("authoring-kit-visual/examples/first-page.document.json");
 assert(document.schemaVersion === "1.16.0", "O exemplo visual alterou CatalogDocument.");
-assert(report.ok && report.summary.products === 7 && report.summary.collisions === 0 && report.summary.overflows === 0 && report.workflow.unresolvedCorrections === 0, "O exemplo visual executável não passa pelos gates.");
+assert(report.ok && report.summary.products === 7 && report.summary.collisions === 0 && report.summary.overflows === 0, "O exemplo visual executável não passa pelos gates estruturais.");
+assert(report.workflow.unresolvedCorrections === 2 && report.issues.filter(issue => issue.code === "FOOTER_CONTENT_PENDING").length === 2, "O exemplo didático deixou de manter dados de footer inválidos e bloqueáveis.");
 const embedded = read("app/authoring-kit-files.js");
 assert(!embedded.includes("editor-reference.png") && !embedded.includes("case-studies/catalogo-tecnico/reference.jpeg"), "Os binários do complemento visual foram embutidos no bundle textual do editor.");
 assert(fs.existsSync(path.join(root, "tools/capture-visual-guide.js")), "O procedimento de atualização das capturas não é reproduzível.");
