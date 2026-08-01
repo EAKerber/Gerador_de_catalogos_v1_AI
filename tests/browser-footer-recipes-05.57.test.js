@@ -5,9 +5,10 @@ const { chromium } = require(playwrightRoot ? path.join(playwrightRoot, "playwri
 const baseURL = process.env.CATALOG_BASE_URL || "http://127.0.0.1:8080";
 const executablePath = process.env.CATALOG_CHROMIUM_EXECUTABLE || chromium.executablePath();
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+let browser = null;
 
 (async () => {
-  const browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+  browser = await chromium.launch({ executablePath, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
   const page = await browser.newPage({ viewport: { width: 1366, height: 768 } });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
@@ -42,9 +43,10 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(await page.evaluate(id => CatalogEditor.store.findComponent(id).component.children.length, fixture.footerId) === 3, "Desfazer não restaurou a receita de contato.");
   assert(await page.locator(".inspector-section--footer").getByText("Faixa recomendada: 2–5").count() === 1, "A recomendação de densidade não está visível.");
   assert(errors.length === 0, `Erros de página: ${errors.join(" | ")}`);
-  await browser.close();
   console.log("✓ 05.57A expõe receitas, quantidade recomendada e undo único no footer.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
+}).finally(async () => {
+  await browser?.close();
 });
