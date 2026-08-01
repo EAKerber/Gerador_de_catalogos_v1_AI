@@ -1,0 +1,23 @@
+name: Prune merged agent branch 05.56
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [development]
+
+permissions:
+  contents: write
+
+jobs:
+  prune:
+    if: github.event.pull_request.head.ref == 'agent/text-integrity-05.56' && github.event.pull_request.base.ref == 'development'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete exact merged branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git init /tmp/catalog-prune-0556
+          git -C /tmp/catalog-prune-0556 remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git -C /tmp/catalog-prune-0556 push origin --delete agent/text-integrity-05.56
