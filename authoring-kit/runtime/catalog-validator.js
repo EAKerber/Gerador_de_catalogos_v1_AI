@@ -214,7 +214,7 @@
     });
 
     summary.missingReferences = missingReferences.length;
-    if (!issues.length) add("info", "VALIDATION_READY", "Documento estrutural, referencial, editorial e visualmente válido.");
+    if (!issues.length) add("info", "VALIDATION_READY", "Documento estrutural, referencial, editorial e geometricamente válido.");
     return {
       ok: !issues.some(issue => issue.severity === "error"),
       target,

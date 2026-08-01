@@ -1,7 +1,7 @@
 {
   "guideFormat": "CatalogFeatureGuide",
   "guideVersion": "1.0.0",
-  "editorIncrement": "05.55",
+  "editorIncrement": "05.56",
   "entries": [
     {
       "id": "start.semantic-source",
@@ -11,7 +11,7 @@
       "result": "Fonte normalizada, plano editorial e página materializada deterministicamente",
       "example": "Importar sete produtos e gerar a estratégia hero-grid",
       "limits": ["Uma página nesta versão", "Não inventar código, preço, medida ou embalagem"],
-      "capabilityIds": ["semanticCatalogSource", "catalogSourceDirectImport", "generationPlanCompiler", "geometricPublicationGate"],
+      "capabilityIds": ["semanticCatalogSource", "catalogSourceDirectImport", "generationPlanCompiler", "geometricPublicationGate", "renderedTextIntegrityGate"],
       "componentTypes": ["product-card"],
       "recipeIds": [],
       "contracts": ["CatalogSource.products", "CatalogGenerationPlan", "CatalogDocument.pages"]
@@ -232,7 +232,7 @@
       "result": "ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit",
       "example": "Exportar rascunho para revisão em outro navegador",
       "limits": ["Publicação bloqueia pendências críticas", "Rascunho converte pendências permitidas em avisos", "O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema", "examples/catalog-project.json é template não importável até substituir tamanhos e hashes"],
-      "capabilityIds": ["projectPackageExport", "draftPublicationGates", "geometricPublicationGate"],
+      "capabilityIds": ["projectPackageExport", "draftPublicationGates", "geometricPublicationGate", "renderedTextIntegrityGate"],
       "componentTypes": [],
       "recipeIds": [],
       "contracts": ["CatalogProjectPackage", "catalog-project.json"]

@@ -49,6 +49,7 @@
     ],
     "projectPackageExport": true,
     "projectPackageImport": true,
+    "renderedTextIntegrityGate": true,
     "reusableTableSchemas": true,
     "selectionGeometryDiagnostics": true,
     "semanticCatalogSource": true,
@@ -1599,7 +1600,7 @@
     "pagePreset": "A4"
   },
   "editor": {
-    "increment": "05.55",
+    "increment": "05.56",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },

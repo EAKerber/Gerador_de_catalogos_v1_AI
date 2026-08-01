@@ -3,7 +3,7 @@
 
   const PACKAGE_FORMAT = "CatalogProjectPackage";
   const PACKAGE_VERSION = "1.0.0";
-  const AUTHORING_KIT_VERSION = "1.7.0";
+  const AUTHORING_KIT_VERSION = "1.7.1";
   const CAPABILITIES_VERSION = "1.0.0";
   const MAX_PACKAGE_SIZE = 100 * 1024 * 1024;
   const MAX_DOCUMENT_SIZE = 10 * 1024 * 1024;
@@ -216,7 +216,7 @@
     let manifest = {
       manifestType: "CatalogCapabilities",
       manifestVersion: CAPABILITIES_VERSION,
-      editor: { name: "Catálogo V1", increment: "05.55", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
+      editor: { name: "Catálogo V1", increment: "05.56", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
       document: { pagePreset: "A4", logicalSize: { width: 794, height: 1123, unit: "px" }, editorSessionRequired: false },
       components: Object.entries(window.CATALOG_COMPONENT_REGISTRY || {}).sort(([a], [b]) => a.localeCompare(b)).map(serializeComponentDefinition),
       templates: templates.map(template => ({
@@ -272,6 +272,7 @@
         draftPublicationGates: true,
         generationPlanCompiler: true,
         geometricPublicationGate: true,
+        renderedTextIntegrityGate: true,
         catalogSourceDirectImport: true,
         manualBulkProductEntry: true,
         manualBulkTableEntry: true,
@@ -392,8 +393,10 @@
 
     const geometry = window.CatalogDocumentValidator?.validate?.(document, { target: publication ? "publication" : "draft" });
     if (geometry) issues.push(...geometry.issues.filter(item => item.code !== "VALIDATION_READY"));
-    if (!issues.length) issues.push({ severity: "info", code: publication ? "PUBLICATION_READY" : "DRAFT_READY", message: publication ? "Requisitos de publicação e geometria atendidos." : "Rascunho pronto para transporte." });
-    return { target: publication ? "publication" : "draft", ok: !issues.some(issue => issue.severity === "error"), issues };
+    const visualIntegrity = window.CatalogVisualTextIntegrity?.audit?.({ root: globalThis.document?.getElementById?.("componentLayer"), target: publication ? "publication" : "draft", surface: "package-export" }) || null;
+    if (visualIntegrity) issues.push(...visualIntegrity.issues.filter(item => !["VISUAL_TEXT_INTEGRITY_READY", "VISUAL_TEXT_AUDIT_UNAVAILABLE"].includes(item.code)));
+    if (!issues.length) issues.push({ severity: "info", code: publication ? "PUBLICATION_READY" : "DRAFT_READY", message: publication ? "Requisitos de publicação, geometria e integridade textual atendidos." : "Rascunho pronto para transporte; integridade textual registrada." });
+    return { target: publication ? "publication" : "draft", ok: !issues.some(issue => issue.severity === "error"), visualIntegrity, issues };
   }
 
   function mimeForPath(path) {
@@ -515,7 +518,11 @@
           componentTypes: capabilities.components.length,
           products: document.collections.find(collection => collection.id === "products")?.items.length || 0,
           assets: manifestAssets.length,
-          publishReadyAssets: manifestAssets.filter(asset => asset.approval.status === "publish-ready" && asset.approval.publishAllowed).length
+          publishReadyAssets: manifestAssets.filter(asset => asset.approval.status === "publish-ready" && asset.approval.publishAllowed).length,
+          textTruncations: gate.visualIntegrity?.summary?.truncations ?? null,
+          textCollisions: gate.visualIntegrity?.summary?.textCollisions ?? null,
+          textObjectCollisions: gate.visualIntegrity?.summary?.textObjectCollisions ?? null,
+          textBelowMinimum: gate.visualIntegrity?.summary?.belowMinimum ?? null
         },
         gate,
         issues: [...gate.issues, ...warnings]
@@ -532,7 +539,7 @@
         packageFormat: PACKAGE_FORMAT,
         packageVersion: PACKAGE_VERSION,
         createdAt: new Date().toISOString(),
-        generator: { name: "Catálogo V1", increment: "05.55", schemaVersion: document.schemaVersion },
+        generator: { name: "Catálogo V1", increment: "05.56", schemaVersion: document.schemaVersion },
         project: { id: document.id, title: document.title },
         policy: { assetMode: "assisted", publicationGate: target },
         document: { path: DOCUMENT_PATH, schemaVersion: document.schemaVersion },

@@ -25,7 +25,7 @@
     {
       "severity": "info",
       "code": "VALIDATION_READY",
-      "message": "Documento estrutural, referencial, editorial e visualmente válido."
+      "message": "Documento estrutural, referencial, editorial e geometricamente válido."
     }
   ]
 }

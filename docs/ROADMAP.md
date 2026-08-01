@@ -708,7 +708,7 @@ Concluído e integrado em `development` pela PR #37:
 
 ## Incremento 05.55 — Guia visual do Authoring Kit
 
-Em validação sobre `development`:
+Concluído e integrado em `development` pela PR #39:
 
 - dar identidade `1.7.0` ao núcleo que declara o complemento visual;
 - distribuir tutoriais e referências sem embutir binários no bundle textual;
@@ -717,6 +717,21 @@ Em validação sobre `development`:
 - preservar pacotes de catálogo leves, `CatalogDocument 1.16.0` e runtime
   visual;
 - usar terceira referência inédita no ensaio cego final.
+
+## Incremento 05.56 — Integridade textual renderizada
+
+Em implementação sobre `development`:
+
+- separar validade geométrica de integridade visual do texto;
+- medir reticências, clipping, colisão texto–texto e texto–objeto no Chromium;
+- registrar fonte abaixo de 6 pt como aviso de legibilidade separado;
+- incorporar o diagnóstico ao `export-report` e bloquear publicação com
+  truncamentos ou colisões;
+- preservar como fixture mínima os dez truncamentos do ensaio real;
+- elevar o Authoring Kit a `1.7.1` com política de edição factual não
+  imaginativa de imagens;
+- preservar `CatalogDocument 1.16.0`, multipágina e recorte automático fora do
+  escopo.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

@@ -1,17 +1,17 @@
-# Atlas de funcionalidades — Incremento 05.55
+# Atlas de funcionalidades — Incremento 05.56
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 49 capacidades de produto;
+- 50 capacidades de produto;
 - 16 tipos de componente;
 - 5 grupos de descoberta por intenção;
 - 2 posições iniciais prováveis;
 - 9 receitas oficiais;
 - 19 fluxos curados;
 - 35 ícones declarados.
-- governança: 34 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 35 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Grupos de componentes por intenção
 
@@ -62,7 +62,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Resultado:** Fonte normalizada, plano editorial e página materializada deterministicamente
 - **Exemplo:** Importar sete produtos e gerar a estratégia hero-grid
 - **Limites:** Uma página nesta versão; Não inventar código, preço, medida ou embalagem
-- **Capacidades:** `semanticCatalogSource`, `catalogSourceDirectImport`, `generationPlanCompiler`, `geometricPublicationGate`
+- **Capacidades:** `semanticCatalogSource`, `catalogSourceDirectImport`, `generationPlanCompiler`, `geometricPublicationGate`, `renderedTextIntegrityGate`
 - **Componentes:** `product-card`
 - **Receitas:** —
 - **Contratos:** `CatalogSource.products`, `CatalogGenerationPlan`, `CatalogDocument.pages`
@@ -283,7 +283,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Resultado:** ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit
 - **Exemplo:** Exportar rascunho para revisão em outro navegador
 - **Limites:** Publicação bloqueia pendências críticas; Rascunho converte pendências permitidas em avisos; O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema; examples/catalog-project.json é template não importável até substituir tamanhos e hashes
-- **Capacidades:** `projectPackageExport`, `draftPublicationGates`, `geometricPublicationGate`
+- **Capacidades:** `projectPackageExport`, `draftPublicationGates`, `geometricPublicationGate`, `renderedTextIntegrityGate`
 - **Componentes:** —
 - **Receitas:** —
 - **Contratos:** `CatalogProjectPackage`, `catalog-project.json`
@@ -327,6 +327,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `draftPublicationGates` | `true` | **frozen** | Workflow de aprovação/publicação não será ampliado. | `CatalogCapabilities.capabilities.draftPublicationGates` |
 | `generationPlanCompiler` | `true` | **active** | Deve compartilhar comandos com a edição manual. | `CatalogCapabilities.capabilities.generationPlanCompiler` |
 | `geometricPublicationGate` | `true` | **active** | Será tratado como validação de saída e confiabilidade geométrica. | `CatalogCapabilities.capabilities.geometricPublicationGate` |
+| `renderedTextIntegrityGate` | `true` | **active** | Separa a medição tipográfica no Chromium da geometria estrutural e impede falso zero visual. | `CatalogCapabilities.capabilities.renderedTextIntegrityGate` |
 | `catalogSourceDirectImport` | `true` | **active** | Fluxo principal de geração data-first. | `CatalogCapabilities.capabilities.catalogSourceDirectImport` |
 | `manualBulkProductEntry` | `true` | **active** | Maior ganho observado na criação manual. | `CatalogCapabilities.capabilities.manualBulkProductEntry` |
 | `manualBulkTableEntry` | `true` | **active** | Base para esquema e dados em operações separadas. | `CatalogCapabilities.capabilities.manualBulkTableEntry` |
