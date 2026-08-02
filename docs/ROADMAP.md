@@ -749,6 +749,23 @@ Concluído em `development`:
 - preservar `CatalogDocument 1.16.0` e Authoring Kit `1.7.1`, deixando controles
   avançados de enquadramento e revisão editorial do kit para o próximo ensaio.
 
+## Incremento 05.58 — Handover operacional pós-revisão prática
+
+Recorte documental de continuidade:
+
+- substitui o handover 05.41 como entrada operacional sem apagar seu valor
+  histórico;
+- fixa `development@df908dba` como base funcional auditada pós-05.57;
+- consolida contratos, gates, autorizações e higiene pendente;
+- registra simultaneamente a estabilidade técnica em `main` e a revisão
+  prática em `development`;
+- mantém as duas referências conhecidas como evidência/material pedagógico;
+- define o próximo gate como ensaio com agente em início frio e terceira
+  referência inédita;
+- não altera runtime, schema, Authoring Kit, testes, assets ou escopo funcional.
+
+Referência: `docs/DEVELOPMENT-HANDOFF-05.58.md`.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
