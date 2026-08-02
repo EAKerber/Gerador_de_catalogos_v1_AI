@@ -26,7 +26,7 @@ const window = {
 };
 vm.runInNewContext(appSource, { window, console }, { filename: appPath });
 const validator = window.CatalogDocumentValidator;
-assert.strictEqual(validator.VERSION, "1.1.0", "Versão inesperada do validador.");
+assert.strictEqual(validator.VERSION, "1.2.0", "Versão inesperada do validador.");
 
 const clone = value => JSON.parse(JSON.stringify(value));
 const component = (id, type, x, props = {}, extra = {}) => ({

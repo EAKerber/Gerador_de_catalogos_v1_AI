@@ -1,4 +1,4 @@
-# CatalogAuthoringKit 1.7.1
+# CatalogAuthoringKit 1.7.2
 
 Este kit descreve o que o Catálogo V1 aceita e como entregar um projeto importável. Ele é destinado a agentes/LLMs e também pode ser editado manualmente.
 
@@ -30,14 +30,16 @@ O ZIP é o formato recomendado quando existem assets. JSON isolado permanece ace
 3. Normalize produtos em `CatalogSource 1.1.0`, preservando atributos, destaques, aplicações, variantes, linhas comerciais vinculadas, legendas agrupadas e papéis de assets.
 4. Crie um `CatalogGenerationPlan 1.1.0` apenas quando precisar sobrescrever o plano padrão `hero-grid`, inclusive a receita e os papéis do footer; caso contrário, deixe o compilador recomendar a estrutura e registre `needs-input` quando faltarem dados.
 5. Execute `compiler/compile-catalog.js` para materializar componentes, slots, frames e bindings determinísticos.
-6. Revise o relatório estrutural e, no editor/Chromium, execute o gate renderizado. Corrija truncamento, reticências efetivamente aplicadas, colisões de texto e fonte abaixo do mínimo antes de publicar. O compilador Node não mede tipografia nem pode declarar integridade visual.
-7. Use a política de assets `assisted` quando o usuário não indicar outro modo.
-8. Gere o documento sem o bloco opcional `editor`.
-9. Guarde imagens em arquivos do pacote e use `reference.provider = "package"` com o caminho correspondente.
-10. Calcule tamanho e SHA-256 de todos os arquivos declarados.
-11. Registre proveniência, fidelidade e aprovação de cada asset.
-12. Exporte como `draft` durante revisão; use `publication` somente após o gate aprovar requisitos, geometria, integridade textual renderizada e assets.
-13. Valide o pacote antes da entrega.
+6. Audite o `CatalogDocument` materializado, inclusive valores e componentes vindos de defaults injetados. Compare todo fato publicado com `CatalogSource`, plano e decisões registradas; o compilador válido não substitui essa leitura factual.
+7. Importe o documento ou pacote no editor real. Uma prévia paralela produzida pelo agente é somente diagnóstico e nunca substitui o documento importado, o pacote exportado pelo editor ou o PDF do editor como resultado final.
+8. Revise o relatório estrutural e, no editor/Chromium, execute o gate renderizado. Corrija truncamento, reticências efetivamente aplicadas, colisões de texto e fonte abaixo do mínimo antes de publicar. O compilador Node não mede tipografia nem pode declarar integridade visual.
+9. Use a política de assets `assisted` quando o usuário não indicar outro modo.
+10. Gere o documento sem o bloco opcional `editor`.
+11. Guarde imagens em arquivos do pacote e use `reference.provider = "package"` com o caminho correspondente.
+12. Calcule tamanho e SHA-256 de todos os arquivos declarados.
+13. Registre proveniência, papel editorial, fidelidade e aprovação de cada asset e derivado específico por uso.
+14. Exporte como `draft` durante revisão; use `publication` somente após o gate aprovar requisitos, geometria, integridade textual renderizada, round-trip e assets.
+15. Reimporte o pacote exportado, confira o documento materializado e valide o PDF gerado pelo editor antes da entrega.
 
 ## Compilar
 
@@ -62,7 +64,7 @@ node compiler/compile-catalog.js \
 
 A mesma fonte e o mesmo plano produzem os mesmos IDs, frames e bindings. O compilador não inventa fatos e bloqueia capacidade excedida, colisão, clipping e referências estruturais inválidas. No relatório, `workflow.editorImportActions` (e o alias histórico `summary.actionsRequired`) representa as três ações do fluxo de importação no editor; não é uma contagem de correções pendentes. Pendências reais aparecem em `workflow.unresolvedCorrections` e `issues`.
 
-Receitas de footer definem somente estrutura e papéis semânticos. Sem dados suficientes, preserve os placeholders inválidos como `pending`, pergunte ao usuário e não publique. Footer vazio ou omitido exige escolha explícita; a faixa recomendada é de dois a cinco itens e o limite estrutural é oito.
+Receitas de footer definem somente estrutura e papéis semânticos. Para qualquer fato ausente, siga `perguntar → manter pending → omitir explicitamente`: pergunte quando o dado afetar a publicação; sem resposta, preserve placeholder inválido por construção como `pending` e permaneça em rascunho; só omita o papel ou o footer inteiro por decisão explícita registrada ou fallback que não finja o fato. A faixa recomendada é de dois a cinco itens e o limite estrutural é oito.
 
 O CLI incluído termina em `CatalogDocument + relatório`. Ele não cria o ZIP. Para empacotar, use **Exportar → Pacote** no editor ou monte o arquivo conforme `catalog-project-package.schema.json` e valide-o por reimportação. `examples/catalog-project.json` é deliberadamente um template não importável: `size: 1` e hashes zerados precisam ser substituídos pelos valores reais de cada arquivo.
 
@@ -76,9 +78,13 @@ Prioridade: fornecido → oficial → derivação segura → geração não fact
 - `publish-ready` exige decisão explícita e `publishAllowed: true`;
 - base64 não pertence ao documento ou ao manifesto.
 
-Para imagens factuais, prefira `art.props.fit = "contain"`, mas não preserve passivamente margens ou o limite quadrado de um arquivo quando isso cria vazios visíveis no componente. **Edições não imaginativas** destinadas a melhorar apresentação são permitidas e recomendadas: zoom, foco, reposicionamento, reenquadramento, recorte de margem neutra, redimensionamento, expansão de fundo uniforme, contraste, luminosidade, balanço de branco e correção de cor. Elas precisam preservar identidade, geometria, acabamento e características comerciais; não inventem partes, não ocultem detalhes relevantes e não transformem uma variante em outra.
+### Edições não imaginativas
 
-Recoloração do produto só é válida quando a variante de cor existe na fonte. Expansão de fundo branco, transparente ou de cor uniforme pode eliminar o efeito de “quadrado dentro de retângulo”. Toda derivação deve ser reversível e rastreável: guarde o asset-fonte, salve um novo arquivo, recalcule tamanho/SHA-256 e registre `sourceAssetIds`, `method`, fidelidade e aprovação. O padrão completo está em `authoring-patterns.json#factual-image-presentation`.
+Para imagens factuais, aceite somente operações que não inventem partes nem alterem identidade, geometria, acabamento ou características comerciais. Comece pelo enquadramento não destrutivo da instância: `fit`, `focalX/focalY`, `zoom` e `offsetX/offsetY`. Use `contain` como ponto inicial, mas não preserve passivamente margens incorporadas ao arquivo quando elas criam vazios desnecessários. Defina a ocupação útil esperada de forma contextual por papel editorial, asset e proporção do slot; não existe percentual mínimo universal. Compare antes/depois no mesmo viewport, preserve a proporção e confirme que pixels factuais não são cortados em tela ou impressão.
+
+Se o enquadramento da instância ainda for limitado por margens neutras do arquivo, recorte essas margens antes de expandir o canvas. A expansão de fundo uniforme, branco ou transparente é útil para continuidade do fundo e para eliminar o efeito de “quadrado dentro de retângulo”, mas expansão isolada não aumenta a ocupação do produto. Contraste, luminosidade, balanço de branco e correção de cor continuam permitidos somente quando preservam identidade, geometria, acabamento e características comerciais.
+
+Recoloração do produto só é válida quando a variante de cor existe na fonte. Toda operação externa cria um derivado específico por uso: guarde o asset-fonte, salve um novo arquivo, recalcule tamanho/SHA-256 e registre `origin`, `sourceAssetIds`, `method`, papel editorial, fidelidade e aprovação. Não sobrescreva o original nem reutilize cegamente um recorte preparado para outra proporção. O padrão completo e sua ordem de decisão estão em `authoring-patterns.json#factual-image-presentation`.
 
 ## Gate renderizado de integridade textual
 
@@ -91,6 +97,14 @@ Recoloração do produto só é válida quando a variante de cor existe na fonte
 - `TEXT_BELOW_MINIMUM`: aviso separado de legibilidade, atualmente abaixo de 6 pt.
 
 No rascunho, os achados são avisos auditáveis. Na exportação `publication`, truncamentos e colisões bloqueiam; fonte abaixo do mínimo continua aviso explícito. `summary.overflows` do compilador significa apenas overflow geométrico e nunca deve ser apresentado como prova de ausência de truncamento textual.
+
+## Autoridade do resultado e auditoria materializada
+
+O resultado autoral é o `CatalogDocument` realmente importado no editor, acompanhado pelo pacote reimportável e pelo PDF gerado a partir dessa mesma materialização. HTML, canvas, imagem ou PDF produzidos por uma rota paralela podem ajudar no diagnóstico, mas não são entrega nem evidência suficiente de aprovação.
+
+Antes de publicar, percorra a árvore materializada e audite também os defaults: textos, footer, tabelas, assets, propriedades de apresentação e estados de aprovação. Nenhum default pode introduzir contato, preço, código, medida, embalagem, data ou especificação aparentemente válidos. Todo valor didático comercial deve ser inválido por construção e permanecer `placeholder`, `sampleOnly` ou `pending` até substituição por um fato fornecido.
+
+O gate final exige: relatório estrutural; integridade textual renderizada; ausência de fatos sem origem; assets e derivados rastreáveis; importação e reexportação sem divergência; e PDF sem chrome do editor. Estados `notRun` permanecem pendências e nunca podem ser apresentados como aprovados. O padrão verificável está em `authoring-patterns.json#materialized-document-audit`.
 
 ## Edição permissiva
 
@@ -136,7 +150,7 @@ Use `specification` para um atributo técnico curto ligado ao produto; use a rec
 
 Use `variants[].commercialRowIds` e `commercialRows[].variantId` para expressar identidade, sem inferir vínculos pela posição. Cada linha exportada possui `id`. `legends[]` define chave, token e grupo; células e componentes `legend-item` guardam apenas `legendKey`. A interface pode materializar galeria, linha e painel automaticamente, mas as entidades semânticas continuam válidas sem suas representações.
 
-## Limites 1.7.1
+## Limites 1.7.2
 
 - pacote comprimido: 100 MB;
 - arquivo individual: 25 MB;

@@ -685,7 +685,8 @@ Concluído e integrado em `development` pela PR #26:
 - registrar a PR #1 fechada e a poda das 25 branches `agent/*`;
 - confirmar somente `main` e `development` no remoto;
 - documentar o delta linear de 38 commits, sem divergência de `main`;
-- vincular por hash a referência técnica canônica da V1;
+- vincular por hash a evidência técnica conhecida usada na validação da V1,
+  sem promovê-la a especificação normativa;
 - manter a referência promocional como benchmark pós-V1, sem promovê-la a
   baseline;
 - executar Node, schema, build e quatro shards Chromium;
@@ -809,6 +810,28 @@ esta evidência. O ensaio em início frio com terceira referência inédita ocor
 somente depois dessa revisão.
 
 Referência: `docs/INCREMENT-05.59B.md`.
+
+## Incremento 05.60 — Authoring Kit 1.7.2 dirigido por evidência
+
+Recorte editorial e determinístico anterior ao ensaio cego:
+
+- ordenar o fluxo factual como enquadramento por instância, avaliação
+  contextual, recorte de margem neutra e somente então expansão de fundo;
+- tornar metas de ocupação orientações contextuais, nunca percentuais
+  universais;
+- exigir derivados específicos por uso com origem, método, fidelidade, papel e
+  aprovação;
+- fixar o documento importado no editor como autoridade do resultado e limitar
+  previews paralelos a diagnóstico;
+- auditar o documento materializado, inclusive defaults injetados;
+- neutralizar defaults comerciais e bloquear placeholders de produto, tabela e
+  footer na publicação;
+- preservar `CatalogDocument 1.16.0`, 51 capacidades e runtime equivalente.
+
+Depois do 05.60, o próximo gate é o ensaio em início frio com terceira
+referência inédita, pacote importado e PDF gerado pelo editor.
+
+Referência: `docs/INCREMENT-05.60.md`.
 
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 

@@ -9,9 +9,9 @@ const { spawnSync } = require("child_process");
 const root = path.resolve(__dirname, "..");
 const visualRoot = path.join(root, "authoring-kit-visual");
 const coreRoot = path.join(root, "authoring-kit");
-const VISUAL_VERSION = "1.0.0";
-const CORE_VERSION = "1.7.1";
-const EDITOR_INCREMENT = "05.59";
+const VISUAL_VERSION = "1.0.1";
+const CORE_VERSION = "1.7.2";
+const EDITOR_INCREMENT = "05.60";
 
 const stableValue = value => {
   if (Array.isArray(value)) return value.map(stableValue);
@@ -151,12 +151,12 @@ function generate() {
 
   const tutorials = [
     ["01-first-page", "De dados a uma página importável", "Fluxo preferencial e determinístico", [["Leia o START-HERE", "e os fatos"], ["Preencha", "CatalogSource"], ["Compile e valide", "Document + report"], ["Importe no editor", "e revise"], ["Exporte pacote", "e PDF sem guias"]]],
-    ["02-factual-assets", "Imagem factual sem deformação", "Preservar produto, ampliar apenas o canvas neutro", [["Selecione a arte", "ou placeholder"], ["Escolha asset real", "biblioteca ou arquivo"], ["Use fit = contain", "sem recorte"], ["Se faltar respiro", "neutral-canvas-padding"], ["Recalcule hash", "e proveniência"]]],
+    ["02-factual-assets", "Imagem factual sem deformação", "Enquadrar primeiro; derivar somente quando necessário", [["Selecione asset real", "e confirme o papel"], ["Enquadre a instância", "fit, foco, zoom, offset"], ["Compare ocupação", "no mesmo viewport"], ["Recorte margens", "neutras incorporadas"], ["Só então expanda", "o fundo uniforme"], ["Registre por uso", "hash e proveniência"]]],
     ["03-product-arrangement", "Modo editorial versus arranjo", "Semântica e geometria são decisões independentes", [["Escolha o modo", "hero / technical / variants"], ["Avalie a região", "arte + informação"], ["Defina arrangement", "auto / horizontal / stacked"], ["Valide mínimos", "clipping e leitura"]]],
     ["04-table-columns", "Tabela comercial completa", "Editar projeção sem destruir a identidade semântica", [["Adicione ou cole", "linhas comerciais"], ["Renomeie label", "preserve key"], ["Reordene colunas", "sem trocar valores"], ["Oculte visible=false", "sem apagar conteúdo"], ["Valide última coluna", "sempre visível"]]],
     ["05-variants-legends", "Variações e legendas vinculadas", "Identidade explícita entre imagem, linha e classificação", [["Crie variants[]", "com IDs estáveis"], ["Vincule linhas", "commercialRowIds"], ["Adicione imagens", "com legenda individual"], ["Use legendKey", "em vez de posição"], ["Materialize painel", "somente se útil"]]],
     ["06-footer-span", "Rodapé com ocupação ponderada", "Um item pode ocupar duas posições sem duplicar conteúdo", [["Selecione footer-item", "no slot items"], ["Defina slot.span=2", "no primeiro item"], ["Mantenha span=1", "nos demais"], ["Aplique text.scale=80", "aos textos internos"], ["Reajuste e valide", "capacidade do pai"]]],
-    ["07-delivery-gates", "Gate de entrega", "Distinguir ações de interface de correções reais", [["Compile a fonte", "e leia issues"], ["Resolva clipping", "colisão e referências"], ["Importe e revise", "3 ações não são erros"], ["Exporte rascunho", "ou publicação"], ["Gere PDF", "sem chrome do editor"]]]
+    ["07-delivery-gates", "Gate de entrega", "O documento importado é a autoridade", [["Compile a fonte", "e leia issues"], ["Audite defaults", "e fatos materializados"], ["Importe no editor", "e rode gates reais"], ["Ignore preview paralelo", "como resultado final"], ["Reexporte pacote", "e confirme round-trip"], ["Gere PDF", "sem chrome do editor"]]]
   ];
   tutorials.forEach(([id, title, subtitle, steps]) => write(`tutorials/${id}/walkthrough.svg`, flowSvg(title, subtitle, steps)));
 
@@ -167,7 +167,7 @@ function generate() {
   ]));
   write("cookbook/semantic-pieces.svg", comparisonSvg("Cookbook — specification, fact ou legenda", [
     { heading: "specification", color: "#b91c1c", rows: ["atributo curto", "ligado ao produto", "normalmente com ícone"], contract: "component.type=specification" },
-    { heading: "fact", color: "#1d4ed8", rows: ["rótulo + valor + unidade", "dado autônomo", "ex.: carga 40 kg"], contract: "recipeId=fact" },
+    { heading: "fact", color: "#1d4ed8", rows: ["rótulo + valor + unidade", "dado autônomo", "preencher com fonte confirmada"], contract: "recipeId=fact" },
     { heading: "legend-item", color: "#047857", rows: ["classificação compartilhada", "resolvida por legendKey", "não por posição"], contract: "component.type=legend-item" }
   ]));
   write("cookbook/table-columns.svg", comparisonSvg("Cookbook — identidade e apresentação de colunas", [
@@ -180,10 +180,10 @@ function generate() {
     { heading: "demais itens", color: "#1d4ed8", rows: ["uma posição cada", "capacidade preservada", "ordem independente"], contract: "slot.span = 1" },
     { heading: "texto interno", color: "#047857", rows: ["hierarquia mais discreta", "frame externo igual", "legibilidade validada"], contract: "text.props.scale = 80" }
   ]));
-  write("cookbook/factual-image-fit.svg", comparisonSvg("Cookbook — imagem factual", [
-    { heading: "incorreto: stretch", color: "#b91c1c", rows: ["produto deformado", "proporção perdida", "fato visual alterado"], contract: "não usar" },
-    { heading: "incorreto: cover", color: "#d97706", rows: ["produto recortado", "detalhe pode sumir", "fidelidade quebrada"], contract: "evitar para produto factual" },
-    { heading: "correto: contain", color: "#047857", rows: ["proporção preservada", "canvas neutro opcional", "novo hash derivado"], contract: "fit=contain" }
+  write("cookbook/factual-image-fit.svg", comparisonSvg("Cookbook — ordem do enquadramento factual", [
+    { heading: "1 · instância", color: "#047857", rows: ["fit, foco, zoom e offset", "mesmo asset e hash", "ocupação contextual"], contract: "art.props · não destrutivo" },
+    { heading: "2 · recorte neutro", color: "#1d4ed8", rows: ["remove margem incorporada", "derivado específico por uso", "sem cortar produto"], contract: "method=neutral-margin-crop" },
+    { heading: "3 · expandir fundo", color: "#d97706", rows: ["continuidade do canvas", "não aumenta ocupação", "novo hash e proveniência"], contract: "method=neutral-background-expansion" }
   ]));
 
   write("case-studies/catalogo-tecnico/decomposition.svg", decompositionSvg("Estudo de caso — catálogo técnico", "reference.jpeg", [
@@ -191,7 +191,7 @@ function generate() {
     { x: 20, y: 220, width: 970, height: 292, labelX: 34, labelY: 232, labelWidth: 300, label: "COMPOSIÇÃO · hero", color: "#1d4ed8", legend: "Composição — product-card hero, specifications e tabela." },
     { x: 20, y: 520, width: 970, height: 820, labelX: 34, labelY: 532, labelWidth: 310, label: "DIRETA · grade/cards", color: "#047857", legend: "Direta — grade 3×2, variantes, tabelas e aplicações." },
     { x: 20, y: 1348, width: 970, height: 172, labelX: 34, labelY: 1360, labelWidth: 330, label: "COMPOSIÇÃO · rodapé", color: "#1d4ed8", legend: "Composição — painel de legendas, callout e footer com spans." }
-  ], "Referência forte da V1; ensaio cego final deve usar uma terceira referência inédita."));
+  ], "Evidência técnica conhecida, não modelo normativo; o ensaio cego final usa uma terceira referência inédita."));
   write("case-studies/promocional/decomposition.svg", decompositionSvg("Estudo de caso — peça promocional", "reference.jpeg", [
     { x: 0, y: 0, width: 1024, height: 430, labelX: 20, labelY: 20, labelWidth: 370, label: "APROXIMAÇÃO · campanha", color: "#d97706", legend: "Aproximação — títulos publicitários e faixa de período." },
     { x: 0, y: 430, width: 1024, height: 600, labelX: 20, labelY: 442, labelWidth: 390, label: "FORA DA V1 · composição livre", color: "#b91c1c", legend: "Fora da V1 — personagem recortado e sobreposições livres." },
@@ -231,7 +231,8 @@ function generate() {
       embeddedInCatalogPackages: false,
       includedInStandaloneAuthoringKitExport: true,
       imagesAreGoldenBaselines: false,
-      blindTrialReference: "third-unseen-reference"
+      blindTrialReference: "third-unseen-reference",
+      resultAuthority: "editor-imported-document"
     },
     files
   };

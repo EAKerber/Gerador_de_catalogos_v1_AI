@@ -39,7 +39,7 @@
   "repairs": [],
   "workflow": {
     "editorImportActions": 3,
-    "unresolvedCorrections": 2,
+    "unresolvedCorrections": 25,
     "note": "editorImportActions mede o fluxo da interface; não representa pendências do catálogo."
   },
   "issues": [
@@ -60,6 +60,280 @@
       "componentId": "page-1-catalog-footer-10-footer-item-02",
       "pageId": "page-1",
       "role": "contact"
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 1]” contém conteúdo comercial pendente.",
+      "productId": "product-1176",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 2]” contém conteúdo comercial pendente.",
+      "productId": "product-4016",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 3]” contém conteúdo comercial pendente.",
+      "productId": "product-1197",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 4]” contém conteúdo comercial pendente.",
+      "productId": "product-1037",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 5]” contém conteúdo comercial pendente.",
+      "productId": "product-1056",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 6]” contém conteúdo comercial pendente.",
+      "productId": "product-1369",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "PRODUCT_CONTENT_PENDING",
+      "message": "O produto “[PRODUTO 7]” contém conteúdo comercial pendente.",
+      "productId": "product-1042",
+      "fields": [
+        "title",
+        "specOne",
+        "specTwo",
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-02-product-1176-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-03-product-4016-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 2” contém conteúdo comercial pendente.",
+      "rowId": "row-card-03-product-4016-2",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-04-product-1197-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 2” contém conteúdo comercial pendente.",
+      "rowId": "row-card-04-product-1197-2",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-05-product-1037-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 2” contém conteúdo comercial pendente.",
+      "rowId": "row-card-05-product-1037-2",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 3” contém conteúdo comercial pendente.",
+      "rowId": "row-card-05-product-1037-3",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-06-product-1056-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-07-product-1369-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 2” contém conteúdo comercial pendente.",
+      "rowId": "row-card-07-product-1369-2",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 1” contém conteúdo comercial pendente.",
+      "rowId": "row-card-08-product-1042-1",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 2” contém conteúdo comercial pendente.",
+      "rowId": "row-card-08-product-1042-2",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 3” contém conteúdo comercial pendente.",
+      "rowId": "row-card-08-product-1042-3",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 4” contém conteúdo comercial pendente.",
+      "rowId": "row-card-08-product-1042-4",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
+    },
+    {
+      "severity": "warning",
+      "code": "TABLE_CONTENT_PENDING",
+      "message": "A linha “Tabela de dados · linha 5” contém conteúdo comercial pendente.",
+      "rowId": "row-card-08-product-1042-5",
+      "fields": [
+        "code",
+        "package",
+        "price"
+      ]
     }
   ]
 }

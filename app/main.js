@@ -192,7 +192,7 @@
       document.getElementById("exportMenu").open = false;
       try {
         await projectPackage.exportAuthoringKit();
-        toast("CatalogAuthoringKit 1.7.1 + guia visual exportado.");
+        toast("CatalogAuthoringKit 1.7.2 + guia visual exportado.");
       } catch (error) {
         console.error("Falha ao exportar o kit de autoria completo.", error);
         toast(`Kit não exportado: ${error.message}`);

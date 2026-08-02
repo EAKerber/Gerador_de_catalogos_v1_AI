@@ -1,10 +1,11 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.0";
+  const VERSION = "1.2.0";
   const clone = value => JSON.parse(JSON.stringify(value));
   const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
   const invalidPlaceholder = value => window.CatalogFooterRecipes?.isPlaceholder?.(value) || /^\[[^\]]+\]$/.test(String(value || "").trim()) || /^\(00\)\s*0{4,5}-0{4}$/.test(String(value || "").trim());
+  const pendingFields = values => Object.entries(values || {}).filter(([, value]) => invalidPlaceholder(value)).map(([key]) => key);
 
   function collection(document, id) {
     return (document?.collections || []).find(item => item.id === id) || { items: [] };
@@ -119,6 +120,8 @@
           } else if (!products.has(productId)) {
             recordMissing("error", "PRODUCT_REFERENCE_MISSING", `O card “${component.name || component.id}” aponta para o produto ausente “${productId}”.`, { kind: "product", referenceId: productId }, { path, componentId: component.id, pageId, productId });
           }
+          const fields = pendingFields({ title: component.props?.title, specOne: component.props?.specOne, specTwo: component.props?.specTwo, code: component.props?.code, package: component.props?.package, price: component.props?.price });
+          if (!productId && fields.length) add(target === "publication" ? "error" : "warning", "PRODUCT_CONTENT_PENDING", `O card “${component.name || component.id}” contém conteúdo comercial pendente.`, { path, componentId: component.id, pageId, fields });
         }
         if (component.type === "data-table") {
           const columns = window.CatalogSource?.normalizeColumns?.(component.props?.columns) || [];
@@ -139,6 +142,10 @@
               });
             });
           });
+          if (!(component.props?.rowIds || []).length) {
+            const fields = pendingFields({ code: component.props?.code, package: component.props?.package, price: component.props?.price });
+            if (fields.length) add(target === "publication" ? "error" : "warning", "TABLE_CONTENT_PENDING", `A tabela “${component.name || component.id}” contém conteúdo comercial pendente.`, { path, componentId: component.id, pageId, fields });
+          }
         }
         if (component.type === "footer-item" && (component.props?.contentState === "pending" || component.props?.placeholder === true || invalidPlaceholder(component.props?.title) || invalidPlaceholder(component.props?.subtitle))) {
           add(target === "publication" ? "error" : "warning", "FOOTER_CONTENT_PENDING", `O item de rodapé “${component.name || component.id}” contém conteúdo pendente.`, { path, componentId: component.id, pageId, role: component.props?.role || "custom" });
@@ -187,6 +194,8 @@
     productItems.forEach(product => {
       const values = product.metadata?.values || {};
       if (!String(values.title || product.label || "").trim()) add("error", "PRODUCT_TITLE_REQUIRED", `O produto “${product.id}” não possui título.`, { productId: product.id });
+      const fields = pendingFields({ title: values.title || product.label, specOne: values.specOne, specTwo: values.specTwo, code: values.code, package: values.package, price: values.price });
+      if (fields.length) add(target === "publication" ? "error" : "warning", "PRODUCT_CONTENT_PENDING", `O produto “${product.label || product.id}” contém conteúdo comercial pendente.`, { productId: product.id, fields });
       const commercialRows = product.metadata?.commercialRows || [];
       const commercialColumns = window.CatalogSource?.normalizeColumns?.(product.metadata?.tableColumns) || [];
       commercialColumns.forEach(column => {
@@ -212,6 +221,8 @@
     });
 
     rowItems.forEach(row => {
+      const fields = pendingFields(row.metadata?.values);
+      if (fields.length) add(target === "publication" ? "error" : "warning", "TABLE_CONTENT_PENDING", `A linha “${row.label || row.id}” contém conteúdo comercial pendente.`, { rowId: row.id, fields });
       if (row.metadata?.variantId && !variantIds.has(row.metadata.variantId)) {
         recordMissing(target === "publication" ? "error" : "warning", "TABLE_VARIANT_REFERENCE_MISSING", `A linha “${row.label || row.id}” aponta para a variação inexistente “${row.metadata.variantId}”.`, { kind: "variant", referenceId: row.metadata.variantId }, { rowId: row.id, variantId: row.metadata.variantId });
       }

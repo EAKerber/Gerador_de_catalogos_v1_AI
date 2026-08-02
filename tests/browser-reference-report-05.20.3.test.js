@@ -22,13 +22,16 @@ fs.mkdirSync(outputDir, { recursive: true });
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogDocumentValidator?.VERSION === "1.1.0");
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogDocumentValidator?.VERSION === "1.2.0");
 
   const result = await page.evaluate(() => {
     const store = CatalogEditor.store;
     store.reset();
     store.setEditorSettings({ zoom: 1, zoomMode: "manual", gridVisible: false });
     const card = store.addComponent("product-card", { x: 24, y: 24, width: 350, height: 300 });
+    const ellipsisSample = "[ATRIBUTO EXTENSO PARA RETICÊNCIA]";
+    const firstSpecification = card.children.find(component => component.type === "specification");
+    store.updateComponent(firstSpecification.id, { props: { label: ellipsisSample } });
     const standaloneArt = store.addComponent("art", { x: 410, y: 24, width: 210, height: 160 }, { props: { role: "technical", assetId: null } });
 
     const baseDraft = store.getPublicationReport("draft");
@@ -58,6 +61,7 @@ fs.mkdirSync(outputDir, { recursive: true });
 
     return {
       ids: { cardId: card.id, standaloneArtId: standaloneArt.id },
+      ellipsisSample,
       validatorVersion: CatalogDocumentValidator.VERSION,
       schemaVersion: exported.schemaVersion,
       baseDraft,
@@ -69,14 +73,14 @@ fs.mkdirSync(outputDir, { recursive: true });
   });
 
   const optionalKinds = result.basePublication.references.optional.map(item => `${item.kind}:${item.reason}`);
-  assert(result.validatorVersion === "1.1.0", "O browser não carregou o validador 1.1.0.");
+  assert(result.validatorVersion === "1.2.0", "O browser não carregou o validador 1.2.0.");
   assert(result.schemaVersion === "1.16.0", "A alteração de diagnóstico modificou o schema.");
   assert(result.baseDraft.summary.missingReferences === 0, "Card local foi contado como referência ausente no rascunho.");
   assert(result.basePublication.summary.missingReferences === 0, "Card local foi contado como referência ausente na publicação.");
   assert(result.baseDraft.ok === true && result.baseDraft.visualIntegrity?.summary.blockingIssues === 0, `Rascunho autônomo deveria permanecer exportável: ${JSON.stringify(result.baseDraft.issues)}`);
   assert(result.basePublication.ok === false, "A publicação deveria ser bloqueada pelos truncamentos renderizados do documento-base.");
   assert(result.basePublication.visualIntegrity?.summary.truncations >= 1, "O relatório de publicação não materializou o truncamento renderizado conhecido.");
-  assert(result.basePublication.issues.some(issue => issue.code === "TEXT_ELLIPSIS_APPLIED" && issue.text === "Alta resistência"), "O diagnóstico não identificou a reticência real em Alta resistência.");
+  assert(result.basePublication.issues.some(issue => issue.code === "TEXT_ELLIPSIS_APPLIED" && issue.text === result.ellipsisSample), `O diagnóstico não identificou a reticência controlada em ${result.ellipsisSample}.`);
   assert(optionalKinds.filter(value => value === "product:local-content").length === 1, "O card local não aparece como vínculo opcional.");
   assert(optionalKinds.filter(value => value === "asset:placeholder-without-asset").length === 2, `Esperadas duas artes opcionais, obtido ${JSON.stringify(optionalKinds)}.`);
 

@@ -25,7 +25,7 @@
     children: [
       node("recipe-page-header", "catalog-header", { x: 0, y: 0, width: 746, height: 150 }, {
         name: "Cabeçalho do catálogo",
-        props: { kicker: "CATÁLOGO", title: "FIXAÇÃO E ACESSÓRIOS", recipeRole: "header" }
+        props: { kicker: "[CHAMADA EDITORIAL]", title: "[TÍTULO DO CATÁLOGO]", recipeRole: "header" }
       }),
       node("recipe-page-content", "layout-container", { x: 0, y: 162, width: 746, height: 801 }, {
         name: "Conteúdo principal",
@@ -45,9 +45,9 @@
     props: { label: "APLICAÇÕES" },
     layout: { mode: "row", padding: 8, gap: 8, columns: 3, align: "stretch", distribution: "fill", responsive: { enabled: true, breakpoint: 360, mode: "column" } },
     children: [
-      node("recipe-application-1", "specification", { x: 8, y: 8, width: 156, height: 72 }, { props: { icon: "cabinet", label: "ARMÁRIOS" } }),
-      node("recipe-application-2", "specification", { x: 172, y: 8, width: 156, height: 72 }, { props: { icon: "hanger", label: "CLOSETS" } }),
-      node("recipe-application-3", "specification", { x: 336, y: 8, width: 156, height: 72 }, { props: { icon: "kitchen", label: "COZINHAS" } })
+      node("recipe-application-1", "specification", { x: 8, y: 8, width: 156, height: 72 }, { props: { icon: "cabinet", label: "[APLICAÇÃO 1]" } }),
+      node("recipe-application-2", "specification", { x: 172, y: 8, width: 156, height: 72 }, { props: { icon: "hanger", label: "[APLICAÇÃO 2]" } }),
+      node("recipe-application-3", "specification", { x: 336, y: 8, width: 156, height: 72 }, { props: { icon: "kitchen", label: "[APLICAÇÃO 3]" } })
     ]
   });
 
@@ -57,10 +57,10 @@
     layout: { mode: "row", padding: 8, gap: 6, columns: 5, align: "stretch", distribution: "fill", responsive: { enabled: true, breakpoint: 420, mode: "column" } },
     children: [
       node("recipe-legend-title", "text", { x: 8, y: 8, width: 116, height: 56 }, { props: { content: "LEGENDA DE EMBALAGENS" }, style: { surface: "surface.paper", border: "border.none", radius: "radius.none", textColor: "text.primary", typography: "type.label" } }),
-      node("recipe-legend-1000", "text", { x: 130, y: 8, width: 116, height: 56 }, { props: { content: "CX 1000" }, style: { surface: "surface.pack-1000", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
-      node("recipe-legend-300", "text", { x: 252, y: 8, width: 116, height: 56 }, { props: { content: "CX 300" }, style: { surface: "surface.pack-300", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
-      node("recipe-legend-100", "text", { x: 374, y: 8, width: 116, height: 56 }, { props: { content: "CX 100" }, style: { surface: "surface.pack-100", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
-      node("recipe-legend-pct", "text", { x: 496, y: 8, width: 116, height: 56 }, { props: { content: "PCT" }, style: { surface: "surface.pack-pct", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } })
+      node("recipe-legend-1000", "text", { x: 130, y: 8, width: 116, height: 56 }, { props: { content: "[EMBALAGEM A]" }, style: { surface: "surface.pack-1000", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
+      node("recipe-legend-300", "text", { x: 252, y: 8, width: 116, height: 56 }, { props: { content: "[EMBALAGEM B]" }, style: { surface: "surface.pack-300", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
+      node("recipe-legend-100", "text", { x: 374, y: 8, width: 116, height: 56 }, { props: { content: "[EMBALAGEM C]" }, style: { surface: "surface.pack-100", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } }),
+      node("recipe-legend-pct", "text", { x: 496, y: 8, width: 116, height: 56 }, { props: { content: "[EMBALAGEM D]" }, style: { surface: "surface.pack-pct", border: "border.none", radius: "radius.small", textColor: "text.primary", typography: "type.label" } })
     ]
   });
 

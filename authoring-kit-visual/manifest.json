@@ -2,24 +2,24 @@
   "coreKit": {
     "format": "CatalogAuthoringKit",
     "relativeRoot": "..",
-    "version": "1.7.1"
+    "version": "1.7.2"
   },
-  "editorIncrement": "05.59",
+  "editorIncrement": "05.60",
   "entrypoint": "START-HERE.md",
   "files": [
     {
       "mimeType": "image/svg+xml",
       "path": "case-studies/catalogo-tecnico/decomposition.svg",
       "role": "case-study",
-      "sha256": "0924cec833d16ce5524824f5c3c2c501d314b5881037b845f3835483efb6bccb",
-      "size": 2758
+      "sha256": "1457e7f454196e57abb72aecc122d0cc35d5e2f5e09a3465f86ae519d914d969",
+      "size": 2808
     },
     {
       "mimeType": "text/markdown",
       "path": "case-studies/catalogo-tecnico/README.md",
       "role": "case-study",
-      "sha256": "5e07baf6ca253ff8493fb2f5e82d10604354153c1b78f67ba6dccc12bf3b3d01",
-      "size": 1011
+      "sha256": "6db8fb71c458a5efe39a5fed09f17adda36b53ab712cfa80fa11f592a4a70a99",
+      "size": 1051
     },
     {
       "mimeType": "image/jpeg",
@@ -53,8 +53,8 @@
       "mimeType": "image/svg+xml",
       "path": "cookbook/factual-image-fit.svg",
       "role": "cookbook",
-      "sha256": "3dc57fc65f379c7c28134934e9142b206756b08bf7d39c0379cd67ec1b700904",
-      "size": 2629
+      "sha256": "0d651eeccd3e4744d65308ebc0e6c15e36d81fa4831f5dc7b100b6ba6c5a033a",
+      "size": 2738
     },
     {
       "mimeType": "image/svg+xml",
@@ -81,8 +81,8 @@
       "mimeType": "image/svg+xml",
       "path": "cookbook/semantic-pieces.svg",
       "role": "cookbook",
-      "sha256": "a7d1ca4fb541f41139c0eb535c7197bd366505432e577058c923270d9f2c3152",
-      "size": 2665
+      "sha256": "9ecac5c5ad0c888b494a29db90bd781ff9b47839f7c3c5beaf4191b5a061f435",
+      "size": 2679
     },
     {
       "mimeType": "image/svg+xml",
@@ -95,15 +95,15 @@
       "mimeType": "application/json",
       "path": "examples/first-page.document.json",
       "role": "executable-example",
-      "sha256": "1e0e9149e4d26a2a6c9abc8200e6c17a2c4dcab8f68ef2e15abca179d87a17d1",
-      "size": 174192
+      "sha256": "2d6d53f39f3c030eb28ab6dfd68c6af99861adf67d9d5232bcf2a324f9e51c47",
+      "size": 174276
     },
     {
       "mimeType": "application/json",
       "path": "examples/first-page.report.json",
       "role": "executable-example",
-      "sha256": "fbc9eecd8db375e49f91e87367c32e938e71267a8642adbde13efc19897e0f8b",
-      "size": 1908
+      "sha256": "2a69381497421a6d98f7fc13ea72c60c255811c7b9d81bb1843740e298175303",
+      "size": 9093
     },
     {
       "mimeType": "image/svg+xml",
@@ -137,15 +137,15 @@
       "mimeType": "text/markdown",
       "path": "START-HERE.md",
       "role": "entrypoint",
-      "sha256": "d2f882cf821d3f5fa01cdb99fe839361830fdf9033a1dd8e45e110efbf1ab3f0",
-      "size": 2164
+      "sha256": "48b5b897bb724f10bcdb5846764c7d17fd4678a7e51b7fab2eb595161b372410",
+      "size": 2409
     },
     {
       "mimeType": "text/markdown",
       "path": "troubleshooting/GATES.md",
       "role": "troubleshooting",
-      "sha256": "c50646fb0a2c9b892debec03a36d83ae470e630c9acdc54a74b3b85a9053a529",
-      "size": 1093
+      "sha256": "7452e99f547490bc124ff25fb745181c6fcc48e5e58077f99aeab294c5cbdd0c",
+      "size": 1336
     },
     {
       "mimeType": "image/svg+xml",
@@ -158,8 +158,8 @@
       "mimeType": "text/markdown",
       "path": "tutorials/01-first-page/README.md",
       "role": "tutorial",
-      "sha256": "5a1ba048372912c4fac1270359ba7ee32bbedd78c34f24473d577e7e334288c9",
-      "size": 915
+      "sha256": "98a4a64f7fe0a2116826d8ac00090dc898558e551cce0d826a2593c45e08422a",
+      "size": 1177
     },
     {
       "mimeType": "image/png",
@@ -179,15 +179,15 @@
       "mimeType": "text/markdown",
       "path": "tutorials/02-factual-assets/README.md",
       "role": "tutorial",
-      "sha256": "d3cab9a9d46eb8c0894360121ff43727838561a3d9cb5c96062d740328e3c56d",
-      "size": 654
+      "sha256": "5d1a18fed83460ab734cfd10c1e4a1af23a789f21594a8782174454ea32a6077",
+      "size": 1275
     },
     {
       "mimeType": "image/svg+xml",
       "path": "tutorials/02-factual-assets/walkthrough.svg",
       "role": "tutorial",
-      "sha256": "e2bef18d103477917bf2fd2bd41d51d086875b2235daf1e170832951982862a4",
-      "size": 2877
+      "sha256": "04fbb03b9945ebc6d15d501c6511035c2953345d864d681a76065a8cef37d0dd",
+      "size": 3342
     },
     {
       "mimeType": "text/markdown",
@@ -249,31 +249,32 @@
       "mimeType": "text/markdown",
       "path": "tutorials/07-delivery-gates/README.md",
       "role": "tutorial",
-      "sha256": "f53bd6efd7afba0e18011506a74cdaf917cabf4ef83667b0e6927e20b12411ad",
-      "size": 622
+      "sha256": "ca831b9e0300a9fa62f050965cc1fa8df4f6b1f4400018110c5fb22b0476c289",
+      "size": 951
     },
     {
       "mimeType": "image/svg+xml",
       "path": "tutorials/07-delivery-gates/walkthrough.svg",
       "role": "tutorial",
-      "sha256": "2f021c42dfcd86e3405023eb2c5439228f3ea6565983df2e9149b8410f55887e",
-      "size": 2853
+      "sha256": "4a630a2db762d36fb2e38097c295a064e83a1c050e16921aefcc01deb86bf970",
+      "size": 3262
     },
     {
       "mimeType": "application/json",
       "path": "visual-index.json",
       "role": "index",
-      "sha256": "e079a61aff6506131562e93d4783a68d198ee0b7765a45eac2afc13ab552c40d",
-      "size": 10696
+      "sha256": "36b1f2c63dad33d2140cd519bc21b5393cbf4e4da27e1f926db5ffb22a7d5094",
+      "size": 10747
     }
   ],
   "guideFormat": "CatalogAuthoringVisualGuide",
-  "guideVersion": "1.0.0",
+  "guideVersion": "1.0.1",
   "index": "visual-index.json",
   "policy": {
     "blindTrialReference": "third-unseen-reference",
     "embeddedInCatalogPackages": false,
     "imagesAreGoldenBaselines": false,
-    "includedInStandaloneAuthoringKitExport": true
+    "includedInStandaloneAuthoringKitExport": true,
+    "resultAuthority": "editor-imported-document"
   }
 }

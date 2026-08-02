@@ -479,9 +479,9 @@
   "legends": [
     {
       "key": "cx-250",
-      "label": "CX 250",
+      "label": "[EMBALAGEM A]",
       "token": "pack.250",
-      "fallback": "CX 250",
+      "fallback": "[EMBALAGEM A]",
       "groupId": "embalagens",
       "groupLabel": "Embalagens",
       "groupOrder": 0,
@@ -490,9 +490,9 @@
     },
     {
       "key": "cx-150",
-      "label": "CX 150",
+      "label": "[EMBALAGEM B]",
       "token": "pack.150",
-      "fallback": "CX 150",
+      "fallback": "[EMBALAGEM B]",
       "groupId": "embalagens",
       "groupLabel": "Embalagens",
       "groupOrder": 0,

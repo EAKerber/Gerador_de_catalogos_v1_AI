@@ -342,7 +342,7 @@
             <p>Cor e texto permanecem vinculados por uma chave estável; o texto é o fallback acessível.</p>
             <div class="semantic-legend-editor__list">${legends.map(legend => `<div><span style="--legend-preview:${escapeHtml(window.CATALOG_EDITOR_TOKENS.colors[legend.metadata?.token]?.value || "#f5f6f7")}"></span><strong>${escapeHtml(legend.metadata?.textLabel || legend.label)}<small>${escapeHtml(legend.metadata?.groupLabel || "Geral")}</small></strong><code>${escapeHtml(legend.metadata?.key)}</code><button type="button" data-color-legend-remove="${escapeHtml(legend.id)}" aria-label="Remover legenda">×</button></div>`).join("") || "<small>Nenhuma legenda criada.</small>"}</div>
             <div class="inspector-grid">
-              <div class="inspector-field inspector-field--full"><label>Nome da legenda</label><input type="text" placeholder="CX 250" data-new-legend-label /></div>
+              <div class="inspector-field inspector-field--full"><label>Nome da legenda</label><input type="text" placeholder="[EMBALAGEM]" data-new-legend-label /></div>
               <div class="inspector-field inspector-field--full"><label>Grupo visual</label><input type="text" value="Embalagens" placeholder="Embalagens" data-new-legend-group /></div>
               <div class="inspector-field inspector-field--full"><label>Token de cor</label><select data-new-legend-token>${this.colorOptions("pack.250")}</select></div>
             </div>
@@ -350,7 +350,7 @@
             <button type="button" class="table-row-editor__add" data-color-legend-add>+ Criar legenda</button>
             <details class="table-bulk-entry legend-bulk-entry" ${this.legendBulkOpen ? "open" : ""}>
               <summary>Criar várias legendas <span>Nome ⇥ token ⇥ grupo</span></summary>
-              <textarea rows="6" data-legend-bulk-text placeholder="CX 1000&#9;pack.1000&#9;Embalagens&#10;CX 500&#9;pack.500&#9;Embalagens"></textarea>
+              <textarea rows="6" data-legend-bulk-text placeholder="[EMBALAGEM A]&#9;pack.a&#9;[GRUPO]&#10;[EMBALAGEM B]&#9;pack.b&#9;[GRUPO]"></textarea>
               <label class="inspector-switch inspector-switch--wide"><input type="checkbox" data-legend-bulk-materialize checked /><span aria-hidden="true"></span><strong>Adicionar ao painel de legenda</strong></label>
               <button type="button" class="table-row-editor__add" data-legend-bulk-apply>Aplicar lista</button>
               ${this.legendBulkFeedback ? `<small role="status">${escapeHtml(this.legendBulkFeedback)}</small>` : ""}
@@ -1183,7 +1183,7 @@
       } else if (event.target.closest("[data-table-schema-apply]")) {
         this.store.applyTableSchema([component.id], this.root.querySelector("[data-table-schema]")?.value);
       } else if (event.target.closest("[data-table-row-add]")) {
-        const values = Object.fromEntries(this.store.getTableColumns(component).map(column => [column.key, column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""]));
+        const values = Object.fromEntries(this.store.getTableColumns(component).map(column => [column.key, column.role === "price" ? "[R$ 00,00]" : column.role === "identifier" ? "[CÓDIGO]" : "[VALOR]"]));
         this.store.addTableRow(component.id, values);
       } else if (event.target.closest("[data-table-column-add]")) {
         this.tableColumnsOpen = true;

@@ -65,7 +65,7 @@
         <details class="product-bulk-entry">
           <summary>Entrada rápida · colar tabela <span>reduz preenchimentos repetidos</span></summary>
           <p>Cole dados de Excel, Sheets ou CSV. A primeira linha pode usar: Título, Código, Embalagem, Preço, Especificação 1 e Especificação 2.</p>
-          <textarea rows="7" data-products-bulk-text placeholder="Título&#9;Código&#9;Embalagem&#9;Preço&#9;Especificação 1&#9;Especificação 2&#10;PARAFUSO OVAL PHS&#9;1176&#9;CX 1000 UNID.&#9;R$ 35,90&#9;Cabeça oval&#9;Aço cromado"></textarea>
+          <textarea rows="7" data-products-bulk-text placeholder="Título&#9;Código&#9;Embalagem&#9;Preço&#9;Especificação 1&#9;Especificação 2&#10;[PRODUTO]&#9;[CÓDIGO]&#9;[EMBALAGEM]&#9;[R$ 00,00]&#9;[ATRIBUTO 1]&#9;[ATRIBUTO 2]"></textarea>
           <button type="button" class="product-primary-button" data-products-bulk-add>Adicionar produtos da tabela</button>
         </details>
         <form class="product-form" data-product-form autocomplete="off">
@@ -74,12 +74,12 @@
             ${editing ? '<button type="button" class="product-link-button" data-product-cancel>Cancelar</button>' : ""}
           </div>
           <div class="product-form__grid">
-            <label class="product-field product-field--full">Título<input name="title" required value="${escapeHtml(values.title)}" placeholder="PARAFUSO OVAL PHS" /></label>
-            <label class="product-field">Código<input name="code" value="${escapeHtml(values.code)}" placeholder="1176" /></label>
-            <label class="product-field">Embalagem<input name="package" value="${escapeHtml(values.package)}" placeholder="CX 1000 UNID." /></label>
-            <label class="product-field">Preço<input name="price" value="${escapeHtml(values.price)}" placeholder="R$ 35,90" /></label>
-            <label class="product-field">Especificação 1<input name="specOne" value="${escapeHtml(values.specOne)}" placeholder="Alta resistência" /></label>
-            <label class="product-field product-field--full">Especificação 2<input name="specTwo" value="${escapeHtml(values.specTwo)}" placeholder="Aço cromado" /></label>
+            <label class="product-field product-field--full">Título<input name="title" required value="${escapeHtml(values.title)}" placeholder="[PRODUTO]" /></label>
+            <label class="product-field">Código<input name="code" value="${escapeHtml(values.code)}" placeholder="[CÓDIGO]" /></label>
+            <label class="product-field">Embalagem<input name="package" value="${escapeHtml(values.package)}" placeholder="[EMBALAGEM]" /></label>
+            <label class="product-field">Preço<input name="price" value="${escapeHtml(values.price)}" placeholder="[R$ 00,00]" /></label>
+            <label class="product-field">Especificação 1<input name="specOne" value="${escapeHtml(values.specOne)}" placeholder="[ATRIBUTO 1]" /></label>
+            <label class="product-field product-field--full">Especificação 2<input name="specTwo" value="${escapeHtml(values.specTwo)}" placeholder="[ATRIBUTO 2]" /></label>
             <label class="product-field product-field--full">Arte principal
               <select name="assetId"><option value="">Sem arte vinculada</option>${assets.map(asset => `<option value="${escapeHtml(asset.id)}" ${values.assetId === asset.id ? "selected" : ""}>${escapeHtml(asset.label)}</option>`).join("")}</select>
             </label>
@@ -87,9 +87,9 @@
           <details class="product-semantic-fields" ${editing && (values.attributesText || values.highlightsText || values.applicationsText) ? "open" : ""}>
             <summary>Detalhes semânticos <span>opcional</span></summary>
             <p>Esses dados orientam agentes e apresentações sem obrigar o card a exibir tudo.</p>
-            <label class="product-field">Atributos <textarea name="attributesText" rows="3" placeholder="Material: Aço cromado&#10;Medida: 4,0×16">${escapeHtml(values.attributesText)}</textarea></label>
-            <label class="product-field">Destaques <textarea name="highlightsText" rows="3" placeholder="Alta resistência&#10;Cabeça oval">${escapeHtml(values.highlightsText)}</textarea></label>
-            <label class="product-field">Aplicações <textarea name="applicationsText" rows="3" placeholder="MDF&#10;Madeira maciça">${escapeHtml(values.applicationsText)}</textarea></label>
+            <label class="product-field">Atributos <textarea name="attributesText" rows="3" placeholder="[ATRIBUTO]: [VALOR]&#10;[MEDIDA]: [VALOR]">${escapeHtml(values.attributesText)}</textarea></label>
+            <label class="product-field">Destaques <textarea name="highlightsText" rows="3" placeholder="[DESTAQUE 1]&#10;[DESTAQUE 2]">${escapeHtml(values.highlightsText)}</textarea></label>
+            <label class="product-field">Aplicações <textarea name="applicationsText" rows="3" placeholder="[APLICAÇÃO 1]&#10;[APLICAÇÃO 2]">${escapeHtml(values.applicationsText)}</textarea></label>
             <small>Esses campos podem ser preenchidos manualmente ou pelo kit/agente.</small>
           </details>
           ${editing ? `<details class="product-variant-editor" open>

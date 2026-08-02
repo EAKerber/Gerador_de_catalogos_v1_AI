@@ -448,12 +448,12 @@
 
   function productValues(source = {}) {
     return {
-      title: String(source.title ?? "NOVO PRODUTO"),
-      specOne: String(source.specOne ?? "Alta resistência"),
-      specTwo: String(source.specTwo ?? "Material"),
-      code: String(source.code ?? "0000"),
-      package: String(source.package ?? "PCT 100 UNID."),
-      price: String(source.price ?? "R$ 0,00"),
+      title: String(source.title ?? "[PRODUTO]"),
+      specOne: String(source.specOne ?? "[ATRIBUTO 1]"),
+      specTwo: String(source.specTwo ?? "[ATRIBUTO 2]"),
+      code: String(source.code ?? "[CÓDIGO]"),
+      package: String(source.package ?? "[EMBALAGEM]"),
+      price: String(source.price ?? "[R$ 00,00]"),
       assetId: source.assetId ? String(source.assetId) : null
     };
   }
@@ -1827,7 +1827,7 @@
         if (component?.type !== "data-table") return null;
         const values = Object.fromEntries(this.getTableColumns(component).map(column => [
           column.key,
-          column.role === "price" ? "R$ 0,00" : column.role === "identifier" ? "0000" : ""
+          column.role === "price" ? "[R$ 00,00]" : column.role === "identifier" ? "[CÓDIGO]" : "[VALOR]"
         ]));
         return this.addTableRow(component.id, values);
       }
@@ -1842,7 +1842,7 @@
         const sourceValues = rows[rows.length - 1]?.metadata?.values || product.metadata?.values || {};
         return this.addProductVariant(productId, {
           label: `Variação ${index}`,
-          commercialValues: { ...sourceValues, code: "0000", price: "R$ 0,00" }
+          commercialValues: { ...sourceValues, code: "[CÓDIGO]", price: "[R$ 00,00]" }
         }, { materializeVisual: true, materializeRow: true });
       }
       if (actionId === "add-gallery-art" || actionId === "convert-art-gallery") return this.addArtVariation(componentId);

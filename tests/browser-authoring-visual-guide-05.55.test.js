@@ -27,7 +27,7 @@ fs.mkdirSync(outputDir, { recursive: true });
     const bytes = await CatalogEditor.projectPackage.buildCompleteAuthoringKit();
     const archive = fflate.unzipSync(bytes);
     const names = Object.keys(archive).sort();
-    const root = "CatalogAuthoringKit-1.7.1/";
+    const root = "CatalogAuthoringKit-1.7.2/";
     const visualManifest = JSON.parse(new TextDecoder().decode(archive[`${root}visual-guide/manifest.json`]));
     return {
       bytes: bytes.byteLength,

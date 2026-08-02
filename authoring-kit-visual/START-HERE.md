@@ -1,4 +1,4 @@
-# Guia visual do CatalogAuthoringKit 1.7.0
+# Guia visual do CatalogAuthoringKit 1.7.2
 
 Este complemento transforma os contratos do kit em decisões reconhecíveis na
 interface e no resultado. Ele não substitui schemas, `capabilities.json` nem o
@@ -26,17 +26,21 @@ editar; use o relatório e os gates para aprovar.
 | “Qual composição escolher?” | tutorial e cookbook |
 | “Qual propriedade/valor usar?” | `../authoring-patterns.json` e `../capabilities.json` |
 | “O JSON é válido?” | schemas e compilador do núcleo |
-| “Pode publicar?” | relatório, validação geométrica e gate de assets |
+| “Pode publicar?” | documento importado, relatório, gates renderizados, round-trip e PDF do editor |
 
 Uma captura é orientação, não golden image. Os caminhos JSON e IDs ligados a
 cada entrada do índice permanecem verificáveis mesmo que a interface mude de
 posição.
 
+Uma prévia paralela criada pelo agente é apenas diagnóstico. Ela não substitui
+o documento importado no editor, o pacote reimportável nem o PDF gerado pelo
+editor como resultado final.
+
 ## Estudos de caso
 
-- [`catalogo-tecnico`](case-studies/catalogo-tecnico/README.md): referência
-  forte e alvo de cobertura da V1. Agora é material didático; o ensaio cego
-  final deve usar uma terceira referência inédita.
+- [`catalogo-tecnico`](case-studies/catalogo-tecnico/README.md): evidência
+  técnica conhecida e aderente ao escopo atual, sem função de template ou
+  critério normativo. O ensaio cego final usa uma terceira referência inédita.
 - [`promocional`](case-studies/promocional/README.md): benchmark pós-V1 não
   bloqueante. Mostra o limite entre receitas existentes e composição gráfica
   livre.
