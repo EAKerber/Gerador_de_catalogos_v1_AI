@@ -242,7 +242,7 @@ let activeBrowser = null;
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "networkidle" });
   await importPackage(page);
-  await page.locator("#zoomSelect").selectOption("1");
+  await page.evaluate(() => CatalogEditor.store.setEditorSettings({ zoomMode: "manual", zoom: 1 }));
   await page.waitForFunction(() => CatalogEditor.store.getState().editor.zoomMode === "manual" && CatalogEditor.store.getState().editor.zoom === 1);
 
   const target = await page.evaluate(id => {
