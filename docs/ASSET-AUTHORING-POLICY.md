@@ -140,17 +140,29 @@ O agente pode perguntar quando a associação entre produto e imagem for ambígu
 
 Zoom, foco, reenquadramento, redimensionamento, recorte de margens neutras,
 expansão de fundo uniforme e correções de contraste, luminosidade, balanço de
-branco e cor são permitidos e recomendados quando melhoram o preenchimento do
-componente sem alterar a identidade do produto. Em especial, o agente deve
-evitar deixar visível um arquivo quadrado sobre um componente retangular quando
-o fundo puder ser expandido de forma uniforme ou a margem neutra puder ser
-recortada com segurança.
+branco e cor são permitidos quando melhoram a apresentação sem alterar a
+identidade do produto. A ordem preferencial é:
+
+1. enquadrar a instância no editor com `fit`, foco, zoom e deslocamento, sem
+   criar outro asset;
+2. recortar margens neutras incorporadas ao arquivo quando elas ainda limitarem
+   a ocupação do produto;
+3. expandir fundo uniforme somente quando for necessário dar continuidade ao
+   fundo do slot.
+
+Ocupação útil é orientação contextual por papel editorial, asset e proporção do
+slot; não existe um percentual mínimo universal. A comparação deve usar o mesmo
+viewport e verificar proporção, ausência de corte factual e paridade entre tela
+e impressão. Expansão isolada pode melhorar continuidade do fundo, mas não deve
+ser descrita como ganho de ocupação do produto.
 
 A transformação não pode inventar partes, deformar geometria, ocultar detalhes
 comerciais, alterar acabamento nem criar uma variante inexistente. Recoloração
 só materializa uma cor confirmada pela fonte. Toda derivação preserva o
-asset-fonte, cria novo arquivo, recalcula integridade e registra método,
-`sourceAssetIds`, fidelidade e aprovação, para permanecer reversível.
+asset-fonte, cria novo arquivo específico por uso, recalcula integridade e
+registra método, `sourceAssetIds`, papel editorial, fidelidade e aprovação, para
+permanecer reversível. Um derivado preparado para uma proporção não deve ser
+reutilizado cegamente em outro slot.
 
 ## 9. Estado de implementação
 

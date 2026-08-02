@@ -218,7 +218,7 @@ Subcatálogos são itens da coleção `subcatalogs` e guardam apenas `metadata.p
   },
   "props": {
     "icon": "shield-star",
-    "label": "Alta resistência"
+    "label": "[ATRIBUTO]"
   },
   "style": {
     "surface": "surface.paper",

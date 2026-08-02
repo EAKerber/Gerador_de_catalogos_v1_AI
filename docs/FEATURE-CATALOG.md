@@ -1,4 +1,4 @@
-# Atlas de funcionalidades — Incremento 05.59
+# Atlas de funcionalidades — Incremento 05.60
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
@@ -34,12 +34,12 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 | ID | Intenção | Acesso | Resultado |
 | --- | --- | --- | --- |
-| `start.semantic-source` | Gerar um catálogo a partir de produtos estruturados | Importar → CatalogSource JSON → analisar → gerar | Fonte normalizada, plano editorial e página materializada deterministicamente |
+| `start.semantic-source` | Gerar um catálogo a partir de produtos estruturados | Importar → CatalogSource JSON → analisar → gerar | Fonte normalizada, plano editorial e página materializada deterministicamente para auditoria no editor |
 | `start.page-structure` | Começar uma página manual sem montar a estrutura peça por peça | Componentes → Estruturas prontas → Página-base → + | Cabeçalho, área principal e rodapé editáveis, com foco no conteúdo |
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
 | `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
 | `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis |
-| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset factual preservado por referência, com encaixe, foco, zoom e deslocamento por instância |
+| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset factual preservado por referência, com enquadramento contextual e derivação específica por uso quando indispensável |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
 | `content.semantic-pieces` | Escolher entre especificação, dado destacado e legenda sem duplicar significado | feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas | Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey |
@@ -51,7 +51,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `safety.history` | Reverter ou reaplicar uma mudança | Toolbar → Histórico; Ctrl/Cmd+Z e Ctrl/Cmd+Shift+Z ou Ctrl+Y | Estado anterior ou posterior restaurado atomicamente |
 | `inspect.progressive` | Ajustar do conteúdo à geometria sem receber tudo de uma vez | Inspetor → Conteúdo, Layout, Visual e Avançado | Controles priorizados pela intenção e propriedades técnicas sob divulgação |
 | `transfer.import` | Abrir um documento, fonte ou pacote sem perder o trabalho atual | Toolbar → Importar → analisar → confirmar | Relatório antes do commit e substituição reversível |
-| `transfer.package` | Entregar um catálogo portátil com seus assets | Toolbar → Exportar → Pacote de rascunho ou publicação | ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit |
+| `transfer.package` | Entregar um catálogo portátil com seus assets | Toolbar → Exportar → Pacote de rascunho ou publicação | ZIP com hashes, manifestos, relatório, documento importado e auditado, fonte/plano e kit |
 | `transfer.pdf` | Gerar a saída A4 para impressão ou PDF | Toolbar → Imprimir / PDF | Projeção A4 sem chrome, guias ou contêineres editoriais |
 
 ## Gerar um catálogo a partir de produtos estruturados
@@ -59,9 +59,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `start.semantic-source`
 - **Acesso:** Importar → CatalogSource JSON → analisar → gerar
 - **Pré-condições:** Produtos com fatos comerciais confirmados; Assets identificados ou placeholders aceitos
-- **Resultado:** Fonte normalizada, plano editorial e página materializada deterministicamente
-- **Exemplo:** Importar sete produtos e gerar a estratégia hero-grid
-- **Limites:** Uma página nesta versão; Não inventar código, preço, medida ou embalagem
+- **Resultado:** Fonte normalizada, plano editorial e página materializada deterministicamente para auditoria no editor
+- **Exemplo:** Importar produtos com placeholders inválidos, gerar a estratégia hero-grid e auditar os defaults materializados
+- **Limites:** Uma página nesta versão; Não inventar código, preço, medida ou embalagem; Defaults editoriais não podem introduzir fatos
 - **Capacidades:** `semanticCatalogSource`, `catalogSourceDirectImport`, `generationPlanCompiler`, `geometricPublicationGate`, `renderedTextIntegrityGate`
 - **Componentes:** `product-card`
 - **Receitas:** —
@@ -124,9 +124,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `content.assets`
 - **Acesso:** Clicar no placeholder → biblioteca do projeto → importar do computador
 - **Pré-condições:** SVG, PNG, JPEG ou WebP dentro do limite
-- **Resultado:** Asset factual preservado por referência, com encaixe, foco, zoom e deslocamento por instância
-- **Exemplo:** Usar fit=contain, ampliar a instância para 135% e deslocá-la sem modificar o arquivo-fonte
-- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token; Zoom e deslocamento recortam somente o viewport da instância; Expansão de canvas factual cria um derivado separado com novo tamanho, hash e proveniência
+- **Resultado:** Asset factual preservado por referência, com enquadramento contextual e derivação específica por uso quando indispensável
+- **Exemplo:** Ajustar fit/foco/zoom na instância; se margens neutras ainda limitarem a ocupação, recortá-las antes de expandir o fundo
+- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token; Zoom e deslocamento recortam somente o viewport da instância; Ocupação útil é orientação contextual por papel e slot, não percentual universal; Recorte neutro e expansão de canvas criam derivados separados por uso, com novo tamanho, hash, método e proveniência; Expansão isolada melhora continuidade do fundo, não ocupação factual
 - **Capacidades:** `projectPackageExport`, `packageAssetPolicy`, `artInstanceFraming`
 - **Componentes:** `art`
 - **Receitas:** —
@@ -151,7 +151,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Acesso:** Tabela ou produto → Legendas → adicionar definição e materializar
 - **Pré-condições:** Chave de legenda única
 - **Resultado:** Células e itens visuais resolvem o mesmo token por legendKey
-- **Exemplo:** CX 250 em amarelo na célula e na faixa de embalagens
+- **Exemplo:** [EMBALAGEM] com o mesmo token semântico na célula e na faixa de embalagens
 - **Limites:** Cor não pode ser o único meio de transmitir significado
 - **Capacidades:** `semanticColorLegends`, `hierarchicalVisualLegends`, `optionalLegendMaterialization`
 - **Componentes:** `legend-panel`, `legend-group`, `legend-item`, `data-table`
@@ -164,7 +164,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **Acesso:** feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas
 - **Pré-condições:** A função semântica da informação está definida
 - **Resultado:** Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey
-- **Exemplo:** Usar specification para Alta resistência, fact para Carga 40 kg e legend-item para a cor Preto
+- **Exemplo:** Usar specification para [ATRIBUTO], fact para [RÓTULO] + [VALOR] + [UNIDADE] e legend-item para [CLASSIFICAÇÃO]
 - **Limites:** fact não substitui linha comercial; legend-item não armazena o fato por posição ou somente por cor
 - **Capacidades:** `officialSectionRecipes`, `semanticColorLegends`, `specificationDensityControls`
 - **Componentes:** `specification`, `layout-container`, `legend-item`
@@ -280,9 +280,9 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `transfer.package`
 - **Acesso:** Toolbar → Exportar → Pacote de rascunho ou publicação
 - **Pré-condições:** Documento válido; Bytes de assets disponíveis
-- **Resultado:** ZIP com hashes, manifestos, relatório, documento, fonte/plano e kit
-- **Exemplo:** Exportar rascunho para revisão em outro navegador
-- **Limites:** Publicação bloqueia pendências críticas; Rascunho converte pendências permitidas em avisos; O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema; examples/catalog-project.json é template não importável até substituir tamanhos e hashes
+- **Resultado:** ZIP com hashes, manifestos, relatório, documento importado e auditado, fonte/plano e kit
+- **Exemplo:** Importar no editor, auditar o documento materializado e seus defaults, então exportar um rascunho reimportável
+- **Limites:** Publicação bloqueia pendências críticas; Rascunho converte pendências permitidas em avisos; O CLI incluído compila documento e relatório; empacotamento ocorre pelo editor ou por montagem conforme o schema; examples/catalog-project.json é template não importável até substituir tamanhos e hashes; Preview paralelo é somente diagnóstico e nunca substitui o documento importado como resultado
 - **Capacidades:** `projectPackageExport`, `draftPublicationGates`, `geometricPublicationGate`, `renderedTextIntegrityGate`
 - **Componentes:** —
 - **Receitas:** —
@@ -292,10 +292,10 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 
 - **ID:** `transfer.pdf`
 - **Acesso:** Toolbar → Imprimir / PDF
-- **Pré-condições:** Página revisada; Browser com impressão disponível
+- **Pré-condições:** Página importada e revisada no editor real; Browser com impressão disponível
 - **Resultado:** Projeção A4 sem chrome, guias ou contêineres editoriais
 - **Exemplo:** Salvar a página atual como PDF
-- **Limites:** Uma página nesta versão; A impressão usa o diálogo nativo
+- **Limites:** Uma página nesta versão; A impressão usa o diálogo nativo; PDF de preview paralelo não vale como PDF final do catálogo
 - **Capacidades:** `printPdf`
 - **Componentes:** `separator`, `layout-container`
 - **Receitas:** —

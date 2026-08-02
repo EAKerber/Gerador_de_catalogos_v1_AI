@@ -1004,12 +1004,12 @@
       "items": [
         {
           "id": "color-legend-cx-250",
-          "label": "CX 250",
+          "label": "[EMBALAGEM A]",
           "metadata": {
             "key": "cx-250",
             "token": "pack.250",
-            "textLabel": "CX 250",
-            "fallback": "CX 250",
+            "textLabel": "[EMBALAGEM A]",
+            "fallback": "[EMBALAGEM A]",
             "groupId": "embalagens",
             "groupLabel": "Embalagens",
             "groupOrder": 0,
@@ -1020,12 +1020,12 @@
         },
         {
           "id": "color-legend-cx-150",
-          "label": "CX 150",
+          "label": "[EMBALAGEM B]",
           "metadata": {
             "key": "cx-150",
             "token": "pack.150",
-            "textLabel": "CX 150",
-            "fallback": "CX 150",
+            "textLabel": "[EMBALAGEM B]",
+            "fallback": "[EMBALAGEM B]",
             "groupId": "embalagens",
             "groupLabel": "Embalagens",
             "groupOrder": 0,
@@ -1769,9 +1769,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "comfortable"
               },
               "style": {
@@ -2305,9 +2305,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -2721,9 +2721,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -3138,9 +3138,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -3553,9 +3553,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -3969,9 +3969,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -4388,9 +4388,9 @@
                     "visible": true
                   }
                 ],
-                "code": "0000",
-                "package": "PCT 100 UNID.",
-                "price": "R$ 0,00",
+                "code": "[CÓDIGO]",
+                "package": "[EMBALAGEM]",
+                "price": "[R$ 00,00]",
                 "density": "compact"
               },
               "style": {
@@ -5474,7 +5474,7 @@
     "compilerVersion": "1.0.0",
     "sourceVersion": "1.1.0",
     "planVersion": "1.1.0",
-    "sourceDigest": "61860604",
+    "sourceDigest": "25ca1654",
     "planDigest": "59bf380f",
     "strategy": "hero-grid",
     "plan": {

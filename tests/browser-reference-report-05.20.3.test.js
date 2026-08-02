@@ -22,7 +22,7 @@ fs.mkdirSync(outputDir, { recursive: true });
   page.on("pageerror", error => pageErrors.push(error.message));
   page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  await page.waitForFunction(() => window.CatalogEditor && window.CatalogDocumentValidator?.VERSION === "1.1.0");
+  await page.waitForFunction(() => window.CatalogEditor && window.CatalogDocumentValidator?.VERSION === "1.2.0");
 
   const result = await page.evaluate(() => {
     const store = CatalogEditor.store;
@@ -69,7 +69,7 @@ fs.mkdirSync(outputDir, { recursive: true });
   });
 
   const optionalKinds = result.basePublication.references.optional.map(item => `${item.kind}:${item.reason}`);
-  assert(result.validatorVersion === "1.1.0", "O browser não carregou o validador 1.1.0.");
+  assert(result.validatorVersion === "1.2.0", "O browser não carregou o validador 1.2.0.");
   assert(result.schemaVersion === "1.16.0", "A alteração de diagnóstico modificou o schema.");
   assert(result.baseDraft.summary.missingReferences === 0, "Card local foi contado como referência ausente no rascunho.");
   assert(result.basePublication.summary.missingReferences === 0, "Card local foi contado como referência ausente na publicação.");

@@ -1,7 +1,7 @@
 {
   "patternsFormat": "CatalogAuthoringPatterns",
   "patternsVersion": "1.0.0",
-  "editorIncrement": "05.59",
+  "editorIncrement": "05.60",
   "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.1.0.",
   "patterns": [
     {
@@ -32,7 +32,7 @@
       "stage": "source-or-document",
       "choices": [
         { "use": "specification", "when": "atributo técnico curto ligado a um produto, normalmente com ícone" },
-        { "use": "recipe:fact", "when": "dado autônomo com rótulo, valor e unidade, como carga de 40 kg" },
+        { "use": "recipe:fact", "when": "dado autônomo com rótulo, valor e unidade, preenchidos somente a partir de uma fonte confirmada" },
         { "use": "legend-item", "when": "classificação compartilhada resolvida por legendKey, como cor ou embalagem" }
       ],
       "rule": "Não inferir identidade por posição e não usar cor como único significado."
@@ -66,7 +66,42 @@
       "stage": "before-package",
       "targetType": "art",
       "componentPatch": { "props.fit": "contain" },
-      "allowedMethods": [
+      "decisionOrder": [
+        {
+          "step": "instance-framing",
+          "action": "Ajustar fit, focalX/focalY, zoom e offsetX/offsetY no editor antes de criar um derivado.",
+          "createsAsset": false
+        },
+        {
+          "step": "neutral-margin-crop",
+          "action": "Recortar somente margens neutras incorporadas ao arquivo quando o enquadramento da instância não conseguir recuperar ocupação suficiente sem cortar o produto.",
+          "createsAsset": true,
+          "method": "neutral-margin-crop"
+        },
+        {
+          "step": "neutral-background-expansion",
+          "action": "Expandir fundo uniforme somente quando ainda houver descontinuidade entre o canvas e o slot; não usar expansão isolada como técnica de ocupação.",
+          "createsAsset": true,
+          "method": "neutral-background-expansion"
+        }
+      ],
+  "occupationGuidance": {
+        "kind": "contextual",
+        "rule": "Definir e registrar a ocupação útil esperada por papel editorial, asset e proporção do slot; não aplicar um percentual mínimo universal.",
+        "checks": [
+          "preservar a proporção do produto",
+          "não cortar pixels factuais de alta confiança",
+          "comparar ocupação antes e depois no mesmo viewport",
+      "confirmar tela e impressão no documento importado"
+    ]
+  },
+  "derivativePolicy": {
+    "perUse": true,
+    "preserveSource": true,
+    "requiredProvenance": ["origin", "sourceAssetIds", "method", "fidelity", "role", "approval"],
+    "rule": "Cada derivado atende a um uso e proporção declarados; não sobrescrever o original nem presumir que um único derivado serve a todos os slots."
+  },
+  "allowedMethods": [
         "neutral-margin-crop",
         "neutral-background-expansion",
         "factual-reframe",
@@ -75,11 +110,49 @@
       ],
       "rules": [
         "Ajustar fit, focalX/focalY, zoom e offsetX/offsetY no componente é não destrutivo: o recorte pertence somente ao viewport da instância e não cria um novo asset.",
-        "Zoom, foco, reposicionamento, reenquadramento, recorte de margem neutra, redimensionamento, expansão de fundo uniforme e correção tonal são recomendados quando eliminam vazios sem alterar o produto.",
+        "Usar primeiro o enquadramento por instância; se margens neutras incorporadas ainda limitarem o produto, recortá-las antes de considerar expansão de fundo.",
+        "Expansão de fundo uniforme melhora continuidade do fundo, mas não deve ser tratada como ganho de ocupação factual.",
         "Não inventar partes, deformar geometria, ocultar características relevantes nem mudar acabamento ou variante sem fonte declarada.",
         "Recoloração só pode materializar uma variante confirmada no input.",
         "A derivação deve ser reversível: preservar o asset-fonte, salvar novo arquivo e recalcular mimeType, size e sha256.",
-        "Registrar origin, sourceAssetIds, method, fidelity e aprovação no manifesto do pacote."
+        "Criar derivados específicos por uso quando enquadramentos ou proporções divergem; não sobrescrever nem reutilizar cegamente um derivado preparado para outro slot.",
+        "Registrar origin, sourceAssetIds, method, fidelity, papel editorial e aprovação no manifesto do pacote."
+      ]
+    },
+    {
+      "id": "missing-fact-resolution",
+      "kind": "decision-protocol",
+      "stage": "source-plan-and-materialized-document",
+      "order": [
+        { "step": "ask", "rule": "Perguntar quando o fato ausente afetar conteúdo publicável e não houver fallback sem o dado." },
+        { "step": "pending", "rule": "Sem resposta, manter placeholder inválido por construção, marcar pending/sampleOnly e preservar o pacote como draft." },
+        { "step": "explicit-omit", "rule": "Omitir o papel, campo ou footer inteiro somente por decisão explícita registrada ou por fallback que preserve o conteúdo sem fingir o fato." }
+      ],
+      "rules": [
+        "Defaults editoriais podem decidir estrutura e aparência, nunca preço, código, contato, medida, embalagem, data ou especificação.",
+        "Todo valor didático que pareça comercial deve ser inválido por construção e bloqueável no gate de publicação.",
+        "Footer vazio é caso explícito; ausência de resposta mantém pendências, não silêncio factual."
+      ]
+    },
+    {
+      "id": "materialized-document-audit",
+      "kind": "delivery-gate",
+      "stage": "after-editor-import-before-delivery",
+      "authority": "editor-imported-catalog-document",
+      "parallelPreview": "diagnostic-only",
+      "requiredChecks": [
+        "auditar a árvore materializada e todos os defaults injetados",
+        "comparar fatos publicados com CatalogSource, plano e decisões registradas",
+        "confirmar placeholders, pending e omissões explícitas",
+        "executar gates estrutural, geométrico e textual renderizado no editor real",
+        "exportar pacote e PDF a partir do documento importado e revisar o round-trip"
+      ],
+      "blockers": [
+        "fato sem origem",
+        "gate notRun apresentado como aprovado",
+        "preview paralelo apresentado como resultado final",
+        "default com dado comercial aparentemente válido",
+        "divergência entre editor, pacote reimportado e PDF"
       ]
     },
     {

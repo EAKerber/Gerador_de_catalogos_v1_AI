@@ -579,7 +579,7 @@
       minSize: { width: 220, height: 190 },
       recommendedSize: { width: 270, height: 220 },
       defaultFrame: { width: 350, height: 260 },
-      defaultProps: { number: "01", title: "NOVO PRODUTO", specOne: "Alta resistência", specTwo: "Material", code: "0000", package: "PCT 100 UNID.", price: "R$ 0,00" },
+      defaultProps: { number: "00", title: "[PRODUTO]", specOne: "[ATRIBUTO 1]", specTwo: "[ATRIBUTO 2]", code: "[CÓDIGO]", package: "[EMBALAGEM]", price: "[R$ 00,00]" },
       defaultStyle: { surface: "surface.paper", border: "border.default", radius: "radius.medium", accentColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.card-title" },
       measureMinimum(component, proposedFrame) {
         const compact = component.presentation?.responsiveState === "compact" || (component.presentation?.responsiveState !== "wide" && Number(proposedFrame?.width || component.frame.width) < 320);
@@ -606,11 +606,11 @@
       },
       defaultChildren(component) {
         return [
-          { type: "title-symbol", slot: "title", props: { number: component.props.number || "01", title: component.props.title || "NOVO PRODUTO" } },
+          { type: "title-symbol", slot: "title", props: { number: component.props.number || "00", title: component.props.title || "[PRODUTO]" } },
           { type: "art", slot: "art", props: { label: "ARTE DO PRODUTO", hint: "Foto, render, SVG ou desenho técnico", role: "product", fit: "contain", assetId: null, alt: "", focalX: 50, focalY: 50, vectorMode: "original", caption: "", captionPosition: "below" } },
-          { type: "specification", slot: "specifications", props: { icon: "shield-star", label: component.props.specOne || "Alta resistência" } },
-          { type: "specification", slot: "specifications", props: { icon: "layers", label: component.props.specTwo || "Material" } },
-          { type: "data-table", slot: "table", props: { collectionId: "tableRows", rowIds: [], columns: window.CatalogSource?.DEFAULT_TABLE_COLUMNS || [], code: component.props.code || "0000", package: component.props.package || "PCT 100 UNID.", price: component.props.price || "R$ 0,00" } }
+          { type: "specification", slot: "specifications", props: { icon: "shield-star", label: component.props.specOne || "[ATRIBUTO 1]" } },
+          { type: "specification", slot: "specifications", props: { icon: "layers", label: component.props.specTwo || "[ATRIBUTO 2]" } },
+          { type: "data-table", slot: "table", props: { collectionId: "tableRows", rowIds: [], columns: window.CatalogSource?.DEFAULT_TABLE_COLUMNS || [], code: component.props.code || "[CÓDIGO]", package: component.props.package || "[EMBALAGEM]", price: component.props.price || "[R$ 00,00]" } }
         ];
       },
       render: productCardRender
@@ -743,7 +743,7 @@
       gridUnit: 2,
       minSize: { width: 140, height: 32 },
       defaultFrame: { width: 260, height: 38 },
-      defaultProps: { number: "01", title: "NOVO PRODUTO" },
+      defaultProps: { number: "00", title: "[PRODUTO]" },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.card-title" },
       contentFields: [
         { path: "number", label: "Número", type: "text" },
@@ -760,7 +760,7 @@
       gridUnit: 1,
       minSize: { width: 82, height: 28 },
       defaultFrame: { width: 130, height: 38 },
-      defaultProps: { icon: "shield-star", label: "Alta resistência", iconScale: 100, densityPreset: "auto", gap: "auto", padding: "auto" },
+      defaultProps: { icon: "shield-star", label: "[ATRIBUTO]", iconScale: 100, densityPreset: "auto", gap: "auto", padding: "auto" },
       defaultStyle: { surface: "surface.paper", border: "border.none", radius: "radius.none", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.primary", mutedColor: "text.muted", typography: "type.label" },
       contentFields: [
         { path: "icon", label: "Ícone", type: "icon-select", full: true },
@@ -808,7 +808,7 @@
       gridUnit: 2,
       minSize: { width: 180, height: 32 },
       defaultFrame: { width: 300, height: 48 },
-      defaultProps: { collectionId: "tableRows", rowIds: [], columns: window.CatalogSource?.DEFAULT_TABLE_COLUMNS || [], code: "0000", package: "PCT 100 UNID.", price: "R$ 0,00" },
+      defaultProps: { collectionId: "tableRows", rowIds: [], columns: window.CatalogSource?.DEFAULT_TABLE_COLUMNS || [], code: "[CÓDIGO]", package: "[EMBALAGEM]", price: "[R$ 00,00]" },
       measureMinimum(component) {
         const metrics = tableMetrics(component);
         return { width: component.props?.density === "compact" ? 180 : 180, height: metrics.header + dataTableRowCount(component) * metrics.row };

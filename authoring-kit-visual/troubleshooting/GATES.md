@@ -16,3 +16,7 @@ são três pendências.
 O gate de publicação exige zero erros. Avisos de rascunho continuam visíveis e
 devem ser explicados no relatório. O PDF final não mostra grid, seleção, guias
 ou painéis do editor.
+
+Audite também fatos introduzidos por defaults e estados `notRun`. O documento
+importado no editor é a autoridade; capturas, HTML ou PDFs gerados por uma rota
+paralela podem ajudar no diagnóstico, mas não aprovam nem substituem a entrega.

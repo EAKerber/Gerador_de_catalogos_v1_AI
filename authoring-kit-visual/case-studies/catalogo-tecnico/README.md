@@ -1,8 +1,8 @@
 # Estudo de caso — catálogo técnico A4
 
-Classificação: **referência forte e critério canônico da V1**. A imagem é
-evidência externa; não é golden image nem autorização para comparação pixel a
-pixel.
+Classificação: **evidência técnica conhecida e aderente ao escopo atual**. A
+imagem não é template, fonte factual, golden image, especificação normativa nem
+autorização para comparação pixel a pixel.
 
 | Região | Classificação | Tradução no kit |
 | --- | --- | --- |

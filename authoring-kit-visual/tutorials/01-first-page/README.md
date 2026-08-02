@@ -7,8 +7,9 @@ Quando usar: início de qualquer catálogo orientado por fatos.
 2. Use o plano padrão ou adapte `../../../examples/catalog-generation-plan.json`.
 3. Execute o compilador conforme `../../../GUIDE.md`.
 4. Exija `ok: true`, zero colisões, zero overflow e zero correções pendentes.
-5. Importe o documento no editor, faça refinamentos pós-compilação e exporte
-   pacote/PDF.
+5. Audite o documento materializado e seus defaults contra a fonte e o plano.
+6. Importe no editor, execute o gate renderizado, faça refinamentos e exporte
+   pacote/PDF a partir dessa materialização.
 
 Artefatos executáveis deste complemento:
 
@@ -18,3 +19,5 @@ Artefatos executáveis deste complemento:
 
 Erro comum: editar o documento materializado antes de estabilizar
 `CatalogSource`; isso transfere fatos para geometria e dificulta regeneração.
+Outro erro é apresentar um preview paralelo como resultado: ele pode orientar,
+mas não substitui o documento importado, o round-trip e o PDF do editor.

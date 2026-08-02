@@ -139,7 +139,7 @@ const fileFrom = (name, bytes) => ({
     "section-tip-callout"
   ];
   assert(capabilities.components.length === Object.keys(CATALOG_COMPONENT_REGISTRY).length && capabilities.icons.length === Object.keys(CATALOG_ICON_LIBRARY).length, "O manifesto declarativo diverge dos registros runtime.");
-  assert(capabilities.editor.increment === "05.59" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing && capabilities.capabilities.slotSpanControl && capabilities.capabilities.renderedTextIntegrityGate && capabilities.capabilities.artInstanceFraming, "O kit não preservou geometria, enquadramento de arte, gate textual, spans, coleções em lote e receitas oficiais no 05.59.");
+  assert(capabilities.editor.increment === "05.60" && requiredRecipeIds.every(recipeId => recipeIds.has(recipeId)) && capabilities.capabilities.officialSectionRecipes && capabilities.capabilities.batchGeometry && capabilities.capabilities.batchFrameMap && capabilities.capabilities.bulkCollectionEditing && capabilities.capabilities.slotSpanControl && capabilities.capabilities.renderedTextIntegrityGate && capabilities.capabilities.artInstanceFraming, "O kit não preservou geometria, enquadramento de arte, gate textual, spans, coleções em lote e receitas oficiais no 05.60.");
   assert(capabilities.capabilities.editorialTextControls && capabilities.capabilities.internalIconScale && capabilities.capabilities.distinctProductModes, "O kit não publicou a profundidade editorial do 05.18.");
   assert(capabilities.tableSchemas.length === 4 && capabilities.capabilities.batchTableSchemas && capabilities.capabilities.heroGridStripComposition, "O kit não publicou esquemas de tabela e composição focal.");
   assert(capabilities.separatorPresets.length === 5 && capabilities.capabilities.contextualTableRows && capabilities.capabilities.batchSeparators, "Ações contextuais e presets de separador não foram publicados no kit.");
@@ -155,7 +155,7 @@ const fileFrom = (name, bytes) => ({
   try { await new CatalogProjectPackageManager(missingStore, new CatalogAssetStorage()).buildPackage(); } catch (error) { missingBlocked = error.code === "ASSET_BYTES_MISSING"; }
   assert(missingBlocked, "O exportador criou um pacote supostamente portátil sem os bytes de um asset registrado.");
 
-  console.log("✓ Pacote, hashes, assets, CatalogSource, gates e AuthoringKit 1.7.1 validados.");
+  console.log("✓ Pacote, hashes, assets, CatalogSource, gates e AuthoringKit 1.7.2 validados.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;

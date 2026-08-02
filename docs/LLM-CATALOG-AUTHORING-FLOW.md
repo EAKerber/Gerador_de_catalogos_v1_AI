@@ -131,8 +131,10 @@ O agente produz `CatalogGenerationPlan` quando precisa sobrescrever o plano padr
 3. criar referências estáveis por `assetId`;
 4. validar schema, referências, slots, tokens e layout;
 5. executar reparos determinísticos seguros;
-6. repetir validação;
-7. bloquear a entrega somente em erros que impeçam importação ou alterem fatos.
+6. auditar a árvore materializada e os defaults contra `CatalogSource`, plano e decisões registradas;
+7. importar no editor real e executar os gates geométrico e textual renderizado;
+8. repetir validação e reimportar o pacote exportado;
+9. bloquear a entrega em erros de importação, fatos sem origem, gates não executados, divergência de round-trip ou falhas visuais de publicação.
 
 ### Etapa E — entrega
 
@@ -144,6 +146,10 @@ O agente entrega o pacote e resume:
 - avisos remanescentes;
 - versão do kit e do schema.
 
+O documento importado no editor, o pacote reimportável e o PDF gerado pelo
+editor são a autoridade de entrega. Preview paralelo do agente é somente
+diagnóstico e não pode ser apresentado como substituto do catálogo materializado.
+
 ## 4. Política de assets
 
 O modo **Assistido** é aplicado quando o brief não define outra política. Função, risco e proveniência controlam a geração; não existe uma autorização global indistinta para todo tipo de imagem.
@@ -152,9 +158,11 @@ Ordem preferencial:
 
 1. reutilizar asset fornecido e inequivocamente associado;
 2. reutilizar asset oficial do kit ou da biblioteca declarada;
-3. gerar asset quando houver capacidade, autorização e segurança semântica;
-4. usar placeholder editorial quando a imagem for opcional;
-5. pedir ao usuário quando a fidelidade do produto depender do asset.
+3. ajustar enquadramento por instância sem alterar o arquivo;
+4. criar derivação factual específica por uso quando o enquadramento não bastar;
+5. gerar asset não factual quando houver capacidade, autorização e segurança semântica;
+6. usar placeholder editorial quando a imagem for opcional;
+7. pedir ao usuário quando a fidelidade do produto depender do asset.
 
 | Situação | Conduta padrão |
 | --- | --- |
@@ -167,6 +175,11 @@ Ordem preferencial:
 | Ambiente sem geração de imagem | Aplicar fallback e relatar; perguntar apenas se indispensável |
 
 Todo asset gerado precisa de nome estável, MIME suportado, função, origem e relação com o produto quando aplicável.
+
+Em imagens factuais, recorte margens neutras antes de expandir fundo. Metas de
+ocupação são contextuais por papel e slot, não uma regra global. Toda derivação
+preserva o original, cria novo hash e declara `sourceAssetIds`, método, papel,
+fidelidade e aprovação.
 
 Assets também carregam estado de publicação: `publish-ready`, `review-required`, `draft-only`, `missing` ou `optional-missing`. Exportação de rascunho tolera pendências registradas; exportação para publicação bloqueia assets obrigatórios ausentes, de rascunho ou ainda sem aprovação.
 
