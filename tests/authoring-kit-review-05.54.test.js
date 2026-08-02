@@ -19,7 +19,7 @@ const packageTemplate = readJSON("authoring-kit/examples/catalog-project.json");
 const guideMarkdown = read("authoring-kit/GUIDE.md");
 
 assert(manifest.kitVersion === "1.7.1", "O kit com gate textual não possui identidade própria em relação ao núcleo 1.7.0.");
-assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.57"), "Metadados de proveniência do kit divergem.");
+assert([manifest.editorIncrement, capabilities.editor.increment, guide.editorIncrement, governance.editorIncrement, governance.v1State.currentIncrement, patterns.editorIncrement].every(value => value === "05.59"), "Metadados de proveniência do kit divergem.");
 for (const field of ["guide", "capabilities", "featureInventory", "featureGuide", "featureGovernance", "authoringPatterns", "compiler", "runtime"]) {
   assert(fs.existsSync(path.join(root, "authoring-kit", manifest[field])), `Manifesto aponta para caminho ausente: ${field}.`);
 }

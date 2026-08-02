@@ -1,15 +1,16 @@
 {
   "governanceFormat": "CatalogFeatureGovernance",
   "governanceVersion": "1.0.0",
-  "editorIncrement": "05.57",
+  "editorIncrement": "05.59",
   "v1State": {
     "scope": "single-page",
     "status": "stable",
     "closedByIncrement": "05.23",
-    "currentIncrement": "05.57",
+    "currentIncrement": "05.59",
     "nextExpansion": "paused",
     "activeFocus": [
       "factual-footer-integrity",
+      "art-instance-framing",
       "deterministic-compilation",
       "documentation-consistency"
     ]
@@ -65,6 +66,7 @@
     { "id": "packageAssetPolicy", "status": "frozen", "reason": "Governança avançada de mídia está fora do foco atual." },
     { "id": "assetFormats", "status": "frozen", "reason": "Nenhum novo formato de mídia durante o ciclo de saneamento." },
     { "id": "assetMaxBytes", "status": "frozen", "reason": "Limite atual permanece por compatibilidade." },
+    { "id": "artInstanceFraming", "status": "active", "reason": "Enquadramento não destrutivo por instância fecha uma falha factual observada sem criar editor de imagens nem novo asset." },
     { "id": "undoRedo", "status": "active", "reason": "Toda ação pontual ou composta precisa ser reversível." },
     { "id": "printPdf", "status": "active", "reason": "PDF permanece saída de fidelidade, não plataforma de publicação." },
     { "id": "multiplePages", "status": "paused", "reason": "Depende de layout e reflow confiáveis." },

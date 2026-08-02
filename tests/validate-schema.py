@@ -44,6 +44,9 @@ except ModuleNotFoundError:
                 assert component["props"]["fit"] in {"contain", "cover", "original"}
                 assert 0 <= component["props"]["focalX"] <= 100
                 assert 0 <= component["props"]["focalY"] <= 100
+                assert 100 <= component["props"].get("zoom", 100) <= 400
+                assert -100 <= component["props"].get("offsetX", 0) <= 100
+                assert -100 <= component["props"].get("offsetY", 0) <= 100
                 assert component["props"]["vectorMode"] in {"original", "token"}
                 assert component["props"]["captionPosition"] in {"below", "overlay"}
             if component["type"] == "data-table":

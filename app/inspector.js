@@ -233,6 +233,11 @@
             <button type="button" class="inspector-action--primary inspector-action--wide" data-open-asset-library data-component-id="${escapeHtml(component.id)}">${asset ? "Substituir pela biblioteca" : "Escolher na biblioteca"}</button>
             ${asset ? `<button type="button" class="inspector-action--wide" data-clear-asset data-component-id="${escapeHtml(component.id)}">Remover vínculo</button>` : ""}
           </div>
+          <div class="inspector-section__heading"><h4>Enquadramento</h4><span>${escapeHtml(component.props.fit || "contain")} · ${Number(component.props.zoom) || 100}%</span></div>
+          <div class="inspector-actions inspector-actions--grid">
+            <button type="button" data-art-fill-focus>Preencher mantendo foco</button>
+            <button type="button" data-art-framing-reset>Redefinir enquadramento</button>
+          </div>
           <p class="inspector-note">O documento guarda somente <code>assetId</code>, metadados e referência. O arquivo binário permanece no armazenamento local.</p>
         </section>`;
     }
@@ -1119,6 +1124,14 @@
         this.store.fitComponentHeightToContent(component.id);
         const status = document.getElementById("documentStatus");
         if (status) status.textContent = "Altura ajustada ao conteúdo em uma única ação.";
+      } else if (event.target.closest("[data-art-fill-focus]") && component.type === "art") {
+        this.store.updateComponent(component.id, { props: { fit: "cover", zoom: 100, offsetX: 0, offsetY: 0 } });
+        const status = document.getElementById("documentStatus");
+        if (status) status.textContent = "A arte preenche o slot preservando o ponto focal.";
+      } else if (event.target.closest("[data-art-framing-reset]") && component.type === "art") {
+        this.store.updateComponent(component.id, { props: { fit: "contain", focalX: 50, focalY: 50, zoom: 100, offsetX: 0, offsetY: 0 } });
+        const status = document.getElementById("documentStatus");
+        if (status) status.textContent = "Enquadramento redefinido sem alterar o asset original.";
       } else if (event.target.closest("[data-delete-component]")) {
         this.store.deleteComponent(component.id);
       } else if (event.target.closest("[data-duplicate-component]")) {

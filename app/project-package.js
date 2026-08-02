@@ -216,7 +216,7 @@
     let manifest = {
       manifestType: "CatalogCapabilities",
       manifestVersion: CAPABILITIES_VERSION,
-      editor: { name: "Catálogo V1", increment: "05.57", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
+      editor: { name: "Catálogo V1", increment: "05.59", schemaVersion: window.CATALOG_SCHEMA_VERSION || "1.16.0" },
       document: { pagePreset: "A4", logicalSize: { width: 794, height: 1123, unit: "px" }, editorSessionRequired: false },
       components: Object.entries(window.CATALOG_COMPONENT_REGISTRY || {}).sort(([a], [b]) => a.localeCompare(b)).map(serializeComponentDefinition),
       templates: templates.map(template => ({
@@ -257,6 +257,7 @@
         packageAssetPolicy: "assisted",
         assetFormats: Object.keys(MIME_EXTENSIONS),
         assetMaxBytes: MAX_ENTRY_SIZE,
+        artInstanceFraming: true,
         undoRedo: true,
         printPdf: true,
         multiplePages: false,
@@ -539,7 +540,7 @@
         packageFormat: PACKAGE_FORMAT,
         packageVersion: PACKAGE_VERSION,
         createdAt: new Date().toISOString(),
-        generator: { name: "Catálogo V1", increment: "05.57", schemaVersion: document.schemaVersion },
+        generator: { name: "Catálogo V1", increment: "05.59", schemaVersion: document.schemaVersion },
         project: { id: document.id, title: document.title },
         policy: { assetMode: "assisted", publicationGate: target },
         document: { path: DOCUMENT_PATH, schemaVersion: document.schemaVersion },
