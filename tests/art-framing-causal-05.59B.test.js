@@ -24,7 +24,8 @@ assert(protocol.experimentFormat === "CatalogArtFramingCausalTrial" && protocol.
 assert(protocol.conditions.length === 4 && new Set(protocol.conditions.map(condition => condition.id)).size === 4, "O protocolo não preserva quatro condições distintas.");
 assert(protocol.target.componentType === "art" && protocol.target.parentType === "product-card" && protocol.target.slot === "art", "Componente, card e slot não estão fixos.");
 assert(protocol.target.width === 351 && protocol.target.height === 204, "As dimensões controladas do slot factual mudaram.");
-assert(protocol.target.renderedViewport.width === 349 && protocol.target.renderedViewport.height === 202, "O viewport interno mensurável não está fixado.");
+assert(protocol.target.renderedViewport.screen.width === 349 && protocol.target.renderedViewport.screen.height === 202, "O viewport interno de tela não está fixado.");
+assert(protocol.target.renderedViewport.print.width === 350 && protocol.target.renderedViewport.print.height === 202, "O viewport interno de impressão não está fixado.");
 assert(protocol.target.controlledSetup.operation === "isolate-existing-art-slot" && protocol.target.controlledSetup.cardHeight === 220, "A preparação causal do mesmo card não está explícita.");
 assert(protocol.policy.referencesAreNormative === false && protocol.policy.commercialFactsIntroduced === false, "O ensaio promoveu referência ou dado comercial a norma.");
 assert(protocol.policy.externalNetworkRequired === false && protocol.policy.authoringKitVersionChange === false, "O protocolo ampliou rede ou versão do kit.");

@@ -21,7 +21,10 @@
     "slot": "art",
     "width": 351,
     "height": 204,
-    "renderedViewport": { "width": 349, "height": 202 },
+    "renderedViewport": {
+      "screen": { "width": 349, "height": 202 },
+      "print": { "width": 350, "height": 202 }
+    },
     "controlledSetup": {
       "operation": "isolate-existing-art-slot",
       "cardWidth": 367,

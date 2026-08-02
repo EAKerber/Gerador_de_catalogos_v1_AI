@@ -340,8 +340,8 @@ let activeBrowser = null;
   assert(!cropped.screen.clipped && !framed.screen.clipped, "Uma condição ampliada cortou pixels factuais no viewport.");
 
   for (const result of results) {
-    assert(result.screen.width === protocol.target.renderedViewport.width && result.screen.height === protocol.target.renderedViewport.height, `${result.id}: captura de tela divergiu do viewport interno.`);
-    assert(result.print.width === protocol.target.renderedViewport.width && result.print.height === protocol.target.renderedViewport.height, `${result.id}: captura de impressão divergiu do viewport interno.`);
+    assert(result.screen.width === protocol.target.renderedViewport.screen.width && result.screen.height === protocol.target.renderedViewport.screen.height, `${result.id}: captura de tela divergiu do viewport interno.`);
+    assert(result.print.width === protocol.target.renderedViewport.print.width && result.print.height === protocol.target.renderedViewport.print.height, `${result.id}: captura de impressão divergiu do viewport interno.`);
     assert(metricDelta(result.screen, result.print, "usefulBoundsRatio") <= 0.02, `${result.id}: tela e impressão divergiram na ocupação delimitada.`);
     assert(metricDelta(result.screen, result.print, "usefulPixelRatio") <= 0.02, `${result.id}: tela e impressão divergiram nos pixels factuais.`);
     assert(result.screen.style.objectFit === result.print.style.objectFit && result.screen.style.transform === result.print.style.transform, `${result.id}: tela e impressão materializaram transformações diferentes.`);
