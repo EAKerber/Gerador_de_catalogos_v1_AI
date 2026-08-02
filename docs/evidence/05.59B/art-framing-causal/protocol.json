@@ -80,8 +80,8 @@
     }
   ],
   "metrics": {
-    "usefulBoundsRatio": "area da caixa delimitadora de pixels factuais dividida pela area do slot",
-    "usefulPixelRatio": "pixels factuais divididos pelos pixels do slot",
+    "usefulBoundsRatio": "diagnostico da caixa delimitadora de pixels factuais, apos excluir chrome conectado a multiplas bordas",
+    "usefulPixelRatio": "metrica-gate: pixels factuais divididos pelos pixels do viewport, apos excluir chrome conectado a multiplas bordas",
     "neutralBackgroundRatio": "pixels brancos/neutros divididos pelos pixels do slot",
     "clipped": "a caixa factual toca qualquer borda do viewport",
     "screenPrintDelta": "diferenca absoluta das razoes entre midia screen e print"

@@ -156,33 +156,76 @@ async function analyzePng(page, bytes) {
     const context = canvas.getContext("2d", { willReadFrequently: true });
     context.drawImage(image, 0, 0);
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    let usefulPixels = 0;
     let neutralPixels = 0;
-    let minX = canvas.width;
-    let minY = canvas.height;
-    let maxX = -1;
-    let maxY = -1;
+    const total = canvas.width * canvas.height;
+    const usefulMask = new Uint8Array(total);
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
-        const index = (y * canvas.width + x) * 4;
-        const red = pixels[index];
-        const green = pixels[index + 1];
-        const blue = pixels[index + 2];
-        const alpha = pixels[index + 3];
+        const pixelIndex = y * canvas.width + x;
+        const byteIndex = pixelIndex * 4;
+        const red = pixels[byteIndex];
+        const green = pixels[byteIndex + 1];
+        const blue = pixels[byteIndex + 2];
+        const alpha = pixels[byteIndex + 3];
         const minimum = Math.min(red, green, blue);
         const maximum = Math.max(red, green, blue);
         const useful = alpha > 220 && (minimum < 236 || maximum - minimum > 18);
         const neutral = alpha > 220 && minimum >= 246 && maximum - minimum <= 8;
         if (neutral) neutralPixels += 1;
-        if (!useful) continue;
-        usefulPixels += 1;
+        if (useful) usefulMask[pixelIndex] = 1;
+      }
+    }
+
+    const visited = new Uint8Array(total);
+    const queue = new Int32Array(total);
+    const components = [];
+    for (let start = 0; start < total; start += 1) {
+      if (!usefulMask[start] || visited[start]) continue;
+      let head = 0;
+      let tail = 0;
+      let area = 0;
+      let minX = canvas.width;
+      let minY = canvas.height;
+      let maxX = -1;
+      let maxY = -1;
+      const sides = { left: false, right: false, top: false, bottom: false };
+      queue[tail++] = start;
+      visited[start] = 1;
+      while (head < tail) {
+        const pixelIndex = queue[head++];
+        const x = pixelIndex % canvas.width;
+        const y = Math.floor(pixelIndex / canvas.width);
+        area += 1;
         minX = Math.min(minX, x);
         minY = Math.min(minY, y);
         maxX = Math.max(maxX, x);
         maxY = Math.max(maxY, y);
+        if (x === 0) sides.left = true;
+        if (x === canvas.width - 1) sides.right = true;
+        if (y === 0) sides.top = true;
+        if (y === canvas.height - 1) sides.bottom = true;
+        const neighbors = [
+          x > 0 ? pixelIndex - 1 : -1,
+          x < canvas.width - 1 ? pixelIndex + 1 : -1,
+          y > 0 ? pixelIndex - canvas.width : -1,
+          y < canvas.height - 1 ? pixelIndex + canvas.width : -1
+        ];
+        for (const neighbor of neighbors) {
+          if (neighbor < 0 || !usefulMask[neighbor] || visited[neighbor]) continue;
+          visited[neighbor] = 1;
+          queue[tail++] = neighbor;
+        }
       }
+      const sideCount = Object.values(sides).filter(Boolean).length;
+      components.push({ area, minX, minY, maxX, maxY, sideCount });
     }
-    const total = canvas.width * canvas.height;
+
+    const factualComponents = components.filter(component => !(component.sideCount >= 2 && component.area / total < 0.05));
+    const usefulPixels = factualComponents.reduce((sum, component) => sum + component.area, 0);
+    const minX = factualComponents.length ? Math.min(...factualComponents.map(component => component.minX)) : canvas.width;
+    const minY = factualComponents.length ? Math.min(...factualComponents.map(component => component.minY)) : canvas.height;
+    const maxX = factualComponents.length ? Math.max(...factualComponents.map(component => component.maxX)) : -1;
+    const maxY = factualComponents.length ? Math.max(...factualComponents.map(component => component.maxY)) : -1;
     const bounds = usefulPixels ? { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 } : null;
     return {
       width: canvas.width,
@@ -192,7 +235,8 @@ async function analyzePng(page, bytes) {
       usefulBounds: bounds,
       usefulBoundsRatio: bounds ? (bounds.width * bounds.height) / total : 0,
       neutralBackgroundRatio: neutralPixels / total,
-      clipped: bounds ? bounds.x <= 1 || bounds.y <= 1 || bounds.x + bounds.width >= canvas.width - 1 || bounds.y + bounds.height >= canvas.height - 1 : true
+      clipped: factualComponents.length ? factualComponents.some(component => component.sideCount > 0) : true,
+      excludedChromeComponents: components.length - factualComponents.length
     };
   }, bytes.toString("base64"));
 }
@@ -333,9 +377,9 @@ let activeBrowser = null;
   const expandedOccupancyDelta = metricDelta(original.screen, expanded.screen, "usefulBoundsRatio");
   assert(expandedOccupancyDelta <= 0.04, `Expandir somente o canvas alterou demais a ocupação factual (${expandedOccupancyDelta}).`);
   assert(expanded.screen.neutralBackgroundRatio >= original.screen.neutralBackgroundRatio + 0.18, "O canvas expandido não aumentou materialmente a continuidade do fundo neutro.");
-  assert(cropped.screen.usefulBoundsRatio >= original.screen.usefulBoundsRatio * 1.8, "O recorte externo não aumentou a ocupação útil em 80%.");
-  assert(framed.screen.usefulBoundsRatio >= original.screen.usefulBoundsRatio * 1.8, "O enquadramento do editor não aumentou a ocupação útil em 80%.");
-  assert(Math.abs(framed.screen.usefulBoundsRatio - cropped.screen.usefulBoundsRatio) <= cropped.screen.usefulBoundsRatio * 0.15, "O editor ficou mais de 15% distante do recorte externo.");
+  assert(cropped.screen.usefulPixelRatio >= original.screen.usefulPixelRatio * 1.8, "O recorte externo não aumentou a ocupação útil em 80%.");
+  assert(framed.screen.usefulPixelRatio >= original.screen.usefulPixelRatio * 1.8, "O enquadramento do editor não aumentou a ocupação útil em 80%.");
+  assert(Math.abs(framed.screen.usefulPixelRatio - cropped.screen.usefulPixelRatio) <= cropped.screen.usefulPixelRatio * 0.15, "O editor ficou mais de 15% distante do recorte externo.");
   assert(!cropped.screen.clipped && !framed.screen.clipped, "Uma condição ampliada cortou pixels factuais no viewport.");
 
   for (const result of results) {
@@ -356,7 +400,7 @@ let activeBrowser = null;
     editorIncrement: "05.59",
     schemaVersion,
     target,
-    thresholds: { usefulGainMinimum: 1.8, framedVsCropMaximumDelta: 0.15, screenPrintMaximumDelta: 0.02 },
+    thresholds: { usefulGainMetric: "usefulPixelRatio", usefulGainMinimum: 1.8, framedVsCropMaximumDelta: 0.15, screenPrintMaximumDelta: 0.02 },
     results: results.map(({ screenImage, ...result }) => ({
       ...result,
       screen: { ...result.screen, usefulPixelRatio: round(result.screen.usefulPixelRatio), usefulBoundsRatio: round(result.screen.usefulBoundsRatio), neutralBackgroundRatio: round(result.screen.neutralBackgroundRatio) },
@@ -377,8 +421,8 @@ let activeBrowser = null;
 
   const overview = await browser.newPage({ viewport: { width: 1280, height: 760 } });
   const cards = results.map(result => {
-    const gain = result.screen.usefulBoundsRatio / original.screen.usefulBoundsRatio;
-    return `<article><h2>${result.label}</h2><img src="data:image/png;base64,${result.screenImage}" alt="${result.label}"><dl><dt>Ocupação delimitada</dt><dd>${(result.screen.usefulBoundsRatio * 100).toFixed(1)}%</dd><dt>Ganho relativo</dt><dd>${gain.toFixed(2)}×</dd><dt>Fundo neutro</dt><dd>${(result.screen.neutralBackgroundRatio * 100).toFixed(1)}%</dd><dt>Corte factual</dt><dd>${result.screen.clipped ? "sim" : "não"}</dd></dl></article>`;
+    const gain = result.screen.usefulPixelRatio / original.screen.usefulPixelRatio;
+    return `<article><h2>${result.label}</h2><img src="data:image/png;base64,${result.screenImage}" alt="${result.label}"><dl><dt>Ocupação útil</dt><dd>${(result.screen.usefulPixelRatio * 100).toFixed(1)}%</dd><dt>Ganho relativo</dt><dd>${gain.toFixed(2)}×</dd><dt>Fundo neutro</dt><dd>${(result.screen.neutralBackgroundRatio * 100).toFixed(1)}%</dd><dt>Corte factual</dt><dd>${result.screen.clipped ? "sim" : "não"}</dd></dl></article>`;
   }).join("");
   await overview.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;padding:28px;background:#f3f4f6;color:#202124;font-family:Arial,sans-serif}header{margin-bottom:20px}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#5f6368}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{padding:16px;border:1px solid #d8dadd;border-radius:12px;background:#fff}h2{margin:0 0 12px;font-size:16px}img{display:block;width:100%;aspect-ratio:349/202;object-fit:contain;border:1px solid #e0e0e0;background:#f5f6f7}dl{display:grid;grid-template-columns:1fr auto;gap:6px 16px;margin:12px 0 0;font-size:12px}dt{color:#5f6368}dd{margin:0;font-weight:700}</style></head><body><header><h1>Ensaio causal de enquadramento · 05.59B</h1><p>Mesmo asset factual, card e slot controlado 351×204 (viewport interno 349×202); sem pixels generativos.</p></header><main class="grid">${cards}</main></body></html>`, { waitUntil: "load" });
   await overview.screenshot({ path: path.join(outputRoot, "comparison.png"), fullPage: true });
