@@ -57,33 +57,64 @@ async function selectArt(page) {
   if (await contentTab.count() && await contentTab.getAttribute("aria-selected") !== "true") await contentTab.click();
 }
 
-async function openLibrary(page) {
-  await selectArt(page);
-  await page.locator(`[data-open-asset-library][data-component-id="${protocol.target.componentId}"]`).first().click({ force: true });
-  await page.locator("#assetLibraryDialog").waitFor({ state: "visible" });
-}
-
 async function uploadDerivative(page, condition) {
   const fixture = conditionFiles.get(condition.id);
-  await openLibrary(page);
-  await page.locator("#assetFileInput").setInputFiles({
-    name: path.basename(condition.asset),
-    mimeType: "image/png",
-    buffer: fixture.bytes
+  const fileName = path.basename(condition.asset);
+  const assetId = `asset-05-59b-${condition.id}`;
+  await page.evaluate(async ({ componentId, assetId, fileName, base64, width, height, sourceAssetId, method }) => {
+    const bytes = Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+    const blob = new Blob([bytes], { type: "image/png" });
+    await CatalogEditor.assetStorage.put(assetId, blob);
+    CatalogEditor.store.upsertCollectionItem("assets", {
+      id: assetId,
+      label: fileName.replace(/\.[^.]+$/, ""),
+      metadata: {
+        fileName,
+        mimeType: "image/png",
+        size: blob.size,
+        width,
+        height,
+        createdAt: "2026-08-01T00:00:00.000Z",
+        isVector: false,
+        provenance: {
+          origin: "derived",
+          role: "product",
+          relatedProductIds: [],
+          sourceAssetIds: [sourceAssetId],
+          method,
+          fidelity: "product-faithful",
+          generator: null
+        },
+        approval: { status: "review-required", publishAllowed: false, reviewedAt: null }
+      },
+      reference: { provider: "indexeddb", key: assetId }
+    });
+    CatalogEditor.store.setComponentAsset(componentId, assetId);
+  }, {
+    componentId: protocol.target.componentId,
+    assetId,
+    fileName,
+    base64: fixture.bytes.toString("base64"),
+    width: condition.width,
+    height: condition.height,
+    sourceAssetId: protocol.source.assetId,
+    method: condition.derivation.operation
   });
-  await page.locator("#assetLibraryDialog").waitFor({ state: "hidden" });
-  await page.waitForFunction(({ id, fileName }) => {
+  await page.waitForFunction(({ id, assetId, fileName }) => {
     const component = CatalogEditor.store.findComponent(id)?.component;
     const asset = component?.props?.assetId ? CatalogEditor.store.getAsset(component.props.assetId) : null;
-    return asset?.metadata?.fileName === fileName;
-  }, { id: protocol.target.componentId, fileName: path.basename(condition.asset) });
+    const preview = document.querySelector(`[data-component-id="${id}"] [data-asset-preview]`);
+    return component?.props?.assetId === assetId && asset?.metadata?.fileName === fileName && preview?.dataset.assetState === "ready";
+  }, { id: protocol.target.componentId, assetId, fileName });
 }
 
 async function useExistingAsset(page, assetId) {
-  await openLibrary(page);
-  await page.locator(`[data-use-asset="${assetId}"]`).click();
-  await page.locator("#assetLibraryDialog").waitFor({ state: "hidden" });
-  await page.waitForFunction(({ id, expected }) => CatalogEditor.store.findComponent(id)?.component?.props?.assetId === expected, { id: protocol.target.componentId, expected: assetId });
+  await page.evaluate(({ id, expected }) => CatalogEditor.store.setComponentAsset(id, expected), { id: protocol.target.componentId, expected: assetId });
+  await page.waitForFunction(({ id, expected }) => {
+    const component = CatalogEditor.store.findComponent(id)?.component;
+    const preview = document.querySelector(`[data-component-id="${id}"] [data-asset-preview]`);
+    return component?.props?.assetId === expected && preview?.dataset.assetState === "ready";
+  }, { id: protocol.target.componentId, expected: assetId });
 }
 
 async function setNumericControl(page, property, value) {
