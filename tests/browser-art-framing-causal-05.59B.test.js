@@ -156,13 +156,16 @@ async function analyzePng(page, bytes) {
     const context = canvas.getContext("2d", { willReadFrequently: true });
     context.drawImage(image, 0, 0);
     const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    let usefulPixels = 0;
     let neutralPixels = 0;
+    let minX = canvas.width;
+    let minY = canvas.height;
+    let maxX = -1;
+    let maxY = -1;
     const total = canvas.width * canvas.height;
-    const usefulMask = new Uint8Array(total);
     for (let y = 0; y < canvas.height; y += 1) {
       for (let x = 0; x < canvas.width; x += 1) {
-        const pixelIndex = y * canvas.width + x;
-        const byteIndex = pixelIndex * 4;
+        const byteIndex = (y * canvas.width + x) * 4;
         const red = pixels[byteIndex];
         const green = pixels[byteIndex + 1];
         const blue = pixels[byteIndex + 2];
@@ -170,63 +173,18 @@ async function analyzePng(page, bytes) {
         const minimum = Math.min(red, green, blue);
         const maximum = Math.max(red, green, blue);
         const useful = alpha > 220 && (minimum < 236 || maximum - minimum > 18);
+        const highConfidenceFactual = alpha > 220 && (minimum < 205 || maximum - minimum > 25);
         const neutral = alpha > 220 && minimum >= 246 && maximum - minimum <= 8;
         if (neutral) neutralPixels += 1;
-        if (useful) usefulMask[pixelIndex] = 1;
-      }
-    }
-
-    const visited = new Uint8Array(total);
-    const queue = new Int32Array(total);
-    const components = [];
-    for (let start = 0; start < total; start += 1) {
-      if (!usefulMask[start] || visited[start]) continue;
-      let head = 0;
-      let tail = 0;
-      let area = 0;
-      let minX = canvas.width;
-      let minY = canvas.height;
-      let maxX = -1;
-      let maxY = -1;
-      const sides = { left: false, right: false, top: false, bottom: false };
-      queue[tail++] = start;
-      visited[start] = 1;
-      while (head < tail) {
-        const pixelIndex = queue[head++];
-        const x = pixelIndex % canvas.width;
-        const y = Math.floor(pixelIndex / canvas.width);
-        area += 1;
+        if (useful) usefulPixels += 1;
+        if (!highConfidenceFactual) continue;
         minX = Math.min(minX, x);
         minY = Math.min(minY, y);
         maxX = Math.max(maxX, x);
         maxY = Math.max(maxY, y);
-        if (x === 0) sides.left = true;
-        if (x === canvas.width - 1) sides.right = true;
-        if (y === 0) sides.top = true;
-        if (y === canvas.height - 1) sides.bottom = true;
-        const neighbors = [
-          x > 0 ? pixelIndex - 1 : -1,
-          x < canvas.width - 1 ? pixelIndex + 1 : -1,
-          y > 0 ? pixelIndex - canvas.width : -1,
-          y < canvas.height - 1 ? pixelIndex + canvas.width : -1
-        ];
-        for (const neighbor of neighbors) {
-          if (neighbor < 0 || !usefulMask[neighbor] || visited[neighbor]) continue;
-          visited[neighbor] = 1;
-          queue[tail++] = neighbor;
-        }
       }
-      const sideCount = Object.values(sides).filter(Boolean).length;
-      components.push({ area, minX, minY, maxX, maxY, sideCount });
     }
-
-    const factualComponents = components.filter(component => !(component.sideCount >= 2 && component.area / total < 0.05));
-    const usefulPixels = factualComponents.reduce((sum, component) => sum + component.area, 0);
-    const minX = factualComponents.length ? Math.min(...factualComponents.map(component => component.minX)) : canvas.width;
-    const minY = factualComponents.length ? Math.min(...factualComponents.map(component => component.minY)) : canvas.height;
-    const maxX = factualComponents.length ? Math.max(...factualComponents.map(component => component.maxX)) : -1;
-    const maxY = factualComponents.length ? Math.max(...factualComponents.map(component => component.maxY)) : -1;
-    const bounds = usefulPixels ? { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 } : null;
+    const bounds = maxX >= 0 ? { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 } : null;
     return {
       width: canvas.width,
       height: canvas.height,
@@ -235,8 +193,7 @@ async function analyzePng(page, bytes) {
       usefulBounds: bounds,
       usefulBoundsRatio: bounds ? (bounds.width * bounds.height) / total : 0,
       neutralBackgroundRatio: neutralPixels / total,
-      clipped: factualComponents.length ? factualComponents.some(component => component.sideCount > 0) : true,
-      excludedChromeComponents: components.length - factualComponents.length
+      clipped: bounds ? bounds.x <= 1 || bounds.y <= 1 || bounds.x + bounds.width >= canvas.width - 1 || bounds.y + bounds.height >= canvas.height - 1 : true
     };
   }, bytes.toString("base64"));
 }
