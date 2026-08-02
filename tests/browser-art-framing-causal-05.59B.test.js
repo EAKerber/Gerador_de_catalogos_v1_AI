@@ -244,6 +244,12 @@ let activeBrowser = null;
   await importPackage(page);
   await page.evaluate(() => CatalogEditor.store.setEditorSettings({ zoomMode: "manual", zoom: 1 }));
   await page.waitForFunction(() => CatalogEditor.store.getState().editor.zoomMode === "manual" && CatalogEditor.store.getState().editor.zoom === 1);
+  await page.evaluate(({ parentId, componentId, height }) => {
+    const store = CatalogEditor.store;
+    const card = store.findComponent(parentId).component;
+    for (const child of [...card.children]) if (child.id !== componentId) store.deleteComponent(child.id);
+    store.updateComponent(parentId, { frame: { ...card.frame, height } });
+  }, { parentId: protocol.target.parentId, componentId: protocol.target.componentId, height: protocol.target.controlledSetup.cardHeight });
 
   const target = await page.evaluate(id => {
     const found = CatalogEditor.store.findComponent(id);
@@ -330,7 +336,7 @@ let activeBrowser = null;
     const gain = result.screen.usefulBoundsRatio / original.screen.usefulBoundsRatio;
     return `<article><h2>${result.label}</h2><img src="data:image/png;base64,${result.screenImage}" alt="${result.label}"><dl><dt>Ocupação delimitada</dt><dd>${(result.screen.usefulBoundsRatio * 100).toFixed(1)}%</dd><dt>Ganho relativo</dt><dd>${gain.toFixed(2)}×</dd><dt>Fundo neutro</dt><dd>${(result.screen.neutralBackgroundRatio * 100).toFixed(1)}%</dd><dt>Corte factual</dt><dd>${result.screen.clipped ? "sim" : "não"}</dd></dl></article>`;
   }).join("");
-  await overview.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;padding:28px;background:#f3f4f6;color:#202124;font-family:Arial,sans-serif}header{margin-bottom:20px}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#5f6368}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{padding:16px;border:1px solid #d8dadd;border-radius:12px;background:#fff}h2{margin:0 0 12px;font-size:16px}img{display:block;width:100%;aspect-ratio:351/180;object-fit:contain;border:1px solid #e0e0e0;background:#f5f6f7}dl{display:grid;grid-template-columns:1fr auto;gap:6px 16px;margin:12px 0 0;font-size:12px}dt{color:#5f6368}dd{margin:0;font-weight:700}</style></head><body><header><h1>Ensaio causal de enquadramento · 05.59B</h1><p>Mesmo asset factual, card, slot 351×180 e dimensões; sem pixels generativos.</p></header><main class="grid">${cards}</main></body></html>`, { waitUntil: "load" });
+  await overview.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;padding:28px;background:#f3f4f6;color:#202124;font-family:Arial,sans-serif}header{margin-bottom:20px}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#5f6368}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{padding:16px;border:1px solid #d8dadd;border-radius:12px;background:#fff}h2{margin:0 0 12px;font-size:16px}img{display:block;width:100%;aspect-ratio:351/204;object-fit:contain;border:1px solid #e0e0e0;background:#f5f6f7}dl{display:grid;grid-template-columns:1fr auto;gap:6px 16px;margin:12px 0 0;font-size:12px}dt{color:#5f6368}dd{margin:0;font-weight:700}</style></head><body><header><h1>Ensaio causal de enquadramento · 05.59B</h1><p>Mesmo asset factual, card e slot controlado 351×204; sem pixels generativos.</p></header><main class="grid">${cards}</main></body></html>`, { waitUntil: "load" });
   await overview.screenshot({ path: path.join(outputRoot, "comparison.png"), fullPage: true });
   await overview.pdf({ path: path.join(outputRoot, "comparison.pdf"), format: "A4", landscape: true, printBackground: true });
 

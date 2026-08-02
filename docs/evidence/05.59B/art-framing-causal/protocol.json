@@ -20,7 +20,14 @@
     "parentType": "product-card",
     "slot": "art",
     "width": 351,
-    "height": 180
+    "height": 204,
+    "controlledSetup": {
+      "operation": "isolate-existing-art-slot",
+      "cardWidth": 367,
+      "cardHeight": 220,
+      "removedSiblingTypes": ["title-symbol", "specification", "data-table"],
+      "reason": "O runtime 05.59 recalcula o pacote legado para 143x299; isolar a arte no mesmo card remove a variável de arranjo e produz um viewport único para as quatro condições."
+    }
   },
   "conditions": [
     {
@@ -33,12 +40,12 @@
       "id": "neutral-expanded",
       "label": "2. Fundo neutro expandido",
       "asset": "assets/corredica-neutral-expanded.png",
-      "sha256": "2feaae10ad17ee43a19c97a40f2d5200e749413bd0bff87f1dd04a30a7527385",
-      "width": 981,
+      "sha256": "8edeb58b697b4d6e65e0cdbd1c1f211b1cd7792884f268c4b4c69d5b13e5768c",
+      "width": 866,
       "height": 503,
       "derivation": {
         "operation": "neutral-canvas-padding",
-        "command": "convert source.png -background white -gravity center -extent 981x503 output.png",
+        "command": "convert source.png -background white -gravity center -extent 866x503 output.png",
         "inventedPixels": false,
         "resampledProduct": false
       },
@@ -48,12 +55,12 @@
       "id": "external-crop",
       "label": "3. Recorte externo",
       "asset": "assets/corredica-external-crop.png",
-      "sha256": "b6cfc9cdc9c8e098e252981f5ea4e4946aeb24e1ed0ed92bdb66e0f4318b887b",
-      "width": 660,
-      "height": 338,
+      "sha256": "5e8f119b6df8928ce412a9093f27a77b1361b45e289f7aa70a27cfbbc3d5e22f",
+      "width": 628,
+      "height": 365,
       "derivation": {
         "operation": "neutral-margin-crop",
-        "command": "convert source.png -crop 660x338+14+64 +repage output.png",
+        "command": "convert source.png -crop 628x365+30+50 +repage output.png",
         "inventedPixels": false,
         "resampledProduct": false
       },
@@ -64,11 +71,11 @@
       "label": "4. Enquadramento no editor",
       "asset": "source",
       "interaction": [
-        "Definir foco vertical em 40%",
+        "Confirmar foco vertical em 50%",
         "Acionar Preencher mantendo foco",
-        "Definir zoom em 104%"
+        "Definir zoom em 107%"
       ],
-      "props": { "fit": "cover", "focalX": 50, "focalY": 40, "zoom": 104, "offsetX": 0, "offsetY": 0 }
+      "props": { "fit": "cover", "focalX": 50, "focalY": 50, "zoom": 107, "offsetX": 0, "offsetY": 0 }
     }
   ],
   "metrics": {

@@ -23,7 +23,8 @@ function pngDimensions(bytes) {
 assert(protocol.experimentFormat === "CatalogArtFramingCausalTrial" && protocol.experimentVersion === "1.0.0", "Formato do ensaio causal inválido.");
 assert(protocol.conditions.length === 4 && new Set(protocol.conditions.map(condition => condition.id)).size === 4, "O protocolo não preserva quatro condições distintas.");
 assert(protocol.target.componentType === "art" && protocol.target.parentType === "product-card" && protocol.target.slot === "art", "Componente, card e slot não estão fixos.");
-assert(protocol.target.width === 351 && protocol.target.height === 180, "As dimensões do slot factual mudaram.");
+assert(protocol.target.width === 351 && protocol.target.height === 204, "As dimensões controladas do slot factual mudaram.");
+assert(protocol.target.controlledSetup.operation === "isolate-existing-art-slot" && protocol.target.controlledSetup.cardHeight === 220, "A preparação causal do mesmo card não está explícita.");
 assert(protocol.policy.referencesAreNormative === false && protocol.policy.commercialFactsIntroduced === false, "O ensaio promoveu referência ou dado comercial a norma.");
 assert(protocol.policy.externalNetworkRequired === false && protocol.policy.authoringKitVersionChange === false, "O protocolo ampliou rede ou versão do kit.");
 
