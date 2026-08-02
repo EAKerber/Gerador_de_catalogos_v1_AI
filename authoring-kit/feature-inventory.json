@@ -55,6 +55,13 @@
       "value": 26214400
     },
     {
+      "contract": "CatalogCapabilities.capabilities.artInstanceFraming",
+      "governance": "active",
+      "governanceReason": "Enquadramento não destrutivo por instância fecha uma falha factual observada sem criar editor de imagens nem novo asset.",
+      "id": "artInstanceFraming",
+      "value": true
+    },
+    {
       "contract": "CatalogCapabilities.capabilities.undoRedo",
       "governance": "active",
       "governanceReason": "Toda ação pontual ou composta precisa ser reversível.",
@@ -495,6 +502,21 @@
         {
           "label": "Foco vertical (%)",
           "path": "focalY",
+          "type": "number"
+        },
+        {
+          "label": "Zoom da arte (%)",
+          "path": "zoom",
+          "type": "number"
+        },
+        {
+          "label": "Deslocamento horizontal (%)",
+          "path": "offsetX",
+          "type": "number"
+        },
+        {
+          "label": "Deslocamento vertical (%)",
+          "path": "offsetY",
           "type": "number"
         },
         {
@@ -1584,7 +1606,8 @@
     {
       "capabilityIds": [
         "projectPackageExport",
-        "packageAssetPolicy"
+        "packageAssetPolicy",
+        "artInstanceFraming"
       ],
       "componentTypes": [
         "art"
@@ -1763,7 +1786,7 @@
     }
   ],
   "editor": {
-    "increment": "05.57",
+    "increment": "05.59",
     "name": "Catálogo V1",
     "schemaVersion": "1.16.0"
   },
@@ -2405,13 +2428,13 @@
     "governance": "feature-governance.json"
   },
   "summary": {
-    "capabilities": 50,
+    "capabilities": 51,
     "componentIntents": 5,
     "componentPlacements": 2,
     "components": 16,
     "curatedFlows": 19,
     "governance": {
-      "active": 35,
+      "active": 36,
       "audit": 5,
       "frozen": 4,
       "maintain": 5,

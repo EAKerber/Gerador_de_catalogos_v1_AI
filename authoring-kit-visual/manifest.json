@@ -4,7 +4,7 @@
     "relativeRoot": "..",
     "version": "1.7.1"
   },
-  "editorIncrement": "05.57",
+  "editorIncrement": "05.59",
   "entrypoint": "START-HERE.md",
   "files": [
     {
@@ -95,8 +95,8 @@
       "mimeType": "application/json",
       "path": "examples/first-page.document.json",
       "role": "executable-example",
-      "sha256": "a1640f6c03a953e5ea1f9ba14a4978b8ee6bd44a842c2cc1f13b1d340bd3ff1a",
-      "size": 173480
+      "sha256": "1e0e9149e4d26a2a6c9abc8200e6c17a2c4dcab8f68ef2e15abca179d87a17d1",
+      "size": 174192
     },
     {
       "mimeType": "application/json",

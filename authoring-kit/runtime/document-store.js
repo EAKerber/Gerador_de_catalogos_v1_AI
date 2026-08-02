@@ -15,6 +15,23 @@
   const GEOMETRY_EPSILON = 1;
   const hasOwn = (value, key) => Object.prototype.hasOwnProperty.call(value || {}, key);
 
+  function clampNumber(value, minimum, maximum, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+  }
+
+  function normalizeArtProps(source = {}) {
+    return {
+      ...source,
+      fit: ["contain", "cover", "original"].includes(source.fit) ? source.fit : "contain",
+      focalX: clampNumber(source.focalX, 0, 100, 50),
+      focalY: clampNumber(source.focalY, 0, 100, 50),
+      zoom: clampNumber(source.zoom, 100, 400, 100),
+      offsetX: clampNumber(source.offsetX, -100, 100, 0),
+      offsetY: clampNumber(source.offsetY, -100, 100, 0)
+    };
+  }
+
   function normalizeLegacyFooterAlignment(source) {
     if (!source || typeof source !== "object" || Array.isArray(source)) return source;
     const next = clone(source);
@@ -363,6 +380,7 @@
       }
     };
     node.props = { ...clone(definition.defaultProps), ...(node.props || {}) };
+    if (node.type === "art") node.props = normalizeArtProps(node.props);
     node.style = { ...clone(definition.defaultStyle), ...(node.style || {}) };
     node.layout = definition.container?.autoLayout ? { ...clone(definition.defaultLayout || {}), ...(node.layout || {}) } : null;
     node.layoutItem = node.layoutItem ? { managed: true, grow: 1, span: 1, ...node.layoutItem } : null;
@@ -3143,12 +3161,7 @@
         const props = { ...patch.props };
         if (component.type === "text" && hasOwn(props, "align")) props.alignExplicit = true;
         if (component.type === "text" && hasOwn(props, "overflow")) props.overflowExplicit = true;
-        if (component.type === "art") {
-          for (const key of ["focalX", "focalY"]) {
-            if (props[key] !== undefined) props[key] = Math.max(0, Math.min(100, Number(props[key]) || 0));
-          }
-        }
-        Object.assign(component.props, props);
+        Object.assign(component.props, component.type === "art" ? normalizeArtProps({ ...component.props, ...props }) : props);
       }
       if (patch.style) Object.assign(component.style, patch.style);
       if (patch.layout && component.layout) {

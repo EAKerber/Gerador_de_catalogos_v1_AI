@@ -21,7 +21,7 @@ const schema = readJSON("authoring-kit-visual/schemas/visual-index.schema.json")
 const capabilities = readJSON("authoring-kit/capabilities.json");
 const guide = readJSON("authoring-kit/feature-guide.json");
 
-assert(core.kitVersion === "1.7.1" && core.editorIncrement === "05.57", "O núcleo não identifica a geração com guia visual e gate textual.");
+assert(core.kitVersion === "1.7.1" && core.editorIncrement === "05.59", "O núcleo não identifica a geração com guia visual, enquadramento e gate textual.");
 assert(core.visualCompanion?.format === "CatalogAuthoringVisualGuide" && core.visualCompanion.version === "1.0.0", "O núcleo não declara o complemento visual.");
 assert(core.visualCompanion.distribution === "standalone-kit-only" && core.visualCompanion.requiredForCompilation === false, "A fronteira de distribuição do complemento visual mudou.");
 assert(core.visualCompanion.manifestSha256 === digest(manifestBytes), "O hash do manifesto visual diverge do núcleo.");

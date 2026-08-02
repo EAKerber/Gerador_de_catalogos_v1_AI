@@ -1150,6 +1150,9 @@
                 "alt": "Logo do catálogo",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -1553,6 +1556,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -2085,6 +2091,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -2498,6 +2507,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -2911,6 +2923,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -3325,6 +3340,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -3737,6 +3755,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"
@@ -4150,6 +4171,9 @@
                 "alt": "",
                 "focalX": 50,
                 "focalY": 50,
+                "zoom": 100,
+                "offsetX": 0,
+                "offsetY": 0,
                 "vectorMode": "original",
                 "caption": "",
                 "captionPosition": "below"

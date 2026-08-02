@@ -1,7 +1,7 @@
 {
   "guideFormat": "CatalogFeatureGuide",
   "guideVersion": "1.0.0",
-  "editorIncrement": "05.57",
+  "editorIncrement": "05.59",
   "entries": [
     {
       "id": "start.semantic-source",
@@ -73,13 +73,13 @@
       "intention": "Substituir uma arte ou logo por um asset real",
       "access": "Clicar no placeholder → biblioteca do projeto → importar do computador",
       "preconditions": ["SVG, PNG, JPEG ou WebP dentro do limite"],
-      "result": "Asset factual preservado por referência, com encaixe e respiro rastreáveis",
-      "example": "Usar fit=contain e, se faltar respiro, ampliar somente o canvas neutro sem alterar os pixels do produto",
-      "limits": ["JSON isolado não transporta os bytes", "SVG só recolore em modo token", "Expansão de canvas factual deve ser não generativa e gerar novo tamanho, hash e proveniência"],
-      "capabilityIds": ["projectPackageExport", "packageAssetPolicy"],
+      "result": "Asset factual preservado por referência, com encaixe, foco, zoom e deslocamento por instância",
+      "example": "Usar fit=contain, ampliar a instância para 135% e deslocá-la sem modificar o arquivo-fonte",
+      "limits": ["JSON isolado não transporta os bytes", "SVG só recolore em modo token", "Zoom e deslocamento recortam somente o viewport da instância", "Expansão de canvas factual cria um derivado separado com novo tamanho, hash e proveniência"],
+      "capabilityIds": ["projectPackageExport", "packageAssetPolicy", "artInstanceFraming"],
       "componentTypes": ["art"],
       "recipeIds": [],
-      "contracts": ["collections.assets", "component.props.assetId", "component.props.fit", "component.props.vectorMode", "asset.provenance", "asset.approval"]
+      "contracts": ["collections.assets", "component.props.assetId", "component.props.fit", "component.props.focalX", "component.props.focalY", "component.props.zoom", "component.props.offsetX", "component.props.offsetY", "component.props.vectorMode", "asset.provenance", "asset.approval"]
     },
     {
       "id": "content.variants",

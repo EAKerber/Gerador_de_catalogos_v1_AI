@@ -12,6 +12,10 @@
   const discreteScale = value => [80, 100, 120].includes(Number(value)) ? Number(value) : 100;
   const discreteSpecificationGap = value => [3, 7, 10].includes(Number(value)) ? Number(value) : null;
   const discreteSpecificationPadding = value => [2, 4, 6].includes(Number(value)) ? Number(value) : null;
+  const clampNumber = (value, minimum, maximum, fallback) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(minimum, Math.min(maximum, number)) : fallback;
+  };
 
   const slotChildren = (component, slotName) => (component.children || []).filter(child => child.slot?.name === slotName);
   const hasSlot = (component, slotName, type = null) => slotChildren(component, slotName).some(child => !type || child.type === type);
@@ -81,11 +85,14 @@
     const hasAsset = Boolean(linkedAssetId);
     const focalX = Math.max(0, Math.min(100, Number(props.focalX ?? 50)));
     const focalY = Math.max(0, Math.min(100, Number(props.focalY ?? 50)));
+    const zoom = clampNumber(props.zoom, 100, 400, 100);
+    const offsetX = clampNumber(props.offsetX, -100, 100, 0);
+    const offsetY = clampNumber(props.offsetY, -100, 100, 0);
     const caption = String(props.caption || "").trim();
     const captionPosition = props.captionPosition === "overlay" ? "overlay" : "below";
     return `
       <figure class="component-art" data-art-role="${escapeHtml(props.role || "generic")}" data-has-asset="${String(hasAsset)}" data-has-caption="${String(Boolean(caption))}" data-caption-position="${captionPosition}">
-        <div class="component-art__preview" data-asset-preview data-asset-id="${escapeHtml(linkedAssetId)}" data-asset-alt="${escapeHtml(props.alt || "")}" data-fit="${escapeHtml(props.fit || "contain")}" data-focal-x="${focalX}" data-focal-y="${focalY}" data-vector-mode="${escapeHtml(props.vectorMode || "original")}" style="--asset-focal-x:${focalX}%;--asset-focal-y:${focalY}%">
+        <div class="component-art__preview" data-asset-preview data-asset-id="${escapeHtml(linkedAssetId)}" data-asset-alt="${escapeHtml(props.alt || "")}" data-fit="${escapeHtml(props.fit || "contain")}" data-focal-x="${focalX}" data-focal-y="${focalY}" data-zoom="${zoom}" data-offset-x="${offsetX}" data-offset-y="${offsetY}" data-vector-mode="${escapeHtml(props.vectorMode || "original")}" style="--asset-focal-x:${focalX}%;--asset-focal-y:${focalY}%;--asset-zoom:${zoom / 100};--asset-offset-x:${offsetX}%;--asset-offset-y:${offsetY}%">
           <img data-asset-image alt="${escapeHtml(props.alt || "")}" />
           <span data-asset-vector aria-hidden="true"></span>
           <span class="component-art__missing">Arquivo não encontrado neste navegador</span>
@@ -649,7 +656,7 @@
       gridUnit: 2,
       minSize: { width: 80, height: 60 },
       defaultFrame: { width: 210, height: 160 },
-      defaultProps: { label: "ÁREA DE ARTE", hint: "Logo, foto, render, SVG ou desenho técnico", role: "generic", fit: "contain", assetId: null, alt: "", focalX: 50, focalY: 50, vectorMode: "original", caption: "", captionPosition: "below" },
+      defaultProps: { label: "ÁREA DE ARTE", hint: "Logo, foto, render, SVG ou desenho técnico", role: "generic", fit: "contain", assetId: null, alt: "", focalX: 50, focalY: 50, zoom: 100, offsetX: 0, offsetY: 0, vectorMode: "original", caption: "", captionPosition: "below" },
       defaultStyle: { surface: "surface.neutral", border: "border.default", radius: "radius.medium", accentColor: "brand.primary", vectorColor: "brand.primary", textColor: "text.strong", mutedColor: "text.muted", typography: "type.card-title" },
       contentFields: [
         { path: "label", label: "Identificação", type: "text", full: true },
@@ -658,6 +665,9 @@
         { path: "fit", label: "Ajuste", type: "token-select", tokenGroup: "artFits" },
         { path: "focalX", label: "Foco horizontal (%)", type: "number", min: 0, max: 100, step: 1 },
         { path: "focalY", label: "Foco vertical (%)", type: "number", min: 0, max: 100, step: 1 },
+        { path: "zoom", label: "Zoom da arte (%)", type: "number", min: 100, max: 400, step: 1, full: true },
+        { path: "offsetX", label: "Deslocamento horizontal (%)", type: "number", min: -100, max: 100, step: 1 },
+        { path: "offsetY", label: "Deslocamento vertical (%)", type: "number", min: -100, max: 100, step: 1 },
         { path: "vectorMode", label: "Cor de SVG", type: "select", options: [{ value: "original", label: "Cores originais" }, { value: "token", label: "Token do componente" }] },
         { path: "alt", label: "Texto alternativo", type: "text", full: true },
         { path: "caption", label: "Legenda vinculada", type: "textarea", full: true },

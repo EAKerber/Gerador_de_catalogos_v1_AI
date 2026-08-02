@@ -1,17 +1,17 @@
-# Atlas de funcionalidades — Incremento 05.57
+# Atlas de funcionalidades — Incremento 05.59
 
 Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.
 
 ## Resumo
 
-- 50 capacidades de produto;
+- 51 capacidades de produto;
 - 16 tipos de componente;
 - 5 grupos de descoberta por intenção;
 - 2 posições iniciais prováveis;
 - 9 receitas oficiais;
 - 19 fluxos curados;
 - 35 ícones declarados.
-- governança: 35 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
+- governança: 36 active, 5 maintain, 4 frozen, 1 paused, 5 audit.
 
 ## Grupos de componentes por intenção
 
@@ -39,7 +39,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `content.bulk-products` | Cadastrar vários produtos sem repetir formulários | Produtos → Entrada rápida → colar TSV/CSV | Produtos independentes no inventário |
 | `content.cards-from-products` | Criar e vincular cards para uma seleção de produtos | Produtos → selecionar → escolher organização → Criar composição | Cards vinculados e organizados em uma única transação |
 | `content.table` | Editar estrutura e dados de uma tabela | Selecionar tabela → Conteúdo; ou + para nova linha | Colunas semânticas com rótulo, ordem e visibilidade independentes, múltiplas linhas e valores editáveis |
-| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset factual preservado por referência, com encaixe e respiro rastreáveis |
+| `content.assets` | Substituir uma arte ou logo por um asset real | Clicar no placeholder → biblioteca do projeto → importar do computador | Asset factual preservado por referência, com encaixe, foco, zoom e deslocamento por instância |
 | `content.variants` | Representar variações com imagem, legenda e linha comercial próprias | Produtos → editar → Variações; materialização opcional no card | Variante ligada à galeria e à linha sem depender da posição visual |
 | `content.legends` | Vincular cor, rótulo e projeções de uma legenda | Tabela ou produto → Legendas → adicionar definição e materializar | Células e itens visuais resolvem o mesmo token por legendKey |
 | `content.semantic-pieces` | Escolher entre especificação, dado destacado e legenda sem duplicar significado | feature-guide → content.semantic-pieces; no editor, Componentes ou Estruturas prontas | Atributo curto do produto usa specification; estatística autônoma usa a receita fact; classificação compartilhada usa legendKey |
@@ -124,13 +124,13 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 - **ID:** `content.assets`
 - **Acesso:** Clicar no placeholder → biblioteca do projeto → importar do computador
 - **Pré-condições:** SVG, PNG, JPEG ou WebP dentro do limite
-- **Resultado:** Asset factual preservado por referência, com encaixe e respiro rastreáveis
-- **Exemplo:** Usar fit=contain e, se faltar respiro, ampliar somente o canvas neutro sem alterar os pixels do produto
-- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token; Expansão de canvas factual deve ser não generativa e gerar novo tamanho, hash e proveniência
-- **Capacidades:** `projectPackageExport`, `packageAssetPolicy`
+- **Resultado:** Asset factual preservado por referência, com encaixe, foco, zoom e deslocamento por instância
+- **Exemplo:** Usar fit=contain, ampliar a instância para 135% e deslocá-la sem modificar o arquivo-fonte
+- **Limites:** JSON isolado não transporta os bytes; SVG só recolore em modo token; Zoom e deslocamento recortam somente o viewport da instância; Expansão de canvas factual cria um derivado separado com novo tamanho, hash e proveniência
+- **Capacidades:** `projectPackageExport`, `packageAssetPolicy`, `artInstanceFraming`
 - **Componentes:** `art`
 - **Receitas:** —
-- **Contratos:** `collections.assets`, `component.props.assetId`, `component.props.fit`, `component.props.vectorMode`, `asset.provenance`, `asset.approval`
+- **Contratos:** `collections.assets`, `component.props.assetId`, `component.props.fit`, `component.props.focalX`, `component.props.focalY`, `component.props.zoom`, `component.props.offsetX`, `component.props.offsetY`, `component.props.vectorMode`, `asset.provenance`, `asset.approval`
 
 ## Representar variações com imagem, legenda e linha comercial próprias
 
@@ -312,6 +312,7 @@ Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json
 | `packageAssetPolicy` | `"assisted"` | **frozen** | Governança avançada de mídia está fora do foco atual. | `CatalogCapabilities.capabilities.packageAssetPolicy` |
 | `assetFormats` | `["image/svg+xml","image/png","image/jpeg","image/webp"]` | **frozen** | Nenhum novo formato de mídia durante o ciclo de saneamento. | `CatalogCapabilities.capabilities.assetFormats` |
 | `assetMaxBytes` | `26214400` | **frozen** | Limite atual permanece por compatibilidade. | `CatalogCapabilities.capabilities.assetMaxBytes` |
+| `artInstanceFraming` | `true` | **active** | Enquadramento não destrutivo por instância fecha uma falha factual observada sem criar editor de imagens nem novo asset. | `CatalogCapabilities.capabilities.artInstanceFraming` |
 | `undoRedo` | `true` | **active** | Toda ação pontual ou composta precisa ser reversível. | `CatalogCapabilities.capabilities.undoRedo` |
 | `printPdf` | `true` | **active** | PDF permanece saída de fidelidade, não plataforma de publicação. | `CatalogCapabilities.capabilities.printPdf` |
 | `multiplePages` | `false` | **paused** | Depende de layout e reflow confiáveis. | `CatalogCapabilities.capabilities.multiplePages` |

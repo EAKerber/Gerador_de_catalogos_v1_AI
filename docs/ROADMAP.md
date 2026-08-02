@@ -766,6 +766,25 @@ Recorte documental de continuidade:
 
 Referência: `docs/DEVELOPMENT-HANDOFF-05.58.md`.
 
+## Incremento 05.59 — Enquadramento não destrutivo de artes
+
+Recorte funcional mínimo da revisão prática:
+
+- manter `CatalogDocument 1.16.0` e Authoring Kit `1.7.1` compatíveis;
+- acrescentar `zoom`, `offsetX` e `offsetY` ao átomo `art`, com defaults
+  neutros injetados em documentos anteriores;
+- aplicar o mesmo viewport recortado a raster e SVG, no editor e na impressão;
+- oferecer **Preencher mantendo foco** e **Redefinir enquadramento** como ações
+  únicas e reversíveis;
+- preservar as propriedades por filho em `art-gallery`, duplicação,
+  importação/exportação e runtime distribuído;
+- declarar `artInstanceFraming` no manifesto de capacidades;
+- manter pixels, bytes, metadados e identidade do asset original intocados.
+
+O ensaio causal das quatro condições permanece no 05.59B. Revisão editorial
+ampla do Authoring Kit 1.7.2, edição destrutiva, expansão generativa de fundo e
+renderizador headless continuam fora deste incremento.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de

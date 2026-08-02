@@ -132,8 +132,9 @@ Chromium estão verdes. O gate restante é autoral e operacional.
 
 ### Referência técnica
 
-A primeira imagem — catálogo técnico de fixação e acessórios — é a referência
-forte/canônica da investigação da V1 e material pedagógico do guia visual.
+A primeira imagem — catálogo técnico de fixação e acessórios — é evidência
+técnica conhecida, aderente ao escopo atual, e material pedagógico do guia
+visual.
 
 Ela não é:
 

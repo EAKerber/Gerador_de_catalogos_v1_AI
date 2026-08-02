@@ -1,7 +1,7 @@
 {
   "patternsFormat": "CatalogAuthoringPatterns",
   "patternsVersion": "1.0.0",
-  "editorIncrement": "05.57",
+  "editorIncrement": "05.59",
   "purpose": "Padrões pós-compilação e decisões semânticas que não cabem no CatalogGenerationPlan 1.1.0.",
   "patterns": [
     {
@@ -74,6 +74,7 @@
         "declared-variant-recolor"
       ],
       "rules": [
+        "Ajustar fit, focalX/focalY, zoom e offsetX/offsetY no componente é não destrutivo: o recorte pertence somente ao viewport da instância e não cria um novo asset.",
         "Zoom, foco, reposicionamento, reenquadramento, recorte de margem neutra, redimensionamento, expansão de fundo uniforme e correção tonal são recomendados quando eliminam vazios sem alterar o produto.",
         "Não inventar partes, deformar geometria, ocultar características relevantes nem mudar acabamento ou variante sem fonte declarada.",
         "Recoloração só pode materializar uma variante confirmada no input.",
