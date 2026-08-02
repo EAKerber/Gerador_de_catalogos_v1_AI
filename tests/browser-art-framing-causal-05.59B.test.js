@@ -215,6 +215,8 @@ async function currentAsset(page) {
 }
 
 async function captureCondition(page, condition) {
+  await page.evaluate(() => CatalogEditor.store.setSelection(null));
+  await page.waitForFunction(() => CatalogEditor.store.getSelected() === null);
   const preview = page.locator(`[data-component-id="${protocol.target.componentId}"] [data-asset-preview]`);
   const card = page.locator(`[data-component-id="${protocol.target.parentId}"]`);
   await preview.waitFor({ state: "visible" });
@@ -273,6 +275,7 @@ let activeBrowser = null;
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "networkidle" });
   await importPackage(page);
+  await page.addStyleTag({ content: "#pageCanvas [data-open-asset-library]{display:none!important}" });
   await page.evaluate(() => CatalogEditor.store.setEditorSettings({ zoomMode: "manual", zoom: 1 }));
   await page.waitForFunction(() => CatalogEditor.store.getState().editor.zoomMode === "manual" && CatalogEditor.store.getState().editor.zoom === 1);
   await page.evaluate(({ parentId, componentId, height }) => {
@@ -312,6 +315,16 @@ let activeBrowser = null;
   const cropped = byId["external-crop"];
   const framed = byId["editor-framed"];
 
+  fs.writeFileSync(path.join(outputRoot, "metrics.observed.json"), `${JSON.stringify({
+    experimentFormat: protocol.experimentFormat,
+    experimentVersion: protocol.experimentVersion,
+    id: protocol.id,
+    observedAt: new Date().toISOString(),
+    target,
+    results: results.map(({ screenImage, ...result }) => result),
+    pageErrors
+  }, null, 2)}\n`);
+
   assert(original.asset.assetId === framed.asset.assetId, "Original e enquadramento do editor não reutilizaram a mesma identidade de asset.");
   assert(original.asset.sha256 === protocol.source.sha256 && framed.asset.sha256 === protocol.source.sha256, "O enquadramento do editor alterou os bytes do asset original.");
   assert(expanded.asset.sha256 === protocol.conditions.find(condition => condition.id === "neutral-expanded").sha256, "O editor não preservou o derivado de canvas neutro.");
@@ -326,8 +339,8 @@ let activeBrowser = null;
   assert(!cropped.screen.clipped && !framed.screen.clipped, "Uma condição ampliada cortou pixels factuais no viewport.");
 
   for (const result of results) {
-    assert(result.screen.width === protocol.target.width && result.screen.height === protocol.target.height, `${result.id}: captura de tela divergiu do slot.`);
-    assert(result.print.width === protocol.target.width && result.print.height === protocol.target.height, `${result.id}: captura de impressão divergiu do slot.`);
+    assert(result.screen.width === protocol.target.renderedViewport.width && result.screen.height === protocol.target.renderedViewport.height, `${result.id}: captura de tela divergiu do viewport interno.`);
+    assert(result.print.width === protocol.target.renderedViewport.width && result.print.height === protocol.target.renderedViewport.height, `${result.id}: captura de impressão divergiu do viewport interno.`);
     assert(metricDelta(result.screen, result.print, "usefulBoundsRatio") <= 0.02, `${result.id}: tela e impressão divergiram na ocupação delimitada.`);
     assert(metricDelta(result.screen, result.print, "usefulPixelRatio") <= 0.02, `${result.id}: tela e impressão divergiram nos pixels factuais.`);
     assert(result.screen.style.objectFit === result.print.style.objectFit && result.screen.style.transform === result.print.style.transform, `${result.id}: tela e impressão materializaram transformações diferentes.`);
@@ -367,7 +380,7 @@ let activeBrowser = null;
     const gain = result.screen.usefulBoundsRatio / original.screen.usefulBoundsRatio;
     return `<article><h2>${result.label}</h2><img src="data:image/png;base64,${result.screenImage}" alt="${result.label}"><dl><dt>Ocupação delimitada</dt><dd>${(result.screen.usefulBoundsRatio * 100).toFixed(1)}%</dd><dt>Ganho relativo</dt><dd>${gain.toFixed(2)}×</dd><dt>Fundo neutro</dt><dd>${(result.screen.neutralBackgroundRatio * 100).toFixed(1)}%</dd><dt>Corte factual</dt><dd>${result.screen.clipped ? "sim" : "não"}</dd></dl></article>`;
   }).join("");
-  await overview.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;padding:28px;background:#f3f4f6;color:#202124;font-family:Arial,sans-serif}header{margin-bottom:20px}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#5f6368}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{padding:16px;border:1px solid #d8dadd;border-radius:12px;background:#fff}h2{margin:0 0 12px;font-size:16px}img{display:block;width:100%;aspect-ratio:351/204;object-fit:contain;border:1px solid #e0e0e0;background:#f5f6f7}dl{display:grid;grid-template-columns:1fr auto;gap:6px 16px;margin:12px 0 0;font-size:12px}dt{color:#5f6368}dd{margin:0;font-weight:700}</style></head><body><header><h1>Ensaio causal de enquadramento · 05.59B</h1><p>Mesmo asset factual, card e slot controlado 351×204; sem pixels generativos.</p></header><main class="grid">${cards}</main></body></html>`, { waitUntil: "load" });
+  await overview.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;padding:28px;background:#f3f4f6;color:#202124;font-family:Arial,sans-serif}header{margin-bottom:20px}h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#5f6368}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{padding:16px;border:1px solid #d8dadd;border-radius:12px;background:#fff}h2{margin:0 0 12px;font-size:16px}img{display:block;width:100%;aspect-ratio:349/202;object-fit:contain;border:1px solid #e0e0e0;background:#f5f6f7}dl{display:grid;grid-template-columns:1fr auto;gap:6px 16px;margin:12px 0 0;font-size:12px}dt{color:#5f6368}dd{margin:0;font-weight:700}</style></head><body><header><h1>Ensaio causal de enquadramento · 05.59B</h1><p>Mesmo asset factual, card e slot controlado 351×204 (viewport interno 349×202); sem pixels generativos.</p></header><main class="grid">${cards}</main></body></html>`, { waitUntil: "load" });
   await overview.screenshot({ path: path.join(outputRoot, "comparison.png"), fullPage: true });
   await overview.pdf({ path: path.join(outputRoot, "comparison.pdf"), format: "A4", landscape: true, printBackground: true });
 
