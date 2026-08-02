@@ -1,0 +1,379 @@
+{
+  "experimentFormat": "CatalogArtFramingCausalTrial",
+  "experimentVersion": "1.0.0",
+  "id": "corredica-invisivel-soft-extra-05.59B",
+  "executedAt": "2026-08-02T02:52:44.716Z",
+  "trialIncrement": "05.59B",
+  "editorIncrement": "05.59",
+  "schemaVersion": "1.16.0",
+  "target": {
+    "type": "art",
+    "parentId": "card-03-corredica-invisivel-soft-extra",
+    "parentType": "product-card",
+    "slot": "art",
+    "frame": {
+      "x": 8,
+      "y": 8,
+      "width": 351,
+      "height": 204
+    }
+  },
+  "thresholds": {
+    "usefulGainMetric": "usefulPixelRatio",
+    "usefulGainMinimum": 1.8,
+    "framedVsCropMaximumDelta": 0.15,
+    "screenPrintMaximumDelta": 0.02
+  },
+  "results": [
+    {
+      "id": "original-contain",
+      "label": "1. Original",
+      "screen": {
+        "width": 349,
+        "height": 202,
+        "usefulPixels": 11539,
+        "usefulPixelRatio": 0.1637,
+        "usefulBounds": {
+          "x": 52,
+          "y": 30,
+          "width": 246,
+          "height": 124
+        },
+        "usefulBoundsRatio": 0.4327,
+        "neutralBackgroundRatio": 0.5879,
+        "clipped": false,
+        "style": {
+          "preview": {
+            "width": 349,
+            "height": 202
+          },
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "overflow": "hidden"
+        }
+      },
+      "print": {
+        "width": 350,
+        "height": 202,
+        "usefulPixels": 11731,
+        "usefulPixelRatio": 0.1659,
+        "usefulBounds": {
+          "x": 52,
+          "y": 30,
+          "width": 246,
+          "height": 124
+        },
+        "usefulBoundsRatio": 0.4315,
+        "neutralBackgroundRatio": 0.5864,
+        "clipped": false,
+        "style": {
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      },
+      "asset": {
+        "componentProps": {
+          "label": "ARTE DO PRODUTO",
+          "hint": "Foto, render, SVG ou desenho técnico",
+          "role": "product",
+          "fit": "contain",
+          "assetId": "asset-corredica-invisivel",
+          "alt": "",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 100,
+          "offsetX": 0,
+          "offsetY": 0,
+          "vectorMode": "original",
+          "caption": "",
+          "captionPosition": "below"
+        },
+        "assetId": "asset-corredica-invisivel",
+        "fileName": "corredica-invisivel-soft-extra.png",
+        "sha256": "d62a535b54ecbb813c63b640c29f81e622b41a704d2eb2e24711fe0407ad184d",
+        "provenance": {
+          "origin": "official",
+          "role": "product-main",
+          "relatedProductIds": [
+            "corredica-invisivel-soft-extra"
+          ],
+          "sourceAssetIds": [],
+          "method": "direct-download-official-product-page",
+          "fidelity": "product-faithful",
+          "generator": null
+        },
+        "reference": {
+          "provider": "indexeddb",
+          "key": "package-msb7gat1-z8dt59-0003"
+        }
+      }
+    },
+    {
+      "id": "neutral-expanded",
+      "label": "2. Fundo neutro expandido",
+      "screen": {
+        "width": 349,
+        "height": 202,
+        "usefulPixels": 11514,
+        "usefulPixelRatio": 0.1633,
+        "usefulBounds": {
+          "x": 52,
+          "y": 30,
+          "width": 246,
+          "height": 124
+        },
+        "usefulBoundsRatio": 0.4327,
+        "neutralBackgroundRatio": 0.8001,
+        "clipped": false,
+        "style": {
+          "preview": {
+            "width": 349,
+            "height": 202
+          },
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "overflow": "hidden"
+        }
+      },
+      "print": {
+        "width": 350,
+        "height": 202,
+        "usefulPixels": 11717,
+        "usefulPixelRatio": 0.1657,
+        "usefulBounds": {
+          "x": 53,
+          "y": 30,
+          "width": 246,
+          "height": 124
+        },
+        "usefulBoundsRatio": 0.4315,
+        "neutralBackgroundRatio": 0.8,
+        "clipped": false,
+        "style": {
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      },
+      "asset": {
+        "componentProps": {
+          "label": "ARTE DO PRODUTO",
+          "hint": "Foto, render, SVG ou desenho técnico",
+          "role": "product",
+          "fit": "contain",
+          "assetId": "asset-05-59b-neutral-expanded",
+          "alt": "",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 100,
+          "offsetX": 0,
+          "offsetY": 0,
+          "vectorMode": "original",
+          "caption": "",
+          "captionPosition": "below"
+        },
+        "assetId": "asset-05-59b-neutral-expanded",
+        "fileName": "corredica-neutral-expanded.png",
+        "sha256": "8edeb58b697b4d6e65e0cdbd1c1f211b1cd7792884f268c4b4c69d5b13e5768c",
+        "provenance": {
+          "origin": "derived",
+          "role": "product",
+          "relatedProductIds": [],
+          "sourceAssetIds": [
+            "asset-corredica-invisivel"
+          ],
+          "method": "neutral-canvas-padding",
+          "fidelity": "product-faithful",
+          "generator": null
+        },
+        "reference": {
+          "provider": "indexeddb",
+          "key": "asset-05-59b-neutral-expanded"
+        }
+      }
+    },
+    {
+      "id": "external-crop",
+      "label": "3. Recorte externo",
+      "screen": {
+        "width": 349,
+        "height": 202,
+        "usefulPixels": 21662,
+        "usefulPixelRatio": 0.3073,
+        "usefulBounds": {
+          "x": 4,
+          "y": 13,
+          "width": 338,
+          "height": 171
+        },
+        "usefulBoundsRatio": 0.8199,
+        "neutralBackgroundRatio": 0.6268,
+        "clipped": false,
+        "style": {
+          "preview": {
+            "width": 349,
+            "height": 202
+          },
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)",
+          "overflow": "hidden"
+        }
+      },
+      "print": {
+        "width": 350,
+        "height": 202,
+        "usefulPixels": 21854,
+        "usefulPixelRatio": 0.3091,
+        "usefulBounds": {
+          "x": 4,
+          "y": 13,
+          "width": 338,
+          "height": 171
+        },
+        "usefulBoundsRatio": 0.8175,
+        "neutralBackgroundRatio": 0.6251,
+        "clipped": false,
+        "style": {
+          "objectFit": "contain",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)"
+        }
+      },
+      "asset": {
+        "componentProps": {
+          "label": "ARTE DO PRODUTO",
+          "hint": "Foto, render, SVG ou desenho técnico",
+          "role": "product",
+          "fit": "contain",
+          "assetId": "asset-05-59b-external-crop",
+          "alt": "",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 100,
+          "offsetX": 0,
+          "offsetY": 0,
+          "vectorMode": "original",
+          "caption": "",
+          "captionPosition": "below"
+        },
+        "assetId": "asset-05-59b-external-crop",
+        "fileName": "corredica-external-crop.png",
+        "sha256": "5e8f119b6df8928ce412a9093f27a77b1361b45e289f7aa70a27cfbbc3d5e22f",
+        "provenance": {
+          "origin": "derived",
+          "role": "product",
+          "relatedProductIds": [],
+          "sourceAssetIds": [
+            "asset-corredica-invisivel"
+          ],
+          "method": "neutral-margin-crop",
+          "fidelity": "product-faithful",
+          "generator": null
+        },
+        "reference": {
+          "provider": "indexeddb",
+          "key": "asset-05-59b-external-crop"
+        }
+      }
+    },
+    {
+      "id": "editor-framed",
+      "label": "4. Enquadramento no editor",
+      "screen": {
+        "width": 349,
+        "height": 202,
+        "usefulPixels": 21514,
+        "usefulPixelRatio": 0.3052,
+        "usefulBounds": {
+          "x": 7,
+          "y": 4,
+          "width": 336,
+          "height": 169
+        },
+        "usefulBoundsRatio": 0.8055,
+        "neutralBackgroundRatio": 0.6323,
+        "clipped": false,
+        "style": {
+          "preview": {
+            "width": 349,
+            "height": 202
+          },
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1.07, 0, 0, 1.07, 0, 0)",
+          "overflow": "hidden"
+        }
+      },
+      "print": {
+        "width": 350,
+        "height": 202,
+        "usefulPixels": 21706,
+        "usefulPixelRatio": 0.307,
+        "usefulBounds": {
+          "x": 7,
+          "y": 4,
+          "width": 336,
+          "height": 169
+        },
+        "usefulBoundsRatio": 0.8032,
+        "neutralBackgroundRatio": 0.6306,
+        "clipped": false,
+        "style": {
+          "objectFit": "cover",
+          "objectPosition": "50% 50%",
+          "transform": "matrix(1.07, 0, 0, 1.07, 0, 0)"
+        }
+      },
+      "asset": {
+        "componentProps": {
+          "label": "ARTE DO PRODUTO",
+          "hint": "Foto, render, SVG ou desenho técnico",
+          "role": "product",
+          "fit": "cover",
+          "assetId": "asset-corredica-invisivel",
+          "alt": "",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 107,
+          "offsetX": 0,
+          "offsetY": 0,
+          "vectorMode": "original",
+          "caption": "",
+          "captionPosition": "below"
+        },
+        "assetId": "asset-corredica-invisivel",
+        "fileName": "corredica-invisivel-soft-extra.png",
+        "sha256": "d62a535b54ecbb813c63b640c29f81e622b41a704d2eb2e24711fe0407ad184d",
+        "provenance": {
+          "origin": "official",
+          "role": "product-main",
+          "relatedProductIds": [
+            "corredica-invisivel-soft-extra"
+          ],
+          "sourceAssetIds": [],
+          "method": "direct-download-official-product-page",
+          "fidelity": "product-faithful",
+          "generator": null
+        },
+        "reference": {
+          "provider": "indexeddb",
+          "key": "package-msb7gat1-z8dt59-0003"
+        }
+      }
+    }
+  ],
+  "conclusion": {
+    "neutralCanvasEffect": "background-continuity-only",
+    "externalCropEffect": "material-useful-occupancy-gain",
+    "editorFramingEffect": "material-useful-occupancy-gain",
+    "editorMatchesExternalCrop": true,
+    "assetIntegrityPreserved": true,
+    "screenPrintParity": true,
+    "responsibility": "A falha observada era predominantemente autoral/descoberta do kit; o editor 05.59 oferece correção equivalente ao recorte externo para este caso."
+  },
+  "pageErrors": []
+}

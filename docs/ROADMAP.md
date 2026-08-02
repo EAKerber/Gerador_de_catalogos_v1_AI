@@ -785,6 +785,31 @@ O ensaio causal das quatro condições permanece no 05.59B. Revisão editorial
 ampla do Authoring Kit 1.7.2, edição destrutiva, expansão generativa de fundo e
 renderizador headless continuam fora deste incremento.
 
+## Incremento 05.59B — Ensaio causal de enquadramento factual
+
+Concluído em `development`:
+
+- comparar o mesmo asset, átomo, card, slot e frame em quatro condições:
+  original, canvas neutro expandido, recorte externo e enquadramento 05.59;
+- preservar hashes, proveniência, comandos determinísticos, capturas de tela e
+  impressão, PDFs e relatório de métricas;
+- confirmar que o canvas neutro eleva a continuidade de fundo de 58,79% para
+  80,01%, sem alterar a ocupação factual;
+- medir ganho de ocupação de 1,88× no recorte externo e 1,86× no editor, com
+  diferença relativa de 0,68%, sem corte factual;
+- confirmar paridade tela/impressão com variação máxima de 0,24 ponto
+  percentual e integridade integral do asset original;
+- atribuir a falha anterior, neste caso, predominantemente à autoria e à
+  descoberta do kit, pois o editor atual iguala a derivação externa;
+- manter `CatalogDocument 1.16.0`, Authoring Kit `1.7.1`, runtime e 51
+  capacidades sem alteração.
+
+O próximo recorte é a revisão editorial do Authoring Kit `1.7.2`, dirigida por
+esta evidência. O ensaio em início frio com terceira referência inédita ocorre
+somente depois dessa revisão.
+
+Referência: `docs/INCREMENT-05.59B.md`.
+
 ## Incremento 06 — Documento multipágina, balanceamento e exportação ⏸
 
 Pausado até o encerramento formal da V1 single-page e uma decisão explícita de
