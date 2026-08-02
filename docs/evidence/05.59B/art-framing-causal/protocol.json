@@ -1,0 +1,95 @@
+{
+  "experimentFormat": "CatalogArtFramingCausalTrial",
+  "experimentVersion": "1.0.0",
+  "id": "corredica-invisivel-soft-extra-05.59B",
+  "purpose": "Separar efeito do canvas neutro, derivacao externa e enquadramento nao destrutivo do editor sobre a mesma arte factual.",
+  "source": {
+    "fixture": "docs/evidence/05.52/practical-flow-2026-07-30/revised/catalog-project-package.zip",
+    "packageEntry": "assets/corredica-invisivel-soft-extra.png",
+    "assetId": "asset-corredica-invisivel",
+    "sha256": "d62a535b54ecbb813c63b640c29f81e622b41a704d2eb2e24711fe0407ad184d",
+    "width": 680,
+    "height": 503,
+    "provenance": "official-product-page",
+    "fidelity": "product-faithful"
+  },
+  "target": {
+    "componentId": "card-03-corredica-invisivel-soft-extra-art-02",
+    "parentId": "card-03-corredica-invisivel-soft-extra",
+    "componentType": "art",
+    "parentType": "product-card",
+    "slot": "art",
+    "width": 351,
+    "height": 180
+  },
+  "conditions": [
+    {
+      "id": "original-contain",
+      "label": "1. Original",
+      "asset": "source",
+      "props": { "fit": "contain", "focalX": 50, "focalY": 50, "zoom": 100, "offsetX": 0, "offsetY": 0 }
+    },
+    {
+      "id": "neutral-expanded",
+      "label": "2. Fundo neutro expandido",
+      "asset": "assets/corredica-neutral-expanded.png",
+      "sha256": "2feaae10ad17ee43a19c97a40f2d5200e749413bd0bff87f1dd04a30a7527385",
+      "width": 981,
+      "height": 503,
+      "derivation": {
+        "operation": "neutral-canvas-padding",
+        "command": "convert source.png -background white -gravity center -extent 981x503 output.png",
+        "inventedPixels": false,
+        "resampledProduct": false
+      },
+      "props": { "fit": "contain", "focalX": 50, "focalY": 50, "zoom": 100, "offsetX": 0, "offsetY": 0 }
+    },
+    {
+      "id": "external-crop",
+      "label": "3. Recorte externo",
+      "asset": "assets/corredica-external-crop.png",
+      "sha256": "b6cfc9cdc9c8e098e252981f5ea4e4946aeb24e1ed0ed92bdb66e0f4318b887b",
+      "width": 660,
+      "height": 338,
+      "derivation": {
+        "operation": "neutral-margin-crop",
+        "command": "convert source.png -crop 660x338+14+64 +repage output.png",
+        "inventedPixels": false,
+        "resampledProduct": false
+      },
+      "props": { "fit": "contain", "focalX": 50, "focalY": 50, "zoom": 100, "offsetX": 0, "offsetY": 0 }
+    },
+    {
+      "id": "editor-framed",
+      "label": "4. Enquadramento no editor",
+      "asset": "source",
+      "interaction": [
+        "Definir foco vertical em 40%",
+        "Acionar Preencher mantendo foco",
+        "Definir zoom em 104%"
+      ],
+      "props": { "fit": "cover", "focalX": 50, "focalY": 40, "zoom": 104, "offsetX": 0, "offsetY": 0 }
+    }
+  ],
+  "metrics": {
+    "usefulBoundsRatio": "area da caixa delimitadora de pixels factuais dividida pela area do slot",
+    "usefulPixelRatio": "pixels factuais divididos pelos pixels do slot",
+    "neutralBackgroundRatio": "pixels brancos/neutros divididos pelos pixels do slot",
+    "clipped": "a caixa factual toca qualquer borda do viewport",
+    "screenPrintDelta": "diferenca absoluta das razoes entre midia screen e print"
+  },
+  "acceptance": [
+    "A condicao 2 preserva a ocupacao factual da condicao 1 e aumenta a continuidade do fundo neutro.",
+    "As condicoes 3 e 4 aumentam a ocupacao util em pelo menos 80% sem deformacao ou corte factual.",
+    "A condicao 4 fica a no maximo 15% da ocupacao util da condicao 3.",
+    "Tela e impressao preservam a classificacao e variam no maximo dois pontos percentuais por metrica.",
+    "As condicoes 1 e 4 reutilizam exatamente o mesmo asset, bytes, hash e proveniencia.",
+    "Nenhuma derivacao cria forma, detalhe ou fundo generativo."
+  ],
+  "policy": {
+    "referencesAreNormative": false,
+    "commercialFactsIntroduced": false,
+    "externalNetworkRequired": false,
+    "authoringKitVersionChange": false
+  }
+}
