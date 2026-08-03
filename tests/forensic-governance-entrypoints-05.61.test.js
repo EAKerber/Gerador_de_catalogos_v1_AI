@@ -13,7 +13,7 @@ assert(checkpoint.phase === "v1-forensic-autopsy", "O checkpoint não identifica
 assert(checkpoint.productState?.v1 === "frozen-technical-prototype", "A V1 não está congelada como protótipo técnico.");
 assert(checkpoint.productState?.publicationReady === false, "O checkpoint promove a V1 indevidamente.");
 assert(checkpoint.productState?.v2ImplementationAuthorized === false, "O checkpoint autorizou implementação V2 prematura.");
-assert(checkpoint.productState?.lastFunctionalIncrement === "05.60", "O checkpoint confundiu governança 05.61 com incremento funcional.");
+assert(checkpoint.productState?.lastFunctionalIncrement === "05.60", "O checkpoint confundiu governança documental com incremento funcional.");
 assert(checkpoint.repositoryState?.permanentDocumentationBranch === null, "Uma segunda fonte documental permanente foi criada.");
 assert(checkpoint.repositoryState?.archiveCreated === false, "O checkpoint declara snapshot ainda não comprovado.");
 assert(checkpoint.nextAction?.productCodeChangesAllowed === false, "O próximo passo permite mudança de produto.");
@@ -30,7 +30,8 @@ for (const required of [
 }
 
 const status = read("docs/project/STATUS.md");
-assert(status.includes("Checkpoint de governança:** `05.61`"), "STATUS e CHECKPOINT divergem sobre a transição.");
+const checkpointNumber = checkpoint.checkpointId.match(/^\d+\.\d+/)?.[0];
+assert(checkpointNumber && status.includes(`Checkpoint de governança:** \`${checkpointNumber}\``), "STATUS e CHECKPOINT divergem sobre a transição.");
 assert(status.includes("Nenhum código do produto deve mudar nessa etapa"), "STATUS não bloqueia mutação no próximo passo.");
 
 const startHere = read("docs/START-HERE.md");

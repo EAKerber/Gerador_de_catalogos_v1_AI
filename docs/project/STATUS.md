@@ -2,7 +2,7 @@
 
 - **Atualizado em:** 2026-08-02
 - **Fase:** encerramento e autópsia forense da V1
-- **Checkpoint de governança:** `05.61`
+- **Checkpoint de governança:** `05.62`
 - **Último incremento funcional:** `05.60`
 - **Estado do produto:** protótipo técnico congelado; não aceito como produto
   satisfatório ou pronto para publicação
@@ -25,6 +25,7 @@ A decisão completa está em
 | Incremento funcional | `05.60` |
 | Authoring Kit | `1.7.2` |
 | `main` anterior à transição | `050589347e55613182a00ed1e22f6efd2f1a2540` |
+| Base integrada da autópsia | `development@efe9c063404910e902b109f340ff2dab7358876e` |
 | Branch de arquivo planejada | `archive/v1` — ainda não criada |
 | Tag planejada | `v1.0.0-prototype` — ainda não criada |
 | Branch documental permanente | nenhuma |
@@ -74,6 +75,27 @@ Bloqueado:
 - promessa de compatibilidade integral com documentos V1;
 - poda de refs antes do snapshot final comprovado.
 
+## Unidade 05.62 concluída para revisão
+
+O encerramento factual e a cadeia de evidências foram consolidados sem mudança
+de produto:
+
+- `docs/v1/CLOSURE-REPORT.md` reconstrói objetivo, trajetória, resultado e
+  motivo formal do congelamento;
+- `docs/v1/EVIDENCE-INDEX.md` distingue evidência reproduzida, observada,
+  inferida e decidida;
+- `docs/v1/KNOWN-FAILURES.md` registra dez falhas com critérios de refutação;
+- `docs/v1/PR-LEDGER.md` consolida 48 PRs, CI e refs remotas.
+
+O ensaio cego final ainda não está no repositório. Seus achados permanecem como
+`observed`, não `reproduced`, até a ingestão dos pacotes, PDFs e relatórios. As
+duas referências anexadas já possuem cópias versionadas com os mesmos hashes e
+não foram duplicadas.
+
+O relatório está pronto para revisão, mas o gate
+`v1-closure-report-approved` permanece aberto. Produção documental não é
+autoaprovação.
+
 ## Plano aprovado e gates
 
 1. **Encerramento factual da V1** — consolidar objetivo, resultado, falhas,
@@ -91,11 +113,15 @@ Bloqueado:
 
 ## Próximo passo exato
 
-Produzir o relatório de encerramento da V1 e o registro de evidências. A
-primeira frente deve reconstruir o caminho crítico
-`Source/Plan → compilador → layout → renderer/editor → medição → PDF/pacote`,
-identificando para cada passagem a autoridade, os dados observáveis, os gates e
-as divergências conhecidas. Nenhum código do produto deve mudar nessa etapa.
+Produzir `docs/v1/CAPABILITY-DISPOSITION.md`. A matriz deve avaliar capacidades
+e módulos pelo caminho crítico e classificá-los como `preservar`, `extrair`,
+`reconstruir`, `descartar`, `adiar` ou `ainda aberta`, sempre com evidência,
+dependências, custo de migração e condição de refutação. Não classificar as 51
+capacidades em bloco e não presumir compatibilidade de schemas.
+
+Nenhum código do produto deve mudar nessa etapa. Achados novos sobre o
+encerramento devem corrigir os documentos 05.62 e manter explícito se foram
+observados ou reproduzidos.
 
 ## Condição de handoff
 

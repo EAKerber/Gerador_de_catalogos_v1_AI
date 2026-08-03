@@ -1,7 +1,7 @@
 {
   "checkpointFormat": "CatalogProjectCheckpoint",
   "checkpointVersion": "1.0.0",
-  "checkpointId": "05.61-forensic-governance-bootstrap",
+  "checkpointId": "05.62-v1-closure-evidence",
   "updatedAt": "2026-08-02",
   "phase": "v1-forensic-autopsy",
   "productState": {
@@ -14,6 +14,7 @@
   "repositoryState": {
     "transitionalControlBranch": "development",
     "functionalBaseline": "e83a8f361b5bdcc9c33136ebebe87454abcb3bb8",
+    "forensicBaseline": "efe9c063404910e902b109f340ff2dab7358876e",
     "preTransitionMain": "050589347e55613182a00ed1e22f6efd2f1a2540",
     "plannedArchiveBranch": "archive/v1",
     "plannedArchiveTag": "v1.0.0-prototype",
@@ -48,9 +49,44 @@
     "v2-quality-contract-approved",
     "architecture-options-compared"
   ],
+  "analysisDeliverables": {
+    "v1ClosureReport": {
+      "status": "complete-pending-review",
+      "path": "docs/v1/CLOSURE-REPORT.md"
+    },
+    "evidenceIndex": {
+      "status": "complete-pending-review",
+      "path": "docs/v1/EVIDENCE-INDEX.md"
+    },
+    "knownFailures": {
+      "status": "complete-pending-review",
+      "path": "docs/v1/KNOWN-FAILURES.md"
+    },
+    "prLedger": {
+      "status": "complete-pending-review",
+      "path": "docs/v1/PR-LEDGER.md"
+    },
+    "capabilityDisposition": {
+      "status": "not-started",
+      "path": "docs/v1/CAPABILITY-DISPOSITION.md"
+    },
+    "v2QualityContract": {
+      "status": "not-started",
+      "path": "docs/v2/QUALITY-CONTRACT.md"
+    },
+    "architectureOptions": {
+      "status": "not-started",
+      "path": "docs/autopsy/ARCHITECTURE-OPTIONS.md"
+    }
+  },
+  "evidenceState": {
+    "finalColdStartArtifactsInRepository": false,
+    "finalColdStartFindings": "observed-not-reproduced",
+    "knownReferenceBytesAlreadyVersioned": true
+  },
   "nextAction": {
-    "id": "v1-closure-and-evidence",
-    "description": "Consolidar o relatório de encerramento e o registro reproduzível de evidências pelo caminho crítico da V1.",
+    "id": "v1-capability-disposition",
+    "description": "Classificar capacidades e módulos da V1 por evidência, dependências, custo de migração e condição de refutação.",
     "productCodeChangesAllowed": false
   },
   "sourceOfTruth": {
