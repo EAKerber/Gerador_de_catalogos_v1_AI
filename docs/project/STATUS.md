@@ -2,7 +2,7 @@
 
 - **Atualizado em:** 2026-08-02
 - **Fase:** encerramento e autópsia forense da V1
-- **Checkpoint de governança:** `05.62`
+- **Checkpoint de governança:** `05.63`
 - **Último incremento funcional:** `05.60`
 - **Estado do produto:** protótipo técnico congelado; não aceito como produto
   satisfatório ou pronto para publicação
@@ -25,7 +25,7 @@ A decisão completa está em
 | Incremento funcional | `05.60` |
 | Authoring Kit | `1.7.2` |
 | `main` anterior à transição | `050589347e55613182a00ed1e22f6efd2f1a2540` |
-| Base integrada da autópsia | `development@efe9c063404910e902b109f340ff2dab7358876e` |
+| Base integrada da autópsia | `development@ac33b638eaf8d92d04b6a7c846f9b8f830e1bb54` |
 | Branch de arquivo planejada | `archive/v1` — ainda não criada |
 | Tag planejada | `v1.0.0-prototype` — ainda não criada |
 | Branch documental permanente | nenhuma |
@@ -96,6 +96,29 @@ O relatório está pronto para revisão, mas o gate
 `v1-closure-report-approved` permanece aberto. Produção documental não é
 autoaprovação.
 
+## Unidade 05.63 concluída para revisão
+
+`docs/v1/CAPABILITY-DISPOSITION.md` e seu registro JSON classificam exatamente
+as 51 capacidades do Authoring Kit e os módulos do caminho crítico:
+
+| Disposição | Quantidade |
+| --- | ---: |
+| preservar | 1 |
+| extrair | 13 |
+| reconstruir | 15 |
+| descartar | 6 |
+| adiar | 15 |
+| ainda aberta | 1 |
+
+O núcleo `Source → Plan → compiler → document/store → layout → renderer/PDF →
+gate agregado` deve ser reconstruído ou justificado novamente. Primitivas de
+parsing, medição DOM, geometria especializada, hashing/ZIP e transações têm
+presunção de extração, nunca de cópia do módulo hospedeiro. A paridade com 51
+capacidades foi rejeitada como objetivo do primeiro corte.
+
+`capability-disposition-approved` permanece aberto até revisão; a matriz não
+autoriza extrair código nem iniciar V2.
+
 ## Plano aprovado e gates
 
 1. **Encerramento factual da V1** — consolidar objetivo, resultado, falhas,
@@ -113,15 +136,14 @@ autoaprovação.
 
 ## Próximo passo exato
 
-Produzir `docs/v1/CAPABILITY-DISPOSITION.md`. A matriz deve avaliar capacidades
-e módulos pelo caminho crítico e classificá-los como `preservar`, `extrair`,
-`reconstruir`, `descartar`, `adiar` ou `ainda aberta`, sempre com evidência,
-dependências, custo de migração e condição de refutação. Não classificar as 51
-capacidades em bloco e não presumir compatibilidade de schemas.
+Produzir `docs/v2/QUALITY-CONTRACT.md`. O contrato deve definir, separadamente,
+estrutura, fatos, texto, geometria, composição, imagens, autoridade visual,
+round-trip e PDF. Cada gate precisa informar superfície, método, unidade,
+limiar, severidade, dados `notRun`, evidência exigida e política de correção.
 
-Nenhum código do produto deve mudar nessa etapa. Achados novos sobre o
-encerramento devem corrigir os documentos 05.62 e manter explícito se foram
-observados ou reproduzidos.
+O documento deve ser aplicável aos casos que falharam na V1, sem escolher
+framework, renderer ou estratégia de repositório. Nenhum código do produto deve
+mudar nessa etapa.
 
 ## Condição de handoff
 

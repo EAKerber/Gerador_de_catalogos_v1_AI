@@ -32,7 +32,7 @@ for (const required of [
 const status = read("docs/project/STATUS.md");
 const checkpointNumber = checkpoint.checkpointId.match(/^\d+\.\d+/)?.[0];
 assert(checkpointNumber && status.includes(`Checkpoint de governança:** \`${checkpointNumber}\``), "STATUS e CHECKPOINT divergem sobre a transição.");
-assert(status.includes("Nenhum código do produto deve mudar nessa etapa"), "STATUS não bloqueia mutação no próximo passo.");
+assert(/Nenhum código do produto deve\s+mudar nessa etapa/.test(status), "STATUS não bloqueia mutação no próximo passo.");
 
 const startHere = read("docs/START-HERE.md");
 for (const required of checkpoint.requiredReading.filter(relative => relative !== "docs/START-HERE.md")) {
