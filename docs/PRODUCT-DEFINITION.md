@@ -1,5 +1,9 @@
 # Definição canônica do produto
 
+> **PATRIMÔNIO DA V1.** Este documento descreve a visão que orientou a V1; não é
+> uma especificação aprovada da V2. A fase atual e os gates de reavaliação estão
+> em `docs/START-HERE.md` e `docs/project/STATUS.md`.
+
 ## Status
 
 Direção de produto aceita em 2026-07-14 e atualizada pelos Incrementos 05.10, 05.13 e 05.17. Este documento orienta backlog, arquitetura, interface e kit de autoria para agentes. Implementações atuais que ainda não atendem a esta definição são tratadas como etapas de migração, não como mudança da visão.

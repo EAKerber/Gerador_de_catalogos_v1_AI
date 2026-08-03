@@ -1,5 +1,10 @@
 # Operação GitHub determinística
 
+> Durante a transição forense, esta é uma referência mecânica subordinada a
+> `docs/START-HERE.md` e `docs/project/CHECKPOINT.json`. A base continua
+> `development` somente enquanto o checkpoint declarar; poda fica bloqueada
+> até o snapshot final da V1 ser criado e confirmado.
+
 ## Problema formalizado
 
 O ambiente do ChatGPT pode disponibilizar o conector GitHub sem instalar a CLI

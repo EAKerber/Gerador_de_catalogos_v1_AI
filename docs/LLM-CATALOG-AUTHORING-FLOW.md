@@ -1,5 +1,9 @@
 # Fluxo de autoria de catálogos por agente
 
+> **CONTRATO HISTÓRICO DA V1.** Pode ser usado para reproduzir e avaliar o
+> protótipo intacto, mas não como autorização para corrigir o kit ou definir a
+> V2. Governança vigente: `docs/START-HERE.md`.
+
 ## Status
 
 Especificação funcional canônica do fluxo desejado. Transporte portátil foi implementado no 05.3; `CatalogSource`, apresentações semânticas e gates de assets no 05.4; `CatalogGenerationPlan`, compilador determinístico e gate geométrico no 05.5; receitas oficiais declarativas no 05.8; ações contextuais no 05.9; variantes e legendas hierárquicas no 05.10; atlas funcional validado no 05.11.

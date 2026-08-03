@@ -245,6 +245,10 @@ const list = values => values?.length ? values.map(value => `\`${value}\``).join
 const catalogLines = [
   `# Atlas de funcionalidades — Incremento ${kitManifest.editorIncrement}`,
   "",
+  "> **SNAPSHOT FUNCIONAL DA V1.** Estados `active`, `maintain`, `audit`, `frozen`",
+  "> e `paused` abaixo descrevem a governança interna do protótipo no 05.60; não",
+  "> autorizam evolução durante a autópsia. Comece por `docs/START-HERE.md`.",
+  "",
   "Referência operacional para pessoas e agentes. `authoring-kit/capabilities.json` é a fonte técnica; `feature-inventory.json` é gerado; `feature-guide.json` contém a curadoria por intenção; `authoring-patterns.json` publica refinamentos pós-compilação; `feature-governance.json` define foco, congelamento e auditoria subtrativa. Execute `node tools/build-authoring-kit.js` para regenerar e validar referências.",
   "",
   "## Resumo",

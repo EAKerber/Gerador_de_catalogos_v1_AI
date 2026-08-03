@@ -1,5 +1,10 @@
 # Backlog de produto e usabilidade
 
+> **REGISTRO HISTÓRICO, NÃO FILA ATIVA.** A V1 está congelada e a fase atual é
+> a autópsia documental descrita em `docs/START-HERE.md`. Estados como “linha
+> autorizada” ou “próximo recorte” abaixo registram decisões de seu período e
+> não autorizam implementação.
+
 Registro consolidado das observações recebidas após o Incremento 04. As prioridades orientam a sequência, mas não substituem validação de interface. A direção canônica está em `PRODUCT-DEFINITION.md`; itens concluídos abaixo permanecem como histórico.
 
 ## Validação prática pós-promoção — ensaio de 2026-07-30

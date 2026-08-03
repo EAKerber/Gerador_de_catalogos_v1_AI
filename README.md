@@ -1,5 +1,11 @@
 # Catálogo V1 — Editor A4 incremental
 
+> **Estado atual:** a V1 foi congelada como protótipo técnico após o incremento
+> funcional 05.60. O trabalho ativo é uma autópsia documental; não há correção
+> funcional nem implementação V2 autorizada. Comece por
+> [`docs/START-HERE.md`](docs/START-HERE.md), não pela sequência incremental
+> abaixo.
+
 Base experimental para um compilador editorial de catálogos orientado a dados, com editor visual hierárquico para revisão e refinamento. O projeto atual funciona diretamente no navegador, sem backend, e mantém o documento em JSON/pacote portátil para autoria por agente, snapshots locais e futura colaboração browser-only.
 
 A direção canônica do produto, o fluxo esperado para agentes, a política de assets e a operação local-first estão documentados em `docs/PRODUCT-DEFINITION.md`, `docs/LLM-CATALOG-AUTHORING-FLOW.md`, `docs/ASSET-AUTHORING-POLICY.md` e `docs/ADR-024-browser-local-first-collaboration.md`. O editor atual ainda não implementa todo esse fluxo-alvo.

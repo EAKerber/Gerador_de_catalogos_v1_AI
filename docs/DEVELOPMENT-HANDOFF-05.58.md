@@ -1,5 +1,11 @@
 # Handover de desenvolvimento — estado pós-05.57
 
+> **SUPERADO COMO PONTO DE RETOMADA.** Este handoff preserva o estado observado
+> em 1º de agosto de 2026, antes do ensaio que encerrou a evolução funcional da
+> V1. Para qualquer trabalho novo, comece por `docs/START-HERE.md` e
+> `docs/project/STATUS.md`. Não execute o “próximo gate” deste documento como
+> fila ativa.
+
 **Data de corte:** 1º de agosto de 2026  
 **Repositório:** `EAKerber/Gerador_de_catalogos_v1_AI`  
 **Branch operacional:** `development`  
