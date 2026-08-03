@@ -1,5 +1,10 @@
 # Roadmap incremental
 
+> **SEQUÊNCIA HISTÓRICA.** O roadmap funcional encerra em 05.60. O checkpoint
+> 05.61 é documental e inicia a autópsia; nenhum item posterior está autorizado
+> para implementação. Estado e próximo passo: `docs/START-HERE.md` e
+> `docs/project/STATUS.md`.
+
 ## Incremento 00 — Fundação arquitetônica ✅
 
 - modelo JSON versionado;

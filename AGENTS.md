@@ -1,68 +1,107 @@
 # Instruções operacionais do repositório
 
-## GitHub: conector antes de declarar bloqueio por `gh`
+## Leitura obrigatória antes de agir
 
-A ausência do executável local `gh` não é, isoladamente, um bloqueio para
-operações GitHub neste projeto.
+Este repositório está em **transição forense da V1**, não em desenvolvimento
+funcional normal. Antes de propor, editar, testar, publicar ou podar qualquer
+coisa:
 
-Antes de interromper um fluxo por `gh: command not found`, verifique as
-capacidades do conector GitHub disponíveis na sessão e use-as quando cobrirem a
-operação necessária.
+1. leia `docs/START-HERE.md`;
+2. leia `docs/project/STATUS.md`;
+3. valide `docs/project/CHECKPOINT.json`;
+4. leia `docs/ADR-029-encerramento-v1-e-governanca-forense.md`;
+5. para trabalho de autópsia, siga `docs/autopsy/README.md`.
 
-## Governança de decisões e higiene de branches
+Não use `README.md`, `docs/BACKLOG.md`, `docs/ROADMAP.md`, handovers antigos,
+o atlas de funcionalidades ou o Authoring Kit isoladamente para inferir a fase
+atual. Eles contêm evidência e contratos históricos da V1.
 
-O fluxo determinístico é uma salvaguarda de execução, não um veto semântico.
-Ele exige base remota comprovada, branch curta, PR revisável, CI aplicável e
-readback das escritas; ele **não** impede uma decisão, fix ou contorno ad hoc
-explicitamente escolhido pelo usuário. Para esse tipo de recorte, registre a
-decisão, o escopo e os gates proporcionais na PR em vez de classificá-lo como
-bloqueado por estar fora de um roteiro anterior.
+## Estado e limite de escopo
 
-Branches `agent/*` são temporárias. A rotina recorrente também pode encerrar
-sem merge a PR elegível cujo `head` esteja nesse namespace e cuja base não seja
-`main`, quando ela já estiver integrada, tiver sido substituída de modo
-identificável ou estiver explicitamente abandonada. Ela não pode encerrar uma
-PR ativa apenas para simplificar o inventário. Depois de a PR correspondente
-ser integrada ou fechada nessas condições, o agente deve incluir a branch no
-inventário de poda da mesma etapa, quando a capacidade disponível permitir. A
-rotina só pode remover uma branch quando todos estes critérios forem
-comprovados por readback:
+- O último incremento funcional é `05.60` / Authoring Kit `1.7.2`.
+- A V1 foi encerrada para evolução funcional como **protótipo técnico**, não
+  aprovada como produto satisfatório ou pronto para publicação.
+- O checkpoint documental `05.61` inicia a autópsia e não altera o editor.
+- Até a aprovação dos gates descritos no checkpoint, são permitidos somente:
+  documentação, inventário, reprodução de evidência, medições não mutantes e
+  testes que protejam esses contratos documentais.
 
-1. o nome começa literalmente por `agent/`;
-2. a branch não é `main` nem `development`;
-3. não há PR aberta que dependa dela;
-4. ela está integrada no destino ou foi fechada/abandonada de modo explícito;
-5. a lista exata de refs candidatas foi mostrada antes da escrita.
+Sem nova decisão explícita do usuário, não:
 
-Nunca force-push, zere, renomeie ou mova `main` ou `development` como parte da
-poda. Se qualquer critério não puder ser demonstrado, preserve a ref e registre
-a pendência; a higiene não autoriza inferência destrutiva.
+- corrija runtime, interface, layout, renderer, schema, compilador ou kit;
+- acrescente funcionalidades à V1;
+- inicie implementação, scaffold ou branch de V2;
+- trate CI verde, zero colisão estrutural ou pacote válido como prova de
+  qualidade visual;
+- crie migração ou compatibilidade V1→V2;
+- transforme hipótese de autópsia em decisão arquitetural.
 
-Para diagnosticar GitHub Actions:
+Uma reprodução pode usar o runtime intacto da V1. Se a reprodução exigir
+alterar o produto, registre a limitação em vez de corrigi-la.
 
-1. resolva a PR e seu `head_sha`;
-2. obtenha as execuções associadas ao commit;
-3. liste os jobs da execução;
-4. identifique jobs e etapas com falha;
-5. busque os logs do job pelo conector;
-6. registre run, job, etapa, erro e evidência antes de propor uma correção.
+## Autoridade documental
 
-Para publicar quando o push Git autenticado não estiver disponível:
+Em caso de conflito, use esta ordem:
 
-0. execute `npm run git:preflight -- --json` no commit limpo e siga o transporte
-   declarado; confirme que `remoteBase` coincide com `base` e não repita
-   descoberta de worktrees, SSH ou `gh`;
-1. use objetos Git pelo conector apenas numa branch de agente;
-2. preserve a ordem e as mensagens dos commits;
-3. transfira arquivos grandes sem truncamento;
-4. compare a árvore remota com a árvore local antes de atualizar a ref;
-5. abra PR draft para `development`;
-6. mantenha `main` intocada;
-7. integre somente após todos os gates.
+1. instrução atual e explícita do usuário;
+2. este `AGENTS.md`;
+3. `docs/project/STATUS.md` e `docs/project/CHECKPOINT.json`;
+4. ADRs aceitas da fase forense;
+5. achados reproduzidos e inventários da autópsia;
+6. documentação histórica da V1.
 
-Declare bloqueio somente quando faltar a capacidade específica no conector ou
-quando ele retornar erro de autenticação/permissão. Não transforme a ausência
-da CLI em uma solicitação de configuração ao usuário se o conector já estiver
-autorizado.
+`docs/project/STATUS.md` é o resumo humano atual. O checkpoint JSON é a versão
+consultável por agentes e automações. Os dois devem mudar juntos quando fase,
+gates, próximo passo ou refs autoritativas mudarem.
 
-Detalhes e checklist auditável: `docs/GITHUB-OPERATIONS.md`.
+## Método da autópsia
+
+Separe sempre:
+
+- **observado:** existe em artefato ou execução identificada;
+- **reproduzido:** foi repetido com procedimento e resultado registrados;
+- **inferido:** explicação causal ainda falsificável;
+- **decidido:** escolha aceita, com alternativas e consequências documentadas.
+
+Não use linguagem de conclusão para hipótese. Cada achado deve identificar a
+evidência, a camada afetada, o impacto, a confiança e o teste que poderia
+refutá-lo. As imagens de referência são evidências; não são golden images,
+templates ou fontes de fatos comerciais.
+
+## Fluxo Git durante a transição
+
+Enquanto o encerramento formal não estiver completo:
+
+- `development` é a base transitória de controle;
+- mudanças usam branches curtas `agent/*` derivadas do head remoto comprovado;
+- PRs têm base `development` e começam como draft;
+- `main`, `archive/v1` e a tag `v1.0.0-prototype` não são movidos ou criados
+  antes dos gates de encerramento;
+- não existe branch documental permanente;
+- `main` só se tornará o plano de controle documental após a promoção formal e
+  o readback do snapshot da V1.
+
+Use `docs/GITHUB-OPERATIONS.md` para preflight, publicação, CI e readback. A
+ausência do executável `gh` não é, isoladamente, bloqueio: verifique primeiro o
+conector GitHub disponível. Nunca force-push nem reescreva refs protegidas.
+
+Poda é uma operação posterior ao snapshot. Até lá, apenas inventarie refs.
+Quando autorizada pelo checkpoint, uma branch só pode ser removida se o nome
+literal começar por `agent/`, não houver PR aberta dependente e a integração ou
+abandono estiver comprovado por readback. Nunca infira segurança apenas por
+ancestralidade quando a PR tiver usado squash.
+
+## Protocolo de continuidade
+
+Antes de encerrar uma unidade de trabalho documental:
+
+1. registre decisões aceitas em ADR;
+2. atualize o índice/evidência/achado afetado;
+3. atualize `STATUS.md` e `CHECKPOINT.json` se o próximo passo mudou;
+4. declare o que continua aberto e qual é o próximo passo exato;
+5. valide links, JSON e o contrato de entrypoints;
+6. publique por branch curta e PR revisável.
+
+Evite transcrever conversas inteiras. Preserve decisões, evidências,
+alternativas, critérios, incertezas e consequências suficientes para que um
+agente novo continue sem depender do chat.

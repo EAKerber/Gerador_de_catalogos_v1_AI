@@ -1,23 +1,63 @@
-# Convenções de desenvolvimento
+# Convenções de contribuição
 
-## Branches
+> A governança vigente está em `docs/START-HERE.md`. A V1 está congelada e a
+> fase atual aceita somente documentação, inventário/reprodução de evidência e
+> testes de consistência documental. Não inicie correção funcional ou V2 a
+> partir deste arquivo.
 
-- `main` contém a versão estável mais recente.
-- `development` recebe o desenvolvimento corrente e é a base normal de trabalho.
-- Mudanças isoladas podem usar branches curtas derivadas de `development` quando isso reduzir risco ou facilitar revisão.
+## Branches durante a autópsia
 
-## Commits
+- `development` é a base transitória até o encerramento e snapshot formais;
+- cada unidade usa uma branch curta `agent/*` derivada do head remoto
+  comprovado;
+- PRs começam como draft e têm base `development` enquanto o checkpoint assim
+  declarar;
+- não existe branch documental permanente;
+- `main`, `archive/v1` e `v1.0.0-prototype` só mudam na operação formal de
+  encerramento descrita no checkpoint;
+- branches V2 são proibidas antes da decisão arquitetural.
 
-Toda mensagem de commit deve começar pelo número do incremento correspondente:
+## Escopo de uma contribuição forense
+
+Cada PR deve declarar:
+
+- pergunta investigada;
+- evidência adicionada ou reproduzida;
+- distinção entre observado, reproduzido, inferido e decidido;
+- documentos e camadas afetados;
+- incertezas e alternativas;
+- próximo passo exato;
+- confirmação de que nenhum código do produto foi alterado.
+
+Se uma análise revelar um fix provável, registre-o como implicação ou hipótese.
+Não o implemente na mesma PR.
+
+## Identificação
+
+O último incremento funcional permanece `05.60`. Checkpoints da fase forense
+usam a sequência documental iniciada em `05.61`, explicitando que não alteram a
+versão do editor ou do Authoring Kit.
+
+Mensagens de commit devem começar pelo checkpoint correspondente:
 
 ```text
-05.15 — descrição objetiva da mudança
+05.61 — descrição objetiva da mudança documental
 ```
 
-Não são aceitas mensagens que ocultem a versão, misturem incrementos não relacionados ou publiquem artefatos gerados sem necessidade.
+Não misture autópsia, implementação e higiene de refs no mesmo commit.
 
-## Promoção
+## Validação
 
-Um incremento só deve ser promovido de `development` para `main` depois de testes de domínio, validação de schema e verificações de navegador proporcionais ao risco. Checkpoints explicitamente incompletos permanecem em `development`.
+Execute os testes documentais e, quando a mudança tocar referências consumidas
+por contratos antigos, os testes Node relevantes. Build e Chromium completos
+são proporcionais ao risco e continuam obrigatórios na CI quando o workflow os
+executar; aprovação técnica não substitui revisão da evidência.
 
-ZIPs deixam de ser uma etapa normal de entrega. O repositório Git e seus branches passam a ser a fonte oficial; pacotes portáteis continuam existindo apenas como funcionalidade do produto ou backup excepcional.
+## Promoção e artefatos
+
+ZIPs não são uma etapa normal de contribuição. O repositório é a fonte
+oficial; pacotes da V1 são evidência ou funcionalidade preservada.
+
+A promoção para `main`, criação de `archive/v1`, tag ou release e a poda de
+branches formam uma operação separada, posterior à aprovação dos gates de
+encerramento e sujeita a readback.

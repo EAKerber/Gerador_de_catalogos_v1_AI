@@ -1,0 +1,60 @@
+{
+  "checkpointFormat": "CatalogProjectCheckpoint",
+  "checkpointVersion": "1.0.0",
+  "checkpointId": "05.61-forensic-governance-bootstrap",
+  "updatedAt": "2026-08-02",
+  "phase": "v1-forensic-autopsy",
+  "productState": {
+    "v1": "frozen-technical-prototype",
+    "publicationReady": false,
+    "v2ImplementationAuthorized": false,
+    "lastFunctionalIncrement": "05.60",
+    "authoringKitVersion": "1.7.2"
+  },
+  "repositoryState": {
+    "transitionalControlBranch": "development",
+    "functionalBaseline": "e83a8f361b5bdcc9c33136ebebe87454abcb3bb8",
+    "preTransitionMain": "050589347e55613182a00ed1e22f6efd2f1a2540",
+    "plannedArchiveBranch": "archive/v1",
+    "plannedArchiveTag": "v1.0.0-prototype",
+    "archiveCreated": false,
+    "permanentDocumentationBranch": null
+  },
+  "requiredReading": [
+    "AGENTS.md",
+    "docs/START-HERE.md",
+    "docs/project/STATUS.md",
+    "docs/ADR-029-encerramento-v1-e-governanca-forense.md",
+    "docs/autopsy/README.md"
+  ],
+  "allowedChangeClasses": [
+    "documentation",
+    "evidence-inventory",
+    "non-mutating-reproduction",
+    "documentation-contract-tests"
+  ],
+  "blockedChangeClasses": [
+    "v1-runtime-fix",
+    "v1-feature",
+    "schema-or-compiler-change",
+    "authoring-kit-1.7.3",
+    "v2-scaffold-or-implementation",
+    "v1-to-v2-migration",
+    "branch-pruning-before-archive-readback"
+  ],
+  "requiredGatesBeforeArchitectureDecision": [
+    "v1-closure-report-approved",
+    "capability-disposition-approved",
+    "v2-quality-contract-approved",
+    "architecture-options-compared"
+  ],
+  "nextAction": {
+    "id": "v1-closure-and-evidence",
+    "description": "Consolidar o relatório de encerramento e o registro reproduzível de evidências pelo caminho crítico da V1.",
+    "productCodeChangesAllowed": false
+  },
+  "sourceOfTruth": {
+    "human": "docs/project/STATUS.md",
+    "machine": "docs/project/CHECKPOINT.json"
+  }
+}
