@@ -27,17 +27,24 @@ normalize antes de preservar a divergência como evidência.
 
 ## Entregas de encerramento
 
-Ainda precisam ser consolidadas sob o método de `docs/autopsy/README.md`:
+Concluídas para revisão no checkpoint `05.62`:
 
-- `CLOSURE-REPORT.md` — objetivos, resultados, falhas e limites;
-- `EVIDENCE-INDEX.md` — artefatos, execuções, hashes e procedência;
-- `KNOWN-FAILURES.md` — sintomas, reproduções e atribuição por camada;
+- `CLOSURE-REPORT.md` — objetivos, resultados, falhas, limites e motivo formal
+  do congelamento;
+- `EVIDENCE-INDEX.md` — artefatos, execuções, hashes, procedência e lacunas de
+  cadeia de custódia;
+- `KNOWN-FAILURES.md` — dez falhas com estado, evidência, refutação e
+  implicação preliminar;
+- `PR-LEDGER.md` — 48 PRs, marcos de CI, refs remotas e regra de poda.
+
+Próxima entrega bloqueante:
+
 - `CAPABILITY-DISPOSITION.md` — preservar, extrair, reconstruir, descartar ou
-  adiar;
-- `PR-LEDGER.md` — PRs, SHAs, CI e relação com o snapshot final.
+  adiar cada capacidade e módulo relevante.
 
-Não crie esses arquivos como listas vazias apenas para marcar progresso. Cada
-um deve nascer com evidência suficiente para ser revisável.
+Os documentos concluídos ainda aguardam revisão do gate
+`v1-closure-report-approved`. “Concluído para revisão” não significa aprovação
+arquitetural nem autorização de V2.
 
 ## Snapshot futuro
 
