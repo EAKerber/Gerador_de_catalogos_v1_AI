@@ -36,15 +36,14 @@ Concluídas para revisão no checkpoint `05.62`:
 - `KNOWN-FAILURES.md` — dez falhas com estado, evidência, refutação e
   implicação preliminar;
 - `PR-LEDGER.md` — 48 PRs, marcos de CI, refs remotas e regra de poda.
+- `CAPABILITY-DISPOSITION.md` e `CAPABILITY-DISPOSITION.json` — classificação
+  individual das 51 capacidades e disposição dos módulos críticos.
 
-Próxima entrega bloqueante:
-
-- `CAPABILITY-DISPOSITION.md` — preservar, extrair, reconstruir, descartar ou
-  adiar cada capacidade e módulo relevante.
+Próxima entrega bloqueante: `docs/v2/QUALITY-CONTRACT.md`.
 
 Os documentos concluídos ainda aguardam revisão do gate
-`v1-closure-report-approved`. “Concluído para revisão” não significa aprovação
-arquitetural nem autorização de V2.
+`v1-closure-report-approved` e `capability-disposition-approved`. “Concluído
+para revisão” não significa aprovação arquitetural nem autorização de V2.
 
 ## Snapshot futuro
 

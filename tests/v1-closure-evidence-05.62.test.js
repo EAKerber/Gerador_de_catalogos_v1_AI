@@ -10,13 +10,13 @@ const readJSON = relative => JSON.parse(read(relative));
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const checkpoint = readJSON("docs/project/CHECKPOINT.json");
-assert(checkpoint.checkpointId === "05.62-v1-closure-evidence", "O checkpoint não aponta para a unidade de encerramento 05.62.");
+assert(/^05\.(?:6[2-9]|[7-9]\d)-/.test(checkpoint.checkpointId), "O checkpoint regrediu para antes da unidade de encerramento 05.62.");
 assert(checkpoint.productState.v1 === "frozen-technical-prototype", "O encerramento reabriu a V1.");
 assert(checkpoint.productState.v2ImplementationAuthorized === false, "A unidade documental autorizou V2 prematuramente.");
 assert(checkpoint.repositoryState.archiveCreated === false, "O checkpoint antecipou o snapshot histórico.");
 assert(checkpoint.evidenceState.finalColdStartArtifactsInRepository === false, "O checkpoint declara artefatos finais ainda não ingeridos.");
 assert(checkpoint.evidenceState.finalColdStartFindings === "observed-not-reproduced", "O ensaio final foi promovido indevidamente a reprodução.");
-assert(checkpoint.nextAction.id === "v1-capability-disposition" && checkpoint.nextAction.productCodeChangesAllowed === false, "O próximo passo não é a matriz documental bloqueante.");
+assert(checkpoint.nextAction.productCodeChangesAllowed === false, "O próximo passo documental permite mudança de produto.");
 
 const deliverables = checkpoint.analysisDeliverables;
 for (const key of ["v1ClosureReport", "evidenceIndex", "knownFailures", "prLedger"]) {
@@ -24,7 +24,7 @@ for (const key of ["v1ClosureReport", "evidenceIndex", "knownFailures", "prLedge
   assert(item.status === "complete-pending-review", `${key} não está concluído para revisão.`);
   assert(fs.existsSync(path.join(root, item.path)), `${key} aponta para arquivo ausente: ${item.path}.`);
 }
-assert(deliverables.capabilityDisposition.status === "not-started", "A matriz foi marcada pronta sem análise.");
+assert(["not-started", "complete-pending-review", "approved"].includes(deliverables.capabilityDisposition.status), "Estado inválido da matriz de disposição.");
 assert(checkpoint.requiredGatesBeforeArchitectureDecision.includes("v1-closure-report-approved"), "O relatório se autoaprovou ao ser criado.");
 
 const closure = read(deliverables.v1ClosureReport.path);
@@ -70,8 +70,8 @@ for (const fact of ["48 PRs", "44 integradas", "4 encerradas sem merge", "16 com
 }
 
 const status = read("docs/project/STATUS.md");
-assert(status.includes("Checkpoint de governança:** `05.62`"), "STATUS diverge do checkpoint 05.62.");
-assert(status.includes("Produzir `docs/v1/CAPABILITY-DISPOSITION.md`"), "STATUS não oferece próximo passo exato.");
+const checkpointNumber = checkpoint.checkpointId.match(/^\d+\.\d+/)?.[0];
+assert(checkpointNumber && status.includes(`Checkpoint de governança:** \`${checkpointNumber}\``), "STATUS diverge do checkpoint vigente.");
 assert(/Produção documental não é\s+autoaprovação/.test(status), "STATUS confunde criação com aprovação do gate.");
 
 console.log("✓ Encerramento 05.62 é rastreável, falsificável e não antecipa a V2.");

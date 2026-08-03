@@ -1,0 +1,527 @@
+{
+  "dispositionFormat": "CatalogV1CapabilityDisposition",
+  "dispositionVersion": "1.0.0",
+  "checkpoint": "05.63",
+  "base": "development@ac33b638eaf8d92d04b6a7c846f9b8f830e1bb54",
+  "source": "authoring-kit/capabilities.json",
+  "vocabulary": {
+    "preserve": "Manter o contrato e o comportamento; somente adaptação de integração é esperada.",
+    "extract": "Isolar uma implementação ou primitiva comprovada antes de reutilizar; não carregar o módulo hospedeiro.",
+    "rebuild": "Preservar a necessidade, mas substituir contrato, autoridade ou mecanismo da V1.",
+    "discard": "Não carregar como capacidade pública ou mecanismo; manter apenas como evidência histórica.",
+    "defer": "Não incluir no primeiro corte vertical; reavaliar depois de o núcleo passar pelos gates.",
+    "open": "Evidência insuficiente para decidir sem medição adicional."
+  },
+  "entries": [
+    {
+      "id": "artInstanceFraming",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-006", "KF-004"],
+      "dependencies": ["authoritative-renderer", "asset-governance"],
+      "decision": "Extrair a matemática não destrutiva e a paridade tela/impressão; não herdar o inspector nem defaults atuais.",
+      "refutation": "Falha se a primitiva não reproduzir o 05.59B no renderer escolhido."
+    },
+    {
+      "id": "assetFormats",
+      "disposition": "preserve",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-004", "E-008"],
+      "dependencies": ["asset-decoder"],
+      "decision": "Preservar SVG, PNG, JPEG e WebP; não ampliar formatos sem caso real.",
+      "refutation": "Reabrir se um input factual obrigatório não puder ser representado nesses formatos."
+    },
+    {
+      "id": "assetMaxBytes",
+      "disposition": "open",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-008"],
+      "dependencies": ["storage-budget", "deployment-model"],
+      "decision": "O limite de 25 MB não possui evidência de produto suficiente para ser preservado ou rejeitado.",
+      "refutation": "Decidir após medir assets reais, memória, upload e persistência do ambiente escolhido."
+    },
+    {
+      "id": "batchAlignment",
+      "disposition": "defer",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-003", "KF-008"],
+      "dependencies": ["manual-editor", "selection-model"],
+      "decision": "Útil na V1, mas não necessário para provar o primeiro ciclo autoritativo da V2.",
+      "refutation": "Antecipar somente se o corte vertical exigir ajuste manual comparável e não houver layout automático suficiente."
+    },
+    {
+      "id": "batchFrameMap",
+      "disposition": "defer",
+      "confidence": "medium",
+      "migrationCost": "high",
+      "evidence": ["E-003", "KF-008"],
+      "dependencies": ["manual-editor", "frame-model", "undo-redo"],
+      "decision": "Preservar a evidência de redução de ações, sem carregar edição tabular de coordenadas no primeiro corte.",
+      "refutation": "Antecipar se múltiplas caixas heterogêneas continuarem exigindo correções repetitivas após o novo layout."
+    },
+    {
+      "id": "batchGeometry",
+      "disposition": "defer",
+      "confidence": "medium",
+      "migrationCost": "high",
+      "evidence": ["E-003", "KF-008"],
+      "dependencies": ["manual-editor", "selection-model", "undo-redo"],
+      "decision": "A intenção é válida, mas depende de uma geometria que ainda será reconstruída.",
+      "refutation": "Reavaliar depois que frames, constraints e autoridade local da V2 estiverem definidos."
+    },
+    {
+      "id": "batchPresentation",
+      "disposition": "rebuild",
+      "confidence": "medium",
+      "migrationCost": "high",
+      "evidence": ["KF-010"],
+      "dependencies": ["content-priority-model", "layout-policy"],
+      "decision": "Substituir presets/modos/overrides concorrentes por decisões de conteúdo e prioridade aplicáveis em lote.",
+      "refutation": "Preservar parte da API somente se o mapa de escritores provar autoridade única e baixo acoplamento."
+    },
+    {
+      "id": "batchSeparators",
+      "disposition": "discard",
+      "confidence": "medium",
+      "migrationCost": "low",
+      "evidence": ["KF-010"],
+      "dependencies": ["layout-policy"],
+      "decision": "Não carregar separadores em lote como capacidade autônoma; divisores devem resultar da estrutura editorial.",
+      "refutation": "Reabrir se testes de tarefa mostrarem intenção independente recorrente que o layout não expressa."
+    },
+    {
+      "id": "batchSpacing",
+      "disposition": "defer",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-003"],
+      "dependencies": ["manual-editor", "selection-model"],
+      "decision": "Manter como hipótese de refinamento manual posterior, não requisito do núcleo.",
+      "refutation": "Antecipar se o corte vertical falhar exclusivamente por ajuste repetitivo de espaçamento."
+    },
+    {
+      "id": "batchTableSchemas",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "E-003", "KF-008"],
+      "dependencies": ["semantic-tables", "transaction-model"],
+      "decision": "Extrair o comando semântico de aplicar esquema a várias tabelas; descartar dependência do store monolítico.",
+      "refutation": "Falha se o novo modelo de tabela não puder preservar valores e desfazer a operação atomicamente."
+    },
+    {
+      "id": "bulkCollectionEditing",
+      "disposition": "rebuild",
+      "confidence": "medium",
+      "migrationCost": "high",
+      "evidence": ["E-003", "KF-008", "KF-010"],
+      "dependencies": ["collection-model", "task-oriented-ui"],
+      "decision": "Preservar edição em lote como necessidade, mas redesenhar coleções e interação antes de portar código.",
+      "refutation": "Extrair implementação somente se o mapa de dependências mostrar núcleo puro separado do store e do inspector."
+    },
+    {
+      "id": "catalogSourceDirectImport",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "E-009", "KF-003"],
+      "dependencies": ["source-contract", "compiler", "versioning"],
+      "decision": "Manter importação data-first como fluxo, com novo contrato coerente e feedback de materialização.",
+      "refutation": "Extrair o importador atual somente se schema, versões e relatório forem unificados sem normalização ad hoc."
+    },
+    {
+      "id": "contextualArtGallery",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-001", "E-003"],
+      "dependencies": ["gallery-requirement", "manual-editor"],
+      "decision": "Galerias não pertencem ao primeiro corte de uma página com imagem principal por produto.",
+      "refutation": "Reabrir quando um caso de aceite exigir múltiplas representações factuais do mesmo produto."
+    },
+    {
+      "id": "contextualInsertActions",
+      "disposition": "rebuild",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "KF-008"],
+      "dependencies": ["task-oriented-ui", "component-intent"],
+      "decision": "Preservar inserção por intenção, mas redesenhar a superfície a partir das tarefas essenciais.",
+      "refutation": "Extrair a UI atual se um ensaio comparável provar descoberta e contexto sem tentativas sem efeito."
+    },
+    {
+      "id": "contextualTableRows",
+      "disposition": "extract",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-004"],
+      "dependencies": ["semantic-tables", "transaction-model"],
+      "decision": "Extrair a operação semântica de linha vinculada, não o controle visual atual.",
+      "refutation": "Reconstruir integralmente se rowIds e coleções não sobreviverem à decisão do novo modelo de tabela."
+    },
+    {
+      "id": "distinctProductModes",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "KF-010"],
+      "dependencies": ["content-priority-model", "layout-policy"],
+      "decision": "Substituir modos fixos por prioridade de conteúdo e requisitos mensuráveis; não criar tipos paralelos de card.",
+      "refutation": "Preservar um modo somente se ele corresponder a tarefa distinta e reduzir complexidade total."
+    },
+    {
+      "id": "draftPublicationGates",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-005", "KF-001", "KF-009"],
+      "dependencies": ["typed-quality-report", "authoritative-renderer"],
+      "decision": "Manter estados draft/publication, mas reconstruir o agregador para nunca omitir superfícies notRun.",
+      "refutation": "Extrair o gate atual se ele puder provar composição, tipografia, fatos, assets e round-trip numa única autoridade."
+    },
+    {
+      "id": "editorialTextControls",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-005", "KF-001", "KF-002"],
+      "dependencies": ["text-measurement", "content-priority-model"],
+      "decision": "Trocar controles locais de escala/overflow por políticas explícitas de preservar, reflow, reduzir ou reprovar.",
+      "refutation": "Extrair controles atuais se um ciclo fechado demonstrar correção previsível sem truncar conteúdo obrigatório."
+    },
+    {
+      "id": "generationPlanCompiler",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-008", "E-009", "KF-002", "KF-003"],
+      "dependencies": ["source-contract", "layout-policy", "typed-quality-report"],
+      "decision": "Preservar compilação determinística como princípio, substituindo plano, versionamento e dependência do store.",
+      "refutation": "Extrair partes atuais apenas após provar pureza, versão coerente e ausência de DOM notRun mascarado."
+    },
+    {
+      "id": "geometricPublicationGate",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-001", "E-002", "E-003", "KF-009"],
+      "dependencies": ["frame-model", "typed-quality-report"],
+      "decision": "Extrair interseção e contenção como diagnóstico especializado; nunca chamá-lo isoladamente de gate visual.",
+      "refutation": "Reconstruir se o novo layout não usar frames comparáveis ou exigir geometria contínua distinta."
+    },
+    {
+      "id": "heroGridStripComposition",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-002"],
+      "dependencies": ["recipe-system", "layout-policy"],
+      "decision": "Preservar como cenário de regressão; não fazer da receita um requisito do primeiro corte.",
+      "refutation": "Reabrir se o contrato de qualidade escolher essa composição como um dos casos mínimos."
+    },
+    {
+      "id": "hierarchicalVisualLegends",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-001", "E-003", "KF-008"],
+      "dependencies": ["semantic-legends", "manual-editor"],
+      "decision": "O valor semântico existe, mas a tarefa foi cara e não é necessária ao primeiro corte.",
+      "refutation": "Antecipar somente diante de caso de aceite com classificações compartilhadas impossíveis de omitir."
+    },
+    {
+      "id": "independentProductArrangement",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "KF-010"],
+      "dependencies": ["content-priority-model", "layout-policy"],
+      "decision": "Preservar independência entre conteúdo e orientação, mas eliminar overrides pós-compilação concorrentes.",
+      "refutation": "Extrair o campo atual somente se ele for a única autoridade e sobreviver a texto/assets heterogêneos."
+    },
+    {
+      "id": "internalIconScale",
+      "disposition": "discard",
+      "confidence": "medium",
+      "migrationCost": "low",
+      "evidence": ["KF-010"],
+      "dependencies": ["icon-fitting"],
+      "decision": "Não carregar escala interna como capacidade pública; o ícone deve obedecer ao slot e à hierarquia tipográfica.",
+      "refutation": "Reabrir se casos mensurados exigirem controle independente que o fit automático não consiga expressar."
+    },
+    {
+      "id": "jsonExport",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-004", "E-009", "KF-003"],
+      "dependencies": ["document-contract", "versioning"],
+      "decision": "Preservar saída auditável em dados, sem congelar CatalogDocument 1.16.0.",
+      "refutation": "Preservar o schema atual somente se a matriz de contratos resolver sua divergência e provar suficiência."
+    },
+    {
+      "id": "jsonImport",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-004", "E-009", "KF-003"],
+      "dependencies": ["document-contract", "versioning", "validation"],
+      "decision": "Manter importação auditável, com validação transacional contra o novo documento.",
+      "refutation": "Extrair importador atual se o novo contrato permanecer compatível por evidência, não por promessa."
+    },
+    {
+      "id": "linkedVariantRepresentations",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["KF-010"],
+      "dependencies": ["variant-domain", "semantic-tables", "asset-governance"],
+      "decision": "Variantes não entram no primeiro corte; o vínculo triplo atual exige autópsia própria.",
+      "refutation": "Antecipar se o catálogo mínimo não puder representar seus produtos sem variantes comerciais."
+    },
+    {
+      "id": "manualBulkProductEntry",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-002", "E-003", "KF-008"],
+      "dependencies": ["source-contract"],
+      "decision": "Extrair parser tabular e contrato de confirmação; foi um dos maiores ganhos observados.",
+      "refutation": "Reconstruir se o novo Source exigir semântica incompatível ou validação por célula mais rica."
+    },
+    {
+      "id": "manualBulkTableEntry",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-002", "E-003", "KF-008"],
+      "dependencies": ["semantic-tables"],
+      "decision": "Extrair parsing delimitado e validação básica; manter esquema separado dos valores.",
+      "refutation": "Reconstruir se o modelo tabular escolhido não aceitar entrada bidimensional normalizada."
+    },
+    {
+      "id": "manualProductCardBatch",
+      "disposition": "rebuild",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "E-003"],
+      "dependencies": ["compiler", "content-priority-model"],
+      "decision": "Preservar materialização em lote como intenção, mas fazê-la usar o mesmo compilador autoritativo.",
+      "refutation": "Extrair comando atual se não houver segundo caminho de defaults e geometria."
+    },
+    {
+      "id": "multiSelection",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-003"],
+      "dependencies": ["manual-editor", "selection-model"],
+      "decision": "Importante para refinamento avançado, mas não para provar a geração e correção autoritativas.",
+      "refutation": "Antecipar se o corte vertical exigir correção de grupo impossível por intenção de alto nível."
+    },
+    {
+      "id": "multiplePages",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-008"],
+      "dependencies": ["single-page-quality", "pagination-policy"],
+      "decision": "Continuar fora do primeiro corte até uma página heterogênea passar por todos os gates.",
+      "refutation": "Reabrir após aprovação do corte single-page ou se paginação for necessária para impedir perda factual."
+    },
+    {
+      "id": "officialSectionRecipes",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "KF-010"],
+      "dependencies": ["component-primitives", "layout-policy"],
+      "decision": "Preservar as receitas como fixtures de cenário; não portar as nove implementações antes do núcleo.",
+      "refutation": "Extrair uma receita somente se ela for escolhida como caso mínimo e usar primitivas aprovadas."
+    },
+    {
+      "id": "oneClickInsertion",
+      "disposition": "defer",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "KF-008"],
+      "dependencies": ["task-oriented-ui", "component-primitives"],
+      "decision": "A rapidez de inserção é desejável, mas a taxonomia de peças ainda não foi aprovada.",
+      "refutation": "Antecipar após definir os poucos componentes fundamentais do corte."
+    },
+    {
+      "id": "optionalLegendMaterialization",
+      "disposition": "discard",
+      "confidence": "medium",
+      "migrationCost": "low",
+      "evidence": ["KF-008", "KF-010"],
+      "dependencies": ["semantic-legends"],
+      "decision": "Não carregar como capacidade separada; materialização deve pertencer ao compilador ou à ação semântica da legenda.",
+      "refutation": "Reabrir se existir tarefa independente recorrente que justifique uma operação pública distinta."
+    },
+    {
+      "id": "packageAssetPolicy",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-004", "KF-006"],
+      "dependencies": ["asset-provenance", "publication-policy"],
+      "decision": "Preservar estados de aprovação e fidelidade, tornando linhagem de derivados obrigatória e reproduzível.",
+      "refutation": "Extrair política atual se o caso final ingerido provar cadeia completa em todos os derivados."
+    },
+    {
+      "id": "printPdf",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "E-005", "KF-001", "KF-005"],
+      "dependencies": ["authoritative-renderer", "typed-quality-report"],
+      "decision": "PDF continua entrega central, mas deve vir do mesmo renderer e ser verificável sem uma segunda verdade visual.",
+      "refutation": "Extrair pipeline atual se provar equivalência material editor/PDF e automação de readback."
+    },
+    {
+      "id": "progressiveInspectorVocabulary",
+      "disposition": "discard",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-002", "E-003", "KF-008"],
+      "dependencies": ["task-oriented-ui"],
+      "decision": "Não carregar Conteúdo/Layout/Visual/Avançado como arquitetura; organizar a V2 por tarefas e decisões.",
+      "refutation": "Reabrir apenas se teste comparativo mostrar menor custo e melhor continuidade que a alternativa orientada a tarefa."
+    },
+    {
+      "id": "projectPackageExport",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-004", "E-008"],
+      "dependencies": ["package-manifest-v2", "asset-storage"],
+      "decision": "Extrair ZIP seguro, hashing, MIME e inventário; reconstruir o manifesto ao redor do novo documento.",
+      "refutation": "Reconstruir tudo se o transporte escolhido abandonar pacote local ou exigir streaming incompatível."
+    },
+    {
+      "id": "projectPackageImport",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-004", "E-008"],
+      "dependencies": ["package-manifest-v2", "transaction-model", "asset-storage"],
+      "decision": "Extrair preflight, integridade, path safety e rollback; substituir aplicação ao store V1.",
+      "refutation": "Reconstruir tudo se o novo storage impedir commit transacional ou remapeamento de referências."
+    },
+    {
+      "id": "renderedTextIntegrityGate",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-005", "KF-001", "KF-002"],
+      "dependencies": ["authoritative-renderer", "typed-quality-report"],
+      "decision": "Extrair medição por ranges, scroll e interseções; reconstruir agregação, severidade e ciclo de correção.",
+      "refutation": "Reconstruir a primitiva se o novo renderer não expuser DOM ou usar medição tipográfica diferente."
+    },
+    {
+      "id": "reusableTableSchemas",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-002", "E-003", "E-004"],
+      "dependencies": ["semantic-tables"],
+      "decision": "Preservar definição semântica de colunas e aplicação sem apagar valores.",
+      "refutation": "Reconstruir se o novo modelo unificar esquema e dados de forma incompatível."
+    },
+    {
+      "id": "selectionGeometryDiagnostics",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-003", "KF-009"],
+      "dependencies": ["manual-editor", "multi-selection", "geometric-gate"],
+      "decision": "Manter como requisito posterior de refinamento, depois que a semântica do gate estiver corrigida.",
+      "refutation": "Antecipar se a edição manual fizer parte do corte vertical aprovado."
+    },
+    {
+      "id": "semanticCatalogSource",
+      "disposition": "rebuild",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "E-009", "KF-003"],
+      "dependencies": ["domain-model", "versioning", "provenance"],
+      "decision": "Preservar separação de fatos e intenção; redesenhar schema, campos obrigatórios e proveniência.",
+      "refutation": "Preservar schema 1.1.0 somente se cobrir o corte sem normalizações e com round-trip coerente."
+    },
+    {
+      "id": "semanticColorLegends",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "medium",
+      "evidence": ["E-001", "E-003"],
+      "dependencies": ["semantic-legends", "accessibility-contract"],
+      "decision": "Preservar o conceito como evidência; reavaliar após o primeiro corte sem legendas hierárquicas.",
+      "refutation": "Antecipar se uma classificação compartilhada for fato obrigatório do caso mínimo."
+    },
+    {
+      "id": "semanticProductVariants",
+      "disposition": "defer",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-004", "KF-010"],
+      "dependencies": ["variant-domain", "semantic-tables", "asset-governance"],
+      "decision": "Não levar variantes ao primeiro corte; preservar fixtures para desenho posterior do domínio.",
+      "refutation": "Antecipar se o conjunto mínimo de produtos exigir múltiplas linhas comerciais por identidade."
+    },
+    {
+      "id": "semanticTables",
+      "disposition": "extract",
+      "confidence": "medium",
+      "migrationCost": "medium",
+      "evidence": ["E-002", "E-003", "E-004"],
+      "dependencies": ["document-contract", "source-contract"],
+      "decision": "Extrair colunas com papéis, valores vinculados e chaves estáveis; revisar separação rowIds/collection.",
+      "refutation": "Reclassificar como rebuild se a autópsia do modelo mostrar duplicidade ou writers concorrentes incontornáveis."
+    },
+    {
+      "id": "slotSpanControl",
+      "disposition": "discard",
+      "confidence": "medium",
+      "migrationCost": "low",
+      "evidence": ["E-004", "KF-010"],
+      "dependencies": ["layout-policy"],
+      "decision": "Não expor span como capacidade editorial independente; expressar peso/ocupação na intenção do layout.",
+      "refutation": "Reabrir se casos de footer/tabela não puderem ser descritos sem controle explícito e compreensível."
+    },
+    {
+      "id": "specificationDensityControls",
+      "disposition": "discard",
+      "confidence": "medium",
+      "migrationCost": "low",
+      "evidence": ["KF-002", "KF-010"],
+      "dependencies": ["text-measurement", "layout-policy"],
+      "decision": "Não carregar presets locais de gap/padding como capacidade; o layout deve resolver conteúdo real por política.",
+      "refutation": "Reabrir se um controle discreto for necessário depois de o reflow automático atender todos os gates."
+    },
+    {
+      "id": "tableColumnPresentationControls",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "low",
+      "evidence": ["E-004"],
+      "dependencies": ["semantic-tables"],
+      "decision": "Preservar separação entre key estável e label/ordem/visibilidade editorial.",
+      "refutation": "Reconstruir se o novo schema não usar chaves estáveis ou projetar tabelas de outra forma."
+    },
+    {
+      "id": "undoRedo",
+      "disposition": "extract",
+      "confidence": "high",
+      "migrationCost": "high",
+      "evidence": ["E-003", "E-008"],
+      "dependencies": ["transaction-model", "manual-editor"],
+      "decision": "Extrair semântica de transações atômicas e reversíveis; não portar o store monolítico.",
+      "refutation": "Reconstruir se o novo estado usar eventos/comandos cuja reversão não possa reaproveitar os contratos atuais."
+    }
+  ]
+}
